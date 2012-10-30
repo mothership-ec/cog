@@ -1,0 +1,50 @@
+{
+	"name": "message/cog",
+	"description": "Message's powerful PHP5 framework",
+	"keywords": ["framework", "cog"],
+	"homepage": "http://message.co.uk",
+	"authors": [
+		{
+			"name"  : "The Message Development Team",
+			"email" : "dev@message.co.uk"
+		}
+	],
+	"support": {
+		"wiki"   : "http://server.local/wiki/projects/cog",
+		"issues" : "http://server.local:3000/cog/issues",
+	},
+	"autoload": {
+		"psr-0": {
+			"Message": "src"
+		}
+	},
+	"minimum-stability": "stable",
+	"require": {
+		// Software
+		"php"          : ">=5.3.0",
+		"ext-simplexml": "*",
+		"ext-curl"     : "*",
+		"ext-gd"       : "*",
+		"ext-json"     : "*",
+		"ext-mysqli"   : "*",
+
+		// Third-party libraries
+		"symfony/class-loader"         : "2.1.*",
+		"symfony/console"              : "2.1.*",
+		"symfony/event-dispatcher"     : "2.1.*",
+		"symfony/http-foundation"      : "2.1.*",
+		"symfony/process"              : "2.1.*",
+		"symfony/routing"              : "2.1.*",
+		"symfony/templating"           : "2.1.*",
+		"symfony/yaml"                 : "2.1.*",
+		"mtdowling/cron-expression"    : "1.0.*",
+//		"treasure-chest/treasure-chest": "0.1.*"
+	},
+	"suggest": {
+		"ext-imagemagick": "Provides faster and more powerful image manipulation libraries",
+		"ext-apc"        : "Essential for system-level caching",
+	},
+	"bin": [
+		"bin/cog"
+	]
+}
