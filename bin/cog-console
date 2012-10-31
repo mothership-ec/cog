@@ -1,0 +1,7 @@
+<?php
+
+require_once __DIR__ . '/../src/Message/Cog/App.php';
+require_once __DIR__ . '/../src/Message/Cog/AppConsole.php';
+
+$app = new \Message\Cog\AppConsole;
+$app->run();
