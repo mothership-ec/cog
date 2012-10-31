@@ -6,4 +6,4 @@ Cog is Message's private internal PHP5 framework. It's very powerful but also li
 
 ## How do I set up a new Cog project?
 
-* write me
+@TODO write me
