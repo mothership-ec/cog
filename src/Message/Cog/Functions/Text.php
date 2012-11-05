@@ -1,6 +1,6 @@
 <?php
 
-namespace Mothership\Framework\Functions;
+namespace Message\Cog\Functions;
 
 class Text
 {
@@ -14,31 +14,31 @@ class Text
 		$string = join("Mc", array_map('ucwords', explode("Mc", $string)));
 
 		$ignores = array(
-			' a ', 
-			' or ', 
-			' if ', 
-			' it ', 
-			' and ', 
-			' or ', 
-			' nor ', 
-			' but ', 
-			' so ', 
-			' is ', 
-			' the ', 
+			' a ',
+			' or ',
+			' if ',
+			' it ',
+			' and ',
+			' or ',
+			' nor ',
+			' but ',
+			' so ',
+			' is ',
+			' the ',
 			' are ',
 		);
 
 		$string = str_replace(array_map('ucwords', $ignores), $ignores, $string);
-		
+
 		return $string;
 	}
 
 	/**
 	 * Returns a standard plural letter if the input
 	 * amount would require pluralisation.
-	 * 
-	 * @param 	int $amount	Input amount
-	 * @return 	string 		Returns the standard plural letter or an empty string
+	 *
+	 * @param int $amount Input amount
+	 * @return string     Returns the standard plural letter or an empty string
 	 */
 	public function plural($amount)
 	{
@@ -57,9 +57,9 @@ class Text
 
 	/**
 	 * Obfuscates an input string as HTML ASCII entities.
-	 * 
-	 * @param 	string $string 	Input string
-	 * @return 	string 			Obfuscated string
+	 *
+	 * @param string $string Input string
+	 * @return string        Obfuscated string
 	 */
 	public function obfuscate($string)
 	{
@@ -84,7 +84,7 @@ class Text
 				'=',
 				'@',
 				'!',
-			), 
+			),
 			array(
 				'and',
 				'or',
@@ -95,11 +95,11 @@ class Text
 			),
 			$string
 		);
-		
+
 		$return = preg_replace('/[^a-z0-9\s]/i', '', $return);
-		
+
 		$return = str_replace(' ', '-', strtolower($return));
-		
+
 		if($checkExists) {
 			$i = 1;
 			while($this->slugExists($return)) {
@@ -108,7 +108,7 @@ class Text
 			}
 			$return = $newReturn;
 		}
-		
+
 		return $return;
 	}
 
@@ -116,7 +116,7 @@ class Text
 	{
 		$db = new DBquery;
 		$db->query('SELECT id FROM entries WHERE slug = ' . $db->escape($slug));
-		
+
 		return ($check->numrows() != 0 || file_exists(PUBLIC_PATH . $slug));
 	}
 
@@ -188,7 +188,7 @@ class Text
 
 		$words = preg_split('/(_| |\-)/', strtolower($string));
 		$string = array_shift($words);
-		
+
 		while ($word = array_shift($words)) {
 			$string .= ucfirst($word);
 		}
