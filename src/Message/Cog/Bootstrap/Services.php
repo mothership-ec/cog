@@ -11,6 +11,11 @@ class Services implements ServicesInterface
 {
 	public function registerServices($serviceContainer)
 	{
+		// Composer auto loader
+		$this->_services['class.loader'] = function() {
+			return \ComposerAutoloaderInit::getLoader();
+		};
+
 		$env = new Environment;
 		$serviceContainer['environment'] = function() use ($env) {
 			return $env;

@@ -40,23 +40,16 @@ class App
 		// Include composer autoloader
 		require_once ROOT_PATH . 'vendor/autoload.php';
 
-		$loader = new \Symfony\Component\ClassLoader\UniversalClassLoader;
-		$loader->register();
-		$loader->registerNamespaces(array(
-			// Core system
-			'Cog'   => CLASS_AUTOLOAD_PATH,
-		));
-
 		// Setup the environment
 		// TODO: move as much of this as we can in to a Bootstrap
 		$this->_services = Services::instance();
 
 		// Register framework services
-		$serviceBootstrap = new \Mothership\Framework\Bootstrap\Services;
+		$serviceBootstrap = new \Message\Cog\Bootstrap\Services;
 		$serviceBootstrap->registerServices($this->_services);
 
-		$this->_services['class.loader'] = function() use ($loader) {
-			return $loader;
+		$this->_services['class.loader'] = function() {
+			return \ComposerAutoloaderInit::getLoader();
 		};
 
 		$app = $this;
@@ -65,7 +58,7 @@ class App
 		};
 
 		// Register framework events
-		$eventBootstrap = new \Mothership\Framework\Bootstrap\Events;
+		$eventBootstrap = new \Message\Cog\Bootstrap\Events;
 		$eventBootstrap->registerEvents($this->_services['event.dispatcher']);
 	}
 
@@ -78,9 +71,8 @@ class App
 	{
 		if ($this->_services['environment']->isLocal()) {
 			$services = $this->_services;
-			$profiler = new \Message\Cog\Profiler(null, function(){
-				return \DBconnect::instance()->getQueryCount();
-			}, false);
+			// TODO: make this get the query count from new query objects
+			$profiler = new \Message\Cog\Profiler(null, null, false);
 
 			register_shutdown_function(function() use ($profiler, $services) {
 				if($services['environment']->isLocal() && $services['environment']->context() != 'console' && (!isset($GLOBALS['page']) || !in_array($GLOBALS['page']->getTemplateName(), array('Blank', 'Ajax', 'Xml', 'Print', 'AdminPrint')))) {
@@ -131,7 +123,6 @@ class App
 			->send();
 	}
 
-
 	/**
 	 * Defines all global constants used throughout the app.
 	 *
@@ -140,11 +131,8 @@ class App
 	protected function _setupConstants()
 	{
 		// TODO: No global constants, make them part of Mothership\App
-		define('ROOT_PATH', realpath(__DIR__ . '/../../../../').'/');
-		define('TMP_PATH', ROOT_PATH.'tmp/');
-		define('LOG_PATH', ROOT_PATH.'log/');
+		define('ROOT_PATH', realpath(__DIR__ . '/../../../').'/');
 		define('SYSTEM_PATH', ROOT_PATH.'system/');
-		define('CLASS_AUTOLOAD_PATH', SYSTEM_PATH . 'library');
 		define('AREA', preg_replace('/^(.*)\//', '', $_SERVER['DOCUMENT_ROOT']));
 		define('PUBLIC_PATH', SYSTEM_PATH.'public/'.AREA.'/');
 	}
