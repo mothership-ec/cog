@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Templating;
+namespace Message\Cog\Controller;
 
 use Message\Cog\HTTP\Request;
 use Message\Cog\HTTP\Response;
