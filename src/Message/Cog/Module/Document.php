@@ -7,7 +7,7 @@ use Symfony\Component\Yaml\Exception\ParseException;
 
 class Document
 {
-	const NAME = 'info.md';
+	const FILE_NAME = 'info.md';
 
 	protected $_info;
 	protected $_readMe;
@@ -17,7 +17,7 @@ class Document
 		// TODO: update this so that it checks the /vendor dir. It should probably
 		// tap into the UniveralClassLoader
 		$modulePath = 'system/library/'.str_replace('\\', '/', $moduleName).'/';
-		$filePath   = ROOT_PATH . $modulePath . self::NAME;
+		$filePath   = ROOT_PATH . $modulePath . self::FILE_NAME;
 
 		if (!file_exists($filePath)) {
 			throw new Exception(
