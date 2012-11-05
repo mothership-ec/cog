@@ -11,7 +11,6 @@ use \InvalidArgumentException;
  */
 class OSCommerce extends Hash
 {
-
 	/**
 	 * Encrypts a string using the default OSCommerce encryption algorithm.
 	 *
@@ -78,5 +77,4 @@ class OSCommerce extends Hash
 
 		return mt_rand();
 	}
-
 }

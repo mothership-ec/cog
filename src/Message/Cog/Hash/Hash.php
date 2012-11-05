@@ -15,7 +15,6 @@ use \InvalidArgumentException;
  */
 abstract class Hash
 {
-
 	/**
 	 * Returns the relevant subclass of this class using the input algorithm.
 	 *
@@ -89,5 +88,4 @@ abstract class Hash
 
 		return $salt;
 	}
-
 }
