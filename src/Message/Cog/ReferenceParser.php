@@ -13,7 +13,8 @@ namespace Message\Cog;
  * Examples:
  *
  * * ::ClassName#methodName
- * * Mothership:Core:DirectoryName:ClassName#methodName
+ * * ModuleBundleName:Core:DirectoryName:ClassName#methodName
+ * * ModuleName:DirectoryName:ClassName#methodName
  * * Bespoke:Wishlist:FolderName:ViewName
  * * ::DirectoryName:ViewName
  *

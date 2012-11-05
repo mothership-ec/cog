@@ -13,10 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 /**
- * Setup
- *
- * Provides the setup command.
- * Sets up a Mothership installation.
+ * Command to set up a new Cog installation.
  */
 class Setup extends Command
 {

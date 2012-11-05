@@ -24,7 +24,7 @@ use Symfony\Component\Process\Process;
  * asynchronously launched as seperate processes which run independantly.
  *
  * The entry in the crontab file needs to look something like this:
- * 		* * * * * /path/to/site/bin/mothership --env=live task:run_scheduled > /dev/null 2>&1
+ * 		* * * * * /path/to/site/bin/cog --env=live task:run_scheduled > /dev/null 2>&1
  */
 class TaskRunScheduled extends Command
 {

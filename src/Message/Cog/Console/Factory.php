@@ -8,10 +8,9 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Factory
+ * Our wrapper around Symfony's Console component.
  *
- * A wrapper around Symfony's Console component
- * The console runs tasks and helps make Mothership development easier.
+ * The Console component runs tasks and helps make developing with Cog easier.
  */
 class Factory
 {
@@ -21,7 +20,7 @@ class Factory
 
 		$app->getDefinition()->addOption(new InputOption('--env', '-e', InputOption::VALUE_REQUIRED, 'The Environment name.', 'local'));
 
-		// Setup the default commands;
+		// Setup the default commands
 		$app->add(new Command\ModuleGenerate);
 		$app->add(new Command\ModuleList);
 		$app->add(new Command\TaskRun);

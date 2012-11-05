@@ -37,7 +37,7 @@ class App
 	 */
 	public function setupAutoloader()
 	{
-		// Include Composer autoloader
+		// Include composer autoloader
 		require_once ROOT_PATH . 'vendor/autoload.php';
 
 		$loader = new \Symfony\Component\ClassLoader\UniversalClassLoader;
@@ -46,15 +46,6 @@ class App
 			// Core system
 			'Cog'   => CLASS_AUTOLOAD_PATH,
 		));
-
-		// Deprecated autoloader
-		// TODO: Remove once everything is PSR-0
-		require_once SYSTEM_PATH.'library/Mothership/Framework/Functions/autoload.php';
-
-		// Add pear to include path
-		// This is to handle the require_once calls in the Image_Barcode2 class
-		// TODO: try and get rid of this one day...
-		ini_set('include_path', '.:' . ROOT_PATH . 'vendor/pear/Image_Barcode2:'.ini_get('include_path'));
 
 		// Setup the environment
 		// TODO: move as much of this as we can in to a Bootstrap
@@ -85,26 +76,9 @@ class App
 	 */
 	public function setupFrameworkServices()
 	{
-		// Old style config files
-		// TODO: Remove these few lines
-		require ROOT_PATH . 'config/deprecated/Order.cfg.php';
-		require ROOT_PATH . 'config/deprecated/stockLocations.cfg.php';
-
-		// Load functions
-		// TODO: Reduce the amount of functions or combine multiple into a single file
-		// loading all those files adds about 30-50ms to the startup time of a page
-		// TODO: skip classes here somehow, as there is one or two function classes
-		$files = glob(SYSTEM_PATH . 'library/Mothership/Framework/Functions/*.php');
-		foreach ($files as $file) {
-			require_once $file;
-		}
-
-		// Set up test services
-		// TODO: we need some functionality to run a services bootstrap for running in unit test mode
-
 		if ($this->_services['environment']->isLocal()) {
 			$services = $this->_services;
-			$profiler = new \Mothership\Framework\Profiler(null, function(){
+			$profiler = new \Message\Cog\Profiler(null, function(){
 				return \DBconnect::instance()->getQueryCount();
 			}, false);
 
@@ -120,12 +94,6 @@ class App
 			$this->_services['config']->modules,
 			$this->_services['class.loader']->getNamespaces()
 		);
-
-		// Configure database connection
-		// TODO: Make this lazy connecting. At the moment it adds ~50ms to startup time.
-		#$DBC = \DBconnect::getInstance();
-		#$DBC->configure($this->_services['config']->db->host, $this->_services['config']->db->user, $this->_services['config']->db->password, $this->_services['config']->db->database);
-		#$DBC->setCharset($this->_services['config']->db->charset);
 	}
 
 	/**
@@ -140,65 +108,6 @@ class App
 
 		// Set up SOAP ini options
 		ini_set('soap.wsdl_cache_enabled', 0);
-
-		// Grab an instance of feedback
-		$FB = \Feedback::instance();
-
-		// Load deprecated config
-		$this->setupDeprecated();
-
-		// Page load listeners
-		// TODO: Move these to an event and add listener in Mothership\Core
-
-		// Empty a basket
-		if(isset($_GET['empty'])) {
-			// Grab a new id
-			session_regenerate_id();
-			unset(
-				$_SESSION['basket'],
-				$_SESSION['campaign'],
-				$_SESSION['CHECKOUT']
-			);
-			\PersistentBasket::instance()->destroy();
-		}
-
-		// Create a new basket if we don't have one
-		if(!isset($_SESSION['basket'])) {
-			$_SESSION['basket'] = new \Basket();
-			\PersistentBasket::instance()->load();
-		}
-
-		// Reload basket to ensure locale changes get reflected
-		#$locale = \Locale::instance();
-		#$_SESSION['basket']->reload($locale->getId());
-
-		// Check for user cookie, set session if valid
-		recoverLogin();
-	}
-
-	/**
-	 * Some deprecated globals and DB connections
-	 *
-	 * TODO: Remove this method when legacy code has been removed.
-	 *
-	 * @return void
-	 */
-	public function setupDeprecated()
-	{
-		$services = Services::instance();
-
-		// Don't call this method if we're not in a legacy page
-		if($_SERVER['PHP_SELF'] == '/app.php' || $services['env'] == 'test') {
-			return;
-		}
-
-		#mysql_connect($services['config']->db->host, $services['config']->db->user, $services['config']->db->password);
-		#mysql_query("SET NAMES ".$services['config']->db->charset);
-		#mysql_select_db($services['config']->db->database);
-
-		$GLOBALS['root_dir'] = SYSTEM_PATH;
-		$GLOBALS['site_dir'] = "public_html/";
-		$GLOBALS['site']     = 'http://' . $_SERVER['HTTP_HOST'];
 	}
 
 	/**

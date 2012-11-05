@@ -76,7 +76,7 @@ class Router implements RouterInterface
 			'generator_base_class'   => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
 			'generator_dumper_class' => 'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper',
 			'generator_cache_class'  => 'ProjectUrlGenerator',
-			'matcher_class'          => 'Mothership\\Framework\\Routing\\UrlMatcher',
+			'matcher_class'          => 'Message\\Cog\\Routing\\UrlMatcher',
 			'matcher_base_class'     => 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
 			'matcher_dumper_class'   => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper',
 			'matcher_cache_class'    => 'ProjectUrlMatcher',

@@ -30,7 +30,7 @@ class TaskGenerate extends Command
 	{
 		$dialog = $this->getHelperSet()->get('dialog');
 
-		$module = $dialog->askAndValidate($output, '<question>Name of the module (e.g Mothership\\Fedex)</question>:', function($answer){
+		$module = $dialog->askAndValidate($output, '<question>Name of the module (e.g Fedex)</question>:', function($answer){
 			if(!preg_match('/^[A-Za-z0-9\\\\_]*$/', $answer)) {
 				throw new \InvalidArgumentException('Module names can only contain alphanumeric chars and \\.');
 			}
@@ -88,7 +88,7 @@ class TaskGenerate extends Command
 
 namespace ".$module."\Task;
 
-use Mothership\Framework\Console\Task;
+use Message\Cog\Console\Task;
 
 class ".$class." extends Task
 {

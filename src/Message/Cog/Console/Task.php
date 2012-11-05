@@ -1,17 +1,17 @@
 <?php
 
-namespace Mothership\Framework\Console;
+namespace Message\Cog\Console;
+
+use Message\Cog\Services;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Cron\CronExpression;
 
-use Message\Cog\Services;
-
 /**
-* Task
-*/
+ * Task
+ */
 abstract class Task extends Command
 {
 	protected $_services;
@@ -42,7 +42,7 @@ abstract class Task extends Command
 
 		$this->registerHandler('mail', function($output) use ($recipients, $subject, $body, $filename) {
 			$output = implode('', $output);
-			// TODO: Use Mothership's proper email component when it's done
+			// TODO: Use Cog's proper email component when it's done
 			$subject = $subject ?: 'Output of '.$this->getName();
 			$body    = $body ?: !$filename ? $output : '';
 			mail(implode(', ', $recipients), $subject, $body);
@@ -77,7 +77,7 @@ abstract class Task extends Command
 
 	final public function schedule($expression, $env = array())
 	{
-		$env = (array)$env;
+		$env = (array) $env;
 		$this->_cronExpression   = CronExpression::factory($expression);
 		$this->_cronEnvironments = $env;
 	}

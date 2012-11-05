@@ -10,7 +10,7 @@ use stdClass;
 /**
  * Config
  *
- * Manages installation specific variables for Mothership
+ * Manages installation specific variables for Cog applications.
  *
  * TODO: Lazy load configs as they are called for performance. This might have
  * an impact on how they get cached in ConfigCache.

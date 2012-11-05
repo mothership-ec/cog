@@ -44,7 +44,7 @@ class Services implements ServicesInterface
 			return new \Symfony\Component\Templating\DelegatingEngine(
 				array(
 					new \Symfony\Component\Templating\PhpEngine(
-						new \Mothership\Framework\Templating\ViewNameParser(
+						new \Message\Cog\Templating\ViewNameParser(
 							$c,
 							$c['reference_parser'],
 							array(
