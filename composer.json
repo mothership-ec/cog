@@ -38,7 +38,7 @@
 		"symfony/templating"           : "2.1.*",
 		"symfony/yaml"                 : "2.1.*",
 		"mtdowling/cron-expression"    : "1.0.*",
-//		"treasure-chest/treasure-chest": "0.1.*"
+//		"treasure-chest/treasure-chest": "0.1.*",
 	},
 	"suggest": {
 		// Optional PHP extensions
@@ -46,7 +46,8 @@
 		"ext-apc"                : "Essential for system-level caching",
 
 		// Suggested Cog modules
-		"message/cog-maintenance": "A cog module that provides maintenance mode functionality"
+		"message/cog-maintenance": "A cog module that provides maintenance mode functionality",
+		"message/cog-raven"      : "A cog module that logs errors, exceptions and messages to Sentry",
 	},
 	"bin": [
 		"bin/cog",
