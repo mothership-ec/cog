@@ -5,13 +5,13 @@
 	"homepage": "http://message.co.uk",
 	"authors": [
 		{
-			"name"  : "The Message Development Team",
-			"email" : "dev@message.co.uk"
+			"name" : "The Message Development Team",
+			"email": "dev@message.co.uk"
 		}
 	],
 	"support": {
-		"wiki"   : "http://server.local/wiki/projects/cog",
-		"issues" : "http://server.local:3000/cog/issues",
+		"wiki"  : "http://server.local/wiki/projects/cog",
+		"issues": "http://server.local:3000/cog/issues",
 	},
 	"autoload": {
 		"psr-0": {
@@ -41,10 +41,15 @@
 //		"treasure-chest/treasure-chest": "0.1.*"
 	},
 	"suggest": {
-		"ext-imagemagick": "Provides faster and more powerful image manipulation libraries",
-		"ext-apc"        : "Essential for system-level caching",
+		// Optional PHP extensions
+		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
+		"ext-apc"                : "Essential for system-level caching",
+
+		// Suggested Cog modules
+		"message/cog-maintenance": "A cog module that provides maintenance mode functionality"
 	},
 	"bin": [
-		"bin/cog"
+		"bin/cog",
+		"bin/cog-console"
 	]
 }
