@@ -4,7 +4,7 @@ namespace Message\Cog\Routing;
 
 use Message\Cog\ReferenceParserInterface;
 
-use Symfony\Component\Routing\RouterInterfac;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RequestContext;
 

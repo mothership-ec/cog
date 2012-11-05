@@ -5,7 +5,7 @@ namespace Message\Cog\HTTP\Event;
 use Message\Cog\HTTP\Dispatcher;
 use Message\Cog\HTTP\Request;
 
-class Event extends \Mothership\Framework\Event\Event
+class Event extends \Message\Cog\Event\Event
 {
 	const REQUEST        = 'http.request';
 	const RESPONSE_BUILD = 'http.response.build';
