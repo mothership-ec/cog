@@ -15,6 +15,6 @@ return array(
     'Symfony\\Component\\Console' => $vendorDir . '/symfony/console/',
     'Symfony\\Component\\ClassLoader' => $vendorDir . '/symfony/class-loader/',
     'SessionHandlerInterface' => $vendorDir . '/symfony/http-foundation/Symfony/Component/HttpFoundation/Resources/stubs',
-    'Message' => $baseDir . '/src',
+    'Message\\Cog' => $baseDir . '/src',
     'Cron' => $vendorDir . '/mtdowling/cron-expression/src/',
 );
