@@ -5,7 +5,7 @@ FOUND=false
 while [[ $DIR != '/' ]]; do
     if [[ -e $DIR/$FILE ]]; then
     	FOUND=true
-        $DIR/$FILE php "$@"
+        php $DIR/$FILE "$@"
         break;
     else
         DIR=`dirname $DIR`
