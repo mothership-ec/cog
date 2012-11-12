@@ -109,6 +109,9 @@ class Services implements ServicesInterface
 		$serviceContainer['fns.utility'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Functions\Utility($c['module.loader']);
 		});
+		$serviceContainer['fns.debug'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Functions\Utility($c['module.loader']);
+		});
 
 		$serviceContainer['reference_parser'] = function($c) {
 			return new \Message\Cog\ReferenceParser($c['fns.utility']);
