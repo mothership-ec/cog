@@ -26,7 +26,17 @@ class Result extends ResultIterator
 	{
 		$this->reset();
 		$first = $this->_result->fetch_array();
+
 		return $first[0];
+	}
+
+	// TODO name this better?
+	public function row() 
+	{
+		$this->reset();
+		$first = $this->_result->fetch_array();
+
+		return $first;
 	}
 
 	public function hash($key = 0, $value = 1)
@@ -68,9 +78,32 @@ class Result extends ResultIterator
 	public function bind($subject)
 	{
 		if(is_object($subject)) {
+			// get the first row and bind it as the properties of the object
+			$data = $this->_result->fetch_array();
+			foreach($data as $key => $value) {
+				$subject->{$key} = $value;
+			}
 
-		} else if(is_string($subject)) {
+			return $subject;
+		}
 
+		// Bind array of objects or classnames
+		if(is_array($subject)) {
+			foreach($subject as &$value) {
+				$value = $this->bind($value);
+			}
+
+			return $subject;
+		}
+	}
+
+	public function bindTo($subject)
+	{
+		// Valid class name
+		if(is_string($subject)) {
+			$class = new $subject;
+
+			return $this->bind($class);
 		}
 	}
 

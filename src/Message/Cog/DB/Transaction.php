@@ -26,7 +26,7 @@ class Transaction extends Query
 			throw $e;
 		}
 
-		$this->query('COMMIT');
+		return $this->query('COMMIT');
 	}
 
 	public function rollback()

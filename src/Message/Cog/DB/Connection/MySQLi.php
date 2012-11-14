@@ -25,30 +25,35 @@ class MySQLi implements ConnectionInterface
 	public function query($sql)
 	{
 		$this->_connect();
+
 		return $this->_handle->query($sql);
 	}
 
 	public function escape($text)
 	{
 		$this->_connect();
+
 		return $this->real_escape_string($text);
 	}
 
 	public function getLastError()
 	{
 		$this->_connect();
+
 		return $this->_handle->error;
 	}
 
 	public function getAffectedRows()
 	{
 		$this->_connect();
+
 		return $this->_handle->affected_rows;
 	}
 
 	public function getLastInsertId()
 	{
 		$this->_connect();
+		
 		return $this->_handle->insert_id;
 	}
 }
