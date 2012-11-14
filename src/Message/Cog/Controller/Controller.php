@@ -71,7 +71,7 @@ class Controller
 			throw new LogicException('Request must be set on the controller to render a view.');
 		}
 
-		return $this->_services['templating.response_builder']
+		return $this->_services['response_builder']
 			->setRequest($this->_request)
 			->render($reference, $params);
 	}

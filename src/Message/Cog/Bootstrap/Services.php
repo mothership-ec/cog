@@ -74,7 +74,7 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$serviceContainer['templating.response_builder'] = $serviceContainer->share(function($c) {
+		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Controller\ResponseBuilder(
 				$c['templating']
 			);
