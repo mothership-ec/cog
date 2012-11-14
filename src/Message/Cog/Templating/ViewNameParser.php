@@ -30,7 +30,7 @@ class ViewNameParser extends \Symfony\Component\Templating\TemplateNameParser
 	/**
 	 * Parses a view reference & determines which view file to use.
 	 *
-	 * Looks at the allowed content types for the curremt request and checks,
+	 * Looks at the allowed content types for the current request and checks,
 	 * for each, if a view file exists (for each engine defined in
 	 * $this->_fileTypes in order of priority). As soon as it finds a view that
 	 * exists, it returns this.
