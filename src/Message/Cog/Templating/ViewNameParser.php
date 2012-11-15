@@ -43,6 +43,7 @@ class ViewNameParser extends \Symfony\Component\Templating\TemplateNameParser
 	 * @throws StatusException   If the view format could not be determined
 	 *
 	 * @todo What if there's no request object?
+	 * @todo Notify the response of the chosen response type
 	 */
 	public function parse($reference)
 	{
