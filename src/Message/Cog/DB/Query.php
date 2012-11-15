@@ -15,7 +15,7 @@ class Query
 
 	public function __construct(Connection\ConnectionInterface $connection)
 	{
-		$this->_connection = $connection;
+		$this->setConnection($connection);
 	}
 
 	public function run($query, $params = array())
@@ -31,6 +31,11 @@ class Query
 		}
 
 		return new Result($result, $this->_connection);
+	}
+
+	public function setConnection(Connection\ConnectionInterface $connection)
+	{
+		$this->_connection = $connection;
 	}
 
 	private function _parseParams()
