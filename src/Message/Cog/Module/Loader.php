@@ -75,8 +75,12 @@ class Loader
 		}
 
 		foreach ($this->_modules as $module) {
-			// TODO: we should check for the presence of the module and fail nicely here
-			$doc = Document::create($this->_locator->getPath($module));
+			if (!file_exists($this->_locator->getPath($module))) {
+				throw new Exception(
+					sprintf('Module could not be found: `%s`', $module),
+					Exception::MODULE_NOT_FOUND
+				);
+			}
 		}
 	}
 
@@ -84,7 +88,7 @@ class Loader
 	{
 		foreach ($this->_modules as $module) {
 			$modulePath   = $this->_locator->getPath($module);
-			$bootstrapDir =  $modulePath.'Bootstrap/';
+			$bootstrapDir = $modulePath . 'Bootstrap/';
 			// IF THERE IS A BOOTSTRAP DIRECTORY
 			if (is_dir($bootstrapDir)) {
 				// RUN ALL BOOTSTRAPS
@@ -107,10 +111,6 @@ class Loader
 				),
 				new Event
 			);
-			// TODO: Load /Bootstrap files in /test in the module folder after
-			// these ones if in test mode
-			// if (Services::get('env') === 'test') {
-			// }
 		}
 	}
 

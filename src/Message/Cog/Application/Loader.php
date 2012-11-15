@@ -9,8 +9,6 @@ abstract class Loader
 	protected $_baseDir;
 	protected $_services;
 
-	abstract protected function _registerModules();
-
 	public function __construct($baseDir)
 	{
 		// Ensure base directory ends with directory separator
@@ -117,4 +115,6 @@ abstract class Loader
 		define('AREA', preg_replace('/^(.*)\//', '', $_SERVER['DOCUMENT_ROOT']));
 		define('PUBLIC_PATH', SYSTEM_PATH.'public/'.AREA.'/');
 	}
+
+	abstract protected function _registerModules();
 }
