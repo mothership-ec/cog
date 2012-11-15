@@ -6,6 +6,13 @@ use Message\Cog\Services as ServiceContainer;
 use Message\Cog\Module\Bootstrap\EventsInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
+/**
+ * Cog event listener bootstrap.
+ *
+ * Registers Cog event listeners when the application is loaded.
+ *
+ * @todo When this can access Services in a better way, update this
+ */
 class Events implements EventsInterface
 {
 	public function registerEvents($eventDispatcher)
@@ -22,6 +29,14 @@ class Events implements EventsInterface
 		);
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Exception
+		);
+
+		// Profiler
+		$eventDispatcher->addSubscriber(
+			new \Message\Cog\Profiler\EventListener(
+				ServiceContainer::get('profiler'),
+				ServiceContainer::get('environment')
+			)
 		);
 
 		// TODO: add a caching layer that just also subscribes to the request/response events

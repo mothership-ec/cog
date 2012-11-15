@@ -44,12 +44,8 @@ abstract class Loader
 		$serviceBootstrap = new \Message\Cog\Bootstrap\Services;
 		$serviceBootstrap->registerServices($this->_services);
 
-		$this->_services['class.loader'] = function() {
-			return \ComposerAutoloaderInit::getLoader();
-		};
-
 		$app = $this;
-		$this->_services['app'] = function() use ($app) {
+		$this->_services['app.loader'] = function() use ($app) {
 			return $app;
 		};
 
@@ -65,23 +61,8 @@ abstract class Loader
 	 */
 	public function setupFrameworkServices()
 	{
-		if ($this->_services['environment']->isLocal()) {
-			$services = $this->_services;
-			// TODO: make this get the query count from new query objects
-			$profiler = new \Message\Cog\Profiler(null, null, false);
-
-			register_shutdown_function(function() use ($profiler, $services) {
-				if($services['environment']->isLocal() && $services['environment']->context() != 'console' && (!isset($GLOBALS['page']) || !in_array($GLOBALS['page']->getTemplateName(), array('Blank', 'Ajax', 'Xml', 'Print', 'AdminPrint')))) {
-					echo $profiler->renderHtml();
-				}
-			});
-		}
-
 		// Load modules
-		$this->_services['module.loader']->run(
-			$this->_registerModules(),
-			$this->_services['class.loader']->getPrefixes()
-		);
+		$this->_services['module.loader']->run($this->_registerModules());
 	}
 
 	/**

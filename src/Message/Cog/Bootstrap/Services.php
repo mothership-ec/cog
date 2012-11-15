@@ -11,8 +11,12 @@ class Services implements ServicesInterface
 {
 	public function registerServices($serviceContainer)
 	{
+		$serviceContainer['profiler'] = $serviceContainer->share(function() {
+			return new \Message\Cog\Profiler\Profiler(null, null, false);
+		});
+
 		// Composer auto loader
-		$this->_services['class.loader'] = function() {
+		$serviceContainer['class.loader'] = function() {
 			return \ComposerAutoloaderInit::getLoader();
 		};
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog;
+namespace Message\Cog\Profiler;
 
 use \Closure;
 
