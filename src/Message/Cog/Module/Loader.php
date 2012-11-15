@@ -19,24 +19,26 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class Loader
 {
+	protected $_locator;
 	protected $_eventDispatcher;
+
 	protected $_modules;
-	protected $_namespaces;
 
 	/**
 	 * Constructor.
 	 *
+	 * @param LocatorInterface         $locator    The module locator
 	 * @param EventDispatcherInterface $dispatcher The event dispatcher to use for event firing
 	 */
-	public function __construct(EventDispatcherInterface $dispatcher)
+	public function __construct($locator, EventDispatcherInterface $dispatcher)
 	{
+		$this->_locator         = $locator;
 		$this->_eventDispatcher = $dispatcher;
 	}
 
-	public function run(array $modules, array $namespaces)
+	public function run(array $modules)
 	{
-		$this->_modules    = $modules;
-		$this->_namespaces = $namespaces;
+		$this->_modules = $modules;
 		$this->_validateModules();
 		$this->_loadModules();
 	}
@@ -63,31 +65,6 @@ class Loader
 		return $this->_modules;
 	}
 
-	public function getPath($moduleName)
-	{
-		if ('\\' == $moduleName[0]) {
-			$moduleName = substr($moduleName, 1);
-		}
-
-		if (false !== $pos = strrpos($moduleName, '\\')) {
-			$namespace  = substr($moduleName, 0, $pos);
-			$className  = substr($moduleName, $pos + 1);
-			foreach($this->_namespaces as $ns => $dirs) {
-				if (0 !== strpos($namespace, $ns)) {
-					continue;
-				}
-				foreach ($dirs as $dir) {
-					$path = $dir . '/' . str_replace('\\', '/', $moduleName) . '/';
-					if(is_dir($path)) {
-						return $path;
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
 	protected function _validateModules()
 	{
 		if (empty($this->_modules)) {
@@ -99,37 +76,14 @@ class Loader
 
 		foreach ($this->_modules as $module) {
 			// TODO: we should check for the presence of the module and fail nicely here
-			$doc = Document::create($module);
-			if (isset($doc->getInfo()->dependencies)) {
-				$this->_checkDependencies($doc);
-			}
-		}
-	}
-
-	protected function _checkDependencies(Document $doc)
-	{
-		$dependencies = $doc->getInfo()->dependencies;
-		if (is_array($dependencies) && !empty($dependencies)) {
-			foreach ($dependencies as $dependency) {
-				if (!in_array($dependency, $this->_modules)) {
-					if ($doc->getInfo()->critical) {
-						throw new Exception(
-							'Critical module could not be loaded `' . $doc->getInfo()->name . '`, dependency not found: ' . $dependency,
-							Exception::DEPENDENCY_NOT_FOUND
-						);
-					}
-					else {
-						// log warning quietly, tell developers
-					}
-				}
-			}
+			$doc = Document::create($this->_locator->getPath($module));
 		}
 	}
 
 	protected function _loadModules()
 	{
 		foreach ($this->_modules as $module) {
-			$modulePath   = $this->getPath($module);
+			$modulePath   = $this->_locator->getPath($module);
 			$bootstrapDir =  $modulePath.'Bootstrap/';
 			// IF THERE IS A BOOTSTRAP DIRECTORY
 			if (is_dir($bootstrapDir)) {

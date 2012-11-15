@@ -84,8 +84,12 @@ class Services implements ServicesInterface
 			return new \Message\Cog\ConfigCache(ROOT_PATH.'config/', $c['env']);
 		});
 
+		$serviceContainer['module.locator'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Module\Locator($c['class.loader']->getPrefixes());
+		});
+
 		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Module\Loader($c['event.dispatcher']);
+			return new \Message\Cog\Module\Loader($c['module.locator'], $c['event.dispatcher']);
 		});
 
 		$serviceContainer['password'] = $serviceContainer->share(function($c) {
@@ -114,7 +118,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['reference_parser'] = function($c) {
-			return new \Message\Cog\ReferenceParser($c['fns.utility']);
+			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
 		};
 	}
 

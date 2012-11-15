@@ -14,7 +14,9 @@ interface ReferenceParserInterface
 {
 	public function getSymfonyLogicalControllerName();
 
-	public function getFullPath($pathNamespace = null, $separator = null);
+	public function getFullPath($pathNamespace = null);
+
+	public function getPath($pathNamespace = null, $separator = null);
 
 	public function getClassName($pathNamespace);
 

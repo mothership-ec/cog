@@ -1,33 +1,31 @@
 <?php
 
-namespace Message\Cog;
+namespace Message\Cog\Application;
 
-class App
+use Message\Cog\Services;
+
+abstract class Loader
 {
+	protected $_baseDir;
 	protected $_services;
 
-	public function __construct()
+	abstract protected function _registerModules();
+
+	public function __construct($baseDir)
 	{
+		// Ensure base directory ends with directory separator
+		if (substr($baseDir, -1) !== DIRECTORY_SEPARATOR) {
+			$baseDir .= DIRECTORY_SEPARATOR;
+		}
+
+		$this->_baseDir = $baseDir;
+
 		$this->_setupConstants();
 
 		// Set the default timezone
 		date_default_timezone_set('Europe/London');
 
 		$this->setupAutoloader();
-	}
-
-	/**
-	 * A drop in replacement for old calls to include 'global/loader.php'.
-	 *
-	 * TODO: Remove this method when no other files call it.
-	 *
-	 * @return void
-	 */
-	public static function loader()
-	{
-		$app = new self;
-		$app->setupFrameworkServices();
-		$app->setupWebServices();
 	}
 
 	/**
@@ -38,7 +36,7 @@ class App
 	public function setupAutoloader()
 	{
 		// Include composer autoloader
-		require_once ROOT_PATH . 'vendor/autoload.php';
+		require_once $this->_baseDir . 'vendor/autoload.php';
 
 		// Setup the environment
 		// TODO: move as much of this as we can in to a Bootstrap
@@ -83,23 +81,9 @@ class App
 
 		// Load modules
 		$this->_services['module.loader']->run(
-			$this->_services['config']->modules,
-			$this->_services['class.loader']->getNamespaces()
+			$this->_registerModules(),
+			$this->_services['class.loader']->getPrefixes()
 		);
-	}
-
-	/**
-	 * Setup some services, singletons and globals that only apply to
-	 * web requests.
-	 *
-	 * @return void
-	 */
-	public function setupWebServices()
-	{
-		startSession();
-
-		// Set up SOAP ini options
-		ini_set('soap.wsdl_cache_enabled', 0);
 	}
 
 	/**
@@ -110,12 +94,9 @@ class App
 	public function run()
 	{
 		$this->setupFrameworkServices();
-		$this->setupWebServices();
-
-		$GLOBALS['t'] = new \Timer;
 
 		$this->_services['http.request.master'] = $this->_services->share(function() {
-			return HTTP\Request::createFromGlobals();
+			return \Message\Cog\HTTP\Request::createFromGlobals();
 		});
 
 		$this->_services['http.dispatcher']
@@ -130,8 +111,8 @@ class App
 	 */
 	protected function _setupConstants()
 	{
-		// TODO: No global constants, make them part of Mothership\App
-		define('ROOT_PATH', realpath(__DIR__ . '/../../../').'/');
+		// TODO: No global constants, make them part of Cog\App
+		define('ROOT_PATH', $this->_baseDir);
 		define('SYSTEM_PATH', ROOT_PATH.'system/');
 		define('AREA', preg_replace('/^(.*)\//', '', $_SERVER['DOCUMENT_ROOT']));
 		define('PUBLIC_PATH', SYSTEM_PATH.'public/'.AREA.'/');

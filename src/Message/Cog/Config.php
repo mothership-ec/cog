@@ -64,7 +64,7 @@ class Config
 			}
 
 			// Converts the YAML file into an array
-			$yaml 	   = arrayToObject(Yaml::parse($fileinfo->getPathname()), true);
+			$yaml 	   = Services::get('fns.utility')->arrayToObject(Yaml::parse($fileinfo->getPathname()), true);
 			$shortName = $fileinfo->getBasename('.yml');
 
 

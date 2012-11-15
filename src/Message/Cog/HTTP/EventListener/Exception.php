@@ -69,6 +69,7 @@ class Exception implements EventSubscriberInterface
 	 */
 	public function dumper(BuildResponseFromExceptionEvent $event)
 	{
-		dump($event->getException());
+		var_dump($event->getException());
+		exit;
 	}
 }

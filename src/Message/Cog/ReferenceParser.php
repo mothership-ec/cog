@@ -26,6 +26,7 @@ class ReferenceParser implements ReferenceParserInterface
 	const METHOD_SEPARATOR = '#';
 	const RELATIVE_MARKER  = '::';
 
+	protected $_moduleLocator;
 	protected $_fnsUtility;
 
 	protected $_reference;
@@ -38,11 +39,13 @@ class ReferenceParser implements ReferenceParserInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param Functions\Utility $fnsUtility Function class for utility functions
+	 * @param Module\LocatorInterface $moduleLocator The module locator
+	 * @param Functions\Utility       $fnsUtility    Function class for utility functions
 	 */
-	public function __construct($fnsUtility)
+	public function __construct(Module\LocatorInterface $moduleLocator, $fnsUtility)
 	{
-		$this->_fnsUtility = $fnsUtility;
+		$this->_moduleLocator = $moduleLocator;
+		$this->_fnsUtility    = $fnsUtility;
 	}
 
 	/**
@@ -71,7 +74,25 @@ class ReferenceParser implements ReferenceParserInterface
 	 * @param  null|string|array $pathNamespace The namespace to use (array if more than one directory)
 	 * @return string                           The full path to the file
 	 */
-	public function getFullPath($pathNamespace = null, $separator = null)
+	public function getFullPath($pathNamespace = null)
+	{
+		$this->_checkEmpty();
+
+		// Build and return the full path
+		return implode(DIRECTORY_SEPARATOR, array_filter(array(
+			$this->_moduleLocator->getPath($this->getModuleName()),
+			$this->getPath($pathNamespace, DIRECTORY_SEPARATOR)
+		)));
+	}
+
+	/**
+	 * Get path to file referenced relative to the module's directory.
+	 *
+	 * @param  null|string|array $pathNamespace The namespace to use (array if more than one directory)
+	 * @param  null|string       $separator     The separator to use
+	 * @return string                           The relative path to the file
+	 */
+	public function getPath($pathNamespace = null, $separator = null)
 	{
 		$this->_checkEmpty();
 
@@ -84,10 +105,8 @@ class ReferenceParser implements ReferenceParserInterface
 			$pathNamespace = array($pathNamespace);
 		}
 
-		// Build and return the full path
+		// Build and return the path
 		return implode($separator, array_filter(array(
-			$this->_vendor,
-			$this->_module,
 			implode($separator, $pathNamespace),
 			implode($separator, $this->_path),
 		)));
@@ -104,7 +123,7 @@ class ReferenceParser implements ReferenceParserInterface
 	 */
 	public function getClassName($pathNamespace = null)
 	{
-		return $this->getFullPath($pathNamespace, '\\');
+		return $this->getModuleName() . '\\' . $this->getPath($pathNamespace, '\\');
 	}
 
 	/**
@@ -128,6 +147,16 @@ class ReferenceParser implements ReferenceParserInterface
 			'path'   => $this->_path,
 			'method' => $this->_method,
 		);
+	}
+
+	/**
+	 * Get the module name for the file referenced.
+	 *
+	 * @return string The module name
+	 */
+	public function getModuleName()
+	{
+		return $this->_vendor . '\\' . $this->_module;
 	}
 
 	/**
@@ -165,6 +194,9 @@ class ReferenceParser implements ReferenceParserInterface
 		return $this;
 	}
 
+	/**
+	 * Clear this instance so a new reference can be parsed.
+	 */
 	public function clear()
 	{
 		$this->_vendor = null;

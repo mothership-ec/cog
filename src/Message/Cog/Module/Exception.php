@@ -15,5 +15,4 @@ class Exception extends \Exception
 	const DOCUMENT_NOT_FOUND    = 20000001;
 	const DOCUMENT_NOT_READABLE = 20000002;
 	const DOCUMENT_INVALID      = 20000003;
-	const DEPENDENCY_NOT_FOUND  = 20000004;
 }

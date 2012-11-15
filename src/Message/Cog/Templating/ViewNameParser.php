@@ -2,6 +2,7 @@
 
 namespace Message\Cog\Templating;
 
+use Message\Cog\Services;
 use Message\Cog\ReferenceParserInterface;
 use Message\Cog\HTTP\StatusException;
 
@@ -56,7 +57,7 @@ class ViewNameParser extends \Symfony\Component\Templating\TemplateNameParser
 
 			// Loop through the engines in order of preference
 			foreach ($this->_fileTypes as $engine) {
-				$fileName = SYSTEM_PATH . 'library/' . $baseFileName . '.' . $format . '.' . $engine;
+				$fileName = $baseFileName . '.' . $format . '.' . $engine;
 				// Check if a view file exists for this format and this engine
 				if (file_exists($fileName)) {
 					return new TemplateReference($fileName, $engine);

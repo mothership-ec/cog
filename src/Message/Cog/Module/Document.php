@@ -12,12 +12,15 @@ class Document
 	protected $_info;
 	protected $_readMe;
 
-	static public function create($moduleName)
+	static public function create($modulePath)
 	{
-		// TODO: update this so that it checks the /vendor dir. It should probably
-		// tap into the UniveralClassLoader
-		$modulePath = 'system/library/'.str_replace('\\', '/', $moduleName).'/';
-		$filePath   = ROOT_PATH . $modulePath . self::FILE_NAME;
+		// Ensure path ends with directory separator
+		if (substr($modulePath, -1) !== DIRECTORY_SEPARATOR) {
+			$modulePath .= DIRECTORY_SEPARATOR;
+		}
+
+		// Add file name to end of path
+		$filePath = $modulePath . self::FILE_NAME;
 
 		if (!file_exists($filePath)) {
 			throw new Exception(
@@ -31,7 +34,6 @@ class Document
 				Exception::DOCUMENT_NOT_READABLE
 			);
 		}
-
 		return new self(file_get_contents($filePath));
 	}
 
