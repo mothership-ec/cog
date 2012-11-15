@@ -11,6 +11,6 @@ namespace Message\Cog\Module;
 class Exception extends \Exception
 {
 	// EXCEPTION CODES [2000xxxx]
-	const NO_MODULES_FOUND      = 20000000;
-	const MODULE_NOT_FOUND      = 20000001;
+	const NO_MODULES_FOUND = 20000000;
+	const MODULE_NOT_FOUND = 20000001;
 }
