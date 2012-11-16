@@ -18,7 +18,7 @@ class Transaction extends Query
 
 	public function commit()
 	{
-		$this->run('BEGIN');
+		$this->run('START TRANSACTION');
 		try {
 			foreach($this->_queries as $query) {
 				$this->run($query[0], $query[1]);
@@ -34,5 +34,15 @@ class Transaction extends Query
 	public function rollback()
 	{
 		$this->run('ROLLBACK');
+	}
+
+	public function setID($name)
+	{
+		return $this->add("SET @".$name." = LAST_INSERT_ID()");
+	}
+
+	public function getID()
+	{
+		return $this->add("SELECT LAST_INSERT_ID()");
 	}
 }

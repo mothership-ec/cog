@@ -32,7 +32,7 @@ class Query
 			throw new Exception($this->_connection->getLastError(), $this->_query);
 		}
 
-		return new Result($result, $this->_connection);
+		return new Result($result, clone $this);
 	}
 
 	public function setConnection(ConnectionInterface $connection)

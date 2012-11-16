@@ -11,14 +11,16 @@ use Message\Cog\DB\Adapter\ResultInterface;
 class Result extends ResultArrayAccess
 {
 	protected $_result;
+	protected $_query;
 	protected $_position = 0;
 	protected $_affected = 0;
 	protected $_insertId = 0;
 	protected $_error    = '';
 
-	public function __construct(ResultInterface $result)
+	public function __construct(ResultInterface $result, Query $query)
 	{
 		$this->_result = $result;
+		$this->_query  = $query;
 		// snapshot these at this point
 		$this->_affected = $result->getAffectedRows();
 		$this->_insertId = $result->getLastInsertId();
@@ -114,7 +116,7 @@ class Result extends ResultArrayAccess
 		return $this->_affected;
 	}
 
-	public function insertId()
+	public function id()
 	{
 		return $this->_insertId;
 	}
@@ -129,6 +131,11 @@ class Result extends ResultArrayAccess
 		}
 
 		return $columns;
+	}
+
+	public function isFromTransaction()
+	{
+		return $this->_query instanceof Transaction; 
 	}
 
 	protected function _setDefaultKeys(&$key = null, &$value = null)
