@@ -2,6 +2,8 @@
 
 namespace Message\Cog\DB;
 
+use Message\Cog\DB\Adapter\ConnectionInterface;
+
 /**
 * Query
 */
@@ -13,7 +15,7 @@ class Query
 
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)|\?)(\|([a-z]+))?/';
 
-	public function __construct(Connection\ConnectionInterface $connection)
+	public function __construct(ConnectionInterface $connection)
 	{
 		$this->setConnection($connection);
 	}
@@ -33,7 +35,7 @@ class Query
 		return new Result($result, $this->_connection);
 	}
 
-	public function setConnection(Connection\ConnectionInterface $connection)
+	public function setConnection(ConnectionInterface $connection)
 	{
 		$this->_connection = $connection;
 	}

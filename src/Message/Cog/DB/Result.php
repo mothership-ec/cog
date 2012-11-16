@@ -2,10 +2,13 @@
 
 namespace Message\Cog\DB;
 
+use Message\Cog\DB\Adapter\ConnectionInterface;
+use Message\Cog\DB\Adapter\ResultInterface;
+
 /**
 *
 */
-class Result extends ResultIterator
+class Result extends ResultArrayAccess
 {
 	protected $_result;
 	protected $_position = 0;
@@ -13,28 +16,27 @@ class Result extends ResultIterator
 	protected $_insertId = 0;
 	protected $_error    = '';
 
-	public function __construct($result, $connection)
-    {
-        $this->_result = $result;
-        // snapshot these at this point
-        $this->_affected = $connection->getAffectedRows();
-        $this->_insertId = $connection->getLastInsertId();
-        $this->_error    = $connection->getLastError();
-    }
+	public function __construct(ResultInterface $result)
+	{
+		$this->_result = $result;
+		// snapshot these at this point
+		$this->_affected = $result->getAffectedRows();
+		$this->_insertId = $result->getLastInsertId();
+	}
 
 	public function value()
 	{
 		$this->reset();
-		$first = $this->_result->fetch_array();
+		$first = $this->_result->fetchArray();
 
 		return $first[0];
 	}
 
-	// TODO name this better?
-	public function row() 
+	// TODO name this better? (cant be called row())
+	public function first() 
 	{
 		$this->reset();
-		$first = $this->_result->fetch_array();
+		$first = $this->_result->fetchArray();
 
 		return $first;
 	}
@@ -44,7 +46,7 @@ class Result extends ResultIterator
 		$this->_setDefaultKeys($key, $value);
 		$hash = array();
 		$this->reset();
-		while($row = $this->_result->fetch_array()) {
+		while($row = $this->_result->fetchArray()) {
 			$hash[$row[$key]] = $row[$value];
 		}
 
@@ -56,7 +58,7 @@ class Result extends ResultIterator
 		$this->_setDefaultKeys($key);
 		$rows = array();
 		$this->reset();
-		while($row = $this->_result->fetch_object()) {
+		while($row = $this->_result->fetchObject()) {
 			$rows[$row->{$key}] = $row;
 		}
 
@@ -68,7 +70,7 @@ class Result extends ResultIterator
 		$this->_setDefaultKeys($key);
 		$rows = array();
 		$this->reset();
-		while($row = $this->_result->fetch_array()) {
+		while($row = $this->_result->fetchArray()) {
 			$rows[] = $row[$key];
 		}
 
@@ -79,7 +81,7 @@ class Result extends ResultIterator
 	{
 		if(is_object($subject)) {
 			// get the first row and bind it as the properties of the object
-			$data = $this->_result->fetch_array();
+			$data = $this->_result->fetchArray();
 			foreach($data as $key => $value) {
 				$subject->{$key} = $value;
 			}

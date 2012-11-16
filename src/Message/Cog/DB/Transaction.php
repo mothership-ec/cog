@@ -12,6 +12,8 @@ class Transaction extends Query
 	public function add($query, $params = array())
 	{
 		$this->_queries[] = array($query, $params);
+
+		return $this;
 	}
 
 	public function commit()
