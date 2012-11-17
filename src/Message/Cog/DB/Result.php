@@ -38,7 +38,7 @@ class Result extends ResultArrayAccess
 	public function first() 
 	{
 		$this->reset();
-		$first = $this->_result->fetchArray();
+		$first = $this->_result->fetchObject();
 
 		return $first;
 	}

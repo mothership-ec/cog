@@ -12,6 +12,7 @@ class Query
 	protected $_connection;
 	protected $_params;
 	protected $_query;
+	protected $_parsedQuery;
 
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)|\?)(\|([a-z]+))?/';
 
@@ -26,7 +27,7 @@ class Query
 		$this->_params = (array)$params;
 
 		$this->_parseParams();
-		$result = $this->_connection->query($this->_query);
+		$result = $this->_connection->query($this->_parsedQuery);
 
 		if($result === false) {
 			throw new Exception($this->_connection->getLastError(), $this->_query);
@@ -43,6 +44,7 @@ class Query
 	private function _parseParams()
 	{
 		if(!count($this->_params)) {
+			$this->_parsedQuery = $this->_query;
 			return false;
 		}
 
@@ -57,7 +59,14 @@ class Query
 		// PHP 5.3 hack
 		$connection = $this->_connection;
 		$fields = $this->_params;
-		$this->_query = preg_replace_callback(self::TOKEN_REGEX, function($matches) use($fields, $types, &$counter, $connection) {
+
+		if(is_object($fields)) {
+			$fields = (array)$fields;
+		}
+
+		$this->_parsedQuery = preg_replace_callback(
+			self::TOKEN_REGEX, 
+			function($matches) use($fields, $types, &$counter, $connection) {
 
 			// parse and validate the token
 			$full  = $matches[0];

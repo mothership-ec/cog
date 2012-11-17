@@ -29,10 +29,12 @@ abstract class ResultArrayAccess extends ResultIterator implements ArrayAccess
 		// store the old position so we can go back to it
 		$oldPos = $this->_position;
 		// get the desired row
-		$row = $this->_result->seek($offset);
+		$this->_result->seek($offset);
+		$row = $this->_result->fetchObject();
+		
 		// restore the position
 		$this->_result->seek($oldPos);
 
-		return $row == false ? null : $row;
+		return $row === false ? null : $row;
 	}
 }

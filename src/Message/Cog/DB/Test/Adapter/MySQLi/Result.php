@@ -1,9 +1,9 @@
 <?php
 
-namespace Message\Cog\DB\Test\Connection;
+namespace Message\Cog\DB\Test\Adapter\MySQLi;
 
 
-class DummyTest extends \PHPUnit_Framework_TestCase
+class ResultTest extends \PHPUnit_Framework_TestCase
 {
 	
 	public function testCanConnect()

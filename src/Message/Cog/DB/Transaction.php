@@ -31,11 +31,6 @@ class Transaction extends Query
 		return $this->query('COMMIT');
 	}
 
-	public function rollback()
-	{
-		$this->run('ROLLBACK');
-	}
-
 	public function setID($name)
 	{
 		return $this->add("SET @".$name." = LAST_INSERT_ID()");

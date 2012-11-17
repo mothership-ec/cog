@@ -14,13 +14,16 @@ class Result implements ResultInterface
 
 	public function __construct($data, ConnectionInterface $connection)
 	{
+		// Ensure that the pointer is at the start of the array
 		reset($data);
+		
 		$this->_data       = $data;
 		$this->_connection = $connection;
 	}
 
 	public function fetchArray()
 	{
+		// Get the data at the current array pointer and move it forward one place
 		$result = current($this->_data);
 		next($this->_data);
 
@@ -29,13 +32,19 @@ class Result implements ResultInterface
 
 	public function fetchObject()
 	{
-		return (object)$this->fetchArray();
+		// Get the result as an array
+		$result = $this->fetchArray();
+
+		// If the result is false, dont try and convert it to an array
+		return $result === false ? false : (object)$result;
 	}
 
 	public function seek($position)
 	{
+		// Move the pointer back to the start
 		reset($this->_data);
 
+		// Move it forward $position number of places
 		for($i = 0; $i < $position; $i++) {
 			next($this->_data);
 		}

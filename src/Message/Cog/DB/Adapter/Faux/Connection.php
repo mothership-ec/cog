@@ -16,9 +16,10 @@ class Connection implements ConnectionInterface
 		'lastError'		=> '',
 	);
 
-	protected $_data = array();
-	protected $_sequenceData = array();
+	protected $_data            = array();
+	protected $_sequenceData    = array();
 	protected $_sequencePointer = 0;
+	protected $_patternData     = array();
 
 	public function __construct(array $params = array())
 	{
@@ -38,7 +39,16 @@ class Connection implements ConnectionInterface
 
 	public function query($sql)
 	{
-		if($this->_sequenceData) {
+		$data = false;
+
+		if($this->_patternData) {
+			foreach($this->_patternData as $pattern => $value) {
+				if(preg_match($pattern, $sql)) {
+					$data = $value;
+					break;
+				}
+			}
+		} else if($this->_sequenceData) {
 			$data = current($this->_sequenceData);
 			next($this->_sequenceData);
 		} else {
@@ -46,6 +56,11 @@ class Connection implements ConnectionInterface
 		}
 
 		return new Result($data, $this);
+	}
+
+	public function setPattern($pattern, $data)
+	{
+		$this->_patternData[$pattern] = $data;
 	}
 
 	public function escape($text)

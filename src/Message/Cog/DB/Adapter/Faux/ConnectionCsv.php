@@ -21,6 +21,11 @@ class ConnectionCsv extends Connection
 		reset($this->_sequenceData);
 	}
 
+	public function setPattern($pattern, $path)
+	{
+		$this->_patternData[$pattern] = $this->_loadDataFromCsv($path);
+	}
+
 	protected function _loadDataFromCsv($path)
 	{
 		if (file_exists($path) === false) {
