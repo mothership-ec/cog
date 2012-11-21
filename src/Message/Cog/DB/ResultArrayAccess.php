@@ -28,6 +28,7 @@ abstract class ResultArrayAccess extends ResultIterator implements ArrayAccess
 	{
 		// store the old position so we can go back to it
 		$oldPos = $this->_position;
+		
 		// get the desired row
 		$this->_result->seek($offset);
 		$row = $this->_result->fetchObject();

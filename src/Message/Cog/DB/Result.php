@@ -6,7 +6,15 @@ use Message\Cog\DB\Adapter\ConnectionInterface;
 use Message\Cog\DB\Adapter\ResultInterface;
 
 /**
+* Result class
 *
+* A wrapper around a database result. Instances of this class can be accessed
+* like an array using indices and iterated over in a loop. There's also helper
+* methods to make working with data easier.
+*
+* A word of warning: Because of the way the internal pointer works, using 
+* a method on a Result object whilst iterating over it could lead to infinite 
+* loops or unknown behavior.
 */
 class Result extends ResultArrayAccess
 {
@@ -26,6 +34,11 @@ class Result extends ResultArrayAccess
 		$this->_insertId = $result->getLastInsertId();
 	}
 
+	/**
+	 * Returns the first field of the first row.
+	 * 
+	 * @return mixed The very first value in the dataset.
+	 */
 	public function value()
 	{
 		$this->reset();
@@ -34,7 +47,11 @@ class Result extends ResultArrayAccess
 		return $first[0];
 	}
 
-	// TODO name this better? (cant be called row())
+	/**
+	 * Return the first row in the dataset.
+	 * 
+	 * @return stdClass The first row.
+	 */
 	public function first() 
 	{
 		$this->reset();
@@ -43,18 +60,33 @@ class Result extends ResultArrayAccess
 		return $first;
 	}
 
-	public function hash($key = 0, $value = 1)
+	/**
+	 * Returns a copy of the dataset as a hash where one field is used as the 
+	 * key and another as the value.
+	 * 
+	 * @param  string $key   The column to use as the key. If omitted the first column is used.
+	 * @param  string $value The column to use as the value. If omitted the second column is used.
+	 * @return array         The generated hash.
+	 */
+	public function hash($key = null, $value = null)
 	{
 		$this->_setDefaultKeys($key, $value);
 		$hash = array();
 		$this->reset();
-		while($row = $this->_result->fetchArray()) {
-			$hash[$row[$key]] = $row[$value];
+		while($row = $this->_result->fetchObject()) {
+			$hash[$row->{$key}] = $row->{$value};
 		}
 
 		return $hash;
 	}
 
+	/**
+	 * Get a copy of the dataset as an array with a chosen column as the key.
+	 * 
+	 * @param  string $key The column name to use as the key for the array. If 
+	 *                     omitted the first column is used.
+	 * @return array       The dataset copy.
+	 */
 	public function transpose($key = null)
 	{
 		$this->_setDefaultKeys($key);
@@ -67,13 +99,20 @@ class Result extends ResultArrayAccess
 		return $rows;
 	}
 
+	/**
+	 * Reduce the columns in a resultset to a single value.
+	 * 
+	 * @param  string $key The column name to reduce to. If 
+	 *                     omitted the first column is used.
+	 * @return array       The flattened dataset.
+	 */
 	public function flatten($key = null)
 	{
 		$this->_setDefaultKeys($key);
 		$rows = array();
 		$this->reset();
-		while($row = $this->_result->fetchArray()) {
-			$rows[] = $row[$key];
+		while($row = $this->_result->fetchObject()) {
+			$rows[] = $row->{$key};
 		}
 
 		return $rows;
@@ -83,7 +122,7 @@ class Result extends ResultArrayAccess
 	{
 		if(is_object($subject)) {
 			// get the first row and bind it as the properties of the object
-			$data = $this->_result->fetchArray();
+			$data = $this->_result->fetchObject();
 			foreach($data as $key => $value) {
 				$subject->{$key} = $value;
 			}
@@ -111,16 +150,34 @@ class Result extends ResultArrayAccess
 		}
 	}
 
+	/**
+	 * Get the number of rows affected by the query which generated this result.
+	 * 
+	 * @return integer The number of affected rows.
+	 */
 	public function affected()
 	{
 		return $this->_affected;
 	}
 
+	/**
+	 * Get the value last generated from an autoincrement column.
+	 * 
+	 * @return integer The last autoincrement value.
+	 */
 	public function id()
 	{
 		return $this->_insertId;
 	}
 
+	/**
+	 * Get the names of the columns in the result as an array. If a parameter
+	 * is passed then this is treated as an offset and the column name at that
+	 * offset is returned. If the offset doesnt exist, false is returned.
+	 * 	
+	 * @param  integer $position The index offset of a single column name
+	 * @return mixed      	     The array of column names or a single name.
+	 */
 	public function columns($position = null)
 	{
 		$this->reset();
@@ -133,11 +190,23 @@ class Result extends ResultArrayAccess
 		return $columns;
 	}
 
+	/**
+	 * Indicates if the query that generated this object was from a transaction
+	 *
+	 * @return boolean Indicates if object generated via transaction.
+	 */
 	public function isFromTransaction()
 	{
 		return $this->_query instanceof Transaction; 
 	}
 
+	/**
+	 * Helper used to choose default key names for the transpose,
+	 * flatten and hash methods if none are specified.
+	 * 
+	 * @param string $key   If null then the first column name in the dataset is used.
+	 * @param string $value If null then the second column name in the dataset is used.
+	 */
 	protected function _setDefaultKeys(&$key = null, &$value = null)
 	{
 		if($key === null) {

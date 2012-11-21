@@ -28,7 +28,7 @@ class Transaction extends Query
 			throw $e;
 		}
 
-		return $this->query('COMMIT');
+		return $this->run('COMMIT');
 	}
 
 	public function setID($name)
