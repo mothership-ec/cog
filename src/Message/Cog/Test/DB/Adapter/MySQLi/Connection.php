@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\DB\Test\Adapter\MySQLi;
+namespace Message\Cog\Test\DB\Adapter\MySQLi;
 
 use Message\Cog\DB;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\DB\Test\Adapter\Faux;
+namespace Message\Cog\Test\DB\Adapter\Faux;
 
 
 class ResultTest extends \PHPUnit_Framework_TestCase

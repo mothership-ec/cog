@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\DB\Test;
+namespace Message\Cog\Test\DB;
 
 
 class QueryTest extends \PHPUnit_Framework_TestCase

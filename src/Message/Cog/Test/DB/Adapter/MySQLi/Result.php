@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\DB\Test\Adapter\MySQLi;
+namespace Message\Cog\Test\DB\Adapter\MySQLi;
 
 
 class ResultTest extends \PHPUnit_Framework_TestCase
