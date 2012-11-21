@@ -9,19 +9,16 @@ namespace Message\Cog;
 * This class also determines what context the request is running in e.g web or
 * console.
 *
-* @TODO: write unit tests for this class
 * @TODO: security protocol for live
-* @TODO: pull out environment context name and default environment as constants?
 */
 class Environment
 {
-	const ENV_NAME  = 'MOTHERSHIP_ENV';
-	const AREA_NAME = 'MOTHERSHIP_AREA';
-
+	protected $_flagEnv  = 'COG_ENV';
+	protected $_flagArea = 'COG_AREA';
 	protected $_context;
 	protected $_name;
 	protected $_area;
-
+	protected $_allowedAreas = array();
 	protected $_allowedEnvironments = array(
 		'local', 	// Developers machine
 		'test', 	// When test suite is running
@@ -33,15 +30,22 @@ class Environment
 		'web',		// Running in fcgi or as mod_php
 		'console',	// Run from the command line.
 	);
-	protected $_allowedAreas = array(
-		'www',
-		'epos',
-		'admin',
-		'checkout',
-	);
-
-	public function __construct()
+	
+	public function __construct(array $areas, $environmentVar = null, $areaVar = null)
 	{
+		if(!count($areas)) {
+			throw new \InvalidArgumentException('At least one area must be added to the environment.');
+		}
+		$this->_allowedAreas = $areas;
+
+		if(!empty($environmentVar)) {
+			$this->_flagEnv = $environmentVar;
+		}
+
+		if(!empty($areaVar)) {
+			$this->_flagArea = $areaVar;
+		}
+
 		$this->_detectContext();
 		$this->_detectEnvironment();
 		$this->_detectArea();
@@ -91,8 +95,8 @@ class Environment
 	}
 
 	/**
-	 * Searches the $_ENV and then the $_SERVER superglobals for a variable.
-	 * Normally these have been set in a vhost config file.
+	 * Searches the global environment and then the $_SERVER superglobals for a variable.
+	 * Normally these have been set in a vhost config file or .profile file
 	 *
 	 * @param  string $varName Name of the variable to search for.
 	 * @return mixed Value of the found variable or false if it doesnt exist
@@ -126,12 +130,12 @@ class Environment
 
 	protected function _detectEnvironment()
 	{
-		$this->set($this->getEnvironmentVar(self::ENV_NAME) ?: $this->_allowedEnvironments[0]);
+		$this->set($this->getEnvironmentVar($this->_flagEnv) ?: $this->_allowedEnvironments[0]);
 	}
 
 	protected function _detectArea()
 	{
-		$this->setArea($this->getEnvironmentVar(self::AREA_NAME) ?: $this->_allowedAreas[0]);
+		$this->setArea($this->getEnvironmentVar($this->_flagArea) ?: $this->_allowedAreas[0]);
 	}
 
 }
