@@ -5,7 +5,18 @@ namespace Message\Cog;
 /**
 * Determines what environment Cog is running in.
 *
-* Examples of environments could be live, local, dev, staging, test, etc.
+* An environment is made up of 3 things
+*  - A name
+*  - A set of areas
+*  - A context
+*
+* Environments define the 'place' where a Cog app is running. The environment 
+* names are predefined and can't be changed. The allowed options are 
+* currently: live, local, dev, staging and test.
+*
+* The environment's context is either 'web' if the app is being access via HTTP
+* or 'console' if it's being run via the command line.
+* 
 * This class also determines what context the request is running in e.g web or
 * console.
 *
