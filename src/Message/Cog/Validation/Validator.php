@@ -23,13 +23,13 @@ class Validator
 	protected function _loadRules()
 	{
 		$this->_loader = new Loader($this->_messages, array(
-		//	'Message\\Cog\\Validation\\Rules\\Date',
-		  	'Message\\Cog\\Validation\\Rules\\Number',
-		  	'Message\\Cog\\Validation\\Rules\\Iterable',
-		  	'Message\\Cog\\Validation\\Rules\\Text',
-		  	'Message\\Cog\\Validation\\Filter\\Text',
-		  	'Message\\Cog\\Validation\\Filter\\Type',
-		  	'Message\\Cog\\Validation\\Filter\\Other',
+			'Message\\Cog\\Validation\\Rules\\Date',
+			'Message\\Cog\\Validation\\Rules\\Number',
+			'Message\\Cog\\Validation\\Rules\\Iterable',
+			'Message\\Cog\\Validation\\Rules\\Text',
+			'Message\\Cog\\Validation\\Filter\\Text',
+			'Message\\Cog\\Validation\\Filter\\Type',
+			'Message\\Cog\\Validation\\Filter\\Other',
 		));
 	}
 

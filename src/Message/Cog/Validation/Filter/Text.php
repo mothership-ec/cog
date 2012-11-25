@@ -24,6 +24,16 @@ class Text implements CollectionInterface
 		return strtoupper($text);
 	}
 
+	public function lowercase($text)
+	{
+		return strtolower($text);
+	}
+
+	public function titlecase($text)
+	{
+		return ucwords($text);
+	}
+
 	public function prefix($text, $prefix)
 	{
 		return $prefix.$text;
@@ -34,13 +44,13 @@ class Text implements CollectionInterface
 		return $text.$suffix;
 	}
 
-	public function trim($text)
-	{
-		return trim($text);
-	}
-
 	public function capitalize($text)
 	{
 		return ucfirst($text);
+	}
+
+	public function replace($text, $search, $replace)
+	{
+		return str_replace($search, $replace, $text);
 	}
 }

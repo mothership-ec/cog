@@ -9,6 +9,8 @@ use Message\Cog\Validation\CollectionInterface;
 */
 class Type implements CollectionInterface
 {
+	protected $_defaultTimeZone = null;
+
 	public function register($loader)
 	{
 		$loader->registerFilter('string',  array($this, 'string'));
@@ -54,13 +56,47 @@ class Type implements CollectionInterface
 		return (object)$var;
 	}
 
-	public function date($var, $timezone = null)
+	public function date($var, \DateTimeZone $timezone = null, array $keys = array())
 	{
+		if(is_array($var)) {
+
+			$parts = array(
+				'year'   => 1970, 
+				'month'  => 1, 
+				'day'    => 1,
+				'hour'   => 0,
+				'minute' => 0,
+				'second' => 0,
+			);
+
+			foreach($parts as $part => &$value) {
+				if(isset($var[$part])) {
+					$value = (int)$var[$part];
+				}
+			}
+
+			$var = $parts['year'].'-'.$parts['month'].'-'.$parts['day'].' ';
+			$var.= $parts['hour'].':'.$parts['minute'].':'.$parts['second'];
+		}
+
+		if(is_int($var)) {
+			$var = '@'.$var;
+		}
+
+		if(!$timezone) {
+			$timezone = $this->_defaultTimeZone;
+		}
+
 		return new \DateTime($var, $timezone);
 	}
 
 	public function null($var)
 	{
 		return null;
+	}
+
+	public function setDefaultTimeZone(\DateTimeZone $tz)
+	{
+		$this->_defaultTimeZone = $tz;
 	}
 }

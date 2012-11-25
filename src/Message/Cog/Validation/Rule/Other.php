@@ -5,11 +5,8 @@
 */
 class Other
 {
-	
-	public function ruleCustom($func)
+	public function rule($func)
 	{
-		
+		return $func($var);
 	}
-
-	public function ruleEach($func)
 }

@@ -47,4 +47,14 @@ class Text implements CollectionInterface
 	{
 		return filter_var($var, \FILTER_VALIDATE_EMAIL);
 	}
+
+	public function url($var)
+	{
+		return filter_var($var, \FILTER_VALIDATE_URL);
+	}
+
+	public function regex($var, $pattern)
+	{
+		return preg_match($var, $pattern);
+	}
 }
