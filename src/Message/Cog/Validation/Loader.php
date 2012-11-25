@@ -8,8 +8,9 @@ namespace Message\Cog\Validation;
 class Loader
 {
 	
-	public function __construct(Messages $messages, array $classes = null)
+	public function __construct(Validator $validator, Messages $messages, array $classes = null)
 	{
+		$this->_validator = $validator;
 		$this->_messages = $messages;
 		$this->_rules = array();
 		$this->_filters = array();
@@ -41,6 +42,11 @@ class Loader
 		return $this->_rules[$name];
 	}
 
+	public function getValidator()
+	{
+		return $this->_validator;
+	}
+
 	public function getFilter($name)
 	{
 		if(!isset($this->_filters[$name])) {
@@ -68,7 +74,7 @@ class Loader
 		}
 
 		if(isset($this->_{$type}[$name])) {
-			throw new \Exception(sprintf('A filter with the name `%s` has already been registered.', $name));
+			throw new \Exception(sprintf('A %s with the name `%s` has already been registered.', $type, $name));
 		}
 
 		$attr = '_'.$type.'s';

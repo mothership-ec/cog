@@ -12,7 +12,8 @@ class Iterable implements CollectionInterface
 {
 	public function register($loader)
 	{
-		$loader->registerRule('each', array($this, 'each'), '%s must%s be alphanumeric.');
+		$loader->registerRule('each', array($this, 'each'), '%s must%s be valid.');
+		$loader->registerRule('validateEach', array($this, 'validateEach'), '%s must%s be valid.');
 	}
 
 	public function each($var, $func)

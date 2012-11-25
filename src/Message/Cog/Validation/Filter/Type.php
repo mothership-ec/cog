@@ -5,7 +5,9 @@ namespace Message\Cog\Validation\Filter;
 use Message\Cog\Validation\CollectionInterface;
 
 /**
-* Filters
+* Type filters
+*
+* Casts a field into a specific type.
 */
 class Type implements CollectionInterface
 {
@@ -56,6 +58,15 @@ class Type implements CollectionInterface
 		return (object)$var;
 	}
 
+	/**
+	 * Attempts to turn a string, integer or array of integers into a DateTime object.
+	 * 
+	 * @param  mixed		$var      The variable to convert
+	 * @param  DateTimeZone $timezone An optional timezone to use
+	 * @param  array   		$keys     If $var is an array can be used to denote what values
+	 *                 		          should be keys.
+	 * @return DateTime				  The parsed DateTime value.
+	 */
 	public function date($var, \DateTimeZone $timezone = null, array $keys = array())
 	{
 		if(is_array($var)) {
@@ -90,13 +101,13 @@ class Type implements CollectionInterface
 		return new \DateTime($var, $timezone);
 	}
 
-	public function null($var)
-	{
-		return null;
-	}
-
 	public function setDefaultTimeZone(\DateTimeZone $tz)
 	{
 		$this->_defaultTimeZone = $tz;
 	}
-}
+
+ 	public function null($var)
+ 	{
+ 		return null;
+ 	}
+}	

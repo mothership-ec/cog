@@ -22,7 +22,7 @@ class Validator
 
 	protected function _loadRules()
 	{
-		$this->_loader = new Loader($this->_messages, array(
+		$this->_loader = new Loader($this, $this->_messages, array(
 			'Message\\Cog\\Validation\\Rules\\Date',
 			'Message\\Cog\\Validation\\Rules\\Number',
 			'Message\\Cog\\Validation\\Rules\\Iterable',
@@ -190,40 +190,3 @@ class Validator
 
 
 }
-
-
-/*
-$validator = new \Mothership\Framework\Validator;
-
-$validator
-	->field('first_name') // Add a required field to the validator.
-		->optional() // This makes it optional if the field is empt
-		->alnum() // must be alpha numeric
-		->length(3, 15) // between 3 and 15 characters
-		->capitalize() // capitalise each word before validation runs
-		->trimAfter() // trim the field after its been validated
-	->field('email', 'Email Address') // second parameter is the human readable field name, when ommited the human readable name is generated from the field name.
-		->email() // field must be in the format of an email
-	->field('username')
-		->length(1, 16) // must be between 1 and 15 chars
-		->trim() // trim the field before validation.
-		->match('/[A-Za-z_]/') // validated the field against a regex
-			->error('Your username can only contain letters and underscores') // a custom error message should the validation fail
-		->custom(function($value, $fields, $validator){ // custom validation rules
-			if(user_exists($value)) {
-				return 'This username is already taken.';
-			}
-
-			return true;
-		})
-	->field('units')
-		->each(function($key, $value){
-			
-		})
-
-
-$validator->setData($_POST); // sets the data to be input into the validator.
-$validator->validate(); // returns true or false
-$validator->getData(); // gets the validated (and filtered) data
-$validator->getErrors(); // returns an array of the errors that might have occured.
-*/
