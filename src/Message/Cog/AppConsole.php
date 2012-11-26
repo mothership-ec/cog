@@ -20,7 +20,7 @@ class AppConsole extends App
 
 	public function setupConsole()
 	{
-		$services = Services::instance();
+		$services = Service\Container::instance();
 		$console = Console\Factory::create();
 		$services['app.console'] = function() use ($console) {
 			return $console;
@@ -35,9 +35,9 @@ class AppConsole extends App
 	public function run()
 	{
 		// TODO: Make Mothership\Core set the console name / version
-		$console = Services::get('app.console');
+		$console = Service\Container::get('app.console');
 		$console->setName('Cog Console');
-		$console->setVersion(Services::get('config')->merchant->name);
+		$console->setVersion(Service\Container::get('config')->merchant->name);
 		$console->run();
 	}
 }

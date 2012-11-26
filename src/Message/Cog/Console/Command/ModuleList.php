@@ -3,7 +3,7 @@
 namespace Message\Cog\Console\Command;
 
 use Message\Cog\Console\TableFormatter;
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +29,7 @@ class ModuleList extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$modules = (array) Services::get('config')->modules;
+		$modules = (array) ServiceContainer::get('config')->modules;
 
 		$output->writeln('<info>Found ' . count($modules) . ' registered modules.</info>');
 

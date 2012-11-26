@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Application;
 
-use Message\Cog\Services;
-
 abstract class Loader
 {
 	protected $_baseDir;
@@ -38,7 +36,7 @@ abstract class Loader
 
 		// Setup the environment
 		// TODO: move as much of this as we can in to a Bootstrap
-		$this->_services = Services::instance();
+		$this->_services = \Message\Cog\Service\Container::instance();
 
 		// Register framework services
 		$serviceBootstrap = new \Message\Cog\Bootstrap\Services;

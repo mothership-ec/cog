@@ -2,7 +2,6 @@
 
 namespace Message\Cog\Controller;
 
-use Message\Cog\Services;
 use Message\Cog\HTTP\Request;
 
 /**
@@ -18,7 +17,7 @@ class Controller
 
 	public function __construct()
 	{
-		$this->_services = Services::instance();
+		$this->_services = \Message\Cog\Service\Container::instance();
 	}
 
 	public function setRequest(Request $request)

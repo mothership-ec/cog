@@ -2,9 +2,6 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Services;
-use Message\Cog\Console\TaskRunner;
-
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

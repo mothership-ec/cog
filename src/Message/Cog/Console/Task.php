@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Console;
 
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,7 +22,7 @@ abstract class Task extends Command
 
 	final public function __construct($name)
 	{
-		$this->_services = Services::instance();
+		$this->_services = ServiceContainer::instance();
 		parent::__construct($name);
 		// output to console by default
 		$this->printOutput(true);

@@ -4,7 +4,7 @@ namespace Message\Cog\Module;
 
 use DirectoryIterator;
 
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\Module\Bootstrap\EventsInterface;
 use Message\Cog\Module\Bootstrap\RoutesInterface;
@@ -117,19 +117,19 @@ class Loader
 	{
 		// IF THIS IS A ROUTES BOOTSTRAP, REGISTER ROUTES
 		if ($bootstrap instanceof ServicesInterface) {
-			$bootstrap->registerServices(Services::instance());
+			$bootstrap->registerServices(ServiceContainer::instance());
 		}
 		// IF THIS IS AN EVENTS BOOTSTRAP, REGISTER EVENTS
 		if ($bootstrap instanceof EventsInterface) {
-			$bootstrap->registerEvents(Services::get('event.dispatcher'));
+			$bootstrap->registerEvents(ServiceContainer::get('event.dispatcher'));
 		}
 		// IF THIS IS A ROUTES BOOTSTRAP, REGISTER ROUTES
 		if ($bootstrap instanceof RoutesInterface) {
-			$bootstrap->registerRoutes(Services::get('router'));
+			$bootstrap->registerRoutes(ServiceContainer::get('router'));
 		}
 		// IF THIS IS A TASKS BOOTSTRAP AND WE'RE IN THE CONSOLE, REGISTER TASKS
-		if (Services::get('environment')->context() == 'console' && $bootstrap instanceof TasksInterface) {
-			$bootstrap->registerTasks(Services::get('task.collection'));
+		if (ServiceContainer::get('environment')->context() == 'console' && $bootstrap instanceof TasksInterface) {
+			$bootstrap->registerTasks(ServiceContainer::get('task.collection'));
 		}
 	}
 

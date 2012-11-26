@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 use Message\Cog\Console\TableFormatter;
 use Message\Cog\Console\TaskRunner;
 
@@ -35,11 +35,11 @@ class ServicesList extends Command
 		$output->getFormatter()->setStyle('bold', new OutputFormatterStyle(null, null, array('bold')));
 		$term = $input->getArgument('search_term');
 
-		$services = Services::instance()->getAll();
+		$services = ServiceContainer::instance()->getAll();
 		ksort($services);
 
 		foreach($services as $name => &$service) {
-			$result = Services::get($name);
+			$result = ServiceContainer::get($name);
 
 			if(is_object($result)) {
 				$service = get_class($result);

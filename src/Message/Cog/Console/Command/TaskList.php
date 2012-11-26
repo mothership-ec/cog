@@ -3,7 +3,7 @@
 namespace Message\Cog\Console\Command;
 
 use Message\Cog\Console\TableFormatter;
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -35,7 +35,7 @@ class TaskList extends Command
 		$module_name = $input->getArgument('module_name');
 
 		$tasks = array();
-		foreach(Services::get('task.collection')->all() as $task) {
+		foreach(ServiceContainer::get('task.collection')->all() as $task) {
 			if($module_name && $module_name !== $task[0]) {
 				continue;
 			}
@@ -53,7 +53,7 @@ class TaskList extends Command
 			if($cron = $task[2]->getCronExpression()) {
 				$scheduled = $cron->getExpression();
 				$next      = $cron->getNextRunDate()->format('d/m/y H:i T');
-				if(count($envs = $task[2]->getCronEnvironments()) && !in_array(Services::get('env'), $envs)) {
+				if(count($envs = $task[2]->getCronEnvironments()) && !in_array(ServiceContainer::get('env'), $envs)) {
 					$next = 'Only runs on '.implode('|', $envs);
 				}
 			}

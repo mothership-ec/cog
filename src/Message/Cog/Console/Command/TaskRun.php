@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 use Message\Cog\Console\TaskRunner;
 
 use Symfony\Component\Console\Command\Command;
@@ -32,7 +32,7 @@ class TaskRun extends Command
     {
         $name = $input->getArgument('task_name');
 
-        if(!$task = Services::get('task.collection')->get($name)) {
+        if(!$task = ServiceContainer::get('task.collection')->get($name)) {
             $output->writeln('<error>Task `'.$name.'` does not exist.</error>');
             return;
         }
