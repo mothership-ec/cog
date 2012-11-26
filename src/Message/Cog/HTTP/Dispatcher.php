@@ -5,7 +5,7 @@ namespace Message\Cog\HTTP;
 use Message\Cog\Controller\ControllerResolverInterface;
 use Message\Cog\Services;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Request dispatcher.
@@ -27,11 +27,11 @@ class Dispatcher
 	/**
 	 * Constructor.
 	 *
-	 * @param EventDispatcherInterface		$router 	The event dispatcher to use for event firing
-	 * @param ControllerResolverInterface 	$resolver 	The controller resolver to used to help execute the controller
-	 * @param Request 						$request 	The master request
+	 * @param DispatcherInterface         $router   The event dispatcher to use for event firing
+	 * @param ControllerResolverInterface $resolver The controller resolver to used to help execute the controller
+	 * @param Request                     $request  The master request
 	 */
-	public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, Request $request)
+	public function __construct(DispatcherInterface $dispatcher, ControllerResolverInterface $resolver, Request $request)
 	{
 		$this->_eventDispatcher    = $dispatcher;
 		$this->_controllerResolver = $resolver;
