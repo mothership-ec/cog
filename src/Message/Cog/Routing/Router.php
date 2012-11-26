@@ -4,8 +4,6 @@ namespace Message\Cog\Routing;
 
 use Message\Cog\ReferenceParserInterface;
 
-use Symfony\Component\Routing\RequestContext;
-
 /**
 * A wrapper around Symfony's Routing component making it easier to use.
 *
@@ -13,7 +11,6 @@ use Symfony\Component\Routing\RequestContext;
 *
 * @link http://symfony.com/doc/current/components/routing.html
 * @link http://symfony.com/doc/current/book/routing.html
-*
 */
 class Router implements RouterInterface
 {
@@ -154,9 +151,13 @@ class Router implements RouterInterface
 	/**
 	 * Sets the request context.
 	 *
+	 * This hints for the base Symfony `RequestContext` class because this is
+	 * what the Symfony interface requires. Our `RequestContext` extends this
+	 * anyway.
+	 *
 	 * @param RequestContext $context The context
 	 */
-	public function setContext(RequestContext $context)
+	public function setContext(\Symfony\Component\Routing\RequestContext $context)
 	{
 		$this->_context = $context;
 
