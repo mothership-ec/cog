@@ -81,9 +81,9 @@ class ResponseBuilder
 	 * be automatically generated, and returns the automatically generated
 	 * response if so.
 	 *
-	 * @param  array  $params The parameters to use when generating the response
+	 * @param  array $params The parameters to use when generating the response
 	 *
-	 * @return mixed          The generated response result
+	 * @return mixed         The generated response result
 	 */
 	protected function _generateResponse(array $params = array())
 	{
