@@ -3,20 +3,20 @@
 namespace Message\Cog\HTTP\EventListener;
 
 use Message\Cog\Services;
+use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Dispatcher;
 use Message\Cog\HTTP\StatusException;
 
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Exception\ExceptionInterface as RouterException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Event listener for core functionality for dealing with requests.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Request implements EventSubscriberInterface
+class Request implements SubscriberInterface
 {
 	protected $_services;
 	protected $_router;

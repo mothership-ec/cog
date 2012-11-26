@@ -32,7 +32,7 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['event.dispatcher'] = $serviceContainer->share(function() {
-			return new \Symfony\Component\EventDispatcher\EventDispatcher;
+			return new \Message\Cog\Event\Dispatcher;
 		});
 
 		$serviceContainer['router'] = $serviceContainer->share(function($c) {

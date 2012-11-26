@@ -2,17 +2,17 @@
 
 namespace Message\Cog\Profiler;
 
+use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Event\FilterResponseEvent;
 use Message\Cog\Environment;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Event listener for core functionality to deal with exceptions.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class EventListener implements EventSubscriberInterface
+class EventListener implements SubscriberInterface
 {
 	protected $_profiler;
 	protected $_environment;
