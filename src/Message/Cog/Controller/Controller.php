@@ -6,8 +6,10 @@ use Message\Cog\Services;
 use Message\Cog\HTTP\Request;
 
 /**
- * Base controller class, providing helpers and common features
- * used by controllers.
+ * Base controller class, providing helpers and common features used by
+ * controllers.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Controller
 {
@@ -27,10 +29,10 @@ class Controller
 	/**
 	 * Generate a URL from a route name.
 	 *
-	 * @param string 	$routeName 	Name of the route to use
-	 * @param array 	$params	Parameters to use in the route
+	 * @param string $routeName  Name of the route to use
+	 * @param array $params	     Parameters to use in the route
 	 *
-	 * @return string 				The generated URL
+	 * @return string            The generated URL
 	 */
 	public function generateUrl($routeName, $params = array())
 	{
@@ -40,8 +42,8 @@ class Controller
 	/**
 	 * Returns a RedirectResponse for the given URL.
 	 *
-	 * @param string 	$url 	URL to redirect to
-	 * @param int 		$status HTTP status code to use when redirecting
+	 * @param string $url 	 URL to redirect to
+	 * @param int    $status HTTP status code to use when redirecting
 	 *
 	 * @return RedirectResponse
 	 */
