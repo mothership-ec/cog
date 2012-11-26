@@ -4,11 +4,11 @@ namespace Message\Cog\HTTP\EventListener;
 
 use Message\Cog\Services;
 use Message\Cog\Event\SubscriberInterface;
+use Message\Cog\Routing\RouterInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Dispatcher;
 use Message\Cog\HTTP\StatusException;
 
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Exception\ExceptionInterface as RouterException;
 
 /**
