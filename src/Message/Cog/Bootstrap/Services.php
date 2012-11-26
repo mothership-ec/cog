@@ -4,8 +4,7 @@ namespace Message\Cog\Bootstrap;
 
 use Message\Cog\Module\Bootstrap\ServicesInterface;
 use Message\Cog\Environment;
-
-use Symfony\Component\Routing\RouteCollection;
+use Message\Cog\Routing\RouteCollection;
 
 class Services implements ServicesInterface
 {
