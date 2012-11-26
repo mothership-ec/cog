@@ -5,8 +5,7 @@ namespace Message\Cog\Controller;
 use Message\Cog\HTTP\Request;
 use Message\Cog\HTTP\Response;
 use Message\Cog\HTTP\StatusException;
-
-use Symfony\Component\Templating\EngineInterface;
+use Message\Cog\Templating\EngineInterface;
 
 /**
  * This class uses the given templating engine to render a view and turn it into
@@ -82,9 +81,9 @@ class ResponseBuilder
 	 * be automatically generated, and returns the automatically generated
 	 * response if so.
 	 *
-	 * @param  array  $params The parameters to use when generating the response
+	 * @param  array $params The parameters to use when generating the response
 	 *
-	 * @return mixed          The generated response result
+	 * @return mixed         The generated response result
 	 */
 	protected function _generateResponse(array $params = array())
 	{

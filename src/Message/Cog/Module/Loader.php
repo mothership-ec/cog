@@ -5,12 +5,11 @@ namespace Message\Cog\Module;
 use DirectoryIterator;
 
 use Message\Cog\Services;
+use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\Module\Bootstrap\EventsInterface;
 use Message\Cog\Module\Bootstrap\RoutesInterface;
 use Message\Cog\Module\Bootstrap\ServicesInterface;
 use Message\Cog\Module\Bootstrap\TasksInterface;
-
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Loads Cog modules and their related files.
@@ -27,10 +26,10 @@ class Loader
 	/**
 	 * Constructor.
 	 *
-	 * @param LocatorInterface         $locator    The module locator
-	 * @param EventDispatcherInterface $dispatcher The event dispatcher to use for event firing
+	 * @param LocatorInterface    $locator    The module locator
+	 * @param DispatcherInterface $dispatcher The event dispatcher to use for event firing
 	 */
-	public function __construct($locator, EventDispatcherInterface $dispatcher)
+	public function __construct($locator, DispatcherInterface $dispatcher)
 	{
 		$this->_locator         = $locator;
 		$this->_eventDispatcher = $dispatcher;

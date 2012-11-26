@@ -2,9 +2,9 @@
 
 namespace Message\Cog\HTTP\EventListener;
 
+use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Event\FilterResponseEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Event listener for core functionality for any last actions on a Response
@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Response implements EventSubscriberInterface
+class Response implements SubscriberInterface
 {
 	static public function getSubscribedEvents()
 	{

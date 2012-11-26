@@ -4,8 +4,7 @@ namespace Message\Cog\Bootstrap;
 
 use Message\Cog\Module\Bootstrap\ServicesInterface;
 use Message\Cog\Environment;
-
-use Symfony\Component\Routing\RouteCollection;
+use Message\Cog\Routing\RouteCollection;
 
 class Services implements ServicesInterface
 {
@@ -33,7 +32,7 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['event.dispatcher'] = $serviceContainer->share(function() {
-			return new \Symfony\Component\EventDispatcher\EventDispatcher;
+			return new \Message\Cog\Event\Dispatcher;
 		});
 
 		$serviceContainer['router'] = $serviceContainer->share(function($c) {
@@ -50,9 +49,9 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
-			return new \Symfony\Component\Templating\DelegatingEngine(
+			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
-					new \Symfony\Component\Templating\PhpEngine(
+					new \Message\Cog\Templating\PhpEngine(
 						new \Message\Cog\Templating\ViewNameParser(
 							$c,
 							$c['reference_parser'],
@@ -61,7 +60,7 @@ class Services implements ServicesInterface
 								'php',
 							)
 						),
-						new \Symfony\Component\Templating\Loader\FilesystemLoader(SYSTEM_PATH . 'library/%name%'),
+						new \Symfony\Component\Templating\Loader\FilesystemLoader,
 						array(
 							new \Symfony\Component\Templating\Helper\SlotsHelper
 						)

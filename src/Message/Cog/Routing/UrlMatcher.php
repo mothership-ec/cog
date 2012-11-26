@@ -2,9 +2,7 @@
 
 namespace Message\Cog\Routing;
 
-use Symfony\Component\Routing\Matcher\RedirectableUrlMatcher;
-
-class UrlMatcher extends RedirectableUrlMatcher
+class UrlMatcher extends \Symfony\Component\Routing\Matcher\RedirectableUrlMatcher
 {
 	public function redirect($path, $route, $scheme = null)
 	{
