@@ -52,10 +52,7 @@ class ResponseBuilder
 	 */
 	public function render($reference, array $params = array())
 	{
-		$output = '';
-
 		try {
-			// Ask the engine to render the view
 			$output = $this->_engine->render($reference, $params);
 		}
 		catch (\Exception $e) {
