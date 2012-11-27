@@ -15,7 +15,8 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"Message\\Cog": "src"
+			"Message\\Cog"      : "src",
+			"Message\\Cog\\Test": "tests"
 		}
 	},
 	"minimum-stability": "stable",
