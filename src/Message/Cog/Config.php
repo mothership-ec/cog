@@ -26,7 +26,7 @@ class Config
 	 */
 	final public static function get($name)
 	{
-		return Services::get('config')->{$name};
+		return Service\Container::get('config')->{$name};
 	}
 
 	public function __construct($path, $environment)
@@ -64,9 +64,8 @@ class Config
 			}
 
 			// Converts the YAML file into an array
-			$yaml 	   = Services::get('fns.utility')->arrayToObject(Yaml::parse($fileinfo->getPathname()), true);
+			$yaml 	   = Service\Container::get('fns.utility')->arrayToObject(Yaml::parse($fileinfo->getPathname()), true);
 			$shortName = $fileinfo->getBasename('.yml');
-
 
 			if ($yaml === null) {
 				$yaml = new stdClass;

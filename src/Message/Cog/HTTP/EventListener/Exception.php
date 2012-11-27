@@ -2,7 +2,6 @@
 
 namespace Message\Cog\HTTP\EventListener;
 
-use Message\Cog\Services;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Event\BuildResponseFromExceptionEvent;

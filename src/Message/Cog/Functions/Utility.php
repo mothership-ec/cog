@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Functions;
 
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 use LogicException;
 
 class Utility
@@ -64,7 +64,7 @@ class Utility
 			if ($hasNumericIndices) {
 				$new[$key] = $value;
 			} else {
-				$new->{Services::get('fns.text')->toCamelCaps($key)} = $value;
+				$new->{ServiceContainer::get('fns.text')->toCamelCaps($key)} = $value;
 			}
 		}
 

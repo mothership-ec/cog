@@ -3,8 +3,6 @@
 namespace Message\Cog\HTTP;
 
 use Message\Cog\Controller\ControllerResolverInterface;
-use Message\Cog\Services;
-
 use Message\Cog\Event\DispatcherInterface;
 
 /**

@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Bootstrap;
 
-use Message\Cog\Services as ServiceContainer;
+use Message\Cog\Service\Container as ServiceContainer;
 use Message\Cog\Module\Bootstrap\EventsInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 

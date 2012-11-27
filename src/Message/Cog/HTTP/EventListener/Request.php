@@ -2,7 +2,7 @@
 
 namespace Message\Cog\HTTP\EventListener;
 
-use Message\Cog\Services;
+use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Routing\RouterInterface;
 use Message\Cog\HTTP\Event\Event;
@@ -37,7 +37,7 @@ class Request implements SubscriberInterface
 	 * @param Services        $services The service container
 	 * @param RouterInterface $router   The router
 	 */
-	public function __construct(Services $services, RouterInterface $router)
+	public function __construct(ContainerInterface $services, RouterInterface $router)
 	{
 		$this->_services = $services;
 		$this->_router   = $router;
