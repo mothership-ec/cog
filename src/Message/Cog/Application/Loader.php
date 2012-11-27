@@ -34,22 +34,25 @@ abstract class Loader
 		// Include composer autoloader
 		require_once $this->_baseDir . 'vendor/autoload.php';
 
-		// Setup the environment
-		// TODO: move as much of this as we can in to a Bootstrap
+		// Create the service container
 		$this->_services = \Message\Cog\Service\Container::instance();
 
-		// Register framework services
-		$serviceBootstrap = new \Message\Cog\Bootstrap\Services;
-		$serviceBootstrap->registerServices($this->_services);
-
+		// Add the application loader as a service
 		$app = $this;
 		$this->_services['app.loader'] = function() use ($app) {
 			return $app;
 		};
 
-		// Register framework events
-		$eventBootstrap = new \Message\Cog\Bootstrap\Events;
-		$eventBootstrap->registerEvents($this->_services['event.dispatcher']);
+		// Register the service for the bootstrap loader
+		$this->_services['bootstrap.loader'] = function($c) {
+			return new \Message\Cog\Bootstrap\Loader($c);
+		};
+
+		// Load the Cog bootstraps
+		$this->_services['bootstrap.loader']->addFromDirectory(
+			__DIR__ . '/Bootstrap',
+			'Message\Cog\Application\Bootstrap'
+		)->load();
 	}
 
 	/**

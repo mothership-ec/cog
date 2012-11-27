@@ -1,9 +1,9 @@
 <?php
 
-namespace Message\Cog\Bootstrap;
+namespace Message\Cog\Application\Bootstrap;
 
-use Message\Cog\Service\Container as ServiceContainer;
-use Message\Cog\Module\Bootstrap\EventsInterface;
+use Message\Cog\Service\ContainerAware;
+use Message\Cog\Bootstrap\EventsInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
 /**
@@ -13,15 +13,15 @@ use Message\Cog\HTTP\Event\Event as HTTPEvent;
  *
  * @todo When this can access Services in a better way, update this
  */
-class Events implements EventsInterface
+class Events extends ContainerAware implements EventsInterface
 {
 	public function registerEvents($eventDispatcher)
 	{
 		// HTTP Component Events
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Request(
-				ServiceContainer::instance(),
-				ServiceContainer::get('router')
+				$this->_services,
+				$this->_services['router']
 			)
 		);
 		$eventDispatcher->addSubscriber(
@@ -34,8 +34,8 @@ class Events implements EventsInterface
 		// Profiler
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\Profiler\EventListener(
-				ServiceContainer::get('profiler'),
-				ServiceContainer::get('environment')
+				$this->_services['profiler'],
+				$this->_services['environment']
 			)
 		);
 

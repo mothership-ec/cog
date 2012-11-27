@@ -1,8 +1,8 @@
 <?php
 
-namespace Message\Cog\Bootstrap;
+namespace Message\Cog\Application\Bootstrap;
 
-use Message\Cog\Module\Bootstrap\ServicesInterface;
+use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Cog\Environment;
 use Message\Cog\Routing\RouteCollection;
 
@@ -92,7 +92,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Module\Loader($c['module.locator'], $c['event.dispatcher']);
+			return new \Message\Cog\Module\Loader($c['module.locator'], $c['bootstrap.loader'], $c['event.dispatcher']);
 		});
 
 		$serviceContainer['password'] = $serviceContainer->share(function($c) {
