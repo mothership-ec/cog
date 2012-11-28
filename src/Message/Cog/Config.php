@@ -2,6 +2,8 @@
 
 namespace Message\Cog;
 
+use Message\Cog\Functions\Iterable;
+
 use Symfony\Component\Yaml\Yaml;
 use DirectoryIterator;
 use InvalidArgumentException;
@@ -64,7 +66,7 @@ class Config
 			}
 
 			// Converts the YAML file into an array
-			$yaml 	   = Service\Container::get('fns.utility')->arrayToObject(Yaml::parse($fileinfo->getPathname()), true);
+			$yaml 	   = Iterable::toObject(Yaml::parse($fileinfo->getPathname()), true);
 			$shortName = $fileinfo->getBasename('.yml');
 
 			if ($yaml === null) {
