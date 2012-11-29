@@ -28,15 +28,15 @@ abstract class Loader
 	 */
 	final public function __construct($baseDir)
 	{
-		// Ensure the composer autoloader has been included
-		require_once $this->_baseDir . 'vendor/autoload.php';
-
 		// Ensure base directory ends with directory separator
 		if (substr($baseDir, -1) !== DIRECTORY_SEPARATOR) {
 			$baseDir .= DIRECTORY_SEPARATOR;
 		}
 
 		$this->_baseDir = $baseDir;
+
+		// Ensure the composer autoloader has been included
+		require_once $this->_baseDir . 'vendor/autoload.php';
 
 		$this->_setDefaults();
 	}
