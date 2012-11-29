@@ -29,7 +29,6 @@ class Factory
 		$app->add(new Command\TaskList);
 		$app->add(new Command\ServicesList);
 		$app->add(new Command\Setup);
-		$app->add(new Command\TestUnitRun);
 
 		return $app;
 	}

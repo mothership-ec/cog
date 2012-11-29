@@ -44,15 +44,11 @@ abstract class Loader
 	}
 
 	/**
-	 * Get the base directory of the application.
+	 * Initialise the application. This runs the bootstraps for Cog and all
+	 * registered modules.
 	 *
-	 * @return string The application's base directory
+	 * @return Loader Returns $this for chainability
 	 */
-	final public function getBaseDir()
-	{
-		return $this->_baseDir;
-	}
-
 	final public function init()
 	{
 		$this->_loadCog();
@@ -61,7 +57,24 @@ abstract class Loader
 		return $this;
 	}
 
-	final public function getContext()
+	/**
+	 * Get the base directory of the application.
+	 *
+	 * @return string The application's base directory
+	 */
+	public function getBaseDir()
+	{
+		return $this->_baseDir;
+	}
+
+	/**
+	 * Get the context class for this request.
+	 *
+	 * This looks at the context set on the `Environment` class and looks for
+	 *
+	 * @return Context\ContextInterface Instance of the Context class
+	 */
+	public function getContext()
 	{
 		$context   = $this->_services['environment']->context();
 		$className = 'Message\\Cog\\Application\\Context\\' . ucfirst($context);
@@ -73,13 +86,14 @@ abstract class Loader
 			);
 		}
 
-		$context = new $className;
-
-		if ($context instanceof ContainerAwareInterface) {
-			$context->setContainer($this->_services);
+		if (!in_array('Message\Cog\Application\Context\ContextInterface', class_implements($className))) {
+			// TODO: Change to Application\Exception\InvalidContextException
+			throw new \RuntimeException(
+				sprintf('Context class does not implement ContextInterface: `%s`', $context)
+			);
 		}
 
-		return $context;
+		return new $className;
 	}
 
 	/**
@@ -87,27 +101,13 @@ abstract class Loader
 	 *
 	 * @return Whatever is returned by `run()` on the context
 	 */
-	final public function run()
+	public function run()
 	{
 		return $this->init()->getContext()->run();
 	}
 
 	/**
-	 * Apply some default PHP settings for the application.
-	 *
-	 * Currently this only covers the default timezone to avoid avoid a strict
-	 * standards error.
-	 *
-	 * @return void
-	 */
-	final protected function _setDefaults()
-	{
-		// Set the default timezone
-		date_default_timezone_set('Europe/London');
-	}
-
-	/**
-	 * Instantiate the autoloader and run Cog bootstraps
+	 * Ensure the autoloader is included and run Cog bootstraps.
 	 *
 	 * @return void
 	 */
@@ -142,6 +142,20 @@ abstract class Loader
 	final protected function _loadModules()
 	{
 		$this->_services['module.loader']->run($this->_registerModules());
+	}
+
+	/**
+	 * Apply some default PHP settings for the application.
+	 *
+	 * Currently this only covers the default timezone to avoid avoid a strict
+	 * standards error.
+	 *
+	 * @return void
+	 */
+	protected function _setDefaults()
+	{
+		// Set the default timezone
+		date_default_timezone_set('Europe/London');
 	}
 
 	/**

@@ -1,19 +1,6 @@
 <?php
 
-/*
-require_once __DIR__ . '/../src/Message/Cog/App.php';
-require_once __DIR__ . '/../src/Message/Cog/AppConsole.php';
+$baseDir = dirname(dirname($_SERVER['SCRIPT_FILENAME']));
+$app     = require_once $baseDir . '/bootstrap.php';
 
-$app = new \Message\Cog\AppConsole;
-$app->run();
-*/
-
-// or
-
-$baseDir = dirname(__FILE__) . '/';
-die($baseDir);
-require_once $baseDir . '/vendor/autoload.php';
-
-// how do I know about what modules to load?
-$app = new \Message\Cog\Console\Loader($baseDir);
 $app->run();
