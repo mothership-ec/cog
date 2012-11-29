@@ -20,3 +20,6 @@ Cog defines the following services on the service container. Don't overwrite any
 
 * `class.loader` This is the Composer autoloader class which is based on Symfony's autoloader.
 * `http.request.master` This is the `Message\Cog\HTTP\Request` instance for the current master request.
+* `bootstrap.loader` This is an instance of `Message\Cog\Bootstrap\Loader`.
+* `app.loader` This is the instance of the application loader class, which will be the installation's sublass of `Message\Cog\Application\Loader`.
+* `module.loader` This is an instance of `Message\Cog\Module\Loader`.
