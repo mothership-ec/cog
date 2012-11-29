@@ -4,6 +4,12 @@
 
 Cog is Message's private internal PHP5 framework. It's very powerful but also lightweight and helps us create large-scale web applications with ease and confidence.
 
+## What are the rules of Cog?
+
+* Thou shalt never call a class/method statically unless:
+	* Thy class is a function class in the `Message\Cog\Functions` namespace
+	* Thy class is an instance of `Message\Cog\Service\Container`
+
 ## How do I set up a new Cog project?
 
 @TODO write me
