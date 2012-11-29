@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 /**
 * AppConsole
 *
-* Controls startup of the commandline version of Mothership
+* Controls startup of the commandline version of Cog.
 */
 class AppConsole extends App
 {
@@ -34,7 +34,7 @@ class AppConsole extends App
 
 	public function run()
 	{
-		// TODO: Make Mothership\Core set the console name / version
+		// TODO: Let the application set the name / version
 		$console = Service\Container::get('app.console');
 		$console->setName('Cog Console');
 		$console->setVersion(Service\Container::get('config')->merchant->name);
