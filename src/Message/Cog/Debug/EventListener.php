@@ -1,19 +1,20 @@
 <?php
 
-namespace Message\Cog\Debug\EventListener;
+namespace Message\Cog\Debug;
 
-use Message\Cog\Debug\Profiler;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Event\FilterResponseEvent;
 use Message\Cog\Environment;
 
 /**
- * Event listener for rendering the Profiler.
+ * Event listener for the Debug component.
+ *
+ * Registers event listener(s) to render the Profiler.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Profiler implements SubscriberInterface
+class EventListener implements SubscriberInterface
 {
 	protected $_profiler;
 	protected $_environment;
