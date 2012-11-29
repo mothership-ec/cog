@@ -25,8 +25,8 @@ class Setup extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$dirs = array(
-			ROOT_PATH.'tmp/',
-			ROOT_PATH.'logs/',
+			'tmp/',
+			'logs/',
 		);
 
 		foreach($dirs as $dir) {

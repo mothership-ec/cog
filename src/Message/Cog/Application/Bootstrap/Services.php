@@ -84,7 +84,10 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['config'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\ConfigCache(ROOT_PATH.'config/', $c['env']);
+			return new \Message\Cog\ConfigCache(
+				$c['app.loader']->getBaseDir().'config/',
+				$c['env']
+			);
 		});
 
 		$serviceContainer['module.locator'] = $serviceContainer->share(function($c) {

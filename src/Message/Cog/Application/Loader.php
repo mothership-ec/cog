@@ -2,13 +2,35 @@
 
 namespace Message\Cog\Application;
 
+/**
+ * Cog application loader.
+ *
+ * Responsible for instantiating the autoloader and loading bootstraps for Cog
+ * and all modules defined in the abstract `_registerModules()` method.
+ *
+ * In an installation, a class should be created that extends this class and an
+ * array of module names to load should be returned in `_registerModules()`.
+ * The class can be named anything and placed anywhere, but normally this is:
+ * `/app/[AppName]/App.php`.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ * @author James Moss <james@message.co.uk>
+ */
 abstract class Loader
 {
 	protected $_baseDir;
 	protected $_services;
 
-	public function __construct($baseDir)
+	/**
+	 * Constructor.
+	 *
+	 * @param string $baseDir Absolute path to the installation base directory
+	 */
+	final public function __construct($baseDir)
 	{
+		// Ensure the composer autoloader has been included
+		require_once $this->_baseDir . 'vendor/autoload.php';
+
 		// Ensure base directory ends with directory separator
 		if (substr($baseDir, -1) !== DIRECTORY_SEPARATOR) {
 			$baseDir .= DIRECTORY_SEPARATOR;
@@ -16,24 +38,59 @@ abstract class Loader
 
 		$this->_baseDir = $baseDir;
 
-		$this->_setupConstants();
-
-		// Set the default timezone
-		date_default_timezone_set('Europe/London');
-
-		$this->setupAutoloader();
+		$this->_setDefaults();
 	}
 
 	/**
-	 * Sets up and configures the autoloader and some key services.
+	 * Get the base directory of the application.
+	 *
+	 * @return string The application's base directory
+	 */
+	final public function getBaseDir()
+	{
+		return $this->_baseDir;
+	}
+
+	/**
+	 * Loads the application & initiates a web request.
 	 *
 	 * @return void
 	 */
-	public function setupAutoloader()
+	final public function run()
 	{
-		// Include composer autoloader
-		require_once $this->_baseDir . 'vendor/autoload.php';
+		$this->_loadCog();
+		$this->_loadModules();
 
+		$this->_services['http.request.master'] = $this->_services->share(function() {
+			return \Message\Cog\HTTP\Request::createFromGlobals();
+		});
+
+		$this->_services['http.dispatcher']
+			->handle($this->_services['http.request.master'])
+			->send();
+	}
+
+	/**
+	 * Apply some default PHP settings for the application.
+	 *
+	 * Currently this only covers the default timezone to avoid avoid a strict
+	 * standards error.
+	 *
+	 * @return void
+	 */
+	final protected function _setDefaults()
+	{
+		// Set the default timezone
+		date_default_timezone_set('Europe/London');
+	}
+
+	/**
+	 * Instantiate the autoloader and run Cog bootstraps
+	 *
+	 * @return void
+	 */
+	final protected function _loadCog()
+	{
 		// Create the service container
 		$this->_services = \Message\Cog\Service\Container::instance();
 
@@ -56,47 +113,22 @@ abstract class Loader
 	}
 
 	/**
-	 * Sets up some generic services needed by the Framework and all requests.
+	 * Loads the modules defined by `_registerModules()`.
 	 *
 	 * @return void
 	 */
-	public function setupFrameworkServices()
+	final protected function _loadModules()
 	{
-		// Load modules
 		$this->_services['module.loader']->run($this->_registerModules());
 	}
 
 	/**
-	 * Initiates a web request.
+	 * Returns an array of modules to load. Defined by installation application
+	 * subclass.
 	 *
-	 * @return void
-	 */
-	public function run()
-	{
-		$this->setupFrameworkServices();
-
-		$this->_services['http.request.master'] = $this->_services->share(function() {
-			return \Message\Cog\HTTP\Request::createFromGlobals();
-		});
-
-		$this->_services['http.dispatcher']
-			->handle($this->_services['http.request.master'])
-			->send();
-	}
-
-	/**
-	 * Defines all global constants used throughout the app.
+	 * Modules are loaded in the order they are defined here.
 	 *
-	 * @return void
+	 * @return array List of modules to load
 	 */
-	protected function _setupConstants()
-	{
-		// TODO: No global constants, make them part of Cog\App
-		define('ROOT_PATH', $this->_baseDir);
-		define('SYSTEM_PATH', ROOT_PATH.'system/');
-		define('AREA', preg_replace('/^(.*)\//', '', $_SERVER['DOCUMENT_ROOT']));
-		define('PUBLIC_PATH', SYSTEM_PATH.'public/'.AREA.'/');
-	}
-
 	abstract protected function _registerModules();
 }
