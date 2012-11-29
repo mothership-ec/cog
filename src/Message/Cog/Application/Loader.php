@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Application;
 
+use Message\Cog\Service\ContainerAwareInterface;
+
 /**
  * Cog application loader.
  *
@@ -51,23 +53,43 @@ abstract class Loader
 		return $this->_baseDir;
 	}
 
-	/**
-	 * Loads the application & initiates a web request.
-	 *
-	 * @return void
-	 */
-	final public function run()
+	final public function init()
 	{
 		$this->_loadCog();
 		$this->_loadModules();
 
-		$this->_services['http.request.master'] = $this->_services->share(function() {
-			return \Message\Cog\HTTP\Request::createFromGlobals();
-		});
+		return $this;
+	}
 
-		$this->_services['http.dispatcher']
-			->handle($this->_services['http.request.master'])
-			->send();
+	final public function getContext()
+	{
+		$context   = $this->_services['environment']->context();
+		$className = 'Message\\Cog\\Application\\Context\\' . ucfirst($context);
+
+		if (!class_exists($className)) {
+			// TODO: Change to Application\Exception\UnknownContextException
+			throw new \RuntimeException(
+				sprintf('Context class not found for context: `%s`', $context)
+			);
+		}
+
+		$context = new $className;
+
+		if ($context instanceof ContainerAwareInterface) {
+			$context->setContainer($this->_services);
+		}
+
+		return $context;
+	}
+
+	/**
+	 * Loads the application & runs the appropriate context.
+	 *
+	 * @return Whatever is returned by `run()` on the context
+	 */
+	final public function run()
+	{
+		return $this->init()->getContext()->run();
 	}
 
 	/**
