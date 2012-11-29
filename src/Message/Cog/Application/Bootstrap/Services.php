@@ -73,7 +73,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\HTTP\Dispatcher(
 				$c['event.dispatcher'],
 				$c['controller.resolver'],
-				$c['http.request.master']
+				(isset($c['http.request.master']) ? $c['http.request.master'] : null)
 			);
 		};
 
@@ -96,10 +96,6 @@ class Services implements ServicesInterface
 
 		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Module\Loader($c['module.locator'], $c['bootstrap.loader'], $c['event.dispatcher']);
-		});
-
-		$serviceContainer['password'] = $serviceContainer->share(function($c) {
-			return \Message\Cog\Hash::create($c['config']->security->passwordAlgorithm);
 		});
 
 		foreach ($serviceContainer['environment']->getAllowedAreas() as $area) {

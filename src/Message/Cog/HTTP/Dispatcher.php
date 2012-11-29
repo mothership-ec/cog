@@ -27,9 +27,9 @@ class Dispatcher
 	 *
 	 * @param DispatcherInterface         $router   The event dispatcher to use for event firing
 	 * @param ControllerResolverInterface $resolver The controller resolver to used to help execute the controller
-	 * @param Request                     $request  The master request
+	 * @param Request|null                $request  The master request
 	 */
-	public function __construct(DispatcherInterface $dispatcher, ControllerResolverInterface $resolver, Request $request)
+	public function __construct(DispatcherInterface $dispatcher, ControllerResolverInterface $resolver, Request $request = null)
 	{
 		$this->_eventDispatcher    = $dispatcher;
 		$this->_controllerResolver = $resolver;

@@ -45,6 +45,12 @@ class Container extends \Pimple implements ContainerInterface
 	 */
 	public function getAll()
 	{
-		return $this->values;
+        $return = array();
+
+        foreach ($this->keys() as $key) {
+            $return[$key] = $this->offsetGet($key);
+        }
+
+		return $return;
 	}
 }
