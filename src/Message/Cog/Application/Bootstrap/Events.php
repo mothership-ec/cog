@@ -33,7 +33,7 @@ class Events extends ContainerAware implements EventsInterface
 
 		// Profiler
 		$eventDispatcher->addSubscriber(
-			new \Message\Cog\Profiler\EventListener(
+			new \Message\Cog\Debug\EventListener\Profiler(
 				$this->_services['profiler'],
 				$this->_services['environment']
 			)

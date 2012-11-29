@@ -11,7 +11,7 @@ class Services implements ServicesInterface
 	public function registerServices($serviceContainer)
 	{
 		$serviceContainer['profiler'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Profiler\Profiler(null, null, false);
+			return new \Message\Cog\Debug\Profiler(null, null, false);
 		});
 
 		// Composer auto loader

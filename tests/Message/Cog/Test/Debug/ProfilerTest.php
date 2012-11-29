@@ -1,9 +1,9 @@
 <?php
 
-namespace Message\Cog\Test\Profiler;
+namespace Message\Cog\Test\Debug;
 
 use ReflectionClass;
-use Message\Cog\Profiler\Profiler;
+use Message\Cog\Debug\Profiler;
 
 class ProfilerTest extends \PHPUnit_Framework_TestCase
 {

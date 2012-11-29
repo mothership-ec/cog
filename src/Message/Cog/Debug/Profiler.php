@@ -1,8 +1,8 @@
 <?php
 
-namespace Message\Cog\Profiler;
+namespace Message\Cog\Debug;
 
-use \Closure;
+use Closure;
 
 /**
  * Profiler
@@ -11,11 +11,11 @@ use \Closure;
  */
 class Profiler
 {
-	protected $_name            = null;
-	protected $_snapshots       = array();
-	protected $_relative        = true;
-	protected $_initialTime		= 0;
-	protected $_queryCountFunc  = null;
+	protected $_name           = null;
+	protected $_snapshots      = array();
+	protected $_relative       = true;
+	protected $_initialTime    = 0;
+	protected $_queryCountFunc = null;
 
 	/**
 	 * Constructor
