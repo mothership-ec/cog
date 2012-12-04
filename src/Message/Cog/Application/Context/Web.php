@@ -14,11 +14,16 @@ class Web implements ContextInterface
 	protected $_services;
 
 	/**
-	 * Constructor. This sets the service container.
+	 * Constructor. This is run before any modules are loaded, so we can
+	 * initialise the web request as a service here.
 	 */
 	public function __construct()
 	{
 		$this->_services = ServiceContainer::instance();
+
+		$this->_services['http.request.master'] = $this->_services->share(function() {
+			return \Message\Cog\HTTP\Request::createFromGlobals();
+		});
 	}
 
 	/**
@@ -29,10 +34,6 @@ class Web implements ContextInterface
 	 */
 	public function run()
 	{
-		$this->_services['http.request.master'] = $this->_services->share(function() {
-			return \Message\Cog\HTTP\Request::createFromGlobals();
-		});
-
 		$this->_services['http.dispatcher']
 			->handle($this->_services['http.request.master'])
 			->send();
