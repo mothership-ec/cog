@@ -45,8 +45,10 @@ abstract class Loader
 	}
 
 	/**
-	 * Initialise the application. This runs the bootstraps for Cog and all
-	 * registered modules.
+	 * Initialise the application.
+	 *
+	 * This runs the bootstraps for Cog, initialises the appropriate context
+	 * and loads & bootstraps all registered modules.
 	 *
 	 * @return Loader Returns $this for chainability
 	 */
@@ -117,12 +119,16 @@ abstract class Loader
 		)->load();
 	}
 
-	/*
+	/**
 	 * Set the context class for this request.
 	 *
 	 * This looks at the context set on the `Environment` class and looks for
 	 * a context class matching that name in the `Message\Cog\Application\Context`
 	 * namespace.
+	 *
+	 * @throws \RuntimeException If the apropriate context class could not be found
+	 * @throws \LogicException   If the context class was found, but it does not
+	 *                           implement `ContextInterface`.
 	 */
 	final protected function _setContext()
 	{
@@ -130,15 +136,13 @@ abstract class Loader
 		$className = 'Message\\Cog\\Application\\Context\\' . ucfirst($context);
 
 		if (!class_exists($className)) {
-			// TODO: Change to Application\Exception\UnknownContextException
 			throw new \RuntimeException(
 				sprintf('Context class not found for context: `%s`', $context)
 			);
 		}
 
 		if (!in_array('Message\Cog\Application\Context\ContextInterface', class_implements($className))) {
-			// TODO: Change to Application\Exception\InvalidContextException
-			throw new \RuntimeException(
+			throw new \LogicException(
 				sprintf('Context class does not implement ContextInterface: `%s`', $context)
 			);
 		}
