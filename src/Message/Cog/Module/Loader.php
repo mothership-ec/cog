@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Module;
 
-use Message\Cog\Bootstrap\Loader as BootstrapLoader;
+use Message\Cog\Bootstrap\LoaderInterface as BootstrapLoaderInterface;
 use Message\Cog\Event\DispatcherInterface;
 
 /**
@@ -21,11 +21,11 @@ class Loader
 	/**
 	 * Constructor.
 	 *
-	 * @param LocatorInterface    $locator         The module locator
-	 * @param BootstrapLoader     $bootstrapLoader The bootsreap loader
-	 * @param DispatcherInterface $dispatcher      The event dispatcher to use for event firing
+	 * @param LocatorInterface         $locator         The module locator
+	 * @param BootstrapLoaderInterface $bootstrapLoader The bootsreap loader
+	 * @param DispatcherInterface      $dispatcher      The event dispatcher to use for event firing
 	 */
-	public function __construct(LocatorInterface $locator, BootstrapLoader $bootstrapLoader,
+	public function __construct(LocatorInterface $locator, BootstrapLoaderInterface $bootstrapLoader,
 		DispatcherInterface $dispatcher)
 	{
 		$this->_locator         = $locator;

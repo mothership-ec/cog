@@ -60,7 +60,9 @@ class Services implements ServicesInterface
 								'php',
 							)
 						),
-						new \Symfony\Component\Templating\Loader\FilesystemLoader,
+						new \Symfony\Component\Templating\Loader\FilesystemLoader(
+							$c['app.loader']->getBaseDir()
+						),
 						array(
 							new \Symfony\Component\Templating\Helper\SlotsHelper
 						)
@@ -116,7 +118,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Functions\Utility($c['module.loader']);
 		});
 		$serviceContainer['fns.debug'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Functions\Utility($c['module.loader']);
+			return new \Message\Cog\Functions\Debug;
 		});
 
 		$serviceContainer['reference_parser'] = function($c) {

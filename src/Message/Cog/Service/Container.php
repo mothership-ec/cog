@@ -14,9 +14,9 @@ class Container extends \Pimple implements ContainerInterface
 	static protected $_instance;
 
 	/**
-     * Singleton accessor
-     *
-     * @return Container The instance of self
+	 * Singleton accessor
+	 *
+	 * @return Container The instance of self
 	 */
 	static public function instance()
 	{
@@ -28,10 +28,10 @@ class Container extends \Pimple implements ContainerInterface
 	}
 
 	/**
-     * Gets a service.
-     *
-     * @param  string $id Unique identifier for the service
-     * @return mixed
+	 * Gets a service.
+	 *
+	 * @param  string $id Unique identifier for the service
+	 * @return mixed
 	 */
 	static public function get($id)
 	{
@@ -39,17 +39,17 @@ class Container extends \Pimple implements ContainerInterface
 	}
 
 	/**
-     * Get an array of all the defined services.
-     *
-     * @return array The full list of services, where the ID is the key
+	 * Get an array of all the defined services.
+	 *
+	 * @return array The full list of services, where the ID is the key
 	 */
 	public function getAll()
 	{
-        $return = array();
+		$return = array();
 
-        foreach ($this->keys() as $key) {
-            $return[$key] = $this->offsetGet($key);
-        }
+		foreach ($this->keys() as $key) {
+			$return[$key] = $this->offsetGet($key);
+		}
 
 		return $return;
 	}

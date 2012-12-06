@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Application\Bootstrap;
 
-use Message\Cog\Service\ContainerAware;
+use Message\Cog\Service\Container as ServiceContainer;
 use Message\Cog\Bootstrap\EventsInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
@@ -13,8 +13,15 @@ use Message\Cog\HTTP\Event\Event as HTTPEvent;
  *
  * @todo When this can access Services in a better way, update this
  */
-class Events extends ContainerAware implements EventsInterface
+class Events implements EventsInterface
 {
+	protected $_services;
+
+	public function __construct(ServiceContainer $serviceContainer)
+	{
+		$this->_services = $serviceContainer;
+	}
+
 	public function registerEvents($eventDispatcher)
 	{
 		// HTTP Component Events

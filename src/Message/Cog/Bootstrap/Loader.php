@@ -11,7 +11,7 @@ use Message\Cog\Service\ContainerAwareInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader
+class Loader implements LoaderInterface
 {
 	protected $_services;
 	protected $_bootstraps = array();
@@ -55,7 +55,7 @@ class Loader
 				// Determine class name
 				$className = $namespace . '\\' . $file->getBasename('.php');
 				// Load the bootstrap
-				$class = new $className;
+				$class = new $className($this->_services);
 				if ($class instanceof BootstrapInterface) {
 					$this->add($class);
 				}
@@ -68,20 +68,12 @@ class Loader
 	/**
 	 * Adds a bootstrap this loader.
 	 *
-	 * If the bootstrap implements the `ContainerAwareInterface`, the service
-	 * container is injected as defined in the interface.
-	 *
 	 * @param  BootstrapInterface $bootstrap The bootstrap to add
 	 *
 	 * @return Loader                        Returns $this for chaining
 	 */
 	public function add(BootstrapInterface $bootstrap)
 	{
-		// If the bootstrap is ContainerAware, set the container
-		if ($bootstrap instanceof ContainerAwareInterface) {
-			$bootstrap->setContainer($this->_services);
-		}
-
 		// Add to list
 		$this->_bootstraps[] = $bootstrap;
 

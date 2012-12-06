@@ -7,6 +7,7 @@ namespace Message\Cog\Templating;
  * any Symfony code to the rest of Cog.
  */
 class DelegatingEngine extends \Symfony\Component\Templating\DelegatingEngine
+	implements EngineInterface
 {
 
 }
