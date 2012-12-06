@@ -3,6 +3,7 @@
 namespace Message\Cog\Test\Application\Bootstrap;
 
 use Message\Cog\Application\Bootstrap\Services as ServicesBootstrap;
+
 use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Service\SharedServiceIdentifier;
 use Message\Cog\Test\Application\FauxLoader as AppFauxLoader;

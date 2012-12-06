@@ -3,11 +3,12 @@
 namespace Message\Cog\Test\Application\Bootstrap;
 
 use Message\Cog\Application\Bootstrap\Events as EventsBootstrap;
+use Message\Cog\Debug\Profiler;
+use Message\Cog\Environment;
+
 use Message\Cog\Test\Event\FauxDispatcher;
 use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Routing\FauxRouter;
-use Message\Cog\Debug\Profiler;
-use Message\Cog\Environment;
 
 class EventsTest extends \PHPUnit_Framework_TestCase
 {
