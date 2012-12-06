@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Application\Context;
 
-use Message\Cog\Service\Container as ServiceContainer;
+use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Console\Factory;
 
 use Symfony\Component\Console\Input\ArgvInput;
@@ -20,10 +20,12 @@ class Console implements ContextInterface
 	/**
 	 * Constructor. This is run before any modules are loaded, so we can
 	 * initialise the console here.
+	 *
+	 * @param ContainerInterface $container The service container
 	 */
-	public function __construct()
+	public function __construct(ContainerInterface $container)
 	{
-		$this->_services = ServiceContainer::instance();
+		$this->_services = $container;
 
 		$console = Factory::create();
 		$this->_services['app.console'] = function() use ($console) {

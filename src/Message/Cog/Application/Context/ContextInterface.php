@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Application\Context;
 
+use Message\Cog\Service\ContainerInterface;
+
 /**
  * Interface for running a specific context.
  *
@@ -14,8 +16,10 @@ interface ContextInterface
 	 *
 	 * This is run after Cog has been initialised & bootstrapped, but before any
 	 * modules are loaded & bootstrapped.
+	 *
+	 * @param ContainerInterface $container The service container
 	 */
-	public function __construct();
+	public function __construct(ContainerInterface $container);
 
 	/**
 	 * Run context-specific code.

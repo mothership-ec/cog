@@ -147,7 +147,7 @@ abstract class Loader
 			);
 		}
 
-		return $this->_context = new $className;
+		return $this->_context = new $className($this->_services);
 	}
 
 	/**

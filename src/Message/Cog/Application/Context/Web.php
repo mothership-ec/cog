@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Application\Context;
 
-use Message\Cog\Service\Container as ServiceContainer;
+use Message\Cog\Service\ContainerInterface;
 
 /**
  * Web context loader.
@@ -16,10 +16,12 @@ class Web implements ContextInterface
 	/**
 	 * Constructor. This is run before any modules are loaded, so we can
 	 * initialise the web request as a service here.
+	 *
+	 * @param ContainerInterface $container The service container
 	 */
-	public function __construct()
+	public function __construct(ContainerInterface $container)
 	{
-		$this->_services = ServiceContainer::instance();
+		$this->_services = $container;
 
 		$this->_services['http.request.master'] = $this->_services->share(function() {
 			return \Message\Cog\HTTP\Request::createFromGlobals();
