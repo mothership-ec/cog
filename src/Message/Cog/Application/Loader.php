@@ -27,38 +27,18 @@ abstract class Loader
 	/**
 	 * Constructor.
 	 *
+	 * Sets the application base directory.
+	 *
 	 * @param string $baseDir Absolute path to the installation base directory
 	 */
-	final public function __construct($baseDir)
+	public function __construct($baseDir)
 	{
 		// Ensure base directory ends with directory separator
-		if (substr($baseDir, -1) !== DIRECTORY_SEPARATOR) {
+		if (DIRECTORY_SEPARATOR !== substr($baseDir, -1)) {
 			$baseDir .= DIRECTORY_SEPARATOR;
 		}
 
 		$this->_baseDir = $baseDir;
-
-		// Ensure the composer autoloader has been included
-		require_once $this->_baseDir . 'vendor/autoload.php';
-
-		$this->_setDefaults();
-	}
-
-	/**
-	 * Initialise the application.
-	 *
-	 * This runs the bootstraps for Cog, initialises the appropriate context
-	 * and loads & bootstraps all registered modules.
-	 *
-	 * @return Loader Returns $this for chainability
-	 */
-	final public function init()
-	{
-		$this->_loadCog();
-		$this->_setContext();
-		$this->_loadModules();
-
-		return $this;
 	}
 
 	/**
@@ -75,28 +55,57 @@ abstract class Loader
 	 * Get the context instance for this request.
 	 *
 	 * @return Context\ContextInterface The context instance
+	 * @throws \Exception               If the context has not been set yet
 	 */
 	public function getContext()
 	{
+		if (!$this->_context) {
+			throw new \Exception('Cannot get context: it has not yet been set. Please run `loadCog()` first.');
+		}
+
 		return $this->_context;
 	}
 
 	/**
-	 * Loads the application & runs the appropriate context.
+	 * Shortcut method for initialising, loading & executing the application.
 	 *
-	 * @return Whatever is returned by `run()` on the context
+	 * @see initialise
+	 * @see loadCog
+	 * @see loadModules
+	 * @see execute
+	 *
+	 * @return mixed Whatever is returned by `$this->execute()`
 	 */
 	public function run()
 	{
-		return $this->init()->getContext()->run();
+		return $this->initialise()->loadCog()->loadModules()->execute();
 	}
 
 	/**
-	 * Ensure the autoloader is included and run Cog bootstraps.
+	 * Initialises the application.
 	 *
-	 * @return void
+	 * @see _setDefaults
+	 * @see _includeAutoloader
+	 *
+	 * @return Loader Returns $this for chainability
 	 */
-	final protected function _loadCog()
+	public function initialise()
+	{
+		$this->_setDefaults();
+		$this->_includeAutoloader();
+
+		return $this;
+	}
+
+	/**
+	 * Instantiates the service container, runs the Cog bootstraps and sets the
+	 * context.
+	 *
+	 * @see _setContext
+	 *
+	 * @return Loader Returns $this for chainability
+	 */
+	final public function loadCog()
 	{
 		// Create the service container
 		$this->_services = \Message\Cog\Service\Container::instance();
@@ -117,6 +126,59 @@ abstract class Loader
 			__DIR__ . '/Bootstrap',
 			'Message\Cog\Application\Bootstrap'
 		)->load();
+
+		// Set the context
+		$this->_setContext();
+
+		return $this;
+	}
+
+	/**
+	 * Loads the modules defined by `_registerModules()`.
+	 *
+	 * @return Loader Returns $this for chainability
+	 */
+	public function loadModules()
+	{
+		$this->_services['module.loader']->run($this->_registerModules());
+
+		return $this;
+	}
+
+	/**
+	 * Executes the application. This invokes `run()` on the context class.
+	 *
+	 * @see Message\Cog\Application\Context\ContextInterface::run()
+	 *
+	 * @return mixed Whatever is returned by `run()` on the context class
+	 */
+	public function execute()
+	{
+		return $this->_context->run();
+	}
+
+	/**
+	 * Include the Composer autoloader.
+	 *
+	 * This is determined by looking for the `vendor` directory within the
+	 * defined base directory, and the file `autoload.php` within that.
+	 *
+	 * @throws \Exception If the autoloader file can't be found
+	 * @throws \Exception If the autoloader file is not readable
+	 */
+	protected function _includeAutoloader()
+	{
+		$autoloadPath = $this->_baseDir . 'vendor/autoload.php';
+
+		if (!file_exists($autoloadPath)) {
+			throw new \Exception(sprintf('Autoloader file at `%s` could not be found. Is the base directory set correctly?', $autoloadPath));
+		}
+
+		if (!is_readable($autoloadPath)) {
+			throw new \Exception(sprintf('Autoloader file at `%s` is not readable.', $autoloadPath));
+		}
+
+		require_once $this->_baseDir . 'vendor/autoload.php';
 	}
 
 	/**
@@ -151,22 +213,10 @@ abstract class Loader
 	}
 
 	/**
-	 * Loads the modules defined by `_registerModules()`.
-	 *
-	 * @return void
-	 */
-	final protected function _loadModules()
-	{
-		$this->_services['module.loader']->run($this->_registerModules());
-	}
-
-	/**
 	 * Apply some default PHP settings for the application.
 	 *
 	 * Currently this only covers the default timezone to avoid avoid a strict
 	 * standards error.
-	 *
-	 * @return void
 	 */
 	protected function _setDefaults()
 	{
