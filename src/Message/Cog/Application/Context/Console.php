@@ -6,6 +6,8 @@ use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Console\Factory;
 
 use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputDefinition;
 
 /**
  * Console context loader.
@@ -22,6 +24,9 @@ class Console implements ContextInterface
 	 * initialise the console here.
 	 *
 	 * @param ContainerInterface $container The service container
+	 *
+	 * @todo Change the environment earlier if possible. Can we make the context
+	 * run something before even Cog is bootstrapped?
 	 */
 	public function __construct(ContainerInterface $container)
 	{
@@ -33,9 +38,9 @@ class Console implements ContextInterface
 		});
 
 		// Set the environment from the CLI option, if defined
-		$input = new ArgvInput();
-		if($env = $input->getParameterOption(array('--env', '-e'), '')) {
-			$this->_services['environment']->set($env);
+		$input = new ArgvInput(null, $console->getDefinition());
+		if($env = $input->getOption(Factory::ENV_OPT_NAME)) {
+			$this->_services['environment']->set(trim($env));
 		}
 	}
 
