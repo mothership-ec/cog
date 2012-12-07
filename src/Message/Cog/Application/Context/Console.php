@@ -28,9 +28,9 @@ class Console implements ContextInterface
 		$this->_services = $container;
 
 		$console = Factory::create();
-		$this->_services['app.console'] = function() use ($console) {
+		$this->_services['app.console'] = $this->_services->share(function() use ($console) {
 			return $console;
-		};
+		});
 
 		// Set the environment from the CLI option, if defined
 		$input = new ArgvInput();
