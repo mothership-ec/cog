@@ -23,7 +23,7 @@ class WebTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('Message\Cog\HTTP\Request', $this->_container['http.request.master']);
 	}
 
-	public function testRunOutputsSomething()
+	public function testRunOutputsResponse()
 	{
 		$dispatcher = $this->getMock(
 			'Message\Cog\HTTP\Dispatcher',
