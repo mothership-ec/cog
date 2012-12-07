@@ -9,12 +9,12 @@ use Message\Cog\Test\HTTP\FauxDispatcher;
 class WebTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_container;
-	protected $_webContext;
+	protected $_context;
 
 	public function setUp()
 	{
-		$this->_container  = new FauxContainer;
-		$this->_webContext = new Web($this->_container);
+		$this->_container = new FauxContainer;
+		$this->_context   = new Web($this->_container);
 	}
 
 	public function testMasterRequestServiceDefined()
@@ -47,6 +47,6 @@ class WebTest extends \PHPUnit_Framework_TestCase
 			return $dispatcher;
 		};
 
-		$this->_webContext->run();
+		$this->_context->run();
 	}
 }
