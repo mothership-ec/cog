@@ -5,31 +5,25 @@ namespace Message\Cog;
 /**
 * Determines what environment Cog is running in.
 *
-* An environment is made up of 3 things
+* An environment is made up of two things
 *  - A name
-*  - A set of areas
 *  - A context
 *
 * Environments define the 'place' where a Cog app is running. The environment 
 * names are predefined and can't be changed. The allowed options are 
 * currently: live, local, dev, staging and test.
-*
-* The environment's context is either 'web' if the app is being access via HTTP
-* or 'console' if it's being run via the command line.
 * 
-* This class also determines what context the request is running in e.g web or
-* console.
-*
+* This class also determines what context the request is running in: 'web' if 
+* the app is being access via HTTP or 'console' if it's being run via the 
+* command line.
+* 
 * @TODO: security protocol for live
 */
 class Environment
 {
 	protected $_flagEnv  = 'COG_ENV';
-	protected $_flagArea = 'COG_AREA';
 	protected $_context;
 	protected $_name;
-	protected $_area;
-	protected $_allowedAreas = array();
 	protected $_allowedEnvironments = array(
 		'local', 	// Developers machine
 		'test', 	// When test suite is running
@@ -42,24 +36,14 @@ class Environment
 		'console',	// Run from the command line.
 	);
 	
-	public function __construct(array $areas, $environmentVar = null, $areaVar = null)
+	public function __construct($environmentVar = null)
 	{
-		if(!count($areas)) {
-			throw new \InvalidArgumentException('At least one area must be added to the environment.');
-		}
-		$this->_allowedAreas = $areas;
-
 		if(!empty($environmentVar)) {
 			$this->_flagEnv = $environmentVar;
 		}
 
-		if(!empty($areaVar)) {
-			$this->_flagArea = $areaVar;
-		}
-
 		$this->_detectContext();
 		$this->_detectEnvironment();
-		$this->_detectArea();
 	}
 
 	public function get()
@@ -83,34 +67,26 @@ class Environment
 		return $this->_context;
 	}
 
+	/**
+	 * Manually set the context of the environment. This method should very
+	 * rarely need to be used, most likely only for testing purposes.
+	 * 
+	 * @param string $context A valid context name.
+	 */
 	public function setContext($context)
 	{
 		$this->_validate('context', $context, $this->_allowedContexts);
 		$this->_context = $context;
 	}
 
-	public function area()
-	{
-		return $this->_area;
-	}
-
-	public function setArea($area)
-	{
-		$this->_validate('area', $area, $this->_allowedAreas);
-		$this->_area = $area;
-	}
-
-	public function getAllowedAreas()
-	{
-		return $this->_allowedAreas;
-	}
-
 	/**
 	 * Searches the global environment and then the $_SERVER superglobals for a variable.
-	 * Normally these have been set in a vhost config file or .profile file
+	 * Normally these have been set in a vhost config file or .profile file. It 
+	 * falls back to the $_SERVER superglobal as $_ENV cant be populated when php
+	 * is running via PHP-FPM.
 	 *
 	 * @param  string $varName Name of the variable to search for.
-	 * @return mixed Value of the found variable or false if it doesnt exist
+	 * @return mixed Value of the found variable (as a string) or false if it doesnt exist
 	 */
 	public function getEnvironmentVar($varName)
 	{
@@ -143,10 +119,4 @@ class Environment
 	{
 		$this->set($this->getEnvironmentVar($this->_flagEnv) ?: $this->_allowedEnvironments[0]);
 	}
-
-	protected function _detectArea()
-	{
-		$this->setArea($this->getEnvironmentVar($this->_flagArea) ?: $this->_allowedAreas[0]);
-	}
-
 }
