@@ -10,7 +10,7 @@ use Message\Cog\Event\DispatcherInterface;
  *
  * @todo Make this class cachable for performance gains.
  */
-class Loader
+class Loader implements LoaderInterface
 {
 	protected $_locator;
 	protected $_bootstrapLoader;
@@ -33,6 +33,11 @@ class Loader
 		$this->_eventDispatcher = $dispatcher;
 	}
 
+	/**
+	 * Validate & load a list of modules, in order.
+	 *
+	 * @param array $modules List of module names to load, e.g. `Message\Raven`
+	 */
 	public function run(array $modules)
 	{
 		$this->_modules = $modules;
