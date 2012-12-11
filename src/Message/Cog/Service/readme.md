@@ -11,7 +11,3 @@ The default service container, `Message\Cog\Service\Container`, is an extension 
 * `instance()` Singleton accessor.
 * `get($id)` Static method to get a service.
 * `getAll()` Returns a list of all defined services.
-
-## ContainerAware
-
-**TODO: write me when this bit is done**
