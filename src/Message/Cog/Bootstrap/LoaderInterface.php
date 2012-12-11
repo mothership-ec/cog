@@ -3,7 +3,7 @@
 namespace Message\Cog\Bootstrap;
 
 /**
- * Bootstrap loader interface for loadinging bootstraps from modules or Cog
+ * Bootstrap loader interface for loading in bootstraps from modules or Cog
  * itself.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
