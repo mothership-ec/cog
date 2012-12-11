@@ -38,6 +38,9 @@
 		"pimple/pimple"            : "dev-master",
 		"mtdowling/cron-expression": "1.0.*"
 	},
+	"require-dev": {
+		"mikey179/vfsStream": "1.1.*"
+	},
 	"suggest": {
 		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
 		"ext-apc"                : "Essential for system-level caching",
