@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Application\Bootstrap;
 
-use Message\Cog\Service\Container as ServiceContainer;
+use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Bootstrap\EventsInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
@@ -10,14 +10,12 @@ use Message\Cog\HTTP\Event\Event as HTTPEvent;
  * Cog event listener bootstrap.
  *
  * Registers Cog event listeners when the application is loaded.
- *
- * @todo When this can access Services in a better way, update this
  */
 class Events implements EventsInterface
 {
 	protected $_services;
 
-	public function __construct(ServiceContainer $serviceContainer)
+	public function __construct(ContainerInterface $serviceContainer)
 	{
 		$this->_services = $serviceContainer;
 	}

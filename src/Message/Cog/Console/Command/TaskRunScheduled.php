@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Service\Container;
+use Message\Cog\Service\Container as ServiceContainer;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
