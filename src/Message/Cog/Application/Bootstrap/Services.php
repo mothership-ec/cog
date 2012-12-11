@@ -124,6 +124,15 @@ class Services implements ServicesInterface
 		$serviceContainer['reference_parser'] = function($c) {
 			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
 		};
+
+		// Application Contexts
+		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Application\Context\Web($c);
+		});
+
+		$serviceContainer['app.context.console'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Application\Context\Console($c);
+		});
 	}
 
 }

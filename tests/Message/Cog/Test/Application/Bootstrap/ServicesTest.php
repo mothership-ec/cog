@@ -18,6 +18,9 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
+		// Set the command-line arguments (override the phpunit ones)
+		$_SERVER['argv'] = array('/usr/bin/php', 'foo:bar1');
+
 		$this->_container = new FauxContainer;
 		$this->_bootstrap = new ServicesBootstrap;
 
@@ -146,6 +149,21 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf(
 			'Message\Cog\ReferenceParserInterface',
 			$this->_container['reference_parser']
+		);
+	}
+
+	public function testApplicationContextDefinitions()
+	{
+		$this->assertTrue($this->_container->isShared('app.context.web'));
+		$this->assertInstanceOf(
+			'Message\Cog\Application\Context\Web',
+			$this->_container['app.context.web']
+		);
+
+		$this->assertTrue($this->_container->isShared('app.context.console'));
+		$this->assertInstanceOf(
+			'Message\Cog\Application\Context\Console',
+			$this->_container['app.context.console']
 		);
 	}
 
