@@ -3,7 +3,7 @@
 namespace Message\Cog\Debug;
 
 use Message\Cog\Event\SubscriberInterface;
-use Message\Cog\HTTP\Event\Event;
+use Message\Cog\HTTP\Event\Event as HTTPEvent;
 use Message\Cog\HTTP\Event\FilterResponseEvent;
 use Message\Cog\Environment;
 
@@ -21,7 +21,7 @@ class EventListener implements SubscriberInterface
 
 	static public function getSubscribedEvents()
 	{
-		return array(Event::RESPONSE => array(
+		return array(HTTPEvent::RESPONSE => array(
 			array('renderProfiler'),
 		));
 	}
@@ -41,8 +41,7 @@ class EventListener implements SubscriberInterface
 	/**
 	 * Render the profiler to the output.
 	 *
-	 * @param  FilterResponseEvent $event [description]
-	 * @return [type]                     [description]
+	 * @param FilterResponseEvent $event The "filter response" event instance
 	 *
 	 * @todo Ideally this would just append the HTML to the response content rather than just echo it out?
 	 * @todo This should only append the HTML if the response type is actually HTML. Sort this out once we are setting response type on the response.
