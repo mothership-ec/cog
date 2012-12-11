@@ -108,15 +108,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$loader->getContext();
 	}
 
-	public function testGetContextWorks()
-	{
-		$this->createAutoloadFile();
-		$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$loader->initialise()->loadCog()->setContext();
-
-		$this->assertInstanceOf('Message\Cog\Application\Context\ContextInterface', $loader->getContext());
-	}
-
 	/**
 	 * @dataProvider getValidContexts
 	 */
