@@ -46,8 +46,5 @@ class Events implements EventsInterface
 
 		// TODO: add a caching layer that just also subscribes to the request/response events
 		// TODO: bags of stuff could be moved to these events to clean up code, for example, the Profiler
-
-		// NOTE: When the new CMS is built, we just need to add a new listener
-		// or two here that routes requests to the CMS (providing routes fail)! Magic.
 	}
 }
