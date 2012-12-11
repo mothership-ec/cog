@@ -12,16 +12,6 @@ use Message\Cog\Service\ContainerInterface;
 interface ContextInterface
 {
 	/**
-	 * Constructor. This is for running context-specific initialisation code.
-	 *
-	 * This is run after Cog has been initialised & bootstrapped, but before any
-	 * modules are loaded & bootstrapped.
-	 *
-	 * @param ContainerInterface $container The service container
-	 */
-	public function __construct(ContainerInterface $container);
-
-	/**
 	 * Run context-specific code.
 	 *
 	 * This is run after Cog has been initialised & bootstrapped and all modules
