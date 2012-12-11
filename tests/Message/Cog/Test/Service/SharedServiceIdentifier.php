@@ -18,6 +18,7 @@ use Closure;
 class SharedServiceIdentifier
 {
 	protected $_callable;
+	protected $_invokeResult;
 	protected $_container;
 
 	/**
@@ -34,12 +35,18 @@ class SharedServiceIdentifier
 	/**
 	 * Invoke the callable and return it when this wrapper class is invoked.
 	 *
+	 * The first time this is called we save the result as `_invokeResult` so
+	 * this service does actually get shared (rather than re-invoked).
+	 *
 	 * @return mixed The value returned by the callable
 	 */
 	public function __invoke()
 	{
-		$callable = $this->_callable;
+		if (!isset($this->_invokeResult)) {
+			$callable = $this->_callable;
+			$this->_invokeResult = $callable($this->_container);
+		}
 
-		return $callable($this->_container);
+		return $this->_invokeResult;
 	}
 }
