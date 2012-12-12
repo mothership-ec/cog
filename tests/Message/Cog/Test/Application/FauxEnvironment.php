@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Test;
+namespace Message\Cog\Test\Application;
 
 /**
  * A simple Environment implementation to aid unit testing.
