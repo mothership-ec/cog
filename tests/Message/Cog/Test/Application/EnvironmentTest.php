@@ -81,4 +81,25 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals('web', $env->context());
 	}
+
+	public function testIsLocalShortcut()
+	{
+		$env = new Environment;
+		$env->set('local');
+
+		$this->assertTrue($env->isLocal());
+	}
+
+	public function testGettingEnvVar()
+	{
+		$env = new Environment;
+
+		putenv('SPECIAL_PERSON=andy');
+		$this->assertEquals('andy', $env->getEnvironmentVar('SPECIAL_PERSON'));
+		putenv('SPECIAL_PERSON');
+
+		$_SERVER['COOL_PERSON'] = 'rob';
+		$this->assertEquals('rob', $env->getEnvironmentVar('COOL_PERSON'));
+		unset($_SERVER['COOL_PERSON']);
+	}
 }
