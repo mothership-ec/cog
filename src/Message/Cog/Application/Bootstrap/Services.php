@@ -3,7 +3,7 @@
 namespace Message\Cog\Application\Bootstrap;
 
 use Message\Cog\Bootstrap\ServicesInterface;
-use Message\Cog\Environment;
+use Message\Cog\Application\Environment;
 use Message\Cog\Routing\RouteCollection;
 
 class Services implements ServicesInterface
@@ -99,12 +99,6 @@ class Services implements ServicesInterface
 		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Module\Loader($c['module.locator'], $c['bootstrap.loader'], $c['event.dispatcher']);
 		});
-
-		foreach ($serviceContainer['environment']->getAllowedAreas() as $area) {
-			$serviceContainer['routes.' . $area] = $serviceContainer->share(function($c) {
-				return new RouteCollection;
-			});
-		}
 
 		$serviceContainer['task.collection'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Console\TaskCollection;

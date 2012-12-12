@@ -126,16 +126,6 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function testEnvironmentRouteCollectionDefinitions()
-	{
-		foreach ($this->_container['environment']->getAllowedAreas() as $area) {
-			$serviceName = 'routes.' . $area;
-
-			$this->assertTrue($this->_container->isShared($serviceName));
-			$this->assertInstanceOf('Message\Cog\Routing\RouteCollection', $this->_container[$serviceName]);
-		}
-	}
-
 	public function testTaskCollectionDefinitions()
 	{
 		$this->assertTrue($this->_container->isShared('task.collection'));

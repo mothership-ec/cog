@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog;
+namespace Message\Cog\Application;
 
 /**
 * Determines what environment Cog is running in.
@@ -36,32 +36,56 @@ class Environment
 		'console',	// Run from the command line.
 	);
 	
-	public function __construct($environmentVar = null)
+	/**
+	 * Class constructor.
+	 * @param string $environmentVarFlag A custom flagname to use to detect the environment name
+	 */
+	public function __construct($environmentVarFlag = null)
 	{
-		if(!empty($environmentVar)) {
-			$this->_flagEnv = $environmentVar;
+		if(!empty($environmentVarFlag)) {
+			$this->_flagEnv = $environmentVarFlag;
 		}
 
 		$this->_detectContext();
 		$this->_detectEnvironment();
 	}
 
+	/**
+	 * Gets the current environment name.
+	 * 
+	 * @return string The current environment name.
+	 */
 	public function get()
 	{
 		return $this->_name;
 	}
 
+	/**
+	 * Sets the current environment.
+	 * 
+	 * @param string $name A valid environment name to change to.
+	 */
 	public function set($name)
 	{
 		$this->_validate('environment', $name, $this->_allowedEnvironments);
 		$this->_name = $name;
 	}
 
+	/**
+	 * Useful accessor to check if we're running on a developers machine.
+	 * 
+	 * @return boolean true if on local development machine.
+	 */
 	public function isLocal()
 	{
 		return $this->get() === 'local';
 	}
 
+	/**
+	 * Gets the name of the current context.
+	 * 
+	 * @return string Returns the current context.
+	 */
 	public function context()
 	{
 		return $this->_context;
@@ -72,6 +96,7 @@ class Environment
 	 * rarely need to be used, most likely only for testing purposes.
 	 * 
 	 * @param string $context A valid context name.
+	 * @return null
 	 */
 	public function setContext($context)
 	{
@@ -98,6 +123,14 @@ class Environment
 		return $definedVar;
 	}
 
+	/**
+	 * Used to validate that an environment name or context name is valid.
+	 * 
+	 * @param  string $type    The type of variable to validate
+	 * @param  string $value   The value that will be changed to
+	 * @param  array  $allowed An array of allowed values.
+	 * @return boolean         Returns true if $value is in the allowed list.
+	 */
 	protected function _validate($type, $value, array $allowed)
 	{
 		if(!in_array($value, $allowed)) {
@@ -110,13 +143,23 @@ class Environment
 		return true;
 	}
 
-	protected function _detectContext()
-	{
-		$this->setContext(php_sapi_name() == 'cli' ? 'console' : 'web');
-	}
-
+	/**
+	 * Tries to detect the current environment name automatically.
+	 * 
+	 * @return null
+	 */
 	protected function _detectEnvironment()
 	{
 		$this->set($this->getEnvironmentVar($this->_flagEnv) ?: $this->_allowedEnvironments[0]);
+	}
+
+	/**
+	 * Tries to detect the current context name automatically.
+	 * 
+	 * @return null
+	 */
+	protected function _detectContext()
+	{
+		$this->setContext(php_sapi_name() == 'cli' ? 'console' : 'web');
 	}
 }
