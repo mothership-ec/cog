@@ -26,9 +26,12 @@ class FauxContainer extends Container
 	 */
 	public function offsetGet($id)
 	{
-		$return = parent::offsetGet($id);
+		if ($this->isShared($id)) {
+			$raw = $this->raw($id);
+			return $raw();
+		}
 
-		return $this->isShared($id) ? $return() : $return;
+		return parent::offsetGet($id);
 	}
 
 	/**
