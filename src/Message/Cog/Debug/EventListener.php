@@ -5,7 +5,7 @@ namespace Message\Cog\Debug;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 use Message\Cog\HTTP\Event\FilterResponseEvent;
-use Message\Cog\Environment;
+use Message\Cog\Application\Environment;
 
 /**
  * Event listener for the Debug component.
