@@ -108,7 +108,13 @@ abstract class Loader
 	}
 
 	/**
-	 * Initialises the application.
+	 * Initialises the application & sets up a service definition for the
+	 * Composer autoloader class.
+	 *
+	 * To find the instance of the Composer autoloader class without having to
+	 * instantiate a new one, we have to search through all declared classes and
+	 * find one that starts with 'ComposerAutoloaderInit' and define it as the
+	 * `class.loader` service.
 	 *
 	 * @see _setDefaults
 	 * @see _includeAutoloader
@@ -120,10 +126,20 @@ abstract class Loader
 		$this->_setDefaults();
 		$this->_includeAutoloader();
 
-		// Create the service container
+		// Create the service container if not already created
 		if (!isset($this->_services)) {
 			$this->setServiceContainer(ServiceContainer::instance());
 		}
+
+		// Set up service definition for Composer autoloader class
+		$this->_services['class.loader'] = $this->_services->share(function() {
+			// Bit hacky but the only clean way to do this at the moment
+			foreach (get_declared_classes() as $className) {
+				if ('ComposerAutoloaderInit' === substr($className, 0, 22)) {
+					return $className::getLoader();
+				}
+			}
+		});
 
 		return $this;
 	}

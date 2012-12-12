@@ -2,8 +2,8 @@
 
 namespace Message\Cog\Test\Application;
 
-use Message\Cog\Test\FauxEnvironment;
 use Message\Cog\Test\Service\FauxContainer;
+use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Application\Context\FauxContext;
 use Message\Cog\Test\Module\FauxLoader as FauxModuleLoader;
 
@@ -66,8 +66,10 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	public function createAutoloadFile($permission = 0755)
 	{
 		vfsStream::setup(self::VFS_ROOT_DIR);
-		vfsStream::newDirectory('vendor')->at(vfsStreamWrapper::getRoot());
-		vfsStream::newFile('autoload.php', $permission)->at(vfsStreamWrapper::getRoot()->getChild('vendor'));
+		vfsStream::newDirectory('vendor')
+			->at(vfsStreamWrapper::getRoot());
+		vfsStream::newFile('autoload.php', $permission)
+			->at(vfsStreamWrapper::getRoot()->getChild('vendor'));
 	}
 
 	/**
@@ -247,6 +249,20 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$this->fail('Calling `initialise()` did not register the Composer SPL autoloader');
 	}
 
+	public function testInitialiseDefinesAutoloaderService()
+	{
+		$this->createAutoloadFile();
+
+		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+		$container = new FauxContainer;
+
+		$loader->setServiceContainer($container)->initialise();
+
+		$this->assertTrue($container->isShared('class.loader'));
+
+		$this->assertInstanceOf('Composer\Autoload\ClassLoader', $container['class.loader']);
+	}
+
 	/**
 	 * @expectedException        RuntimeException
 	 * @expectedExceptionMessage does not exist
@@ -275,7 +291,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 		$container = new FauxContainer;
 
-		$loader->initialise()->setServiceContainer($container)->loadCog();
+		$loader->setServiceContainer($container)->initialise()->loadCog();
 
 		$this->assertEquals($loader, $container['app.loader']);
 		$this->assertTrue($container->isShared('app.loader'));
@@ -287,16 +303,16 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->createAutoloadFile();
 
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array('loadCog'));
 		$container = new FauxContainer;
 
-		$loader->initialise()->loadCog();
+		$loader->setServiceContainer($container)->initialise()->loadCog();
 
 		$container['module.loader'] = $container->share(function() {
 			return new FauxModuleLoader;
 		});
 
-		$loader->setServiceContainer($container)->loadModules();
+		$loader->loadModules();
 
 		foreach ($this->_moduleList as $moduleName) {
 			$this->assertTrue($container['module.loader']->exists($moduleName));
@@ -344,14 +360,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 		$container = new FauxContainer;
 
+		$loader->setServiceContainer($container);
+
 		$this->assertEquals($loader, $loader->initialise());
 		$this->assertEquals($loader, $loader->loadCog());
 
 		$container['module.loader'] = $container->share(function() {
 			return new FauxModuleLoader;
 		});
-
-		$loader->setServiceContainer($container);
 
 		$this->assertEquals($loader, $loader->loadModules());
 		$this->assertEquals($loader, $loader->setServiceContainer(new FauxContainer));

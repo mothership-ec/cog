@@ -14,11 +14,6 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Debug\Profiler(null, null, false);
 		});
 
-		// Composer auto loader
-		$serviceContainer['class.loader'] = function() {
-			return \ComposerAutoloaderInit::getLoader();
-		};
-
 		$env = new Environment;
 		$serviceContainer['environment'] = function() use ($env) {
 			return $env;

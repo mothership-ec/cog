@@ -29,6 +29,10 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 			return new AppFauxLoader(dirname(__FILE__));
 		};
 
+		$this->_container['class.loader'] = function($c) {
+			return require getcwd() . '/vendor/autoload.php';
+		};
+
 		$this->_container['bootstrap.loader'] = function($c) {
 			return new BootstrapFauxLoader($c);
 		};
@@ -49,7 +53,7 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 
 	public function testEnvironmentDefinitions()
 	{
-		$this->assertInstanceOf('Message\Cog\Environment', $this->_container['environment']);
+		$this->assertInstanceOf('Message\Cog\Application\Environment', $this->_container['environment']);
 		$this->assertInternalType('string', $this->_container['env']);
 	}
 
