@@ -5,6 +5,7 @@ namespace Message\Cog\Controller;
 use Message\Cog\HTTP\Request;
 use Message\Cog\HTTP\Response;
 use Message\Cog\HTTP\StatusException;
+use Message\Cog\HTTP\RequestAwareInterface;
 use Message\Cog\Templating\EngineInterface;
 
 /**
@@ -14,7 +15,7 @@ use Message\Cog\Templating\EngineInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class ResponseBuilder
+class ResponseBuilder implements RequestAwareInterface
 {
 	protected $_engine;
 	protected $_request;
