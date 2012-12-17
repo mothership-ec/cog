@@ -52,6 +52,9 @@ class ResponseBuilder implements RequestAwareInterface
 	 * @return Response          The rendered result as a Response instance
 	 *
 	 * @throws StatusException   If view could not be rendered or generated
+	 *
+	 * @todo When rendering the view, find out the type of the view rendered and
+	 *       set the content type as appropriate.
 	 */
 	public function render($reference, array $params = array())
 	{

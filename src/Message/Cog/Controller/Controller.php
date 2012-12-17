@@ -54,6 +54,8 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	/**
 	 * Generate a URL from a route name.
 	 *
+	 * @see \Message\Cog\Routing\Router::generate()
+	 *
 	 * @param  string $routeName Name of the route to use
 	 * @param  array  $params    Parameters to use in the route
 	 *
@@ -81,6 +83,8 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 * Triggers a sub-request for the given route name and returns a filtered
 	 * Response instance.
 	 *
+	 * @see \Message\Cog\HTTP\Dispatcher::forward()
+	 *
 	 * @param  string $routeName  Name of the route to execute
 	 * @param  array  $attributes Request attributes
 	 * @param  array  $query      Optional query (GET) parameters
@@ -96,10 +100,14 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 * Render a view and return the rendered contents as a HTTP Response
 	 * instance.
 	 *
+	 * @see ResponseBuilder::render()
+	 *
 	 * @param  string $reference The reference for the view
 	 * @param  array  $params    Optional parameters to pass to the view
 	 *
 	 * @return Response          The rendered view as a HTTP Response instance
+	 *
+	 * @throws LogicException    If the Request is not set on this class
 	 */
 	public function render($reference, array $params = array())
 	{
