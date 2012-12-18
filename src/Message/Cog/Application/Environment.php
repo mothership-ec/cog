@@ -17,9 +17,9 @@ namespace Message\Cog\Application;
  * the app is being access via HTTP or 'console' if it's being run via the
  * command line.
  *
- * @TODO security protocol for live
- *
  * @author James Moss <james@message.co.uk>
+ *
+ * @todo security protocol for live
  */
 class Environment
 {
