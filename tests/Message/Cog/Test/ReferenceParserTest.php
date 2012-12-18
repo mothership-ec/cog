@@ -84,7 +84,6 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 		$parsed   = $this->_parser->parse($reference);
 		$expected = $allParts['vendor'] . '\\' .
 					$allParts['module'] . '\\' .
-					'Controller' . '\\' .
 					implode('\\', $allParts['path']);
 
 		if (!is_null($allParts)) {
