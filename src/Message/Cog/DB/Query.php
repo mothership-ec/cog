@@ -62,6 +62,8 @@ class Query
 	/**
 	 * Replaces placeholders in the query with safe, escaped parameters. Used
 	 * to prevent SQL injection attacks.
+	 *
+	 * @todo Move this into it's own class.
 	 * 
 	 * @return boolean Indicates if any parsing had to be performed.
 	 */

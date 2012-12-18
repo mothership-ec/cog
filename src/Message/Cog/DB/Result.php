@@ -81,7 +81,7 @@ class Result extends ResultArrayAccess
 	}
 
 	/**
-	 * Get a copy of the dataset as an array with a chosen column as the key.
+	 * Get a copy of the dataset as an array with a chosen column as the key for each row.
 	 * 
 	 * @param  string $key The column name to use as the key for the array. If 
 	 *                     omitted the first column is used.
@@ -94,6 +94,30 @@ class Result extends ResultArrayAccess
 		$this->reset();
 		while($row = $this->_result->fetchObject()) {
 			$rows[$row->{$key}] = $row;
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Get a copy of the dataset as an array of arrays, where rows are combined using the specified key,
+	 * 
+	 * @param  string $key The column name to use as the key for each array. If omitted
+	 *                     then the first column is used.
+	 * @return array      An array of arrays.
+	 */
+	public function collect($key)
+	{
+		$this->_setDefaultKeys($key);
+		$rows = array();
+		$this->reset();
+
+		while($row = $this->_result->fetchObject()) {
+			if(!isset($rows[$row->{$key}])) {
+				$rows[$row->{$key}] = array();
+			}
+
+			$rows[$row->{$key}][] = $row;
 		}
 
 		return $rows;
