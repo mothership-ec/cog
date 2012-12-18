@@ -23,4 +23,7 @@
 			</exclude>
 		</whitelist>
 	</filter>
+	<php>
+		<env name="COG_ENV" value="test" />
+	</php>
 </phpunit>
