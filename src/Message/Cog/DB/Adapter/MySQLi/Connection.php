@@ -15,6 +15,10 @@ class Connection implements ConnectionInterface
 	public function __construct(array $params = array())
 	{
 		$this->_params = $params;
+
+		if(isset($this->_params['lazy']) && $this->_params['lazy'] === false) {
+			$this->_connect();
+		}
 	}
 
 	protected function _connect()
