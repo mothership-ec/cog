@@ -2,57 +2,17 @@
 
 namespace Message\Cog\Hash;
 
-/**
- * A SHA1 implementation for the hashing component. Uses an optional appended
- * salt.
- *
- * @author Joe Holdcroft <joe@message.co.uk>
- */
-class SHA1 implements HashInterface
+use \InvalidArgumentException;
+
+class SHA1 extends Hash
 {
-	const SALT_SEPARATOR = ':';
-
-	/**
-	 * Hash a string using SHA1, with an optional salt.
-	 *
-	 * If a salt is provided, it is appended to the string before hashing and
-	 * also after the hash (for identification) using the separator value set
-	 * as `self::SALT_SEPARATOR`.
-	 *
-	 * @param  string      $string String to hash
-	 * @param  string|null $salt   Optional salt to use
-	 *
-	 * @return string              The hashed value
-	 */
-	public function encrypt($string, $salt = null)
+	final public function encrypt($string, $salt = null)
 	{
-		if (null !== $salt) {
-			return sha1($string);
-		}
-
-		return sha1($string . self::SALT_SEPARATOR . $salt) . self::SALT_SEPARATOR . $salt;
+		return sha1($string);
 	}
 
-	/**
-	 * Check if a string matches a SHA1 hash.
-	 *
-	 * Detects presence of the separator value set as `self::SALT_SEPARATOR` and
-	 * finds the salt, if set, to use to compare the string.
-	 *
-	 * @param  string $string String to check
-	 * @param  string $hash   Full SHA1 hashed string
-	 *
-	 * @return boolean        Result of match check
-	 */
-	public function check($string, $hash)
+	final public function check($string, $hash)
 	{
-		$salt = null;
-
-		// Look for a salt, extract it
-		if (false !== strpos($hash, self::SALT_SEPARATOR)) {
-			$salt = array_pop(explode(self::SALT_SEPARATOR, $hash));
-		}
-
-		return ($hash === $this->encrypt($string, $salt));
+		return ($hash === $this->encrypt($string));
 	}
 }
