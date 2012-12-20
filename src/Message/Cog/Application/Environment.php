@@ -103,8 +103,7 @@ class Environment
 	 * @todo Remove this. It seems to only be used by unit tests which is bad.
 	 *       We should mock or extend the class instead for testing purposes.
 	 *
-	 * @param string $context A valid context name.
-	 * @return null
+	 * @param string $context A valid context name
 	 */
 	public function setContext($context)
 	{
@@ -121,6 +120,7 @@ class Environment
 	 * is running via PHP-FPM.
 	 *
 	 * @param  string $varName Name of the variable to search for
+	 *
 	 * @return string|false    Value of the found variable (as a string) or
 	 *                         false if it doesnt exist
 	 */
@@ -141,7 +141,7 @@ class Environment
 	 * @param  string $value   The value that will be changed to
 	 * @param  array  $allowed An array of allowed values
 	 *
-	 * @return boolean         Returns true if $value is in the allowed list.
+	 * @return boolean         Returns true if $value is in the allowed list
 	 *
 	 * @throws \InvalidArgumentException If the value is not valid
 	 */
@@ -159,8 +159,6 @@ class Environment
 
 	/**
 	 * Tries to detect the current environment name automatically.
-	 *
-	 * @return null
 	 */
 	protected function _detectEnvironment()
 	{
@@ -169,8 +167,6 @@ class Environment
 
 	/**
 	 * Tries to detect the current context name automatically.
-	 *
-	 * @return null
 	 */
 	protected function _detectContext()
 	{
