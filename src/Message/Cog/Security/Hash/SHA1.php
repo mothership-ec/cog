@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Hash;
+namespace Message\Cog\Security\Hash;
 
 /**
  * A SHA1 implementation for the hashing component. Uses an optional appended
@@ -8,7 +8,7 @@ namespace Message\Cog\Hash;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class SHA1 implements HashInterface
+class SHA1 extends Base implements HashInterface
 {
 	const SALT_SEPARATOR = ':';
 
@@ -26,8 +26,8 @@ class SHA1 implements HashInterface
 	 */
 	public function encrypt($string, $salt = null)
 	{
-		if (null !== $salt) {
-			return sha1($string);
+		if ($salt) {
+			$salt = $this->generateSalt();
 		}
 
 		return sha1($string . self::SALT_SEPARATOR . $salt) . self::SALT_SEPARATOR . $salt;

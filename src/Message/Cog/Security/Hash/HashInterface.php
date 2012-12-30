@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Hash;
+namespace Message\Cog\Security\Hash;
 
 /**
  * Interface for all Hash classes, which are responsible for hashing strings
@@ -28,5 +28,5 @@ interface HashInterface
 	 *
 	 * @return boolean        Result of match check
 	 */
-	abstract public function check($string, $hash);
+	public function check($string, $hash);
 }

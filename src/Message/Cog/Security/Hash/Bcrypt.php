@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Hash;
+namespace Message\Cog\Security\Hash;
 
 /**
  * A Bcrypt implementation for the hashing component.
@@ -13,7 +13,7 @@ namespace Message\Cog\Hash;
  * @author James Moss <james@message.co.uk>
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Bcrypt implements HashInterface
+class Bcrypt extends Base implements HashInterface
 {
 	const WORK_FACTOR = 8; // Value between 4 and 31
 
@@ -23,15 +23,19 @@ class Bcrypt implements HashInterface
 	 * The salt passed must be 22 bytes or more. Only the first 22 bytes will be
 	 * used as the salt.
 	 *
-	 * @param  string $string String to hash
-	 * @param  string $salt   Salt to use
+	 * @param  string      $string String to hash
+	 * @param  string|null $salt   Salt to use
 	 *
-	 * @return string         The hashed value
+	 * @return string              The hashed value
 	 *
 	 * @throws \InvalidArgumentException If the salt is less than 22 bytes long
 	 */
-	public function encrypt($password, $salt)
+	public function encrypt($password, $salt = null)
 	{
+		if (!$salt) {
+			$salt = $this->generateSalt(22);
+		}
+
 		if (strlen($salt) < 22) {
 			throw new \InvalidArgumentException(sprintf(
 				'Salt `%s` must be at least 22 bytes when using Bcrypt.',
@@ -39,7 +43,7 @@ class Bcrypt implements HashInterface
 			));
 		}
 
-		// Using a salt formatted in this way tells crypt() to use bcrypt.
+		// Using a salt formatted in this way tells crypt() to use bcrypt
 		$bcrypt_salt = '$2a$' . str_pad(self::WORK_FACTOR, 2, '0', STR_PAD_LEFT) . '$'
 					 . substr($salt, 0, 22);
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Hash;
+namespace Message\Cog\Security\Hash;
 
 /**
  * An implementation of the hashing component for OSCommerce's custom hashing
@@ -11,7 +11,7 @@ namespace Message\Cog\Hash;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class OSCommerce implements HashInterface
+class OSCommerce extends Base implements HashInterface
 {
 	const SALT_SEPARATOR = ':';
 
@@ -19,7 +19,8 @@ class OSCommerce implements HashInterface
 	 * Hash a string using the OSCommerce hashing algorithm.
 	 *
 	 * If `$salt` is passed as null, the salt is automatically generated using
-	 * the same functionality found in OSCommerce's hashing functionality.
+	 * the same functionality found in OSCommerce's hashing functionality rather
+	 * than `generateSalt()` available in the base class.
 	 *
 	 * @param string      $string The string to be encrypted
 	 * @param string|null $salt   Salt to be used when encrypting. If left null,
@@ -29,7 +30,7 @@ class OSCommerce implements HashInterface
 	 */
 	public function encrypt($string, $salt = null)
 	{
-		// Generate a salt a-la OSCommerce. Bit mental.
+		// Generate a salt a-la OSCommerce
 		if (is_null($salt)) {
 			for ($i = 0; $i < 10; $i++) {
 				$salt .= $this->_tepRand();
@@ -56,7 +57,7 @@ class OSCommerce implements HashInterface
 	public function check($string, $hash)
 	{
 		if (false === strpos($hash, self::SALT_SEPARATOR)) {
-			throw new \InvalidArgumentException('Hash `%s` is invalid: it does not contain a salt.');
+			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
 		}
 
 		$salt = array_pop(explode(self::SALT_SEPARATOR, $hash));
