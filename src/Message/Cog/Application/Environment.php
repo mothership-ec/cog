@@ -9,14 +9,14 @@ namespace Message\Cog\Application;
 *  - A name
 *  - A context
 *
-* Environments define the 'place' where a Cog app is running. The environment 
-* names are predefined and can't be changed. The allowed options are 
+* Environments define the 'place' where a Cog app is running. The environment
+* names are predefined and can't be changed. The allowed options are
 * currently: live, local, dev, staging and test.
-* 
-* This class also determines what context the request is running in: 'web' if 
-* the app is being access via HTTP or 'console' if it's being run via the 
+*
+* This class also determines what context the request is running in: 'web' if
+* the app is being access via HTTP or 'console' if it's being run via the
 * command line.
-* 
+*
 * @TODO: security protocol for live
 */
 class Environment
@@ -35,7 +35,7 @@ class Environment
 		'web',		// Running in fcgi or as mod_php
 		'console',	// Run from the command line.
 	);
-	
+
 	/**
 	 * Class constructor.
 	 * @param string $environmentVarFlag A custom flagname to use to detect the environment name
@@ -52,7 +52,7 @@ class Environment
 
 	/**
 	 * Gets the current environment name.
-	 * 
+	 *
 	 * @return string The current environment name.
 	 */
 	public function get()
@@ -62,7 +62,7 @@ class Environment
 
 	/**
 	 * Sets the current environment.
-	 * 
+	 *
 	 * @param string $name A valid environment name to change to.
 	 */
 	public function set($name)
@@ -73,7 +73,7 @@ class Environment
 
 	/**
 	 * Useful accessor to check if we're running on a developers machine.
-	 * 
+	 *
 	 * @return boolean true if on local development machine.
 	 */
 	public function isLocal()
@@ -83,7 +83,7 @@ class Environment
 
 	/**
 	 * Gets the name of the current context.
-	 * 
+	 *
 	 * @return string Returns the current context.
 	 */
 	public function context()
@@ -94,7 +94,7 @@ class Environment
 	/**
 	 * Manually set the context of the environment. This method should very
 	 * rarely need to be used, most likely only for testing purposes.
-	 * 
+	 *
 	 * @param string $context A valid context name.
 	 * @return null
 	 */
@@ -106,12 +106,14 @@ class Environment
 
 	/**
 	 * Searches the global environment and then the $_SERVER superglobals for a variable.
-	 * Normally these have been set in a vhost config file or .profile file. It 
+	 * Normally these have been set in a vhost config file or .profile file. It
 	 * falls back to the $_SERVER superglobal as $_ENV cant be populated when php
 	 * is running via PHP-FPM.
 	 *
-	 * @param  string $varName Name of the variable to search for.
-	 * @return mixed Value of the found variable (as a string) or false if it doesnt exist
+	 * @param  string $varName Name of the variable to search for
+	 *
+	 * @return mixed           Value of the found variable (as a string) or
+	 *                         false if it doesnt exist
 	 */
 	public function getEnvironmentVar($varName)
 	{
@@ -125,11 +127,12 @@ class Environment
 
 	/**
 	 * Used to validate that an environment name or context name is valid.
-	 * 
+	 *
 	 * @param  string $type    The type of variable to validate
 	 * @param  string $value   The value that will be changed to
-	 * @param  array  $allowed An array of allowed values.
-	 * @return boolean         Returns true if $value is in the allowed list.
+	 * @param  array  $allowed An array of allowed values
+	 *
+	 * @return boolean         Returns true if $value is in the allowed list
 	 */
 	protected function _validate($type, $value, array $allowed)
 	{
@@ -145,7 +148,7 @@ class Environment
 
 	/**
 	 * Tries to detect the current environment name automatically.
-	 * 
+	 *
 	 * @return null
 	 */
 	protected function _detectEnvironment()
@@ -155,7 +158,7 @@ class Environment
 
 	/**
 	 * Tries to detect the current context name automatically.
-	 * 
+	 *
 	 * @return null
 	 */
 	protected function _detectContext()
