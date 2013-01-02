@@ -10,7 +10,7 @@ The namespace `Hash` within this component holds classes for dealing with the en
 * `SHA1` This is a super-simple SHA1 hashing algorithm. It should really be avoided unless your application is dealing with ported SHA1 hashes.
 * `OSCommerce` This is an implementation of OSCommerce's custom hashing algorithm, useful for when you're dealing with data ported from OSCommerce.
 
-## Creating & using a custom Hash algorithm
+### Creating & using a custom Hash algorithm
 
 Any module can create & set the system to use a custom hashing algorithm class. The class:
 
