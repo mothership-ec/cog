@@ -2,6 +2,11 @@
 
 namespace Message\Cog\Security\Hash;
 
+/**
+ * Base hash class, contains helpful methods for the hashing algorithms.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
 abstract class Base
 {
 	const URANDOM_PATH = '/dev/urandom';
