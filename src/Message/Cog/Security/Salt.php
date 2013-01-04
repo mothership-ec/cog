@@ -52,6 +52,9 @@ class Salt
 		foreach ($calls as $call) {
 			try {
 				$string = $call();
+				if ($string) {
+					break;
+				}
 			}
 			catch (\Exception $e) {
 				continue;
