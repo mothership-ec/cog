@@ -11,7 +11,7 @@ namespace Message\Cog\Security\Hash;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class OSCommerce extends Base implements HashInterface
+class OSCommerce implements HashInterface
 {
 	const SALT_SEPARATOR = ':';
 

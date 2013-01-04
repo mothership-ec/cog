@@ -12,9 +12,6 @@ The namespace `Hash` within this component holds classes for dealing with the en
 
 ### Creating & using a custom Hash algorithm
 
-Any module can create & set the system to use a custom hashing algorithm class. The class:
+Any module can create & set the system to use a custom hashing algorithm class. The class must implement the `Message\Cog\Security\Hash\HashInterface` interface.
 
-* Must implement the `Message\Cog\Security\Hash\HashInterface` interface.
-* Can optionally extend the abstract `Message\Cog\Security\Hash\Base` base class.
-
-This should then be set as the `security.hash` service as early as possible. It makes sense to do this in the service bootstrap of the first module loaded, because other modules may well use the `security.hash` service.
+This should then be set as the `security.hash` service as early as possible. It makes sense to do this in the service bootstrap of the first module loaded (likely the installation configuration module) because other modules may well use the `security.hash` service.

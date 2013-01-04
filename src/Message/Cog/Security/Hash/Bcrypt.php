@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Security\Hash;
 
+use Message\Cog\Security\Salt;
+
 /**
  * A Bcrypt implementation for the hashing component.
  *
@@ -13,9 +15,21 @@ namespace Message\Cog\Security\Hash;
  * @author James Moss <james@message.co.uk>
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Bcrypt extends Base implements HashInterface
+class Bcrypt implements HashInterface
 {
 	const WORK_FACTOR = 8; // Value between 4 and 31
+
+	protected $_saltGenerator;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Salt $saltGenerator The pseudorandom string generator class
+	 */
+	public function __construct(Salt $saltGenerator)
+	{
+		$this->_saltGenerator = $saltGenerator;
+	}
 
 	/**
 	 * Hash a string using bcrypt.
@@ -33,7 +47,7 @@ class Bcrypt extends Base implements HashInterface
 	public function encrypt($password, $salt = null)
 	{
 		if (!$salt) {
-			$salt = $this->generateSalt(22);
+			$salt = $this->_saltGenerator->generate(22);
 		}
 
 		if (strlen($salt) < 22) {

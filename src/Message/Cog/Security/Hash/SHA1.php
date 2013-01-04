@@ -8,9 +8,21 @@ namespace Message\Cog\Security\Hash;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class SHA1 extends Base implements HashInterface
+class SHA1 implements HashInterface
 {
 	const SALT_SEPARATOR = ':';
+
+	protected $_saltGenerator;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Salt $saltGenerator The pseudorandom string generator class
+	 */
+	public function __construct(Salt $saltGenerator)
+	{
+		$this->_saltGenerator = $saltGenerator;
+	}
 
 	/**
 	 * Hash a string using SHA1, with an optional salt.
@@ -27,7 +39,7 @@ class SHA1 extends Base implements HashInterface
 	public function encrypt($string, $salt = null)
 	{
 		if ($salt) {
-			$salt = $this->generateSalt();
+			$salt = $this->_saltGenerator->generate();
 		}
 
 		return sha1($string . self::SALT_SEPARATOR . $salt) . self::SALT_SEPARATOR . $salt;
