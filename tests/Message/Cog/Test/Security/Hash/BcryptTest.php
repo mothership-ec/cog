@@ -21,6 +21,7 @@ class BcryptTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testEncryptWithShortSalt()
 	{
+		// the below just makes the test pass temporarily
 		throw new \InvalidArgumentException('must be at least 22 bytes');
 	}
 
@@ -32,7 +33,7 @@ class BcryptTest extends \PHPUnit_Framework_TestCase
 			->with(22)
 			->will($this->returnValue('1234567890abcdefGHIJKL'));
 
-		$this->_hash->encrypt('hello');
+		$this->_hash->encrypt('test');
 	}
 
 	public function testPasswordEncrypting()
