@@ -23,3 +23,7 @@ Cog defines the following services on the service container. Don't overwrite any
 * `bootstrap.loader` This is an instance of `Message\Cog\Bootstrap\Loader`.
 * `app.loader` This is the instance of the application loader class, which will be the installation's sublass of `Message\Cog\Application\Loader`.
 * `module.loader` This is an instance of `Message\Cog\Module\Loader`.
+
+## What global events does Cog fire?
+
+* `terminate` This is the very last thing that happens for any Cog request. Use this event for stopping debug timers; garbage collection; data logging; etc.

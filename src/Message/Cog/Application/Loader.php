@@ -59,12 +59,12 @@ abstract class Loader
 	 * Get the context instance for this request.
 	 *
 	 * @return Context\ContextInterface The context instance
-	 * @throws \Exception               If the context has not been set yet
+	 * @throws LogicException           If the context has not been set yet
 	 */
 	public function getContext()
 	{
 		if (!$this->_context) {
-			throw new \Exception('Cannot get context: it has not yet been set. Please run `loadCog()` first.');
+			throw new LogicException('Cannot get context: it has not yet been set. Please run `loadCog()` first.');
 		}
 
 		return $this->_context;
@@ -79,7 +79,7 @@ abstract class Loader
 	 * @see loadModules
 	 * @see execute
 	 *
-	 * @return mixed Whatever is returned by `$this->execute()`
+	 * @return mixed The result of running `$this->execute()`
 	 */
 	public function run()
 	{
@@ -97,8 +97,8 @@ abstract class Loader
 	 * This gets set automatically, so this method is only for overriding the
 	 * container. Handy for unit testing.
 	 *
-	 * @param ContainerInterface $container The service container to use
-	 * @return Loader                       Returns $this for chainability
+	 * @param  ContainerInterface $container The service container to use
+	 * @return Loader                        Returns $this for chainability
 	 */
 	public function setServiceContainer(ContainerInterface $container)
 	{
@@ -227,7 +227,14 @@ abstract class Loader
 	 */
 	public function execute()
 	{
-		return $this->_context->run();
+		$return = $this->_context->run();
+
+		$this->_services['event.dispatcher']->dispatch(
+			'terminate',
+			$this->_services['event']
+		);
+
+		return $return;
 	}
 
 	/**
@@ -236,8 +243,8 @@ abstract class Loader
 	 * This is determined by looking for the `vendor` directory within the
 	 * defined base directory, and the file `autoload.php` within that.
 	 *
-	 * @throws \Exception If the autoloader file can't be found
-	 * @throws \Exception If the autoloader file is not readable
+	 * @throws RuntimeException If the autoloader file can't be found
+	 * @throws RuntimeException If the autoloader file is not readable
 	 */
 	protected function _includeAutoloader()
 	{
