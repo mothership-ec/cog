@@ -27,7 +27,7 @@ class Utility
 	{
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($backtrace as $call) {
-			// Turn a class name like Mothership\Core\Model\Order into Mothership\Core
+			// Turn a class name like Message\CMS\Model\Page into Message\CMS
 			$namespaces = explode('\\', $call['class']);
 			$moduleName = implode('\\', array_slice($namespaces, 0, 2));
 

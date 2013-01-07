@@ -13,7 +13,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		// // Generate mock for ReferenceParser
-		// $this->_referenceParser = $this->getMockBuilder('Mothership\Framework\ReferenceParserInterface')
+		// $this->_referenceParser = $this->getMockBuilder('Message\Cog\ReferenceParserInterface')
 		// 	->disableOriginalConstructor()
 		// 	->getMock();
 
@@ -25,7 +25,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 		// $this->_referenceParser
 		// 	->expects($this->any())
 		// 	->method('getSymfonyLogicalControllerName')
-		// 	->will($this->returnValue('Mothership\ModuleName\Controller\ClassName::viewMethod'));
+		// 	->will($this->returnValue('Message\ModuleName\Controller\ClassName::viewMethod'));
 
 		// $this->_dispatcher = new Dispatcher($this->_router);
 	}
