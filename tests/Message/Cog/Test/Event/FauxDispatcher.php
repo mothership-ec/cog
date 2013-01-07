@@ -8,14 +8,27 @@ use Message\Cog\Event\SubscriberInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * An implementation of the event dispatcher for use when unit testing.
+ *
+ * Instead of actually dispatching events and registering listeners, an internal
+ * log is simply kept that can be interrogated by tests to test that:
+ *
+ *  * Specific subscribers get registered
+ *  * Specfic listeners get registered
+ *  * Specific events get dispatched
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
 class FauxDispatcher implements DispatcherInterface
 {
 	protected $_subscribers = array();
-	protected $_listeners = array();
+	protected $_listeners   = array();
+	protected $_dispatched  = array();
 
 	public function dispatch($eventName, Event $event = null)
 	{
-
+		$this->_dispatched[$eventName] = $event;
 	}
 
 	public function addSubscriber(EventSubscriberInterface $subscriber)
@@ -38,6 +51,19 @@ class FauxDispatcher implements DispatcherInterface
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get the `Event` for a given event name. If the event has not been
+	 * dispatched, null is returned.
+	 *
+	 * @param  string $eventName The event name to check for
+	 * @return Event|false       The dispatched event object, or null if not yet
+	 *                           dispatched
+	 */
+	public function getDispatchedEvent($eventName)
+	{
+		return isset($this->_dispatched[$eventName]) ? $this->_dispatched[$eventName] : false;
 	}
 
 	public function addListener($eventName, $listener, $priority = 0)
