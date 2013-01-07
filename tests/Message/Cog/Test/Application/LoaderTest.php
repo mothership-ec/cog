@@ -2,10 +2,13 @@
 
 namespace Message\Cog\Test\Application;
 
-use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Application\Context\FauxContext;
+use Message\Cog\Test\Event\FauxDispatcher;
+use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Module\FauxLoader as FauxModuleLoader;
+
+use Message\Cog\Service\Container as ServiceContainer;
 
 use Composer\Autoload\ClassLoader as ComposerAutoloader;
 
@@ -230,8 +233,11 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	public function testInitialiseSetsAutoloader()
 	{
 		$this->createAutoloadFile();
-		$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$loader->initialise();
+
+		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+		$container = new FauxContainer;
+
+		$loader->setServiceContainer($container)->initialise();
 
 		foreach (spl_autoload_functions() as $function) {
 			if ($function instanceof ComposerAutoloader) {
@@ -247,6 +253,18 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		}
 
 		$this->fail('Calling `initialise()` did not register the Composer SPL autoloader');
+	}
+
+	public function testInitialiseGetsDefaultServiceContainerInstance()
+	{
+		$this->createAutoloadFile();
+
+		$container = ServiceContainer::instance();
+		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+
+		$loader->initialise();
+
+		$this->assertInternalType('object', $container['class.loader']);
 	}
 
 	public function testInitialiseDefinesAutoloaderService()
@@ -325,8 +343,19 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 		$loader      = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 		$container   = new FauxContainer;
+		$dispatcher  = new FauxDispatcher;
 
 		$contextReturnVal = 'foobar';
+
+		// Add the event dispatcher service
+		$container['event.dispatcher'] = $container->share(function($c) use ($dispatcher) {
+			return $dispatcher;
+		});
+
+		// Add the event dispatcher service
+		$container['event'] = function($c) {
+			return new \Message\Cog\Event\Event;
+		};
 
 		// Add the environment service
 		$container['environment'] = $container->share(function($c) {
@@ -351,6 +380,9 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$returnVal = $loader->setServiceContainer($container)->setContext()->execute();
 
 		$this->assertEquals($contextReturnVal, $returnVal);
+
+		// Assert 'terminate' event fired
+		$this->assertInstanceOf('Message\Cog\Event\Event', $dispatcher->getDispatchedEvent('terminate'));
 	}
 
 	public function testChainability()
