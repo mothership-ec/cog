@@ -3,6 +3,7 @@
 namespace Message\Cog\Application\Bootstrap;
 
 use Message\Cog\Service\ContainerInterface;
+use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Bootstrap\EventsInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
@@ -11,11 +12,11 @@ use Message\Cog\HTTP\Event\Event as HTTPEvent;
  *
  * Registers Cog event listeners when the application is loaded.
  */
-class Events implements EventsInterface
+class Events implements EventsInterface, ContainerAwareInterface
 {
 	protected $_services;
 
-	public function __construct(ContainerInterface $serviceContainer)
+	public function setContainer(ContainerInterface $serviceContainer)
 	{
 		$this->_services = $serviceContainer;
 	}

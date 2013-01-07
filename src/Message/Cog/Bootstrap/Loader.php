@@ -4,6 +4,7 @@ namespace Message\Cog\Bootstrap;
 
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
+use Message\Cog\HTTP\RequestAwareInterface;
 
 /**
  * Bootstrap loader, responsible for loading bootstraps from modules or Cog
@@ -55,7 +56,14 @@ class Loader implements LoaderInterface
 				// Determine class name
 				$className = $namespace . '\\' . $file->getBasename('.php');
 				// Load the bootstrap
-				$class = new $className($this->_services);
+				$class = new $className;
+				if ($class instanceof ContainerAwareInterface) {
+					$class->setContainer($this->_services);
+				}
+				if ($class instanceof RequestAwareInterface) {
+					$class->setRequest($this->_services['request']);
+				}
+				// Add to the internal list if it implements `BootstrapInterface`
 				if ($class instanceof BootstrapInterface) {
 					$this->add($class);
 				}
