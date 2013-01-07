@@ -24,7 +24,7 @@ class Request implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(Event::REQUEST => array(
-			array('addRequestToServices'),
+			array('addRequestToServices', 9999),
 			array('routeRequest'),
 			array('validateRequestScope'),
 			array('validateRequestedFormats'),
