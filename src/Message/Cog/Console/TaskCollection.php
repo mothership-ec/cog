@@ -2,11 +2,9 @@
 
 namespace Message\Cog\Console;
 
-use Message\Cog\Services;
-
 /**
-*
-*/
+ *
+ */
 class TaskCollection
 {
 	protected $_tasks = array();
@@ -19,7 +17,7 @@ class TaskCollection
 		}
 
 		$this->_tasks[$task->getName()] = array(
-			Services::get('fns.utility')->traceCallingModuleName(),
+			\Message\Cog\Service\Container::get('fns.utility')->traceCallingModuleName(),
 			$description,
 			$task,
 		);

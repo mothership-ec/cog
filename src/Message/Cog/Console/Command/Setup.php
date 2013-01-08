@@ -2,9 +2,6 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Services;
-use Message\Cog\Console\TaskRunner;
-
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,8 +25,8 @@ class Setup extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$dirs = array(
-			ROOT_PATH.'tmp/',
-			ROOT_PATH.'logs/',
+			'tmp/',
+			'logs/',
 		);
 
 		foreach($dirs as $dir) {

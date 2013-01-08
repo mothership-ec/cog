@@ -2,9 +2,7 @@
 
 namespace Message\Cog\Routing;
 
-use Symfony\Component\Routing\Route as BaseRoute;
-
-class Route extends BaseRoute
+class Route extends \Symfony\Component\Routing\Route
 {
 	public function __construct($pattern, array $defaults = array(), array $requirements = array(), array $options = array())
 	{

@@ -1,0 +1,36 @@
+name: Message
+short-name: message
+domain: message.uk.com
+url: www.message.uk.com
+email: debug@message.uk.com
+telephone: +44 12345 6789
+fax: 
+vat-registration-number: '0123456789'
+company-number: '1234567'
+address:
+   line1: Atlas Chambers
+   line2: 33 West Street
+   town: Brighton
+   postcode: BN1 2RE
+   country-code: GB
+   country: United Kingdom
+facebook: message
+twitter: message
+gateway:
+   use-local-payment: true
+   sagepay:
+      vendor: message
+      vps-protocol: 1.445
+      encryption-key: 1234567
+      payment-url: https://test.sagepay.com/gateway/service/vspserver-register.vsp
+      refund-url: https://test.sagepay.com/gateway/service/refund.vsp
+      redirect-url-base: http://beta.message.uk.com
+ga-code:
+updates:
+   email: true
+   postal: false
+admins:
+    - Joe Nelson
+    - Andy James Moss
+    - Hannah Holdcroft
+    - Danny Freeman

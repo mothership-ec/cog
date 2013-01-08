@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,7 +34,7 @@ class TaskGenerate extends Command
 			if(!preg_match('/^[A-Za-z0-9\\\\_]*$/', $answer)) {
 				throw new \InvalidArgumentException('Module names can only contain alphanumeric chars and \\.');
 			}
-			if(!Services::get('module.loader')->exists($answer)) {
+			if(!ServiceContainer::get('module.loader')->exists($answer)) {
 				throw new \InvalidArgumentException('Module `'.$answer.'` does not exist.');
 			}
 			return $answer;
@@ -66,7 +66,7 @@ class TaskGenerate extends Command
 			return $answer;
 		});
 
-		$modulePath = Services::get('module.loader')->getPath($module);
+		$modulePath = ServiceContainer::get('module.loader')->getPath($module);
 		$taskPath   = $modulePath . 'Task/';
 		$fileName   = $taskPath . $class . '.php';
 

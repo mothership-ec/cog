@@ -4,7 +4,7 @@ namespace Message\Cog\Functions;
 
 class Text
 {
-	public function toTitleCase($string)
+	public static function toTitleCase($string)
 	{
 		$string = strtolower($string);
 		$string = join("'", array_map('ucwords', explode("'", $string)));
@@ -40,17 +40,17 @@ class Text
 	 * @param int $amount Input amount
 	 * @return string     Returns the standard plural letter or an empty string
 	 */
-	public function plural($amount)
+	public static function plural($amount)
 	{
 		return ($amount == 1) ? '' : 's';
 	}
 
-	public function pluralise($string, $amount)
+	public static function pluralise($string, $amount)
 	{
 		return $string . $this->plural($amount);
 	}
 
-	public function parsePossessive($string)
+	public static function parsePossessive($string)
 	{
 		return $string . (substr($string, -1) === 's' ? "'" : "'s");
 	}
@@ -61,7 +61,7 @@ class Text
 	 * @param string $string Input string
 	 * @return string        Obfuscated string
 	 */
-	public function obfuscate($string)
+	public static function obfuscate($string)
 	{
 		$output = '';
 		$length = strlen($str);
@@ -74,7 +74,7 @@ class Text
 		return $output;
 	}
 
-	public function toSlug($string, $checkExists = true)
+	public static function toSlug($string, $checkExists = true)
 	{
 		$return = str_replace(
 			array(
@@ -112,15 +112,7 @@ class Text
 		return $return;
 	}
 
-	public function slugExists($slug)
-	{
-		$db = new DBquery;
-		$db->query('SELECT id FROM entries WHERE slug = ' . $db->escape($slug));
-
-		return ($check->numrows() != 0 || file_exists(PUBLIC_PATH . $slug));
-	}
-
-	public function camelCapsToString($string)
+	public static function fromCamelCaps($string)
 	{
 		$string = ucfirst(str_replace('ID', 'Id', $string));
 		if ($words = preg_match_all('/([A-Z]{1}[a-z0-9]+)/', $string, $matches)) {
@@ -133,7 +125,7 @@ class Text
 		return $string;
 	}
 
-	public function toCamelCaps($string, $uppercaseID = true)
+	public static function toCamelCaps($string, $uppercaseID = true)
 	{
 		$map = array(
 			'link'                          => 'link',

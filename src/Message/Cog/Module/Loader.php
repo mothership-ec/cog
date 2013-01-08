@@ -2,24 +2,19 @@
 
 namespace Message\Cog\Module;
 
-use DirectoryIterator;
-
-use Message\Cog\Services;
-use Message\Cog\Module\Bootstrap\EventsInterface;
-use Message\Cog\Module\Bootstrap\RoutesInterface;
-use Message\Cog\Module\Bootstrap\ServicesInterface;
-use Message\Cog\Module\Bootstrap\TasksInterface;
-
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Message\Cog\Bootstrap\LoaderInterface as BootstrapLoaderInterface;
+use Message\Cog\Event\DispatcherInterface;
+use Message\Cog\Event\Event;
 
 /**
  * Loads Cog modules and their related files.
  *
  * @todo Make this class cachable for performance gains.
  */
-class Loader
+class Loader implements LoaderInterface
 {
 	protected $_locator;
+	protected $_bootstrapLoader;
 	protected $_eventDispatcher;
 
 	protected $_modules;
@@ -27,15 +22,23 @@ class Loader
 	/**
 	 * Constructor.
 	 *
-	 * @param LocatorInterface         $locator    The module locator
-	 * @param EventDispatcherInterface $dispatcher The event dispatcher to use for event firing
+	 * @param LocatorInterface         $locator         The module locator
+	 * @param BootstrapLoaderInterface $bootstrapLoader The bootsreap loader
+	 * @param DispatcherInterface      $dispatcher      The event dispatcher to use for event firing
 	 */
-	public function __construct($locator, EventDispatcherInterface $dispatcher)
+	public function __construct(LocatorInterface $locator, BootstrapLoaderInterface $bootstrapLoader,
+		DispatcherInterface $dispatcher)
 	{
 		$this->_locator         = $locator;
+		$this->_bootstrapLoader = $bootstrapLoader;
 		$this->_eventDispatcher = $dispatcher;
 	}
 
+	/**
+	 * Validate & load a list of modules, in order.
+	 *
+	 * @param array $modules List of module names to load, e.g. `Message\Raven`
+	 */
 	public function run(array $modules)
 	{
 		$this->_modules = $modules;
@@ -87,51 +90,22 @@ class Loader
 	protected function _loadModules()
 	{
 		foreach ($this->_modules as $module) {
-			$modulePath   = $this->_locator->getPath($module);
-			$bootstrapDir = $modulePath . 'Bootstrap/';
-			// IF THERE IS A BOOTSTRAP DIRECTORY
-			if (is_dir($bootstrapDir)) {
-				// RUN ALL BOOTSTRAPS
-				$dir = new DirectoryIterator($bootstrapDir);
-				foreach ($dir as $file) {
-					// SKIP NON-PHP FILES
-					if ($file->getExtension() !== 'php') {
-						continue;
-					}
-					// BUILD BOOTSTRAP CLASS NAME
-					$bootstrapClassName = '\\' . $module . '\\Bootstrap\\' . $file->getBasename('.php');
-					// LOAD BOOTSTRAP FILE
-					$this->_loadBootstrap(new $bootstrapClassName);
-				}
-			}
+			// Load the bootstraps
+			$this->_bootstrapLoader
+				->addFromDirectory(
+					$this->_locator->getPath($module) . 'Bootstrap',
+					$module . '\\Bootstrap'
+				)
+				->load();
+
+			// Fire the "module loaded" event
 			$this->_eventDispatcher->dispatch(
 				sprintf(
-					Event::MODULE_LOADED,
+					'module.%s.load.success',
 					strtolower(str_replace('\\', '.', $module))
 				),
 				new Event
 			);
 		}
 	}
-
-	protected function _loadBootstrap($bootstrap)
-	{
-		// IF THIS IS A ROUTES BOOTSTRAP, REGISTER ROUTES
-		if ($bootstrap instanceof ServicesInterface) {
-			$bootstrap->registerServices(Services::instance());
-		}
-		// IF THIS IS AN EVENTS BOOTSTRAP, REGISTER EVENTS
-		if ($bootstrap instanceof EventsInterface) {
-			$bootstrap->registerEvents(Services::get('event.dispatcher'));
-		}
-		// IF THIS IS A ROUTES BOOTSTRAP, REGISTER ROUTES
-		if ($bootstrap instanceof RoutesInterface) {
-			$bootstrap->registerRoutes(Services::get('router'));
-		}
-		// IF THIS IS A TASKS BOOTSTRAP AND WE'RE IN THE CONSOLE, REGISTER TASKS
-		if (Services::get('environment')->context() == 'console' && $bootstrap instanceof TasksInterface) {
-			$bootstrap->registerTasks(Services::get('task.collection'));
-		}
-	}
-
 }

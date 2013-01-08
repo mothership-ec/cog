@@ -1,7 +1,17 @@
 <?php
 
-require_once __DIR__ . '/../src/Message/Cog/App.php';
-require_once __DIR__ . '/../src/Message/Cog/AppConsole.php';
+/**
+ * The Cog executable only works within an installation, as with the web-based
+ * context.
+ *
+ * This finds the base directory by looking at this file's parent directory. We
+ * know this is correct because the `composer.json` defines that vendor bin
+ * files should be installed to `/bin`.
+ *
+ * The installation `bootstrap.php` file is then included, and the returned
+ * instance of `Message\Cog\Application\Loader` is run.
+ */
+$baseDir = dirname(dirname($_SERVER['SCRIPT_FILENAME']));
+$app     = require_once $baseDir . '/bootstrap.php';
 
-$app = new \Message\Cog\AppConsole;
 $app->run();

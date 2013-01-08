@@ -5,8 +5,8 @@ namespace Message\Cog\Controller;
 use Message\Cog\HTTP\Request;
 use Message\Cog\HTTP\Response;
 use Message\Cog\HTTP\StatusException;
-
-use Symfony\Component\Templating\EngineInterface;
+use Message\Cog\HTTP\RequestAwareInterface;
+use Message\Cog\Templating\EngineInterface;
 
 /**
  * This class uses the given templating engine to render a view and turn it into
@@ -15,7 +15,7 @@ use Symfony\Component\Templating\EngineInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class ResponseBuilder
+class ResponseBuilder implements RequestAwareInterface
 {
 	protected $_engine;
 	protected $_request;
@@ -50,31 +50,32 @@ class ResponseBuilder
 	 * @param  array  $params    The parameters to use when rendering the view
 	 *
 	 * @return Response          The rendered result as a Response instance
+	 *
+	 * @throws StatusException   If view could not be rendered or generated
+	 *
+	 * @todo When rendering the view, find out the type of the view rendered and
+	 *       set the content type as appropriate.
 	 */
 	public function render($reference, array $params = array())
 	{
-		$output = '';
-
 		try {
-			// Ask the engine to render the view
-			$output = $this->_engine->render($reference, $params);
+			return Response::create($this->_engine->render($reference, $params));
 		}
 		catch (\Exception $e) {
 			// See if we can automatically generate a response
-			if (!$output = $this->_generateResponse($params)) {
-				// If not, throw an exception
-				throw new StatusException(
-					sprintf(
-						'View format could not be determined for reference `%s`',
-						$reference
-					),
-					StatusException::NOT_ACCEPTABLE,
-					$e
-				);
+			if ($generatedResponse = $this->_generateResponse($params)) {
+				return $generatedResponse;
 			}
+			// If not, throw an exception
+			throw new StatusException(
+				sprintf(
+					'View could not be rendered or generated for reference `%s`',
+					$reference
+				),
+				StatusException::NOT_ACCEPTABLE,
+				$e
+			);
 		}
-
-		return Response::create($output);
 	}
 
 	/**
@@ -82,9 +83,9 @@ class ResponseBuilder
 	 * be automatically generated, and returns the automatically generated
 	 * response if so.
 	 *
-	 * @param  array  $params The parameters to use when generating the response
+	 * @param  array $params  The parameters to use when generating the response
 	 *
-	 * @return mixed          The generated response result
+	 * @return Response|false The generated response result, or false if not generated
 	 */
 	protected function _generateResponse(array $params = array())
 	{
@@ -95,7 +96,7 @@ class ResponseBuilder
 
 			switch ($format) {
 				case 'json':
-					return json_encode($params);
+					return Response::create(json_encode($params), 200, array('Content-Type' => $mimeType));
 					break;
 			}
 		}

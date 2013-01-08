@@ -2,10 +2,10 @@
 
 namespace Message\Cog\HTTP;
 
+use Message\Cog\Service\Container as ServiceContainer;
+use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Controller\ControllerResolverInterface;
-use Message\Cog\Services;
-
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Message\Cog\Event\DispatcherInterface;
 
 /**
  * Request dispatcher.
@@ -27,11 +27,11 @@ class Dispatcher
 	/**
 	 * Constructor.
 	 *
-	 * @param EventDispatcherInterface		$router 	The event dispatcher to use for event firing
-	 * @param ControllerResolverInterface 	$resolver 	The controller resolver to used to help execute the controller
-	 * @param Request 						$request 	The master request
+	 * @param DispatcherInterface         $router   The event dispatcher to use for event firing
+	 * @param ControllerResolverInterface $resolver The controller resolver to used to help execute the controller
+	 * @param Request|null                $request  The master request
 	 */
-	public function __construct(EventDispatcherInterface $dispatcher, ControllerResolverInterface $resolver, Request $request)
+	public function __construct(DispatcherInterface $dispatcher, ControllerResolverInterface $resolver, Request $request = null)
 	{
 		$this->_eventDispatcher    = $dispatcher;
 		$this->_controllerResolver = $resolver;
@@ -64,8 +64,13 @@ class Dispatcher
 			$controller = $this->_controllerResolver->getController($request);
 			$arguments  = $this->_controllerResolver->getArguments($request, $controller);
 
-			// If the controller has a 'setRequest' method, call it and set the request
-			if (isset($controller[0]) && is_object($controller[0]) && method_exists($controller[0], 'setRequest')) {
+			// If the controller implements ContainerAwareInterface, set the container
+			if ($controller[0] instanceof ContainerAwareInterface) {
+				$controller[0]->setContainer(ServiceContainer::instance());
+			}
+
+			// If the controller implements RequestAwareInterface, set the request
+			if ($controller[0] instanceof RequestAwareInterface) {
 				$controller[0]->setRequest($request);
 			}
 

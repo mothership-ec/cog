@@ -15,7 +15,8 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"Message\\Cog": "src"
+			"Message\\Cog"      : "src",
+			"Message\\Cog\\Test": "tests"
 		}
 	},
 	"minimum-stability": "stable",
@@ -27,7 +28,6 @@
 		"ext-json"     : "*",
 		"ext-mysqli"   : "*",
 
-		"symfony/class-loader"     : "2.1.*",
 		"symfony/console"          : "2.1.*",
 		"symfony/event-dispatcher" : "2.1.*",
 		"symfony/http-foundation"  : "2.1.*",
@@ -35,7 +35,11 @@
 		"symfony/routing"          : "2.1.*",
 		"symfony/templating"       : "2.1.*",
 		"symfony/yaml"             : "2.1.*",
+		"pimple/pimple"            : "dev-master",
 		"mtdowling/cron-expression": "1.0.*"
+	},
+	"require-dev": {
+		"mikey179/vfsStream": "1.1.*"
 	},
 	"suggest": {
 		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",

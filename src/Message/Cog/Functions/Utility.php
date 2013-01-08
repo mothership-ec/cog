@@ -2,7 +2,6 @@
 
 namespace Message\Cog\Functions;
 
-use Message\Cog\Services;
 use LogicException;
 
 class Utility
@@ -28,7 +27,7 @@ class Utility
 	{
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($backtrace as $call) {
-			// Turn a class name like Mothership\Core\Model\Order into Mothership\Core
+			// Turn a class name like Message\CMS\Model\Page into Message\CMS
 			$namespaces = explode('\\', $call['class']);
 			$moduleName = implode('\\', array_slice($namespaces, 0, 2));
 
@@ -38,36 +37,5 @@ class Utility
 		}
 
 		throw new LogicException('Stack trace could not be traced back to a module');
-	}
-
-	/**
-	 * Recursively converts an array to an object.
-	 *
-	 * @param array $array                  The array to convert
-	 * @param bool  $maintainNumericIndices If true, numeric indecies are retained
-	 * @return \stdClass                    The array in object form
-	 */
-	public function arrayToObject($array, $maintainNumericIndices = false)
-	{
-		if (!is_array($array)) {
-			return $array;
-		}
-
-		$hasNumericIndices = (array_values($array) === $array) && $maintainNumericIndices;
-		$new = $hasNumericIndices ? array() : new \stdClass;
-
-		foreach ($array as $key => $value) {
-			if (is_array($value)) {
-				$value = $this->arrayToObject($value, $maintainNumericIndices);
-			}
-
-			if ($hasNumericIndices) {
-				$new[$key] = $value;
-			} else {
-				$new->{Services::get('fns.text')->toCamelCaps($key)} = $value;
-			}
-		}
-
-		return $new;
 	}
 }
