@@ -35,7 +35,7 @@ class Environment
 	);
 	protected $_allowedContexts = array(
 		'web',		// Running in fcgi or as mod_php
-		'console',	// Run from the command line.
+		'console',	// Run from the command line
 	);
 
 	/**

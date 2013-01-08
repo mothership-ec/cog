@@ -179,6 +179,7 @@ abstract class Loader
 	 * a definition on the service container named `app.context.[$contextName]`.
 	 *
 	 * @return Loader            Returns $this for chainability
+	 *
 	 * @throws \RuntimeException If the apropriate context class could not be
 	 *                           found on the service container.
 	 * @throws \LogicException   If the context class was found, but it does not
