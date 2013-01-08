@@ -6,7 +6,7 @@ This component is aware of high-level information about the application and is r
 
 Each Cog module has bootstraps for event listeners; services; routes and tasks. Cog itself also has bootstraps for many of these, primarily event listeners and services.
 
-The bootstraps for Cog live in the Application component under the `Bootstrap` namespace. A list the services defined by Cog can be found in [the main readme file](../../../../readme.md).
+The bootstraps for Cog live in the Application component under the `Bootstrap` namespace. A list the services defined by Cog can be found in the main Cog readme file.
 
 ## Environment
 
