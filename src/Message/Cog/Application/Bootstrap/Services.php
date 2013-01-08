@@ -6,8 +6,20 @@ use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Cog\Application\Environment;
 use Message\Cog\Routing\RouteCollection;
 
+/**
+ * Cog services bootstrap.
+ *
+ * Registers Cog service definitions when the application is loaded.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
 class Services implements ServicesInterface
 {
+	/**
+	 * Register the services to the given service container.
+	 *
+	 * @param  object $serviceContainer The service container
+	 */
 	public function registerServices($serviceContainer)
 	{
 		$serviceContainer['profiler'] = $serviceContainer->share(function() {
