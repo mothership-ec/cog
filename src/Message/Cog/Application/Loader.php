@@ -228,7 +228,7 @@ abstract class Loader
 	 */
 	public function execute()
 	{
-		$return = $this->_context->run();
+		$return = $this->getContext()->run();
 
 		$this->_services['event.dispatcher']->dispatch(
 			'terminate',
