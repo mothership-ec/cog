@@ -14,11 +14,13 @@ use Symfony\Component\Console\Input\InputOption;
  */
 class Factory
 {
+	const ENV_OPT_NAME = 'env';
+
 	public static function create()
 	{
 		$app = new Application;
 
-		$app->getDefinition()->addOption(new InputOption('--env', '-e', InputOption::VALUE_REQUIRED, 'The Environment name.', 'local'));
+		$app->getDefinition()->addOption(new InputOption('--' . self::ENV_OPT_NAME, '-e', InputOption::VALUE_OPTIONAL, 'The Environment name.'));
 
 		// Setup the default commands
 		$app->add(new Command\ModuleGenerate);
@@ -29,7 +31,6 @@ class Factory
 		$app->add(new Command\TaskList);
 		$app->add(new Command\ServicesList);
 		$app->add(new Command\Setup);
-		$app->add(new Command\TestUnitRun);
 
 		return $app;
 	}

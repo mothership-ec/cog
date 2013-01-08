@@ -2,21 +2,21 @@
 
 namespace Message\Cog\HTTP\EventListener;
 
-use Message\Cog\Services;
+use Message\Cog\Service\ContainerInterface;
+use Message\Cog\Event\SubscriberInterface;
+use Message\Cog\Routing\RouterInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Dispatcher;
 use Message\Cog\HTTP\StatusException;
 
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Exception\ExceptionInterface as RouterException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Event listener for core functionality for dealing with requests.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Request implements EventSubscriberInterface
+class Request implements SubscriberInterface
 {
 	protected $_services;
 	protected $_router;
@@ -24,7 +24,7 @@ class Request implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(Event::REQUEST => array(
-			array('addRequestToServices'),
+			array('addRequestToServices', 9999),
 			array('routeRequest'),
 			array('validateRequestScope'),
 			array('validateRequestedFormats'),
@@ -37,7 +37,7 @@ class Request implements EventSubscriberInterface
 	 * @param Services        $services The service container
 	 * @param RouterInterface $router   The router
 	 */
-	public function __construct(Services $services, RouterInterface $router)
+	public function __construct(ContainerInterface $services, RouterInterface $router)
 	{
 		$this->_services = $services;
 		$this->_router   = $router;

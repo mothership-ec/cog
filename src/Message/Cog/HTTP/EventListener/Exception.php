@@ -2,18 +2,17 @@
 
 namespace Message\Cog\HTTP\EventListener;
 
-use Message\Cog\Services;
+use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Event\Event;
 use Message\Cog\HTTP\Event\BuildResponseFromExceptionEvent;
 use Message\Cog\HTTP\StatusException;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Event listener for core functionality to deal with exceptions.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Exception implements EventSubscriberInterface
+class Exception implements SubscriberInterface
 {
 	static public function getSubscribedEvents()
 	{

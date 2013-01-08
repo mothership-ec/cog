@@ -1,0 +1,11 @@
+url: live.message.uk.com
+twitter: messagedigital
+ga-code: MESSAGE_123
+address:
+    town: Hove
+gateway:
+   sagepay:
+      vendor: message_live
+admins:
+    - Mark Bobkins
+    - Bob Smith

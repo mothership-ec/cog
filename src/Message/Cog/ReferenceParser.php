@@ -62,7 +62,7 @@ class ReferenceParser implements ReferenceParserInterface
 	{
 		$this->_checkEmpty();
 
-		return $this->getClassName('Controller') . '::' . $this->_method;
+		return $this->getClassName() . '::' . $this->_method;
 	}
 
 	/**

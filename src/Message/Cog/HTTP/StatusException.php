@@ -3,8 +3,7 @@
 namespace Message\Cog\HTTP;
 
 /**
- * Exception object for throwing exceptions that should relate to a specific
- * HTTP status code in the response.
+ * Exceptions that represent a specific HTTP response status code.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */

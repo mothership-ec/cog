@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Services;
+use Message\Cog\Service\Container as ServiceContainer;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -39,9 +39,9 @@ class TaskRunScheduled extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$path = $_SERVER['argv'][0];
-		$env  = ' --env='.Services::get('env');
-		foreach(Services::get('task.collection')->all() as $task) {
-			if($task[2]->isDue(time(), Services::get('env'))) {
+		$env  = ' --env='.ServiceContainer::get('env');
+		foreach(ServiceContainer::get('task.collection')->all() as $task) {
+			if($task[2]->isDue(time(), ServiceContainer::get('env'))) {
 				$output->writeln('Running ' . $task[2]->getName());
 				try {
 					$process = new Process($path . $env . ' task:run ' . $task[2]->getName());

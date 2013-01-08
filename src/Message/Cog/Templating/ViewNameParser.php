@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Templating;
 
-use Message\Cog\Services;
+use Message\Cog\Service\ContainerInterface;
 use Message\Cog\ReferenceParserInterface;
 use Message\Cog\HTTP\StatusException;
 
@@ -17,11 +17,11 @@ class ViewNameParser extends \Symfony\Component\Templating\TemplateNameParser
 	/**
 	 * Constructor.
 	 *
-	 * @param Services                 $services  The service container
+	 * @param ContainerInterface       $services  The service container
 	 * @param ReferenceParserInterface $parser    Reference parser class
 	 * @param array                    $fileTypes Array of filetypes to support, in order of preference
 	 */
-	public function __construct(Services $services, ReferenceParserInterface $parser, array $fileTypes)
+	public function __construct(ContainerInterface $services, ReferenceParserInterface $parser, array $fileTypes)
 	{
 		$this->_services  = $services;
 		$this->_parser    = $parser;

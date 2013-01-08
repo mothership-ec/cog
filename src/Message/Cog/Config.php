@@ -2,6 +2,8 @@
 
 namespace Message\Cog;
 
+use Message\Cog\Functions\Iterable;
+
 use Symfony\Component\Yaml\Yaml;
 use DirectoryIterator;
 use InvalidArgumentException;
@@ -26,7 +28,7 @@ class Config
 	 */
 	final public static function get($name)
 	{
-		return Services::get('config')->{$name};
+		return Service\Container::get('config')->{$name};
 	}
 
 	public function __construct($path, $environment)
@@ -64,9 +66,8 @@ class Config
 			}
 
 			// Converts the YAML file into an array
-			$yaml 	   = Services::get('fns.utility')->arrayToObject(Yaml::parse($fileinfo->getPathname()), true);
+			$yaml 	   = Iterable::toObject(Yaml::parse($fileinfo->getPathname()), true);
 			$shortName = $fileinfo->getBasename('.yml');
-
 
 			if ($yaml === null) {
 				$yaml = new stdClass;
@@ -98,7 +99,7 @@ class Config
 		// TODO: make this find configs in modules. How?
 		// This classname stuff smells bad. Having it hardcoded in this class
 		// makes unit testing difficult.
-		$className = '\\Mothership\\Framework\\Config\\'.ucfirst($shortName);
+		$className = '\\Message\\Cog\\Config\\'.ucfirst($shortName);
 
 		if (!isset($this->_configs[$shortName])) {
 			// If a config class exists use it instead.
