@@ -27,3 +27,11 @@ Cog defines the following services on the service container. Don't overwrite any
 ## What global events does Cog fire?
 
 * `terminate` This is the very last thing that happens for any Cog request. Use this event for stopping debug timers; garbage collection; data logging; etc.
+
+## Running tests
+
+To execute all tests run `phpunit` in the root of the site.
+
+You can run tests for individual components by running `phpunit --testsuite <componentname>`
+
+e.g `phpunit --testsuite Routing` or `phpunit --testsuite Application` 
