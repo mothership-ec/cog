@@ -82,7 +82,6 @@ class Loader implements LoaderInterface
 	 */
 	public function add(BootstrapInterface $bootstrap)
 	{
-		// Add to list
 		$this->_bootstraps[] = $bootstrap;
 
 		return $this;
@@ -121,7 +120,7 @@ class Loader implements LoaderInterface
 			if ($bootstrap instanceof EventsInterface) {
 				$bootstrap->registerEvents($this->_services['event.dispatcher']);
 			}
-			if ($this->_services['environment']->context() == 'console'
+			if ('console' === $this->_services['environment']->context()
 			 && $bootstrap instanceof TasksInterface) {
 				$bootstrap->registerTasks($this->_services['task.collection']);
 			}
