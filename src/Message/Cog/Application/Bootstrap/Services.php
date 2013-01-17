@@ -35,10 +35,10 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
-			$adaptorClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-			$adaptorClass = '\Message\Cog\Cache\Adaptor\\' . $adaptorClass;
+			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
 			$cache        = new \Message\Cog\Cache\Instance(
-				new $adaptorClass
+				new $adapterClass
 			);
 			$cache->setPrefix(implode('.', array(
 				$s['app.loader']->appName,

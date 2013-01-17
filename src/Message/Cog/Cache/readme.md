@@ -4,10 +4,10 @@ A simple wrapper around the `TreasureChest` package, providing caching functiona
 
 ## Usage
 
-Create an instance of the cache `Instance` object and pass in the adaptor you wish to use:
+Create an instance of the cache `Instance` object and pass in the adapter you wish to use:
 
 	$cache = new Message\Cog\Cache\Instance(
-		new Message\Cog\Cache\Adaptor\APC
+		new Message\Cog\Cache\Adapter\APC
 	);
 
 The `$cache` object can then be manipulated like so:
@@ -38,10 +38,10 @@ The methods and their signatures generally match the functionality defined in th
 The service definition for the cache is set to use APC if it is available, otherwise the filesystem cache is used. A global prefix of the application name; the environment name and the installation name (if set) is used, so that caches are unique to the installation.
 
 	$serviceContainer['cache'] = $serviceContainer->share(function($s) {
-		$adaptorClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-		$adaptorClass = '\Message\Cog\Cache\Adaptor\\' . $adaptorClass;
+		$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+		$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
 		$cache        = new \Message\Cog\Cache\Instance(
-			new $adaptorClass
+			new $adapterClass
 		);
 		$cache->setPrefix(implode('.', array(
 			$s['app.loader']->appName,
@@ -60,7 +60,7 @@ For example, you may wish to create a shared cache between all installations of 
 
 	$serviceContainer['cache.shared'] = $serviceContainer->share(function($s) {
 		$cache = new \Message\Cog\Cache\Instance(
-			new \Message\Cog\Cache\Adaptor\APC
+			new \Message\Cog\Cache\Adapter\APC
 		);
 		$cache->setPrefix($s['app.loader']->appName);
 
