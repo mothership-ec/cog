@@ -18,7 +18,7 @@ class Services implements ServicesInterface
 	/**
 	 * Register the services to the given service container.
 	 *
-	 * @param  object $serviceContainer The service container
+	 * @param object $serviceContainer The service container
 	 */
 	public function registerServices($serviceContainer)
 	{
@@ -33,6 +33,21 @@ class Services implements ServicesInterface
 		$serviceContainer['env'] = function($c) {
 			return $c['environment']->get();
 		};
+
+		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
+			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
+			$cache        = new \Message\Cog\Cache\Instance(
+				new $adapterClass
+			);
+			$cache->setPrefix(implode('.', array(
+				$s['app.loader']->appName,
+				$s['environment']->get(),
+				$s['environment']->installation(),
+			)));
+
+			return $cache;
+		});
 
 		$serviceContainer['event'] = function() {
 			return new \Message\Cog\Event\Event;
