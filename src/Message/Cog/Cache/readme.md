@@ -1,14 +1,14 @@
-# Cache component
+# Cache Component
 
-A simple wrapper and interface around `TreasureChest`'s interfaces and classes.
-
-Currently the only cache available is the filesystem cache. In the future we should check to see if APC is enabled and use that instead.
+A simple wrapper around the `TreasureChest` package, providing caching functionality.
 
 ## Usage
 
-Create an instance of the cache object
+Create an instance of the cache `Instance` object and pass in the adaptor you wish to use:
 
-	$cache = new Cache\Filesystem('/tmp'); // directory to store cache data in
+	$cache = new Message\Cog\Cache\Instance(
+		new Message\Cog\Cache\Adaptor\APC
+	);
 
 The `$cache` object can then be manipulated like so:
 
@@ -21,8 +21,8 @@ The `$cache` object can then be manipulated like so:
 	$cache->fetch('email'); // returns boolean FALSE
 
 The methods and their signatures generally match the functionality defined in the [apc_* set of functions](http://www.php.net/manual/en/ref.apc.php).
-
-## Methods
+	
+### Methods
 
 * `add` — Cache a new variable in the data store
 * `clear` — Clears the entire cache
@@ -32,3 +32,36 @@ The methods and their signatures generally match the functionality defined in th
 * `fetch` — Fetch a stored variable from the cache
 * `inc` — Increase a stored number
 * `store` — Cache a variable in the data store
+
+## The cache store service
+
+The service definition for the cache is set to use APC if it is available, otherwise the filesystem cache is used. A global prefix of the application name; the environment name and the installation name (if set) is used, so that caches are unique to the installation.
+
+	$serviceContainer['cache'] = $serviceContainer->share(function($s) {
+		$adaptor = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+		$cache   = new \Message\Cog\Cache\Instance(
+			new {'\Message\Cog\Cache\Adaptor\' . $adaptor}
+		);
+		$cache->setPrefix(implode('.', array(
+			$s['app.loader']->appName,
+			$s['environment']->get(),
+			$s['environment']->installation()
+		));
+
+		return $cache;
+	});
+
+### Creating a custom cache store service
+
+If you need to use a cache store with different settings than the `cache` service definition defined in Cog, you can simply add more service definitions with your preferred settings.
+
+For example, you may wish to create a shared cache between all installations of this application on this server that only uses APC:
+
+	$serviceContainer['cache.shared'] = $serviceContainer->share(function($s) {
+		$cache = new \Message\Cog\Cache\Instance(
+			new \Message\Cog\Cache\Adaptor\APC
+		);
+		$cache->setPrefix($s['app.loader']->appName);
+
+		return $cache;
+	});
