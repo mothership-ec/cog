@@ -1,5 +1,5 @@
 {
-    "hash": "8aab624fffad7cecf6668c6361d80805",
+    "hash": "e9a0538a7ac79c5eb4c32f98dad8dff8",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -44,22 +44,22 @@
         },
         {
             "name": "pimple/pimple",
-            "version": "dev-master",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "git://github.com/fabpot/Pimple.git",
-                "reference": "d58cec632dfdd3305d6b4f2563a5cf2a75b4d978"
+                "reference": "v1.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/fabpot/Pimple/archive/d58cec632dfdd3305d6b4f2563a5cf2a75b4d978.zip",
-                "reference": "d58cec632dfdd3305d6b4f2563a5cf2a75b4d978",
+                "url": "https://github.com/fabpot/Pimple/archive/v1.0.1.zip",
+                "reference": "v1.0.1",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "2013-01-07 10:39:26",
+            "time": "2012-11-11 08:32:34",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -408,91 +408,14 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com"
-        },
-        {
-            "name": "treasure-chest/treasure-chest",
-            "version": "0.1.2",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:jamesmoss/treasure-chest.git",
-                "reference": "0.1.2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/jamesmoss/treasure-chest/zipball/0.1.2",
-                "reference": "0.1.2",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "time": "2012-10-08 04:37:12",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-0": {
-                    "TreasureChest": "lib"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Moss",
-                    "email": "email@jamesmoss.co.uk",
-                    "homepage": "http://jamesmoss.co.uk"
-                }
-            ],
-            "description": "A simple key/value store with namespace support and backends for memcached, apc, and more.",
-            "homepage": "http://github.com/jamesmoss/treasure-chest",
-            "keywords": [
-                "cache",
-                "apc",
-                "caching",
-                "memcached"
-            ]
         }
     ],
-    "packages-dev": [
-        {
-            "name": "mikey179/vfsStream",
-            "version": "v1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mikey179/vfsStream",
-                "reference": "v1.1.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/mikey179/vfsStream/zipball/v1.1.0",
-                "reference": "v1.1.0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "time": "2012-08-25 05:49:29",
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "psr-0": {
-                    "org\\bovigo\\vfs": "src/main/php"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD"
-            ],
-            "homepage": "http://vfs.bovigo.org/"
-        }
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pimple/pimple": 20
-    }
+    "stability-flags": [
+
+    ]
 }
