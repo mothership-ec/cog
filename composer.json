@@ -35,7 +35,7 @@
 		"symfony/routing"          : "2.1.*",
 		"symfony/templating"       : "2.1.*",
 		"symfony/yaml"             : "2.1.*",
-		"pimple/pimple"            : "dev-master",
+		"pimple/pimple"            : "1.0.*",
 		"mtdowling/cron-expression": "1.0.*"
 	},
 	"require-dev": {
