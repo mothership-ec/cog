@@ -21,7 +21,7 @@ The `$cache` object can then be manipulated like so:
 	$cache->fetch('email'); // returns boolean FALSE
 
 The methods and their signatures generally match the functionality defined in the [apc_* set of functions](http://www.php.net/manual/en/ref.apc.php).
-	
+
 ### Methods
 
 * `add` — Cache a new variable in the data store
@@ -38,15 +38,16 @@ The methods and their signatures generally match the functionality defined in th
 The service definition for the cache is set to use APC if it is available, otherwise the filesystem cache is used. A global prefix of the application name; the environment name and the installation name (if set) is used, so that caches are unique to the installation.
 
 	$serviceContainer['cache'] = $serviceContainer->share(function($s) {
-		$adaptor = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-		$cache   = new \Message\Cog\Cache\Instance(
-			new {'\Message\Cog\Cache\Adaptor\' . $adaptor}
+		$adaptorClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+		$adaptorClass = '\Message\Cog\Cache\Adaptor\\' . $adaptorClass;
+		$cache        = new \Message\Cog\Cache\Instance(
+			new $adaptorClass
 		);
 		$cache->setPrefix(implode('.', array(
 			$s['app.loader']->appName,
 			$s['environment']->get(),
-			$s['environment']->installation()
-		));
+			$s['environment']->installation(),
+		)));
 
 		return $cache;
 	});

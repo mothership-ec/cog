@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Cache\Filesystem;
+namespace Message\Cog\Cache\Adaptor;
 
 class Filesystem extends \TreasureChest\Cache\Filesystem
 {

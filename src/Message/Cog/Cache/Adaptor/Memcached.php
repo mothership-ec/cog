@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Cache\Memcached;
+namespace Message\Cog\Cache\Adaptor;
 
 class Memcached extends \TreasureChest\Cache\Memcached
 {
