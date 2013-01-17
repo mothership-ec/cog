@@ -44,7 +44,7 @@
 	},
 	"suggest": {
 		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
-		"ext-apc"                : "Essential for system-level caching",
+		"ext-apc"                : "The preferred caching system in Cog",
 
 		"message/cog-maintenance": "A cog module that provides maintenance mode functionality",
 		"message/cog-raven"      : "A cog module that logs errors, exceptions and messages to Sentry"
