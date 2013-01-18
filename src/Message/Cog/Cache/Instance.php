@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Cache;
 
-class Instance extends \TreasureChest\Instance
+class Instance extends \TreasureChest\Instance implements CacheInterface
 {
 
 }
