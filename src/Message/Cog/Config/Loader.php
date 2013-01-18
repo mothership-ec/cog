@@ -18,11 +18,11 @@ class Loader
 	public function loadFromDirectory($dir)
 	{
 		if (!file_exists($dir)) {
-			throw new Exception(sprintf('Config directory `%s` does not exist', $dir));
+			throw new Exception\ConfigUnreadableException(sprintf('Config directory `%s` does not exist', $dir));
 		}
 
 		if (!is_readable($dir)) {
-			throw new Exception(sprintf('Config directory `%s` is not readable'));
+			throw new Exception\ConfigUnreadableException(sprintf('Config directory `%s` is not readable'));
 		}
 
 		try {
@@ -85,7 +85,6 @@ class Loader
 
 			throw new Exception\CacheInvalidException(sprintf('Config cache `%s` is invalid', $key), null, $e);
 		}
-		// get 'em, add them all to the service container
 	}
 
 	protected function _addService($name, Group $config)
