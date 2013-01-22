@@ -2,6 +2,10 @@
 
 namespace Message\Cog\Config;
 
+use Message\Cog\Application\Environment;
+use Message\Cog\Service\ContainerInterface;
+use Message\Cog\Cache\CacheInterface;
+
 use DirectoryIterator;
 
 /**
@@ -37,7 +41,7 @@ class Loader
 		$dirs    = array(
 			$dir,
 			$dir . $this->_env->get() . '/',
-			$dir . $this->_env->get() . '/' . $this->_env->getInstallationName() . '/',
+			$dir . $this->_env->get() . '/' . $this->_env->installation() . '/',
 		);
 
 		foreach ($dirs as $key => $dir) {
