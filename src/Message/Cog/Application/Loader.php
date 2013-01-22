@@ -31,18 +31,14 @@ abstract class Loader
 	/**
 	 * Constructor.
 	 *
-	 * Sets the application base directory.
+	 * Sets the application base directory, ensuring it ends with a trailing
+	 * slash.
 	 *
 	 * @param string $baseDir Absolute path to the installation base directory
 	 */
 	public function __construct($baseDir)
 	{
-		// Ensure base directory ends with directory separator
-		if (DIRECTORY_SEPARATOR !== substr($baseDir, -1)) {
-			$baseDir .= DIRECTORY_SEPARATOR;
-		}
-
-		$this->_baseDir = $baseDir;
+		$this->_baseDir = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
 
 	/**
