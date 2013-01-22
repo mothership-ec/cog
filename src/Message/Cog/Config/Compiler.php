@@ -48,12 +48,14 @@ class Compiler
 	 *
 	 * @see _stack
 	 *
-	 * @return Group The compiled configuration set
+	 * @return Group     The compiled configuration set
+	 *
+	 * @throws Exception If no data sets have been added to be compiled
 	 */
 	public function compile()
 	{
 		if (empty($this->_dataSets)) {
-			throw new Exception\CompileException('Cannot compile configuration: there\'s nothing to compile');
+			throw new Exception('Cannot compile configuration: there\'s nothing to compile');
 		}
 
 		$compiled = array();
