@@ -5,6 +5,7 @@ namespace Message\Cog\Config;
 use Message\Cog\Functions\Iterable;
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException as YamlParseException;
 
 /**
  * Configuration compiler.
@@ -51,6 +52,8 @@ class Compiler
 	 * @return Group     The compiled configuration set
 	 *
 	 * @throws Exception If no data sets have been added to be compiled
+	 * @throws Exception If YAML parsing throws a ParseException
+	 * @throws Exception If YAML parsed result is not an array
 	 */
 	public function compile()
 	{
@@ -61,7 +64,24 @@ class Compiler
 		$compiled = array();
 
 		foreach ($this->_dataSets as $data) {
-			$compiled = $this->_stack($compiled, Yaml::parse($data, true));
+			try {
+				$parsed = Yaml::parse($data, true);
+			}
+			catch (YamlParseException $e) {
+				throw new Exception(sprintf(
+					'Cannot compile configuration: YAML parsing failed with message `%s`',
+					$e->getMessage()
+				), null, $e);
+			}
+
+			if (!is_array($parsed)) {
+				throw new Exception(sprintf(
+					'Cannot compile configuration: parsed result was not an array for YAML `%s`',
+					$data
+				));
+			}
+
+			$compiled = $this->_stack($compiled, $parsed);
 		}
 
 		return Iterable::toObject($compiled, true, 'Message\Cog\Config\Group');

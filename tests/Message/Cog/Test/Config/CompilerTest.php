@@ -3,6 +3,7 @@
 namespace Message\Cog\Test\Config;
 
 use Message\Cog\Config\Compiler;
+use Message\Cog\Config\Group;
 
 class CompilerTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,7 +51,7 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
 		$compiler->add(file_get_contents(__DIR__ . '/fixtures/live/example.yml'));
 
 		$compiled = $compiler->compile();
-		$expected = new \Message\Cog\Config\Group;
+		$expected = new Group;
 
 		$expected->name                  = 'Message';
 		$expected->shortName             = 'message';
@@ -100,16 +101,57 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $compiled);
 	}
 
-	public function testCompilingInvalidYAMLData()
+	/**
+	 * @dataProvider getValidYAMLButNotArray
+	 *
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage parsed result was not an array for YAML
+	 */
+	public function testCompilingValidYAMLButNotArray($data)
 	{
 		$compiler = new Compiler;
 
-		$compiler->add('THIS IS NOT YAML');
-		$compiler->add(false);
-		$compiler->add('BRFNUGR*^&&%%^$&@*(£');
-
-		// surely exceptions should get thrown
+		$compiler->add($data);
 
 		$compiler->compile();
+	}
+
+	/**
+	 * @dataProvider getInvalidYAML
+	 *
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage YAML parsing failed
+	 */
+	public function testCompilingInvalidYAML($data)
+	{
+		$compiler = new Compiler;
+
+		$compiler->add($data);
+
+		$compiler->compile();
+	}
+
+	static public function getValidYAMLButNotArray()
+	{
+		return array(
+			array('this 	S IS N*%^$^%£@$&%^*$£OT YAML'),
+			array(false),
+			array(null),
+			array('iamyaml'),
+		);
+	}
+
+	static public function getInvalidYAML()
+	{
+		return array(
+			array('Bad escapes:
+  "\c
+  \xq-"'),
+			array('- Invalid use of BOM
+⇔
+- Inside a document.'),
+			array('		I like to use tabs
+						- to indent my YAML'),
+		);
 	}
 }
