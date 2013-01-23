@@ -18,6 +18,8 @@ use DirectoryIterator;
  */
 class Loader
 {
+	protected $_added;
+
 	protected $_services;
 	protected $_env;
 
@@ -68,7 +70,7 @@ class Loader
 					throw new Exception(sprintf('Config file `%s` is not readable', $file->getPathname()));
 				}
 
-				$name = 'cfg.' . $file->getBasename('.yml');
+				$name = $file->getBasename('.yml');
 
 				if (!isset($configs[$name])) {
 					$configs[$name] = new Compiler;
@@ -78,11 +80,12 @@ class Loader
 			}
 		}
 
-		foreach ($configs as $name => $config) {
-			$this->_addService($name, $config->compile());
+		foreach ($configs as $name => $compiler) {
+			$configs[$name] = $compiler->compile();
+			$this->_addService($name, $configs[$name]);
 		}
 
-		return true;
+		return $configs;
 	}
 
 	protected function _addService($name, Group $config)
