@@ -9,6 +9,9 @@ use Message\Cog\Test\Service\SharedServiceIdentifier;
 use Message\Cog\Test\Application\FauxLoader as AppFauxLoader;
 use Message\Cog\Test\Bootstrap\FauxLoader as BootstrapFauxLoader;
 
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamWrapper;
+
 use Closure;
 
 class ServicesTest extends \PHPUnit_Framework_TestCase
@@ -24,9 +27,14 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		$this->_container = new FauxContainer;
 		$this->_bootstrap = new ServicesBootstrap;
 
+		// Add config directory as the config loader needs it
+		vfsStream::setup('root');
+		vfsStream::newDirectory('config')
+			->at(vfsStreamWrapper::getRoot());
+
 		// Define services normally defined in Application\Loader.
 		$this->_container['app.loader'] = function($c) {
-			return new AppFauxLoader(dirname(__FILE__));
+			return new AppFauxLoader(vfsStream::url('root'));
 		};
 
 		$this->_container['class.loader'] = function($c) {
