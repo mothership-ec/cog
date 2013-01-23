@@ -16,9 +16,9 @@ use DirectoryIterator;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Loader
+class Loader implements LoaderInterface
 {
-	protected $_added;
+	protected $_dir;
 
 	protected $_services;
 	protected $_env;
@@ -26,24 +26,24 @@ class Loader
 	/**
 	 * Constructor.
 	 *
+	 * @param string             $dir      Directory to load configs from
 	 * @param ContainerInterface $services The service container to add configs to
 	 * @param Environment        $env      The environment object
 	 */
-	public function __construct(ContainerInterface $services, Environment $env)
+	public function __construct($dir, ContainerInterface $services, Environment $env)
 	{
+		$this->_dir      = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		$this->_services = $services;
 		$this->_env      = $env;
 	}
 
-	public function loadFromDirectory($dir)
+	public function load(Registry $registry)
 	{
-		$dir = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-
 		$configs = array();
 		$dirs    = array(
-			$dir,
-			$dir . $this->_env->get() . '/',
-			$dir . $this->_env->get() . '/' . $this->_env->installation() . '/',
+			$this->_dir,
+			$this->_dir . $this->_env->get() . '/',
+			$this->_dir . $this->_env->get() . '/' . $this->_env->installation() . '/',
 		);
 
 		foreach ($dirs as $key => $dir) {
@@ -81,17 +81,9 @@ class Loader
 		}
 
 		foreach ($configs as $name => $compiler) {
-			$configs[$name] = $compiler->compile();
-			$this->_addService($name, $configs[$name]);
+			$registry->$name = $compiler->compile();
 		}
 
-		return $configs;
-	}
-
-	protected function _addService($name, Group $config)
-	{
-		$this->_services['cfg.' . $name] = $this->_services->share(function() use ($config) {
-			return $config;
-		});
+		return $registry;
 	}
 }
