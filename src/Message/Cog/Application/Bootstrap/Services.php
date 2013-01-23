@@ -107,11 +107,17 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$serviceContainer['config'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\ConfigCache(
-				$c['app.loader']->getBaseDir().'config/',
-				$c['env']
+		$serviceContainer['config.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Config\LoaderCache(
+				$c['app.loader']->getBaseDir() . 'config/',
+				$c,
+				$c['environment'],
+				$c['cache']
 			);
+		});
+
+		$serviceContainer['cfg'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Config\Registry($c['config.loader']);
 		});
 
 		$serviceContainer['module.locator'] = $serviceContainer->share(function($c) {
@@ -150,5 +156,4 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Application\Context\Console($c);
 		});
 	}
-
 }
