@@ -52,6 +52,21 @@ abstract class Loader
 	}
 
 	/**
+	 * Get the application name.
+	 *
+	 * This gets the first namespace for the application's loader (the subclass
+	 * that extends this abstract class).
+	 *
+	 * E.g. a loader named TestApp\MySetupModule\AppLoader would return `TestApp`
+	 *
+	 * @return string The application name
+	 */
+	public function getAppName()
+	{
+		return strstr(get_class($this), '\\', true);
+	}
+
+	/**
 	 * Get the context instance for this request.
 	 *
 	 * @return Context\ContextInterface The context instance

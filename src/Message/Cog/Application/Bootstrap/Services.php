@@ -41,7 +41,7 @@ class Services implements ServicesInterface
 				new $adapterClass
 			);
 			$cache->setPrefix(implode('.', array(
-				$s['app.loader']->appName,
+				$s['app.loader']->getAppName(),
 				$s['environment']->get(),
 				$s['environment']->installation(),
 			)));
