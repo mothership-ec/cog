@@ -106,12 +106,18 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function testConfigDefinition()
+	public function testConfigDefinitions()
 	{
-		$this->assertTrue($this->_container->isShared('config'));
+		$this->assertTrue($this->_container->isShared('cfg'));
 		$this->assertInstanceOf(
-			'Message\Cog\Config',
-			$this->_container['config']
+			'Message\Cog\Config\Registry',
+			$this->_container['cfg']
+		);
+
+		$this->assertTrue($this->_container->isShared('config.loader'));
+		$this->assertInstanceOf(
+			'Message\Cog\Config\LoaderInterface',
+			$this->_container['config.loader']
 		);
 	}
 
