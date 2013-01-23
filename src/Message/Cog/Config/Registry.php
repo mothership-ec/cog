@@ -52,10 +52,10 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Sets a configuration group.
 	 *
-	 * @param string $name  Identifier for the configuration group
-	 * @param Group  $group Configuration group to set
+	 * @param  string $name  Identifier for the configuration group
+	 * @param  Group  $group Configuration group to set
 	 *
-	 * @throws Exception    If a config group is already defined for this identifier
+	 * @throws Exception     If a config group is already defined for this identifier
 	 */
 	public function __set($name, Group $group)
 	{
@@ -104,7 +104,7 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Get a configuration group using array access.
 	 *
-	 * @see  __get
+	 * @see __get
 	 *
 	 * @param  string $offset Configuration identifier
 	 * @return Group          Configuration group
@@ -117,7 +117,7 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Set a configuration group using array access.
 	 *
-	 * @see  __set
+	 * @see __set
 	 *
 	 * @param  string $offset Configuration identifier
 	 * @return mixed          Configuration group
