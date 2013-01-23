@@ -128,6 +128,16 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
+	 * Get all configuration groups as an associative array.
+	 *
+	 * @return array All configuration groups, where the keys are the identifiers
+	 */
+	public function getAll()
+	{
+		return $this->_configs;
+	}
+
+	/**
 	 * Load the configurations using the configuration loader.
 	 */
 	public function _load()
