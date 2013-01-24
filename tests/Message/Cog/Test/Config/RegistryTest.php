@@ -147,7 +147,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 	public function testIteration()
 	{
 		// Get something to trigger the lazy load
-		$this->_registry->getAll();
+		$this->_registry->load();
 
 		$expectedKeys = array_keys($this->_configs);
 
@@ -164,7 +164,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 	public function testUnsetting()
 	{
 		// Get something to trigger the lazy load, just incase
-		$this->_registry->getAll();
+		$this->_registry->load();
 
 		unset($this->_registry->test);
 	}
@@ -176,7 +176,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 	public function testUnsettingArrayAccess()
 	{
 		// Get something to trigger the lazy load, just incase
-		$this->_registry->getAll();
+		$this->_registry->load();
 
 		unset($this->_registry['test']);
 	}
@@ -184,7 +184,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 	public function testIsset()
 	{
 		// Trigger the lazy loading
-		$this->_registry->getAll();
+		$this->_registry->load();
 
 		$this->assertTrue(isset($this->_registry->test));
 		$this->assertTrue(isset($this->_registry['test']));
@@ -199,7 +199,7 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 	public function testGetAll()
 	{
 		// Trigger lazy loading
-		$this->_registry->getAll();
+		$this->_registry->load();
 
 		$this->assertEquals($this->_configs, $this->_registry->getAll());
 	}

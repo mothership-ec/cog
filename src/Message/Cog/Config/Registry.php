@@ -41,7 +41,7 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function __get($name)
 	{
-		$this->_load();
+		$this->load();
 
 		if (isset($this->_configs[$name])) {
 			return $this->_configs[$name];
@@ -163,7 +163,7 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function getAll()
 	{
-		$this->_load();
+		$this->load();
 
 		return $this->_configs;
 	}
@@ -174,7 +174,7 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	 * @return boolean True if the configuration was loaded, false if it had
 	 *                 already been loaded
 	 */
-	public function _load()
+	public function load()
 	{
 		if ($this->_loaded) {
 			return false;
