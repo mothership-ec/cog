@@ -109,21 +109,140 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 
 	public function testSetting()
 	{
+		$registry    = new Registry(new FauxLoader);
+		$firstConfig = array_shift($this->_configs);
 
+		$registry->testingAdding = $firstConfig;
+
+		$this->assertEquals(1, count($registry->getAll()));
+
+		$registry['testingAddingArrayAccess'] = $firstConfig;
+
+		$this->assertEquals(2, count($registry->getAll()));
+
+		$this->assertEquals($firstConfig, $registry['testingAdding']);
+		$this->assertEquals($firstConfig, $registry->testingAddingArrayAccess);
 	}
 
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage has already been set
+	 */
 	public function testSettingConfigThatsAlreadySet()
 	{
-
+		$this->_registry->test = new Group;
+		$this->_registry->test = new Group;
 	}
 
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage has already been set
+	 */
 	public function testSettingConfigThatsAlreadySetArrayAccess()
 	{
-
+		$this->_registry['myAwesomeTest'] = new Group;
+		$this->_registry['myAwesomeTest'] = new Group;
 	}
 
 	public function testIteration()
 	{
-		// iterate over the class, test the order of groups is correct
+		// Get something to trigger the lazy load
+		$this->_registry->getAll();
+
+		$expectedKeys = array_keys($this->_configs);
+
+		foreach ($this->_registry as $id => $config) {
+			$this->assertEquals(array_shift($expectedKeys), $id);
+			$this->assertEquals(array_shift($this->_configs), $config);
+		}
+	}
+
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage Config groups cannot be removed from the registry
+	 */
+	public function testUnsetting()
+	{
+		// Get something to trigger the lazy load, just incase
+		$this->_registry->getAll();
+
+		unset($this->_registry->test);
+	}
+
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage Config groups cannot be removed from the registry
+	 */
+	public function testUnsettingArrayAccess()
+	{
+		// Get something to trigger the lazy load, just incase
+		$this->_registry->getAll();
+
+		unset($this->_registry['test']);
+	}
+
+	public function testIsset()
+	{
+		// Trigger the lazy loading
+		$this->_registry->getAll();
+
+		$this->assertTrue(isset($this->_registry->test));
+		$this->assertTrue(isset($this->_registry['test']));
+
+		$this->assertTrue(isset($this->_registry->db));
+		$this->assertTrue(isset($this->_registry['db']));
+
+		$this->assertFalse(isset($this->_registry->iDoNotExist));
+		$this->assertFalse(isset($this->_registry['iDoNotExist']));
+	}
+
+	public function testGetAll()
+	{
+		// Trigger lazy loading
+		$this->_registry->getAll();
+
+		$this->assertEquals($this->_configs, $this->_registry->getAll());
+	}
+
+	public function testLazyLoadingObjectAccess()
+	{
+		$this->setUpForLazyLoadingTests();
+
+		$this->_registry->test;
+		$this->_registry['test'];
+		$this->_registry->getAll();
+	}
+
+	public function testLazyLoadingArrayAccess()
+	{
+		$this->setUpForLazyLoadingTests();
+
+		$this->_registry['test'];
+		$this->_registry->getAll();
+		$this->_registry->test;
+	}
+
+	public function testLazyLoadingGetAll()
+	{
+		$this->setUpForLazyLoadingTests();
+
+		$this->_registry->getAll();
+		$this->_registry->test;
+		$this->_registry['test'];
+	}
+
+	public function setUpForLazyLoadingTests()
+	{
+		$this->_loader  = $this->getMock('Message\Cog\Config\LoaderInterface');
+		$this->_registry = new Registry($this->_loader);
+
+		$this->_loader
+			->expects($this->exactly(1))
+			->method('load')
+			->with($this->_registry);
+
+		foreach ($this->_configs as $id => $config) {
+			$this->_registry->$id = $config;
+		}
 	}
 }
