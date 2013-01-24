@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Config;
 
-use Message\Cog\Application\Environment;
+use Message\Cog\Application\EnvironmentInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Cache\CacheInterface;
 
@@ -24,12 +24,13 @@ class LoaderCache extends Loader
 	/**
 	 * Constructor.
 	 *
-	 * @param string             $dir      Directory to load configs from
-	 * @param ContainerInterface $services The service container to add configs to
-	 * @param Environment        $env      The environment object
-	 * @param CacheInterface     $cache    The caching engine to use
+	 * @param string               $dir      Directory to load configs from
+	 * @param ContainerInterface   $services The service container to add configs to
+	 * @param EnvironmentInterface $env      The environment object
+	 * @param CacheInterface       $cache    The caching engine to use
 	 */
-	public function __construct($dir, ContainerInterface $services, Environment $env, CacheInterface $cache)
+	public function __construct($dir, ContainerInterface $services,
+		EnvironmentInterface $env, CacheInterface $cache)
 	{
 		parent::__construct($dir, $services, $env);
 

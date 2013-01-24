@@ -152,7 +152,7 @@ namespace Message\Cog\Test\Application {
 			});
 
 			// Force the context to change
-			$container['environment']->set($contextName);
+			$container['environment']->setContext($contextName);
 
 			$loader->setServiceContainer($container)->setContext();
 
@@ -176,7 +176,7 @@ namespace Message\Cog\Test\Application {
 			});
 
 			// Force the context to change
-			$container['environment']->set('web');
+			$container['environment']->setContext('web');
 
 			$loader->setServiceContainer($container)->setContext();
 		}
@@ -203,7 +203,7 @@ namespace Message\Cog\Test\Application {
 			});
 
 			// Force the context to change
-			$container['environment']->set('web');
+			$container['environment']->setContext('web');
 
 			$loader->setServiceContainer($container)->setContext();
 		}
@@ -380,7 +380,7 @@ namespace Message\Cog\Test\Application {
 			});
 
 			// Force the context to change
-			$container['environment']->set('web');
+			$container['environment']->setContext('web');
 
 			$contextMock = $this->getMock('Message\Cog\Test\Application\Context\FauxContext');
 

@@ -28,7 +28,7 @@ namespace Message\Cog\Application;
  *
  * @todo security protocol for live
  */
-class Environment
+class Environment implements EnvironmentInterface
 {
 	const ENV_SEPARATOR = '-';
 

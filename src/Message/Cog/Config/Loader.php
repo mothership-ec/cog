@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Config;
 
-use Message\Cog\Application\Environment;
+use Message\Cog\Application\EnvironmentInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Cache\CacheInterface;
 
@@ -26,13 +26,13 @@ class Loader implements LoaderInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param string             $dir      Directory to load configs from
-	 * @param ContainerInterface $services The service container to add configs to
-	 * @param Environment        $env      The environment object
+	 * @param string               $dir      Directory to load configs from
+	 * @param ContainerInterface   $services The service container to add configs to
+	 * @param EnvironmentInterface $env      The environment object
 	 *
-	 * @throws Exception                   If the directory does not exist
+	 * @throws Exception                     If the directory does not exist
 	 */
-	public function __construct($dir, ContainerInterface $services, Environment $env)
+	public function __construct($dir, ContainerInterface $services, EnvironmentInterface $env)
 	{
 		$this->_dir      = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		$this->_services = $services;
