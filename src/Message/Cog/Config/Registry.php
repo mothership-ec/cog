@@ -31,6 +31,9 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Get a configuration group.
 	 *
+	 * If the configurations have not yet been loaded, calling this method will
+	 * load them.
+	 *
 	 * @param  string $name Configuration group identifier to get
 	 * @return Group        Configuration group
 	 *
@@ -38,9 +41,7 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	 */
 	public function __get($name)
 	{
-		if (!$this->_loaded) {
-			$this->_load();
-		}
+		$this->_load();
 
 		if (isset($this->_configs[$name])) {
 			return $this->_configs[$name];
@@ -67,6 +68,30 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
+	 * Check if a configuration group exists.
+	 *
+	 * @param  string $name Configuration identifier
+	 * @return boolean      True if the configuration group exists
+	 */
+	public function __isset($name)
+	{
+		return isset($this->_configs[$name]);
+	}
+
+	/**
+	 * Unset a configuration group.
+	 *
+	 * This functionality is not available. An exception will always be thrown.
+	 *
+	 * @param  string $name Configuration identifier
+	 * @throws Exception    Always: this method should not be called
+	 */
+	public function __unset($name)
+	{
+		throw new Exception('Config groups cannot be removed from the registry');
+	}
+
+	/**
 	 * Get the iterator to use when iterating over this class.
 	 *
 	 * @return \ArrayIterator The iterator to use
@@ -79,26 +104,27 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Check if a configuration group exists when using array access.
 	 *
+	 * @see __isset
+	 *
 	 * @param  string $offset Configuration identifier
 	 * @return boolean        True if the configuration group exists
 	 */
 	public function offsetExists($offset)
 	{
-		return isset($this->_configs[$offset]);
+		return $this->__isset($offset);
 	}
 
 	/**
-	 * Unset a configuration group.
+	 * Unset a configuration group using array access.
 	 *
-	 * This is required because this class implements `\ArrayAccess`, but the
-	 * functionality is not available. An exception will always be thrown.
+	 * @see __unset
 	 *
 	 * @param  string $offset Configuration identifier
 	 * @throws Exception      Always: this method should not be called
 	 */
 	public function offsetUnset($offset)
 	{
-		throw new Exception('Config groups cannot be removed from the registry');
+		return $this->__unset($offset);
 	}
 
 	/**
@@ -130,19 +156,33 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Get all configuration groups as an associative array.
 	 *
+	 * If the configurations have not yet been loaded, calling this method will
+	 * load them.
+	 *
 	 * @return array All configuration groups, where the keys are the identifiers
 	 */
 	public function getAll()
 	{
+		$this->_load();
+
 		return $this->_configs;
 	}
 
 	/**
 	 * Load the configurations using the configuration loader.
+	 *
+	 * @return boolean True if the configuration was loaded, false if it had
+	 *                 already been loaded
 	 */
 	public function _load()
 	{
+		if ($this->_loaded) {
+			return false;
+		}
+
 		$this->_loader->load($this);
 		$this->_loaded = true;
+
+		return true;
 	}
 }
