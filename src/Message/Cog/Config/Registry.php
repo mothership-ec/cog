@@ -171,6 +171,11 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 	/**
 	 * Load the configurations using the configuration loader.
 	 *
+	 * Note that the `_loaded` variable must be set to true before the loader
+	 * is called to deal with the case of recursive loading... this can happen
+	 * when `LoaderCache` asks the registry for the defined configs before
+	 * `load()` returns the registry again.
+	 *
 	 * @return boolean True if the configuration was loaded, false if it had
 	 *                 already been loaded
 	 */
@@ -180,8 +185,8 @@ class Registry implements \IteratorAggregate, \ArrayAccess
 			return false;
 		}
 
-		$this->_loader->load($this);
 		$this->_loaded = true;
+		$this->_loader->load($this);
 
 		return true;
 	}

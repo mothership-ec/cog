@@ -233,7 +233,9 @@ class RegistryTest extends \PHPUnit_Framework_TestCase
 
 	public function setUpForLazyLoadingTests()
 	{
-		$this->_loader  = $this->getMock('Message\Cog\Config\LoaderInterface');
+		$this->_loader = $this->getMock('Message\Cog\Test\Config\FauxLoader', array('load'));
+		$this->_loader->addConfigs($this->_configs);
+
 		$this->_registry = new Registry($this->_loader);
 
 		$this->_loader
