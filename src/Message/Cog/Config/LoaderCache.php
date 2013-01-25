@@ -24,18 +24,26 @@ class LoaderCache extends Loader
 	/**
 	 * Constructor.
 	 *
-	 * @param string               $dir      Directory to load configs from
-	 * @param ContainerInterface   $services The service container to add configs to
-	 * @param EnvironmentInterface $env      The environment object
-	 * @param CacheInterface       $cache    The caching engine to use
+	 * @param string               $dir   Directory to load configs from
+	 * @param EnvironmentInterface $env   The environment object
+	 * @param CacheInterface       $cache The caching engine to use
 	 */
-	public function __construct($dir, ContainerInterface $services,
-		EnvironmentInterface $env, CacheInterface $cache)
+	public function __construct($dir, EnvironmentInterface $env, CacheInterface $cache)
 	{
-		parent::__construct($dir, $services, $env);
+		parent::__construct($dir, $env);
 
 		$this->_cache    = $cache;
 		$this->_cacheKey = sprintf(self::CACHE_KEY_PATTERN, md5($this->_dir));
+	}
+
+	/**
+	 * Get the cache key for the directory being loaded from.
+	 *
+	 * @return string The cache key
+	 */
+	public function getCacheKey()
+	{
+		return $this->_cacheKey;
 	}
 
 	/**

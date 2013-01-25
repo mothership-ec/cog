@@ -110,7 +110,6 @@ class Services implements ServicesInterface
 		$serviceContainer['config.loader'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Config\LoaderCache(
 				$c['app.loader']->getBaseDir() . 'config/',
-				$c,
 				$c['environment'],
 				$c['cache']
 			);

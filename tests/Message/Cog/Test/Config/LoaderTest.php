@@ -5,7 +5,6 @@ namespace Message\Cog\Test\Config;
 use Message\Cog\Config\Loader;
 
 use Message\Cog\Test\Application\FauxEnvironment;
-use Message\Cog\Test\Service\FauxContainer;
 
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamWrapper;
@@ -20,7 +19,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testExceptionThrownOnNonExistantDirectory()
 	{
-		$loader = new Loader('/i/do/not/exist/', new FauxContainer, new FauxEnvironment);
+		$loader = new Loader('/i/do/not/exist/', new FauxEnvironment);
 	}
 
 	public function testLoading()
@@ -29,7 +28,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$env->set('live');
 		$env->setInstallation('server6');
 
-		$loader   = new Loader(realpath(__DIR__) . '/fixtures', new FauxContainer, $env);
+		$loader   = new Loader(realpath(__DIR__) . '/fixtures', $env);
 		$registry = new NonLoadingRegistry($loader);
 		$expected = include 'expected_groups.php';
 
@@ -68,7 +67,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$env->set('dev');
 		$env->setInstallation('dev6');
 
-		$loader = new Loader(vfsStream::url('config'), new FauxContainer, $env);
+		$loader = new Loader(vfsStream::url('config'), $env);
 		$registry = new NonLoadingRegistry($loader);
 
 		$loader->load($registry);
@@ -87,7 +86,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$env = new FauxEnvironment;
 		$env->set('dev');
 
-		$loader = new Loader(vfsStream::url('config'), new FauxContainer, $env);
+		$loader = new Loader(vfsStream::url('config'), $env);
 		$registry = new NonLoadingRegistry($loader);
 
 		$loader->load($registry);
@@ -106,7 +105,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$env = new FauxEnvironment;
 		$env->set('staging');
 
-		$loader = new Loader(vfsStream::url('config'), new FauxContainer, $env);
+		$loader = new Loader(vfsStream::url('config'), $env);
 		$registry = new NonLoadingRegistry($loader);
 
 		$loader->load($registry);

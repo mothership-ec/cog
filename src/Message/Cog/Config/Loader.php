@@ -20,22 +20,19 @@ class Loader implements LoaderInterface
 {
 	protected $_dir;
 
-	protected $_services;
 	protected $_env;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string               $dir      Directory to load configs from
-	 * @param ContainerInterface   $services The service container to add configs to
-	 * @param EnvironmentInterface $env      The environment object
+	 * @param string               $dir Directory to load configs from
+	 * @param EnvironmentInterface $env The environment object
 	 *
-	 * @throws Exception                     If the directory does not exist
+	 * @throws Exception                If the directory does not exist
 	 */
-	public function __construct($dir, ContainerInterface $services, EnvironmentInterface $env)
+	public function __construct($dir, EnvironmentInterface $env)
 	{
 		$this->_dir      = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$this->_services = $services;
 		$this->_env      = $env;
 
 		if (!file_exists($this->_dir)) {
