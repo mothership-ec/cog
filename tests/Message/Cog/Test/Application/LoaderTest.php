@@ -26,7 +26,6 @@ namespace Message\Cog\Test\Application {
 	use org\bovigo\vfs\vfsStreamDirectory;
 	use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 
-
 	class LoaderTest extends \PHPUnit_Framework_TestCase
 	{
 		const VFS_ROOT_DIR = 'root';
