@@ -51,54 +51,11 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
 		$compiler->add(file_get_contents(__DIR__ . '/fixtures/live/example.yml'));
 
 		$compiled = $compiler->compile();
-		$expected = new Group;
 
-		$expected->name                  = 'Message';
-		$expected->shortName             = 'message';
-		$expected->domain                = 'message.co.uk';
-		$expected->url                   = 'live.message.co.uk';
-		$expected->email                 = 'debug@message.co.uk';
-		$expected->telephone             = '+44 12345 6789';
-		$expected->fax                   = null;
-		$expected->vatRegistrationNumber = '0123456789';
-		$expected->companyNumber         = '1234567';
-		$expected->facebook              = 'message';
-		$expected->twitter               = 'messagedigital';
-		$expected->gaCode                = 'MESSAGE_123';
-
-		$expected->address = (object) array(
-			'line1'       => 'Atlas Chambers',
-			'line2'       => '33 West Street',
-			'town'        => 'Hove',
-			'postcode'    => 'BN1 2RE',
-			'countryCode' => 'GB',
-			'country'     => 'United Kingdom',
-		);
-
-		$expected->gateway = (object) array(
-			'useLocalPayment' => true,
-			'sagepay'         => (object) array(
-				'vendor'          => 'message_live',
-				'vpsProtocol'     => 1.445,
-				'encryptionKey'   => 1234567,
-				'paymentUrl'      => 'https://test.sagepay.com/gateway/service/vspserver-register.vsp',
-				'refundUrl'       => 'https://test.sagepay.com/gateway/service/refund.vsp',
-				'redirectUrlBase' => 'http://beta.message.co.uk',
-			),
-		);
-
-		$expected->updates = (object) array(
-			'email'  => true,
-			'postal' => false,
-		);
-
-		$expected->admins = array(
-			'Mark Bobkins',
-			'Bob Smith',
-		);
+		$expected = include 'expected_groups.php';
 
 		$this->assertInstanceOf('Message\Cog\Config\Group', $compiled);
-		$this->assertEquals($expected, $compiled);
+		$this->assertEquals($expected['example'], $compiled);
 	}
 
 	/**

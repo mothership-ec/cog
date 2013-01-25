@@ -7,7 +7,10 @@ use Message\Cog\Config\Loader;
 use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Service\FauxContainer;
 
-// TODO: somewhere explicitly test that the slash is added to the dir
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamWrapper;
+use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,11 +31,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 		$loader   = new Loader(realpath(__DIR__) . '/fixtures', new FauxContainer, $env);
 		$registry = new NonLoadingRegistry($loader);
+		$expected = include 'expected_groups.php';
 
 		$loader->load($registry);
 
-		// AHH CHICKEN AND EGG
-		// Do some asserting!
+		$this->assertEquals($expected['example'], $registry->example);
+		$this->assertEquals($expected['example1'], $registry->example1);
+		$this->assertEquals($expected['example2'], $registry->example2);
+		$this->assertEquals($expected['example3'], $registry->example3);
 
 		return $registry;
 	}
@@ -48,13 +54,61 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$registry->nonyaml;
 	}
 
-	public function testExceptionThrownWhenDirectoryNotReadable()
+	/**
+	 * This test doesn't assert anything as it simply checks that the
+	 * non-presence of override directories is handled gracefully.
+	 */
+	public function testNonExistantOverrideDirectoriesGetIgnored()
 	{
+		vfsStream::setup('config');
+		vfsStream::newDirectory('dev')
+			->at(vfsStreamWrapper::getRoot());
 
+		$env = new FauxEnvironment;
+		$env->set('dev');
+		$env->setInstallation('dev6');
+
+		$loader = new Loader(vfsStream::url('config'), new FauxContainer, $env);
+		$registry = new NonLoadingRegistry($loader);
+
+		$loader->load($registry);
 	}
 
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage Config directory `vfs://config/dev/` is not readable
+	 */
+	public function testExceptionThrownWhenDirectoryNotReadable()
+	{
+		vfsStream::setup('config');
+		vfsStream::newDirectory('dev', 0000)
+			->at(vfsStreamWrapper::getRoot());
+
+		$env = new FauxEnvironment;
+		$env->set('dev');
+
+		$loader = new Loader(vfsStream::url('config'), new FauxContainer, $env);
+		$registry = new NonLoadingRegistry($loader);
+
+		$loader->load($registry);
+	}
+
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage Config file `vfs://config/myconfig.yml` is not readable
+	 */
 	public function testExceptionThrownWhenConfigFileNotReadable()
 	{
+		vfsStream::setup('config');
+		vfsStream::newFile('myconfig.yml', 0333)
+			->at(vfsStreamWrapper::getRoot());
 
+		$env = new FauxEnvironment;
+		$env->set('staging');
+
+		$loader = new Loader(vfsStream::url('config'), new FauxContainer, $env);
+		$registry = new NonLoadingRegistry($loader);
+
+		$loader->load($registry);
 	}
 }
