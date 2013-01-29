@@ -12,7 +12,7 @@ use Message\Cog\Cache\CacheInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Faux extends \TreasureChest\FauxCache implements CacheInterface
+class Faux extends \TreasureChest\Cache\Faux implements CacheInterface
 {
 
 }

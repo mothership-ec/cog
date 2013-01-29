@@ -402,16 +402,16 @@
         },
         {
             "name": "treasure-chest/treasure-chest",
-            "version": "0.1.4",
+            "version": "0.1.5",
             "source": {
                 "type": "git",
                 "url": "git@github.com:jamesmoss/treasure-chest.git",
-                "reference": "0.1.4"
+                "reference": "0.1.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/jamesmoss/treasure-chest/archive/0.1.4.zip",
-                "reference": "0.1.4",
+                "url": "https://github.com/jamesmoss/treasure-chest/archive/0.1.5.zip",
+                "reference": "0.1.5",
                 "shasum": ""
             },
             "require": {
@@ -421,7 +421,7 @@
                 "ext-apc": "Install to use the APC datastore",
                 "ext-memcache": "Install to use the memcached datastore"
             },
-            "time": "2013-01-18 15:26:14",
+            "time": "2013-01-25 17:27:49",
             "type": "library",
             "autoload": {
                 "psr-0": {
