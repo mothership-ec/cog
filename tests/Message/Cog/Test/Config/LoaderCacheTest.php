@@ -52,11 +52,6 @@ class LoaderCacheTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @dataProvider getInvalidCaches
-	 *
-	 * @todo Fix this test. For some reason, even though the caches are
-	 *       successfully deleted within LoaderCache::loadFromCache, they
-	 *       are still there within this test. Makes no sense as the cache
-	 *       instance should be automatically updated... very odd
 	 */
 	public function testInvalidCacheGetsCleared($cached)
 	{
@@ -68,7 +63,7 @@ class LoaderCacheTest extends \PHPUnit_Framework_TestCase
 
 		$cache->store($loader->getCacheKey(), $cached);
 
-		$loader->load($registry);
+		$loader->loadFromCache($registry);
 
 		$this->assertFalse($cache->exists($loader->getCacheKey()));
 	}
