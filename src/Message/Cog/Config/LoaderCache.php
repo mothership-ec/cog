@@ -4,7 +4,7 @@ namespace Message\Cog\Config;
 
 use Message\Cog\Application\EnvironmentInterface;
 use Message\Cog\Service\ContainerInterface;
-use Message\Cog\Cache\CacheInterface;
+use Message\Cog\Cache\InstanceInterface;
 
 /**
  * Configuration cache loader.
@@ -26,9 +26,9 @@ class LoaderCache extends Loader
 	 *
 	 * @param string               $dir   Directory to load configs from
 	 * @param EnvironmentInterface $env   The environment object
-	 * @param CacheInterface       $cache The caching engine to use
+	 * @param InstanceInterface    $cache The cache instance
 	 */
-	public function __construct($dir, EnvironmentInterface $env, CacheInterface $cache)
+	public function __construct($dir, EnvironmentInterface $env, InstanceInterface $cache)
 	{
 		parent::__construct($dir, $env);
 
@@ -49,9 +49,9 @@ class LoaderCache extends Loader
 	/**
 	 * Load the configuration files.
 	 *
-	 * If `loadByCache` doesn't return false, then the registry is returned
-	 * straight away. This would mean the configuration groups were loaded from
-	 * the cache.
+	 * If `loadFromCache` doesn't return false (meaning the configuration groups
+	 * were loaded from the cache), then the registry is returned straight away
+	 * and the filesystem loading is bypassed.
 	 *
 	 * If the configuration groups could not be loaded from the cache, then
 	 * `load()` on the parent class is called, loading and compiling the
@@ -90,30 +90,30 @@ class LoaderCache extends Loader
 	 */
 	public function loadFromCache(Registry $registry)
 	{
-		if (!$this->_cache->exists($this->_cacheKey)) {
+		if (!$this->_cache->exists($this->getCacheKey())) {
 			return false;
 		}
 
-		$result = $this->_cache->fetch($this->_cacheKey);
+		$result = $this->_cache->fetch($this->getCacheKey());
 
 		try {
 			if (!is_array($result)) {
-				throw new Exception(sprintf('Config cache `%s` is not an array', $this->_cacheKey));
+				throw new Exception(sprintf('Config cache `%s` is not an array', $this->getCacheKey()));
 			}
 
 			foreach ($result as $name => $group) {
 				if (!$name) {
-					throw new Exception(sprintf('Config cache `%s` has empty group key(s)', $this->_cacheKey));
+					throw new Exception(sprintf('Config cache `%s` has empty group key(s)', $this->getCacheKey()));
 				}
 				if (!$group instanceof Group) {
-					throw new Exception(sprintf('Config cache `%s` group `%s` value was not a valid Group instance', $this->_cacheKey, $name));
+					throw new Exception(sprintf('Config cache `%s` group `%s` value was not a valid Group instance', $this->getCacheKey(), $name));
 				}
 
 				$registry->$name = $group;
 			}
 		}
 		catch (Exception $e) {
-			$this->_cache->delete($this->_cacheKey);
+			$this->_cache->delete($this->getCacheKey());
 
 			return false;
 		}
