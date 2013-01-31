@@ -221,8 +221,8 @@ class FixtureManager
 	 *
 	 * @param  string $fixtureDir Path to the directory to look in
 	 *
-	 * @return false|array        False if the directory does not exist,
-	 *                            otherwise an array of the fixture filenames
+	 * @return false|array        False if the directory does not exist or is
+	 *                            empty, otherwise an array of the fixture filenames
 	 *
 	 * @throws Exception          If the directory is not readable
 	 * @throws Exception          If any fixture files are not readable
@@ -258,6 +258,6 @@ class FixtureManager
 			$fixtures[] = $file->getBasename();
 		}
 
-		return $fixtures;
+		return $fixtures ?: false;
 	}
 }
