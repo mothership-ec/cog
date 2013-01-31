@@ -39,9 +39,7 @@ class FixtureManager
 	 */
 	static public function postInstall(PackageEvent $event)
 	{
-		$package = $event->getOperation()->getPackage();
-
-		if (!self::isPackageCogModule($package)) {
+		if (!self::isPackageCogModule($event->getOperation()->getPackage())) {
 			return false;
 		}
 
@@ -65,7 +63,7 @@ class FixtureManager
 
 				$event->getIO()->write(sprintf(
 					$message,
-					$package->getPrettyName(),
+					$event->getOperation()->getPackage()->getPrettyName(),
 					$fixture
 				));
 			}
