@@ -4,8 +4,7 @@ namespace Message\Cog\Config;
 
 use Composer\Composer;
 use Composer\Script\PackageEvent;
-use Composer\Package\PackageInterface;
-use Composer\IO\IOInterface;
+use Composer\Package\BasePackage;
 
 use DirectoryIterator;
 
@@ -183,12 +182,12 @@ class FixtureManager
 	/**
 	 * Get the full path to the config fixture directory for a given package.
 	 *
-	 * @param  Composer         $composer The current Composer instance
-	 * @param  PackageInterface $package  The package to get the directory for
+	 * @param  Composer    $composer The current Composer instance
+	 * @param  BasePackage $package  The package to get the directory for
 	 *
-	 * @return string                     Full path to the package's config fixture dir
+	 * @return string                Full path to the package's config fixture dir
 	 */
-	static public function getConfigFixtureDir(Composer $composer, PackageInterface $package)
+	static public function getConfigFixtureDir(Composer $composer, BasePackage $package)
 	{
 		return implode('/', array(
 			realpath($composer->getConfig()->get('vendor-dir')),
@@ -204,13 +203,13 @@ class FixtureManager
 	 * Cog module packages are identified by a name prefixed with 'cog-',
 	 * regardless of the vendor name.
 	 *
-	 * @param  PackageInterface $package The Composer package to check
+	 * @param  BasePackage $package The Composer package to check
 	 *
-	 * @return boolean                   True if the package is a Cog module
+	 * @return boolean              True if the package is a Cog module
 	 */
-	static public function isPackageCogModule(PackageInterface $package)
+	static public function isPackageCogModule(BasePackage $package)
 	{
-		list($vendor, $name) = explode('/', $package->getName());
+		list($vendor, $name) = explode('/', $package->getPrettyName());
 
 		return 'cog-' === substr($name, 0, 4);
 	}
