@@ -16,7 +16,7 @@ use Message\Cog\Cache\InstanceInterface;
  */
 class LoaderCache extends Loader
 {
-	const CACHE_KEY_PATTERN = 'cache.%s';
+	const CACHE_KEY_PATTERN = 'config:%s';
 
 	protected $_cache;
 	protected $_cacheKey;
