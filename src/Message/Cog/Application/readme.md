@@ -12,7 +12,7 @@ The bootstraps for Cog live in the Application component under the `Bootstrap` n
 
 The `Environment` class is responsible for determining the environment in which the application is running in, and translates this into useful instructions for how the application should behave.
 
-An environment is made up of a name and a context.
+An environment is made up of a name, an installation name (optionally) and a context.
 
 ### Environment names
 
@@ -41,6 +41,21 @@ For example, running the following Cog commands will instruct Cog to execute in 
 
 	$ bin/cog services:list --env=staging
 	$ bin/cog services:list -e staging
+
+#### Setting an Installation Name
+
+When setting the environment name as detailed above, an optional installation name can be appended. This can be any alphanumeric string prepended by a hyphen.
+
+The installation name is simply a unique identifier for the specific installation of the application. It's very helpful if you need to idenfity a specific front-end server, a specific dev site or even a specific local development machine.
+
+##### Examples
+
+* `dev-dev6`
+* `dev-new`
+* `live-server1`
+* `live-server2`
+* `local-joe`
+* `local-danny`
 
 ## Application Loader
 
