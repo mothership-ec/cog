@@ -47,15 +47,15 @@ class FixtureManager
 	{
 		$package = $event->getOperation()->getPackage();
 
-		if (!self::isPackageCogModule($package)) {
+		if (!static::isPackageCogModule($package)) {
 			return false;
 		}
 
-		$workingDir = self::getWorkingDir();
-		$fixtureDir = self::getConfigFixtureDir($event->getComposer(), $package);
+		$workingDir = static::getWorkingDir();
+		$fixtureDir = static::getConfigFixtureDir($event->getComposer(), $package);
 
 		try {
-			$fixtures = self::getFixtures($fixtureDir);
+			$fixtures = static::getFixtures($fixtureDir);
 
 			if (!$fixtures) {
 				return false;
@@ -94,24 +94,24 @@ class FixtureManager
 	 */
 	static public function preUpdate(PackageEvent $event)
 	{
-		if (!self::isPackageCogModule($event->getOperation()->getInitialPackage())) {
+		if (!static::isPackageCogModule($event->getOperation()->getInitialPackage())) {
 			return false;
 		}
 
 		$package    = $event->getOperation()->getInitialPackage();
-		$fixtureDir = self::getConfigFixtureDir($event->getComposer(), $package);
+		$fixtureDir = static::getConfigFixtureDir($event->getComposer(), $package);
 
 		try {
-			$fixtures = self::getFixtures($fixtureDir);
+			$fixtures = static::getFixtures($fixtureDir);
 
 			if (!$fixtures) {
 				return false;
 			}
 
-			self::$_updatedFixtures[$package->getPrettyName()] = array();
+			static::$_updatedFixtures[$package->getPrettyName()] = array();
 
 			foreach ($fixtures as $fixture) {
-				self::$_updatedFixtures[$package->getPrettyName()][$fixture] = md5_file($fixtureDir . $fixture);
+				static::$_updatedFixtures[$package->getPrettyName()][$fixture] = md5_file($fixtureDir . $fixture);
 			}
 		}
 		catch (Exception $e) {
@@ -132,15 +132,15 @@ class FixtureManager
 	 */
 	static public function postUpdate(PackageEvent $event)
 	{
-		if (!self::isPackageCogModule($event->getOperation()->getInitialPackage())) {
+		if (!static::isPackageCogModule($event->getOperation()->getInitialPackage())) {
 			return false;
 		}
 
 		$package    = $event->getOperation()->getInitialPackage();
-		$fixtureDir = self::getConfigFixtureDir($event->getComposer(), $package);
+		$fixtureDir = static::getConfigFixtureDir($event->getComposer(), $package);
 
 		try {
-			$fixtures = self::getFixtures($fixtureDir);
+			$fixtures = static::getFixtures($fixtureDir);
 
 			if (!$fixtures) {
 				return false;
@@ -149,8 +149,8 @@ class FixtureManager
 			foreach ($fixtures as $fixture) {
 				$checksum = md5_file($fixtureDir . $fixture);
 
-				if (isset(self::$_updatedFixtures[$package->getPrettyName()][$fixture])
-				 && $checksum !== self::$_updatedFixtures[$package->getPrettyName()][$fixture]) {
+				if (isset(static::$_updatedFixtures[$package->getPrettyName()][$fixture])
+				 && $checksum !== static::$_updatedFixtures[$package->getPrettyName()][$fixture]) {
 					$event->getIO()->write(sprintf(
 						'<warning>Package `%s` config fixture `%s` has changed: please review manually.</warning>',
 						$package->getPrettyName(),
@@ -193,7 +193,7 @@ class FixtureManager
 			realpath($composer->getConfig()->get('vendor-dir')),
 			$package->getPrettyName(),
 			$package->getTargetDir(),
-			self::CONFIG_FIXTURE_PATH
+			static::CONFIG_FIXTURE_PATH
 		));
 	}
 
