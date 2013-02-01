@@ -7,8 +7,10 @@ use Message\Cog\Config\Exception;
 
 use Composer\Package\BasePackage;
 
-//NOTE: none of my static mocks are actually taking effect (one of the tests passes anyway
-//but thats unrelated). No idea why it's not returning the values I say or throwing exceptions when I tell it to
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamWrapper;
+use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 
 class FauxOperation
 {
@@ -162,8 +164,6 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->method('getFixtures')
 			->will($this->throwException(new Exception('test message')));
 
-		#$this->markTestIncomplete('for some infuriating reason, the above exception isn\'t getting thrown');
-
 		$manager::postInstall($event);
 		$manager::preUpdate($event);
 		$manager::postUpdate($event);
@@ -171,17 +171,154 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 
 	public function testPostInstallCopiesConfigFixtures()
 	{
+		$manager  = $this->getMock('Message\Cog\Config\FixtureManager', array('getFixtures', 'isPackageCogModule', 'getConfigFixtureDir', 'getWorkingDir'));
+		$composer = $this->getComposerInstance();
+		$event    = $this->getMock('Composer\Script\PackageEvent', array('getOperation', 'getComposer', 'getIO'));
+		$package  = $this->getMock('Composer\Package\BasePackage', array('getPrettyName', 'getTargetDir'));
+		$io       = $this->getMock('Composer\IO\IOInterface', array('write'));
+		$fixtures = array(
+			'alerts.yml',
+			'rss.yml',
+			'comments.yml',
+		);
 
-	}
+		$package
+			->expects($this->any())
+			->method('getPrettyName')
+			->will($this->returnValue('message/cog-cms'));
 
-	public function testPostInstallErrorOnCopyConfigFixtureFailure()
-	{
+		$event
+			->expects($this->any())
+			->method('getOperation')
+			->will($this->returnValue(new FauxOperation($package)));
 
+		$event
+			->expects($this->any())
+			->method('getComposer')
+			->will($this->returnValue($composer));
+
+		$event
+			->expects($this->any())
+			->method('getIO')
+			->will($this->returnValue($io));
+
+		$manager
+			::staticExpects($this->any())
+			->method('isPackageCogModule')
+			->will($this->returnValue(true));
+
+		$manager
+			::staticExpects($this->any())
+			->method('getFixtures')
+			->will($this->returnValue($fixtures));
+
+		$vfs = vfsStream::setup('root');
+		vfsStream::newDirectory('application')
+			->at(vfsStreamWrapper::getRoot());
+		vfsStream::newDirectory('config')
+			->at(vfsStreamWrapper::getRoot()->getChild('application'));
+		vfsStream::newDirectory('Fixtures')
+			->at(vfsStreamWrapper::getRoot());
+		vfsStream::newDirectory('Config')
+			->at(vfsStreamWrapper::getRoot()->getChild('Fixtures'));
+
+		foreach ($fixtures as $i => $fixture) {
+			$io
+				->expects($this->at($i))
+				->method('write')
+				->with('<info>Moved package `message/cog-cms` config fixture `' . $fixture . '` to application config directory.</info>');
+
+			vfsStream::newFile($fixture)
+				->at(vfsStreamWrapper::getRoot()->getChild('Fixtures')->getChild('Config'));
+		}
+
+		$manager
+			::staticExpects($this->any())
+			->method('getWorkingDir')
+			->will($this->returnValue(vfsStream::url('root/application') . '/'));
+
+		$manager
+			::staticExpects($this->any())
+			->method('getConfigFixtureDir')
+			->will($this->returnValue(vfsStream::url('root/Fixtures/Config') . '/'));
+
+		$manager::postInstall($event);
+
+		$fixtureDir = $vfs->getChild('application')->getChild('config');
+		foreach ($fixtures as $fixture) {
+			$this->assertTrue($fixtureDir->hasChild($fixture));
+		}
 	}
 
 	public function testUpdateConfigFixtureComparisons()
 	{
+		$manager  = $this->getMock('Message\Cog\Config\FixtureManager', array('getFixtures', 'isPackageCogModule', 'getConfigFixtureDir'));
+		$composer = $this->getComposerInstance();
+		$event    = $this->getMock('Composer\Script\PackageEvent', array('getOperation', 'getComposer', 'getIO'));
+		$package  = $this->getMock('Composer\Package\BasePackage', array('getPrettyName', 'getTargetDir'));
+		$io       = $this->getMock('Composer\IO\IOInterface', array('write'));
+		$fixtures = array(
+			'alerts.yml'   => "new: joe@message.co.uk\nedit: team@message.co.uk",
+			'rss.yml'      => "enabled: true\npost-types: all",
+			'comments.yml' => "enabled: true\napproval: true\nlimit: 50",
+		);
 
+		$package
+			->expects($this->any())
+			->method('getPrettyName')
+			->will($this->returnValue('message/cog-cms'));
+
+		$event
+			->expects($this->any())
+			->method('getOperation')
+			->will($this->returnValue(new FauxOperation($package)));
+
+		$event
+			->expects($this->any())
+			->method('getComposer')
+			->will($this->returnValue($composer));
+
+		$event
+			->expects($this->any())
+			->method('getIO')
+			->will($this->returnValue($io));
+
+		$manager
+			::staticExpects($this->any())
+			->method('isPackageCogModule')
+			->will($this->returnValue(true));
+
+		$manager
+			::staticExpects($this->any())
+			->method('getFixtures')
+			->will($this->returnValue(array_keys($fixtures)));
+
+		$vfs = vfsStream::setup('Fixtures');
+		vfsStream::newDirectory('Config')
+			->at(vfsStreamWrapper::getRoot());
+
+		foreach ($fixtures as $fixture => $content) {
+			vfsStream::newFile($fixture)
+				->setContent($content)
+				->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+		}
+
+		$manager
+			::staticExpects($this->any())
+			->method('getConfigFixtureDir')
+			->will($this->returnValue(vfsStream::url('Fixtures/Config') . '/'));
+
+		$manager::preUpdate($event);
+
+		vfsStreamWrapper::getRoot()->getChild('Config')->getChild('rss.yml')
+			->setContent("enabled: false\npost-types: all");
+
+		$io
+			->expects($this->exactly(1))
+			->method('write')
+			->with('<warning>Package `message/cog-cms` config fixture `rss.yml` has changed: please review manually.</warning>');
+
+		$manager::postUpdate($event);
 	}
 
 	public function testGetWorkingDir()
@@ -236,17 +373,56 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetFixtures()
 	{
-		// test correct fixture files are returned
-		// test non-yaml files are not returned
+		$this->assertFalse(FixtureManager::getFixtures('/this/does/not/exist'));
+
+		vfsStream::setup('Fixtures');
+		vfsStream::newDirectory('Config')
+			->at(vfsStreamWrapper::getRoot());
+		vfsStream::newFile('myconfig.txt')
+			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+		vfsStream::newFile('Not Yaml.php')
+			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+
+		$this->assertFalse(FixtureManager::getFixtures(vfsStream::url('Fixtures/Config')));
+
+		vfsStream::newFile('a-real-config.yml')
+			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+		vfsStream::newFile('wishlist.yml')
+			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+
+		$expected = array(
+			'a-real-config.yml',
+			'wishlist.yml',
+		);
+
+		$this->assertEquals($expected, FixtureManager::getFixtures(vfsStream::url('Fixtures/Config')));
 	}
 
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage Configuration fixture directory `vfs://Fixtures/Config` is not readable
+	 */
 	public function testGetFixturesThrowsExceptionWhenDirectoryUnreadable()
 	{
+		vfsStream::setup('Fixtures');
+		vfsStream::newDirectory('Config', 0333)
+			->at(vfsStreamWrapper::getRoot());
 
+		FixtureManager::getFixtures(vfsStream::url('Fixtures/Config'));
 	}
 
+	/**
+	 * @expectedException        Message\Cog\Config\Exception
+	 * @expectedExceptionMessage Configuration fixture `myconfig.yml` is not readable
+	 */
 	public function testGetFixturesThrowsExceptionWhenFixtureUnreadable()
 	{
+		vfsStream::setup('Fixtures');
+		vfsStream::newDirectory('Config')
+			->at(vfsStreamWrapper::getRoot());
+		vfsStream::newFile('myconfig.yml', 0000)
+			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
 
+		FixtureManager::getFixtures(vfsStream::url('Fixtures/Config'));
 	}
 }
