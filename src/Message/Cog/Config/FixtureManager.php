@@ -62,15 +62,10 @@ class FixtureManager
 			}
 
 			foreach ($fixtures as $fixture) {
-				if (copy($fixtureDir . $fixture, $workingDir . 'config/' . $fixture)) {
-					$message = '<info>Moved package `%s` config fixture `%s` to application config directory.</info>';
-				}
-				else {
-					$message = '<error>Moving package `%s` config fixture `%s` to application config directory FAILED - please move manually.</error>';
-				}
+				copy($fixtureDir . $fixture, $workingDir . 'config/' . $fixture);
 
 				$event->getIO()->write(sprintf(
-					$message,
+					'<info>Moved package `%s` config fixture `%s` to application config directory.</info>',
 					$event->getOperation()->getPackage()->getPrettyName(),
 					$fixture
 				));
