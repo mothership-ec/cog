@@ -7,6 +7,7 @@ A route maps a URL to a controller. Registering a route involves telling Cog tha
 A route consists of 3 things:
 
 - A URL
+- A name
 - A list of defaults
 - A list of requirements
 
@@ -32,6 +33,20 @@ Taking the last URL as an example if you visited `/blog_archive_2012_10/tagged/c
 By default placeholders are matched using a ungreedy regex which tries to match any character except for a forward slash. By default they are required so if you had a URL such as `/blog/{postTitle}`, visiting `/blog/` wouldnt cause the router to match anything. 
 
 For more information on how to access placeholders in controllers, read the Controller component documentation.
+
+### Names
+
+Each route must have a unique name to identify it. The route names can be any arbritary string but we recommend using a name made up of the module and a suitable action. This ensures that if it needs to be referenced in other parts of the system the URL can be changed without breaking any links. 
+
+An example of this could be a template tag which takes a route name and returns the URL for that route.
+
+    <a href="{{ render_link('account.profile') }}">My account</a>
+    
+Becomes
+    
+    <a href="/account">My account</a>
+    
+In the future if the URL for the route was updated to `/my/account` we wouldnt have to update any templates.
 
 ### Requirements 
 
@@ -60,7 +75,12 @@ Some defaults have special meaning, this are prefixed with an underscore.
 - `_controller` - The controller and method which should be executed when this route is matched. Can be an absolute class name and path or a controller reference. e.g `Message\CMS\Controller\ClassName::viewMethod` or `Message:Cog:ClassName#view`.
 
 
-## An example route bootstrap
+## Registering routes
+
+The `Router` class is responsible for taking a request and returning a route that matches it. Before this happens `Route`s are added to the `Router`.
+
+$router = new Router();
+
 
 
 
