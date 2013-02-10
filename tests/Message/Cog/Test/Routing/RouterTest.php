@@ -109,4 +109,25 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
 		$match = $router->match('/order/view/9342');
 	}
+
+	public function testMatcherCaching()
+	{
+		// todo
+		//$this->_router->setCache();
+
+		$router = clone $this->_router;
+		$router->add('blog.post', '/blog/post/{id}', 'Message:Cog:Blog##post');
+		$match = $router->match('/blog/post/9342');
+
+		// This time routes should be loaded from cache
+
+		$router = clone $this->_router;
+		$router->add('blog.post', '/blog/post/{id}', 'Message:Cog:Blog##post');
+		$match = $router->match('/blog/post/9342');
+
+
+		$this->markTestIncomplete(
+			'Needs integration with the cache class'
+		);
+	}
 }

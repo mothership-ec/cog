@@ -89,14 +89,16 @@ class Router implements RouterInterface
 			'cache'                  => null,
 			'cache_key'              => null,
 			'debug'                  => false,
+			'matcher_class'          => 'Message\\Cog\\Routing\\UrlMatcher',
+			'matcher_base_class'     => 'Message\\Cog\\Routing\\UrlMatcher',
+			'matcher_dumper_class'   => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper',
+			'matcher_cache_class'    => 'Message\\Cog\\Routing\\DumpedMatcher',
+			'matcher_cache_key'      => 'router:dumped_matcher',
+			'matcher_cache_ttl'    	 => 600,
 			'generator_class'        => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
 			'generator_base_class'   => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
 			'generator_dumper_class' => 'Symfony\\Component\\Routing\\Generator\\Dumper\\PhpGeneratorDumper',
 			'generator_cache_class'  => 'ProjectUrlGenerator',
-			'matcher_class'          => 'Message\\Cog\\Routing\\UrlMatcher',
-			'matcher_base_class'     => 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
-			'matcher_dumper_class'   => 'Symfony\\Component\\Routing\\Matcher\\Dumper\\PhpMatcherDumper',
-			'matcher_cache_class'    => 'ProjectUrlMatcher',
 			'resource_type'          => null,
 		);
 
@@ -220,58 +222,37 @@ class Router implements RouterInterface
 	 */
 	public function getMatcher()
 	{
+		// If we've already used the matcher in the past return that instance rather than making a new one.
 		if (null !== $this->_matcher) {
 			return $this->_matcher;
 		}
 
-		// TODO: Remove this line and re-instate cached matchers that dont rely on ConfigCache
-
-		if(null === $this->_options['cache'] || null === $this->_options['cache_key']) {
-			$matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
-			return $this->_matcher = $matcher;
+		// If theres no caching then return a normal UrlMatcher
+		if (null === $this->_cache || null === $this->_options['matcher_cache_class']) {
+		    return $this->matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
 		}
-
-		if($matcher = $this->_options['cache']->fetch($this->_options['cache_key'])) {
-			//return $matcher;
-		}
-
-		$dumper = new $this->_options['matcher_dumper_class']($this->getRouteCollection());
-
-		$options = array(
-			'class'	  => $this->_options['matcher_cache_class'],
-			'base_class' => $this->_options['matcher_base_class'],
-		);
-
-		dump($dumper->dump($options));
-
-
-		$matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
-
-		$this->_options['cache']->store($this->_options['cache_key'], $matcher);
-
-		return $matcher;
-
-
-
-		/*
-
-		if (null === $this->_options['cache_dir'] || null === $this->_options['matcher_cache_class']) {
-			return $this->_matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
-		}
-
 
 		$class = $this->_options['matcher_cache_class'];
-		$cache = new ConfigCache($this->_options['cache_dir'].'/'.$class.'.php', $this->_options['debug']);
 
+		$rawPHP = $this->_cache->fetch($this->_options['matcher_cache_key'], $success);
 
-		if (!$cache->isFresh($class)) {
+		if (!$success) {
+		    $dumper = new $this->_options['matcher_dumper_class']($this->getRouteCollection());
 
+		    $options = array(
+		        'class'      => $class,
+		        'base_class' => $this->_options['matcher_base_class'],
+		    );
+
+		    $rawPHP = $dumper->dump($options);
+
+		    $this->_cache->store($this->_options['matcher_cache_key'], $rawPHP, $this->_options['matcher_cache_ttl']);
 		}
 
-		require_once $cache;
+		// Load our dumped matcher
+		eval($rawPHP);
 
-		return $this->_matcher = new $class($this->_context);
-		*/
+		return $this->matcher = new $class($this->context);
 	}
 
 	/**
