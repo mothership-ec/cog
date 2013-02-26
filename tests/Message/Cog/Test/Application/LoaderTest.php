@@ -1,407 +1,424 @@
 <?php
 
-namespace Message\Cog\Test\Application;
-
-use Message\Cog\Test\Application\FauxEnvironment;
-use Message\Cog\Test\Application\Context\FauxContext;
-use Message\Cog\Test\Event\FauxDispatcher;
-use Message\Cog\Test\Service\FauxContainer;
-use Message\Cog\Test\Module\FauxLoader as FauxModuleLoader;
-
-use Message\Cog\Service\Container as ServiceContainer;
-
-use Composer\Autoload\ClassLoader as ComposerAutoloader;
-
-use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamWrapper;
-use org\bovigo\vfs\vfsStreamDirectory;
-use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
-
-class LoaderTest extends \PHPUnit_Framework_TestCase
-{
-	const VFS_ROOT_DIR = 'root';
-
-	protected $_moduleList = array(
-		'FauxApp/MyModuleName',
-		'Message/NotModuleName',
-	);
-
-	public function setUp()
+namespace MyTestApp\MyInitialisationModule {
+	class AppLoader extends \Message\Cog\Application\Loader
 	{
-		// Set the command-line arguments (override the phpunit ones)
-		$_SERVER['argv'] = array('/usr/bin/php', 'foo:bar1');
+		public function _registerModules()
+		{
+
+		}
 	}
+}
 
-	/**
-	 * Get a mocked instance of `Application\Loader` with `_registerModules` set
-	 * to return a list of faux module names.
-	 *
-	 * @param  string $baseDir       Base URL to pass to the constructor
-	 * @param  array  $methodsToMock Array of methods to mock
-	 * @return object                The mocked instance
-	 */
-	public function getLoader($baseDir, array $methodsToMock = array())
+namespace Message\Cog\Test\Application {
+	use Message\Cog\Test\Application\FauxEnvironment;
+	use Message\Cog\Test\Application\Context\FauxContext;
+	use Message\Cog\Test\Event\FauxDispatcher;
+	use Message\Cog\Test\Service\FauxContainer;
+	use Message\Cog\Test\Module\FauxLoader as FauxModuleLoader;
+
+	use Message\Cog\Service\Container as ServiceContainer;
+
+	use Composer\Autoload\ClassLoader as ComposerAutoloader;
+
+	use org\bovigo\vfs\vfsStream;
+	use org\bovigo\vfs\vfsStreamWrapper;
+	use org\bovigo\vfs\vfsStreamDirectory;
+	use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
+
+	class LoaderTest extends \PHPUnit_Framework_TestCase
 	{
-		$loader = $this->getMockForAbstractClass(
-			'Message\Cog\Application\Loader',
-			array($baseDir),
-			'',
-			true,
-			true,
-			true,
-			$methodsToMock
+		const VFS_ROOT_DIR = 'root';
+
+		protected $_moduleList = array(
+			'FauxApp/MyModuleName',
+			'Message/NotModuleName',
 		);
 
-		$loader
-			->expects($this->any())
-			->method('_registerModules')
-			->will($this->returnValue($this->_moduleList));
+		public function setUp()
+		{
+			// Set the command-line arguments (override the phpunit ones)
+			$_SERVER['argv'] = array('/usr/bin/php', 'foo:bar1');
+		}
 
-		return $loader;
-	}
+		/**
+		 * Get a mocked instance of `Application\Loader` with `_registerModules` set
+		 * to return a list of faux module names.
+		 *
+		 * @param  string $baseDir       Base URL to pass to the constructor
+		 * @param  array  $methodsToMock Array of methods to mock
+		 * @return object                The mocked instance
+		 */
+		public function getLoader($baseDir, array $methodsToMock = array())
+		{
+			$loader = $this->getMockForAbstractClass(
+				'Message\Cog\Application\Loader',
+				array($baseDir),
+				'',
+				true,
+				true,
+				true,
+				$methodsToMock
+			);
 
-	/**
-	 * Use the `vfsStream` library to create the expected autoload file as
-	 * `vendor/autoload.php`.
-	 *
-	 * @param  integer $permission Octal permission level for the file
-	 */
-	public function createAutoloadFile($permission = 0755)
-	{
-		vfsStream::setup(self::VFS_ROOT_DIR);
-		vfsStream::newDirectory('vendor')
-			->at(vfsStreamWrapper::getRoot());
-		vfsStream::newFile('autoload.php', $permission)
-			->at(vfsStreamWrapper::getRoot()->getChild('vendor'));
-	}
+			$loader
+				->expects($this->any())
+				->method('_registerModules')
+				->will($this->returnValue($this->_moduleList));
 
-	/**
-	 * Get the path to the directory that this file is located in.
-	 *
-	 * @return string The full path, with symlinks followed
-	 */
-	public function getWorkingBaseDir()
-	{
-		return realpath(__DIR__);
-	}
+			return $loader;
+		}
 
-	public function getValidContexts()
-	{
-		return array(
-			array('web'),
-			array('console'),
-		);
-	}
+		/**
+		 * Use the `vfsStream` library to create the expected autoload file as
+		 * `vendor/autoload.php`.
+		 *
+		 * @param integer $permission Octal permission level for the file
+		 */
+		public function createAutoloadFile($permission = 0755)
+		{
+			vfsStream::setup(self::VFS_ROOT_DIR);
+			vfsStream::newDirectory('vendor')
+				->at(vfsStreamWrapper::getRoot());
+			vfsStream::newFile('autoload.php', $permission)
+				->at(vfsStreamWrapper::getRoot()->getChild('vendor'));
+		}
 
-	public function testBaseDirTrailingSlashMadeConsistent()
-	{
-		$expectedBaseDir = '/this/is/a/folder/';
+		/**
+		 * Get the path to the directory that this file is located in.
+		 *
+		 * @return string The full path, with symlinks followed
+		 */
+		public function getWorkingBaseDir()
+		{
+			return realpath(__DIR__);
+		}
 
-		$loader = $this->getLoader('/this/is/a/folder');
-		$this->assertEquals($expectedBaseDir, $loader->getBaseDir());
+		public function getValidContexts()
+		{
+			return array(
+				array('web'),
+				array('console'),
+			);
+		}
 
-		$loader = $this->getLoader($expectedBaseDir);
-		$this->assertEquals($expectedBaseDir, $loader->getBaseDir());
-	}
+		public function testBaseDirTrailingSlashMadeConsistent()
+		{
+			$expectedBaseDir = '/this/is/a/folder/';
 
-	/**
-	 * @expectedException \Exception
-	 */
-	public function testGetContextTooEarlyThrowsException()
-	{
-		$loader = $this->getLoader('/path/to/installation');
-		$loader->getContext();
-	}
+			$loader = $this->getLoader('/this/is/a/folder');
+			$this->assertEquals($expectedBaseDir, $loader->getBaseDir());
 
-	/**
-	 * @dataProvider getValidContexts
-	 */
-	public function testSetContextWorks($contextName)
-	{
-		$this->createAutoloadFile();
+			$loader = $this->getLoader($expectedBaseDir);
+			$this->assertEquals($expectedBaseDir, $loader->getBaseDir());
+		}
 
-		$loader      = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container   = new FauxContainer;
-		$serviceName = 'app.context.' . $contextName;
+		public function testGetAppName()
+		{
+			$loader = new \MyTestApp\MyInitialisationModule\AppLoader('/');
 
-		// Add the environment service
-		$container['environment'] = $container->share(function($c) {
-			return new FauxEnvironment;
-		});
+			$this->assertEquals('MyTestApp', $loader->getAppName());
+		}
 
-		// Add the context to the service container as expected by `setContext()`
-		$container[$serviceName] = $container->share(function($c) {
-			return new FauxContext;
-		});
+		/**
+		 * @expectedException \Exception
+		 */
+		public function testGetContextTooEarlyThrowsException()
+		{
+			$loader = $this->getLoader('/path/to/installation');
+			$loader->getContext();
+		}
 
-		// Force the context to change
-		$container['environment']->set($contextName);
+		/**
+		 * @dataProvider getValidContexts
+		 */
+		public function testSetContextWorks($contextName)
+		{
+			$this->createAutoloadFile();
 
-		$loader->setServiceContainer($container)->setContext();
+			$loader      = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container   = new FauxContainer;
+			$serviceName = 'app.context.' . $contextName;
 
-		$this->assertEquals($container[$serviceName], $loader->getContext());
-	}
+			// Add the environment service
+			$container['environment'] = $container->share(function($c) {
+				return new FauxEnvironment;
+			});
 
-	/**
-	 * @expectedException        \RuntimeException
-	 * @expectedExceptionMessage not defined on service container
-	 */
-	public function testContextClassNotFoundException()
-	{
-		$this->createAutoloadFile();
+			// Add the context to the service container as expected by `setContext()`
+			$container[$serviceName] = $container->share(function($c) {
+				return new FauxContext;
+			});
 
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container = new FauxContainer;
+			// Force the context to change
+			$container['environment']->setContext($contextName);
 
-		// Add the environment service
-		$container['environment'] = $container->share(function($c) {
-			return new FauxEnvironment;
-		});
+			$loader->setServiceContainer($container)->setContext();
 
-		// Force the context to change
-		$container['environment']->set('web');
+			$this->assertEquals($container[$serviceName], $loader->getContext());
+		}
 
-		$loader->setServiceContainer($container)->setContext();
-	}
+		/**
+		 * @expectedException        \RuntimeException
+		 * @expectedExceptionMessage not defined on service container
+		 */
+		public function testContextClassNotFoundException()
+		{
+			$this->createAutoloadFile();
 
-	/**
-	 * @expectedException        \LogicException
-	 * @expectedExceptionMessage does not implement ContextInterface
-	 */
-	public function testContextClassDoesNotImplementInterfaceException()
-	{
-		$this->createAutoloadFile();
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container = new FauxContainer;
 
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container = new FauxContainer;
+			// Add the environment service
+			$container['environment'] = $container->share(function($c) {
+				return new FauxEnvironment;
+			});
 
-		// Add the environment service
-		$container['environment'] = $container->share(function($c) {
-			return new FauxEnvironment;
-		});
+			// Force the context to change
+			$container['environment']->setContext('web');
 
-		// Add the invalid context class
-		$container['app.context.web'] = $container->share(function() {
-			return new \stdClass;
-		});
+			$loader->setServiceContainer($container)->setContext();
+		}
 
-		// Force the context to change
-		$container['environment']->set('web');
+		/**
+		 * @expectedException        \LogicException
+		 * @expectedExceptionMessage does not implement ContextInterface
+		 */
+		public function testContextClassDoesNotImplementInterfaceException()
+		{
+			$this->createAutoloadFile();
 
-		$loader->setServiceContainer($container)->setContext();
-	}
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container = new FauxContainer;
 
-	public function testRunInvokesCorrectMethods()
-	{
-		$this->createAutoloadFile();
+			// Add the environment service
+			$container['environment'] = $container->share(function($c) {
+				return new FauxEnvironment;
+			});
 
-		$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array(
-			'initialise',
-			'loadCog',
-			'setContext',
-			'loadModules',
-			'execute',
-		));
+			// Add the invalid context class
+			$container['app.context.web'] = $container->share(function() {
+				return new \stdClass;
+			});
 
-		$loader
-			->expects($this->exactly(1))
-			->method('initialise')
-			->will($this->returnValue($loader));
+			// Force the context to change
+			$container['environment']->setContext('web');
 
-		$loader
-			->expects($this->exactly(1))
-			->method('loadCog')
-			->will($this->returnValue($loader));
+			$loader->setServiceContainer($container)->setContext();
+		}
 
-		$loader
-			->expects($this->exactly(1))
-			->method('setContext')
-			->will($this->returnValue($loader));
+		public function testRunInvokesCorrectMethods()
+		{
+			$this->createAutoloadFile();
 
-		$loader
-			->expects($this->exactly(1))
-			->method('loadModules')
-			->will($this->returnValue($loader));
+			$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array(
+				'initialise',
+				'loadCog',
+				'setContext',
+				'loadModules',
+				'execute',
+			));
 
-		$loader
-			->expects($this->exactly(1))
-			->method('execute');
+			$loader
+				->expects($this->exactly(1))
+				->method('initialise')
+				->will($this->returnValue($loader));
 
-		$loader->run();
-	}
+			$loader
+				->expects($this->exactly(1))
+				->method('loadCog')
+				->will($this->returnValue($loader));
 
-	public function testInitialiseSetsAutoloader()
-	{
-		$this->createAutoloadFile();
+			$loader
+				->expects($this->exactly(1))
+				->method('setContext')
+				->will($this->returnValue($loader));
 
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container = new FauxContainer;
+			$loader
+				->expects($this->exactly(1))
+				->method('loadModules')
+				->will($this->returnValue($loader));
 
-		$loader->setServiceContainer($container)->initialise();
+			$loader
+				->expects($this->exactly(1))
+				->method('execute');
 
-		foreach (spl_autoload_functions() as $function) {
-			if ($function instanceof ComposerAutoloader) {
-				return true;
-			}
-			elseif (is_array($function)) {
-				foreach ($function as $fn) {
-					if ($fn instanceof ComposerAutoloader) {
-						return true;
+			$loader->run();
+		}
+
+		public function testInitialiseSetsAutoloader()
+		{
+			$this->createAutoloadFile();
+
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container = new FauxContainer;
+
+			$loader->setServiceContainer($container)->initialise();
+
+			foreach (spl_autoload_functions() as $function) {
+				if ($function instanceof ComposerAutoloader) {
+					return true;
+				}
+				elseif (is_array($function)) {
+					foreach ($function as $fn) {
+						if ($fn instanceof ComposerAutoloader) {
+							return true;
+						}
 					}
 				}
 			}
+
+			$this->fail('Calling `initialise()` did not register the Composer SPL autoloader');
 		}
 
-		$this->fail('Calling `initialise()` did not register the Composer SPL autoloader');
-	}
+		public function testInitialiseGetsDefaultServiceContainerInstance()
+		{
+			$this->createAutoloadFile();
 
-	public function testInitialiseGetsDefaultServiceContainerInstance()
-	{
-		$this->createAutoloadFile();
+			$container = ServiceContainer::instance();
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 
-		$container = ServiceContainer::instance();
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$loader->initialise();
 
-		$loader->initialise();
-
-		$this->assertInternalType('object', $container['class.loader']);
-	}
-
-	public function testInitialiseDefinesAutoloaderService()
-	{
-		$this->createAutoloadFile();
-
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container = new FauxContainer;
-
-		$loader->setServiceContainer($container)->initialise();
-
-		$this->assertTrue($container->isShared('class.loader'));
-
-		$this->assertInstanceOf('Composer\Autoload\ClassLoader', $container['class.loader']);
-	}
-
-	/**
-	 * @expectedException        RuntimeException
-	 * @expectedExceptionMessage does not exist
-	 */
-	public function testAutoloaderNotFoundException()
-	{
-		$loader = $this->getLoader('/not/a/real/path');
-		$loader->initialise();
-	}
-
-	/**
-	 * @expectedException        RuntimeException
-	 * @expectedExceptionMessage is not readable
-	 */
-	public function testAutoloaderNotReadableException()
-	{
-		$this->createAutoloadFile(0333); // 0333 = none readable, all writeable & executable
-		$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$loader->initialise();
-	}
-
-	public function testLoadCogDefinesBaseServices()
-	{
-		$this->createAutoloadFile();
-
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container = new FauxContainer;
-
-		$loader->setServiceContainer($container)->initialise()->loadCog();
-
-		$this->assertEquals($loader, $container['app.loader']);
-		$this->assertTrue($container->isShared('app.loader'));
-
-		$this->assertInstanceOf('Message\Cog\Bootstrap\LoaderInterface', $container['bootstrap.loader']);
-	}
-
-	public function testLoadModules()
-	{
-		$this->createAutoloadFile();
-
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array('loadCog'));
-		$container = new FauxContainer;
-
-		$loader->setServiceContainer($container)->initialise()->loadCog();
-
-		$container['module.loader'] = $container->share(function() {
-			return new FauxModuleLoader;
-		});
-
-		$loader->loadModules();
-
-		foreach ($this->_moduleList as $moduleName) {
-			$this->assertTrue($container['module.loader']->exists($moduleName));
+			$this->assertInternalType('object', $container['class.loader']);
 		}
-	}
 
-	public function testExecution()
-	{
-		$this->createAutoloadFile();
+		public function testInitialiseDefinesAutoloaderService()
+		{
+			$this->createAutoloadFile();
 
-		$loader      = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container   = new FauxContainer;
-		$dispatcher  = new FauxDispatcher;
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container = new FauxContainer;
 
-		$contextReturnVal = 'foobar';
+			$loader->setServiceContainer($container)->initialise();
 
-		// Add the event dispatcher service
-		$container['event.dispatcher'] = $container->share(function($c) use ($dispatcher) {
-			return $dispatcher;
-		});
+			$this->assertTrue($container->isShared('class.loader'));
 
-		// Add the event dispatcher service
-		$container['event'] = function($c) {
-			return new \Message\Cog\Event\Event;
-		};
+			$this->assertInstanceOf('Composer\Autoload\ClassLoader', $container['class.loader']);
+		}
 
-		// Add the environment service
-		$container['environment'] = $container->share(function($c) {
-			return new FauxEnvironment;
-		});
+		/**
+		 * @expectedException        RuntimeException
+		 * @expectedExceptionMessage does not exist
+		 */
+		public function testAutoloaderNotFoundException()
+		{
+			$loader = $this->getLoader('/not/a/real/path');
+			$loader->initialise();
+		}
 
-		// Force the context to change
-		$container['environment']->set('web');
+		/**
+		 * @expectedException        RuntimeException
+		 * @expectedExceptionMessage is not readable
+		 */
+		public function testAutoloaderNotReadableException()
+		{
+			$this->createAutoloadFile(0333); // 0333 = none readable, all writeable & executable
+			$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$loader->initialise();
+		}
 
-		$contextMock = $this->getMock('Message\Cog\Test\Application\Context\FauxContext');
+		public function testLoadCogDefinesBaseServices()
+		{
+			$this->createAutoloadFile();
 
-		$contextMock
-			->expects($this->exactly(1))
-			->method('run')
-			->will($this->returnValue($contextReturnVal));
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container = new FauxContainer;
 
-		// Add the context to the service container as expected by `setContext()`
-		$container['app.context.web'] = $container->share(function($c) use ($contextMock) {
-			return $contextMock;
-		});
+			$loader->setServiceContainer($container)->initialise()->loadCog();
 
-		$returnVal = $loader->setServiceContainer($container)->setContext()->execute();
+			$this->assertEquals($loader, $container['app.loader']);
+			$this->assertTrue($container->isShared('app.loader'));
 
-		$this->assertEquals($contextReturnVal, $returnVal);
+			$this->assertInstanceOf('Message\Cog\Bootstrap\LoaderInterface', $container['bootstrap.loader']);
+		}
 
-		// Assert 'terminate' event fired
-		$this->assertInstanceOf('Message\Cog\Event\Event', $dispatcher->getDispatchedEvent('terminate'));
-	}
+		public function testLoadModules()
+		{
+			$this->createAutoloadFile();
 
-	public function testChainability()
-	{
-		$this->createAutoloadFile();
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array('loadCog'));
+			$container = new FauxContainer;
 
-		$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-		$container = new FauxContainer;
+			$loader->setServiceContainer($container)->initialise()->loadCog();
 
-		$loader->setServiceContainer($container);
+			$container['module.loader'] = $container->share(function() {
+				return new FauxModuleLoader;
+			});
 
-		$this->assertEquals($loader, $loader->initialise());
-		$this->assertEquals($loader, $loader->loadCog());
+			$loader->loadModules();
 
-		$container['module.loader'] = $container->share(function() {
-			return new FauxModuleLoader;
-		});
+			foreach ($this->_moduleList as $moduleName) {
+				$this->assertTrue($container['module.loader']->exists($moduleName));
+			}
+		}
 
-		$this->assertEquals($loader, $loader->loadModules());
-		$this->assertEquals($loader, $loader->setServiceContainer(new FauxContainer));
+		public function testExecution()
+		{
+			$this->createAutoloadFile();
+
+			$loader      = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container   = new FauxContainer;
+			$dispatcher  = new FauxDispatcher;
+
+			$contextReturnVal = 'foobar';
+
+			// Add the event dispatcher service
+			$container['event.dispatcher'] = $container->share(function($c) use ($dispatcher) {
+				return $dispatcher;
+			});
+
+			// Add the event dispatcher service
+			$container['event'] = function($c) {
+				return new \Message\Cog\Event\Event;
+			};
+
+			// Add the environment service
+			$container['environment'] = $container->share(function($c) {
+				return new FauxEnvironment;
+			});
+
+			// Force the context to change
+			$container['environment']->setContext('web');
+
+			$contextMock = $this->getMock('Message\Cog\Test\Application\Context\FauxContext');
+
+			$contextMock
+				->expects($this->exactly(1))
+				->method('run')
+				->will($this->returnValue($contextReturnVal));
+
+			// Add the context to the service container as expected by `setContext()`
+			$container['app.context.web'] = $container->share(function($c) use ($contextMock) {
+				return $contextMock;
+			});
+
+			$returnVal = $loader->setServiceContainer($container)->setContext()->execute();
+
+			$this->assertEquals($contextReturnVal, $returnVal);
+
+			// Assert 'terminate' event fired
+			$this->assertInstanceOf('Message\Cog\Event\Event', $dispatcher->getDispatchedEvent('terminate'));
+		}
+
+		public function testChainability()
+		{
+			$this->createAutoloadFile();
+
+			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$container = new FauxContainer;
+
+			$loader->setServiceContainer($container);
+
+			$this->assertEquals($loader, $loader->initialise());
+			$this->assertEquals($loader, $loader->loadCog());
+
+			$container['module.loader'] = $container->share(function() {
+				return new FauxModuleLoader;
+			});
+
+			$this->assertEquals($loader, $loader->loadModules());
+			$this->assertEquals($loader, $loader->setServiceContainer(new FauxContainer));
+		}
 	}
 }

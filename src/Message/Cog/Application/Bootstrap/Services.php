@@ -41,7 +41,7 @@ class Services implements ServicesInterface
 				new $adapterClass
 			);
 			$cache->setPrefix(implode('.', array(
-				$s['app.loader']->appName,
+				$s['app.loader']->getAppName(),
 				$s['environment']->get(),
 				$s['environment']->installation(),
 			)));
@@ -107,11 +107,16 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$serviceContainer['config'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\ConfigCache(
-				$c['app.loader']->getBaseDir().'config/',
-				$c['env']
+		$serviceContainer['config.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Config\LoaderCache(
+				$c['app.loader']->getBaseDir() . 'config/',
+				$c['environment'],
+				$c['cache']
 			);
+		});
+
+		$serviceContainer['cfg'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Config\Registry($c['config.loader']);
 		});
 
 		$serviceContainer['module.locator'] = $serviceContainer->share(function($c) {
@@ -137,9 +142,9 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Functions\Debug;
 		});
 
-		$serviceContainer['reference_parser'] = function($c) {
+		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
-		};
+		});
 
 		// Application Contexts
 		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {
@@ -150,5 +155,4 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Application\Context\Console($c);
 		});
 	}
-
 }

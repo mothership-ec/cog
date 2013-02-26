@@ -1,0 +1,9 @@
+key: value
+key1:
+   - I'm a list
+   - I'm another thing in the list
+   - List
+key2: 12345
+key3: Test
+key4:
+   - Replace this when on live!

@@ -19,6 +19,9 @@
 		<testsuite name="Bootstrap">
 			<directory>./tests/Message/Cog/Test/Bootstrap/</directory>
 		</testsuite>
+		<testsuite name="Config">
+			<directory>./tests/Message/Cog/Test/Config/</directory>
+		</testsuite>
 		<testsuite name="Console">
 			<directory>./tests/Message/Cog/Test/Console/</directory>
 		</testsuite>
