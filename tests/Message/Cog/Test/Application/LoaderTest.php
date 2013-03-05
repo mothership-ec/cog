@@ -408,8 +408,7 @@ namespace Message\Cog\Test\Application {
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 			$container = new FauxContainer;
 
-			$loader->setServiceContainer($container);
-
+			$this->assertEquals($loader, $loader->setServiceContainer($container));
 			$this->assertEquals($loader, $loader->initialise());
 			$this->assertEquals($loader, $loader->loadCog());
 
@@ -418,7 +417,6 @@ namespace Message\Cog\Test\Application {
 			});
 
 			$this->assertEquals($loader, $loader->loadModules());
-			$this->assertEquals($loader, $loader->setServiceContainer(new FauxContainer));
 		}
 	}
 }
