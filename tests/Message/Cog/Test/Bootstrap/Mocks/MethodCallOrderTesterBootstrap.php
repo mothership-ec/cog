@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Test\Bootstrap;
+namespace Message\Cog\Test\Bootstrap\Mocks;
 
 use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Cog\Bootstrap\RoutesInterface;
@@ -23,22 +23,22 @@ class MethodCallOrderTesterBootstrap implements ServicesInterface,
 
 	public function registerServices($serviceContainer)
 	{
-		$this->_calls[] = __METHOD__;
+		$this->_calls[] = 'registerServices';
 	}
 
 	public function registerRoutes($router)
 	{
-		$this->_calls[] = __METHOD__;
+		$this->_calls[] = 'registerRoutes';
 	}
 
 	public function registerEvents($eventDispatcher)
 	{
-		$this->_calls[] = __METHOD__;
+		$this->_calls[] = 'registerEvents';
 	}
 
 	public function registerTasks($taskCollection)
 	{
-		$this->_calls[] = __METHOD__;
+		$this->_calls[] = 'registerTasks';
 	}
 
 	/**

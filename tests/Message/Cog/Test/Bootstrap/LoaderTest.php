@@ -3,13 +3,25 @@
 namespace Message\Cog\Test\Bootstrap;
 
 use Message\Cog\Bootstrap\Loader;
+use Message\Cog\HTTP\Request;
 
+use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Service\FauxContainer;
+use Message\Cog\Test\Routing\FauxRouter;
+use Message\Cog\Test\Event\FauxDispatcher;
 
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_services;
 	protected $_loader;
+
+	static public function getContexts()
+	{
+		return array(
+			array('console'),
+			array('web'),
+		);
+	}
 
 	public function setUp()
 	{
@@ -19,14 +31,14 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 	public function testChainability()
 	{
-		$this->assertEquals($this->_loader, $this->_loader->add(new FauxServiceBootstrap));
+		$this->assertEquals($this->_loader, $this->_loader->add(new Mocks\FauxFullBootstrap));
 		$this->assertEquals($this->_loader, $this->_loader->addFromDirectory(dirname(__FILE__), 'Not\A\Namespace'));
 		$this->assertEquals($this->_loader, $this->_loader->clear());
 	}
 
 	public function testAdd()
 	{
-		$bootstrap = new FauxServiceBootstrap;
+		$bootstrap = new Mocks\FauxFullBootstrap;
 
 		$this->assertInternalType('array', $this->_loader->getBootstraps());
 		$this->assertEmpty($this->_loader->getBootstraps());
@@ -49,6 +61,11 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEmpty($loader->getBootstraps());
 	}
 
+	/**
+	 * @todo Refactor so this test does not assume the directory read ordering
+	 *       will be by filename ascending - this might be different on different
+	 *       operating systems or distros.
+	 */
 	public function testAddFromDirectory()
 	{
 		// test non-php files are skipped
@@ -56,24 +73,97 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		// test ContainerAware classes dealt with
 		// test RequestAware classes dealt with
 		// test only added if they implement BootstrapInterface
+
+		$this->_services['request'] = $this->_services->share(function() {
+			return new Request;
+		});
+
+		$this->_loader->addFromDirectory(dirname(__FILE__) . '/Mocks', 'Message\Cog\Test\Bootstrap\Mocks');
+
+		$bootstraps = $this->_loader->getBootstraps();
+
+		// Assert the valid bootstraps were loaded
+		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\ContainerAwareBootstrap', $bootstraps[0]);
+		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\FauxFullBootstrap', $bootstraps[1]);
+		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\MethodCallOrderTesterBootstrap', $bootstraps[2]);
+		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\RequestAwareBootstrap', $bootstraps[3]);
+
+		// Assert the 'Aware' bootstraps were made aware!
+		$this->assertEquals($this->_services, $bootstraps[0]);
+		$this->assertEquals($this->_services['request'], $bootstraps[3]);
 	}
 
-	public function testLoad()
+	/**
+	 * @dataProvider getContexts
+	 */
+	public function testLoad($context)
 	{
-		// test that registerServices, registerRoutes and registerEvents are all
-		// called and passed the correct service
-		// also test they run in the correct order
-		// test getBootstraps() is empty after (clear is called)
+		$methodCallLoggingBootstrap = new Mocks\MethodCallOrderTesterBootstrap;
+		$mockBootstrap              = $this->getMock('Message\Cog\Test\Bootstrap\Mocks\FauxFullBootstrap');
+		$registerMethodOrder        = array(
+			'registerServices',
+			'registerRoutes',
+			'registerEvents',
+		);
 
-		$this->_loader->add(new FauxServiceBootstrap);
-		$this->_loader->add(new MethodCallOrderTesterBootstrap);
-		// also add a mock that expects the correct inputs & calls
+		$this->_services['router'] = function() {
+			return new FauxRouter;
+		};
 
-	}
+		$this->_services['event.dispatcher'] = function() {
+			return new FauxDispatcher;
+		};
 
-	public function testLoadTasks()
-	{
-		// test that registerTasks is called, passed the correct service and is
-		// only called when in console context
+		$this->_services['task.collection'] = function() {
+			return array();
+		};
+
+		$this->_services['environment'] = $this->_services->share(function() use ($context) {
+			$env = new FauxEnvironment;
+			$env->setContext($context);
+
+			return $env;
+		});
+
+		// If in console, add expectations for task registration
+		if ('console' === $context) {
+			$mockBootstrap
+				->expects($this->exactly(1))
+				->method('registerTasks')
+				->with($this->_services['task.collection']);
+
+			$registerMethodOrder[] = 'registerTasks';
+		}
+
+		// Set up mock expectations
+		$mockBootstrap
+			->expects($this->exactly(1))
+			->method('registerServices')
+			->with($this->_services);
+
+		$mockBootstrap
+			->expects($this->exactly(1))
+			->method('registerRoutes')
+			->with($this->_services['router']);
+
+		$mockBootstrap
+			->expects($this->exactly(1))
+			->method('registerEvents')
+			->with($this->_services['event.dispatcher']);
+
+		// Add the bootstraps
+		$this->_loader
+			->add(new Mocks\FauxFullBootstrap)
+			->add($methodCallLoggingBootstrap)
+			->add($mockBootstrap);
+
+		// Load the bootstraps
+		$this->_loader->load();
+
+		// Test that the register methods were called in the correct order
+		$this->assertEquals($registerMethodOrder, $methodCallLoggingBootstrap->getCalls());
+
+		// Test the bootstraps were cleared from the loader
+		$this->assertEmpty($this->_loader->getBootstraps());
 	}
 }
