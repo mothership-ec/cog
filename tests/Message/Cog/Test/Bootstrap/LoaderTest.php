@@ -68,12 +68,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testAddFromDirectory()
 	{
-		// test non-php files are skipped
-		// test files skipped if class not found
-		// test ContainerAware classes dealt with
-		// test RequestAware classes dealt with
-		// test only added if they implement BootstrapInterface
-
 		$this->_services['request'] = $this->_services->share(function() {
 			return new Request;
 		});
@@ -82,15 +76,16 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 		$bootstraps = $this->_loader->getBootstraps();
 
-		// Assert the valid bootstraps were loaded
+		// Assert only the valid bootstraps were loaded
+		$this->assertCount(4, $bootstraps);
 		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\ContainerAwareBootstrap', $bootstraps[0]);
 		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\FauxFullBootstrap', $bootstraps[1]);
 		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\MethodCallOrderTesterBootstrap', $bootstraps[2]);
 		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\RequestAwareBootstrap', $bootstraps[3]);
 
 		// Assert the 'Aware' bootstraps were made aware!
-		$this->assertEquals($this->_services, $bootstraps[0]);
-		$this->assertEquals($this->_services['request'], $bootstraps[3]);
+		$this->assertEquals($this->_services, $bootstraps[0]->getContainer());
+		$this->assertEquals($this->_services['request'], $bootstraps[3]->getRequest());
 	}
 
 	/**
