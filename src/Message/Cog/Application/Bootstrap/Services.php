@@ -71,23 +71,29 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
+			$viewNameParser = new \Message\Cog\Templating\ViewNameParser(
+				$c,
+				$c['reference_parser'],
+				array(
+					'twig',
+					'php',
+				)
+			);
+
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
 					new \Message\Cog\Templating\PhpEngine(
-						new \Message\Cog\Templating\ViewNameParser(
-							$c,
-							$c['reference_parser'],
-							array(
-								'twig',
-								'php',
-							)
-						),
+						$viewNameParser,
 						new \Symfony\Component\Templating\Loader\FilesystemLoader(
 							$c['app.loader']->getBaseDir()
 						),
 						array(
 							new \Symfony\Component\Templating\Helper\SlotsHelper
 						)
+					),
+					new \Message\Cog\Templating\TwigEngine(
+						new \Twig_Environment($loader),
+						$viewNameParser
 					),
 				)
 			);
