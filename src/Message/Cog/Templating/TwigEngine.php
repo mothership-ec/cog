@@ -2,8 +2,8 @@
 
 namespace Message\Cog\Templating;
 
-use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Templating\StreamingEngineInterface;
+use Symfony\Component\Templating\TemplateNameParserInterface;
 
 use Twig_Environment;
 use Twig_Template;

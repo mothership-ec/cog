@@ -70,6 +70,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Controller\ControllerResolver;
 		});
 
+		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
 			$viewNameParser = new \Message\Cog\Templating\ViewNameParser(
 				$c,
@@ -82,6 +83,14 @@ class Services implements ServicesInterface
 
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
+					// Twig templating engine
+					new \Message\Cog\Templating\TwigEngine(
+						new \Twig_Environment(
+							new \Twig_Loader_Filesystem($c['app.loader']->getBaseDir())
+						),
+						$viewNameParser
+					),
+					// Plain PHP templating engine
 					new \Message\Cog\Templating\PhpEngine(
 						$viewNameParser,
 						new \Symfony\Component\Templating\Loader\FilesystemLoader(
@@ -90,10 +99,6 @@ class Services implements ServicesInterface
 						array(
 							new \Symfony\Component\Templating\Helper\SlotsHelper
 						)
-					),
-					new \Message\Cog\Templating\TwigEngine(
-						new \Twig_Environment($loader),
-						$viewNameParser
 					),
 				)
 			);
