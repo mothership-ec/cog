@@ -86,7 +86,7 @@ class Services implements ServicesInterface
 					// Twig templating engine
 					new \Message\Cog\Templating\TwigEngine(
 						new \Twig_Environment(
-							new \Twig_Loader_Filesystem('/')
+							new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser)
 						),
 						$viewNameParser
 					),
