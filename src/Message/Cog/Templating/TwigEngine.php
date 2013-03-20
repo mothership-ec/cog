@@ -51,8 +51,8 @@ class TwigEngine implements EngineInterface, StreamingEngineInterface
 	/**
 	 * Stream a view.
 	 *
-	 * @param  mixed $name       A view reference
-	 * @param  array $parameters An array of parameters to pass to the view
+	 * @param mixed $name       A view reference
+	 * @param array $parameters An array of parameters to pass to the view
 	 */
 	public function stream($name, array $parameters = array())
 	{
