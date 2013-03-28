@@ -58,16 +58,25 @@ class Bcrypt implements HashInterface
 		}
 
 		// Using a salt formatted in this way tells crypt() to use bcrypt
-		$bcrypt_salt = '$2a$' . str_pad(self::WORK_FACTOR, 2, '0', STR_PAD_LEFT) . '$'
+		$bcryptSalt = '$2a$' . str_pad(self::WORK_FACTOR, 2, '0', STR_PAD_LEFT) . '$'
 					 . substr($salt, 0, 22);
 
-		return crypt($password, $bcrypt_salt);
+		$crypto = crypt($password, $bcryptSalt);
+
+		if($crypto == '*0'){
+			throw new \InvalidArgumentException(sprintf(
+				'Salt `%s` contains invalid characters.',
+				$salt
+				));
+		} else {
+			return $crypto;
+		}
 	}
 
 	/**
 	 * Check if a string matches a bcrypt hash.
 	 *
-	 * @param  string $string String to check
+	 * @param  string $string Plain text string to check
 	 * @param  string $hash   Full bcrypt hashed string
 	 *
 	 * @return boolean        Result of match check

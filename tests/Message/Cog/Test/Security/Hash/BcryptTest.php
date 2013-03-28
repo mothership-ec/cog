@@ -22,7 +22,8 @@ class BcryptTest extends \PHPUnit_Framework_TestCase
 	public function testEncryptWithShortSalt()
 	{
 		// the below just makes the test pass temporarily
-		throw new \InvalidArgumentException('must be at least 22 bytes');
+		// throw new \InvalidArgumentException('must be at least 22 bytes');
+		$this->_hash->encrypt('teststring', 'thisaint22');
 	}
 
 	public function testEncryptSaltGeneratedWhenNonePassed()
@@ -38,16 +39,32 @@ class BcryptTest extends \PHPUnit_Framework_TestCase
 
 	public function testPasswordEncrypting()
 	{
+		$hashed = $this->_hash->encrypt('aTestString', 'ThisIsASaltThisIsASalt');
 
+		$correctHash = '$2a$08$ThisIsASaltThisIsASaleOLLUepKCwdx3DsV55G8gHdWpoJN51Tq';
+		$this->assertEquals($hashed, $correctHash);
 	}
 
 	public function testHashedPasswordDifferent()
 	{
-
+		$hashed = $this->_hash->encrypt('teststring', 'teststringteststringteststring');
+		$this->assertNotEquals('teststring', $hashed);
 	}
 
 	public function testFailedCheckReturnsFalse()
 	{
+		$hashedString = '$2a$08$teststringteststringte3pPJGRyq.zU1T3w1gBA8hiqk1CuMAAu';
+		$diff = $this->_hash->check('teststring', $hashedString);
+ 
+		$this->assertTrue($diff);
+	}
 
+	/**
+	* @expectedException 		\InvalidArgumentException
+	* @expectedExceptionMessage contains invalid characters.
+	*/
+	public function testDisallowedCharactersInSalt()
+	{
+		$this->_hash->encrypt('testString', '**invalid_salt-Invalid_salt**');
 	}
 }

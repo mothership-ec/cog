@@ -58,6 +58,8 @@ class BcryptTest extends \PHPUnit_Framework_TestCase
 			array(''), // empty string, shock horror!
 			array(' '),
 			array('PASSWORDREALLYLONG AND HAS LOTS OF SPACES'),
+			array('123456789'), // integers
+			array('"|\/{}][]!@£$%^&*()_+=-'), // ascii characters
 		);
 	}
 }
