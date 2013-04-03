@@ -36,6 +36,9 @@ class Bcrypt implements HashInterface
 	 *
 	 * The salt passed must be 22 bytes or more. Only the first 22 bytes will be
 	 * used as the salt.
+	 * 
+	 * Generates *0 if invalid characters are used. Exception thrown if
+  	 * *0 is returned.
 	 *
 	 * @param  string      $string String to hash
 	 * @param  string|null $salt   Salt to use
@@ -43,6 +46,7 @@ class Bcrypt implements HashInterface
 	 * @return string              The hashed value
 	 *
 	 * @throws \InvalidArgumentException If the salt is less than 22 bytes long
+	 * @throws \InvalidArgumentException If the sale contains invalid characters
 	 */
 	public function encrypt($password, $salt = null)
 	{

@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Security\Hash;
 
+use Message\Cog\Security\Salt;
+
 /**
  * An implementation of the hashing component for OSCommerce's custom hashing
  * algorithm using md5 and randomised salts.
@@ -14,6 +16,18 @@ namespace Message\Cog\Security\Hash;
 class OSCommerce implements HashInterface
 {
 	const SALT_SEPARATOR = ':';
+
+	protected $saltGenerator;
+
+	/**
+	 * __construct()
+	 *
+	 * @param Salt $saltGenerator - Instantiation of psuedorandom string generator class
+	 */ 
+	public function __construct($saltGenerator)
+	{
+		$this->_saltGenerator = $saltGenerator;
+	}
 
 	/**
 	 * Hash a string using the OSCommerce hashing algorithm.
@@ -44,6 +58,7 @@ class OSCommerce implements HashInterface
 		return $hash;
 	}
 
+
 	/**
 	 * Check if a string matches an OSCommerce hashed string.
 	 *
@@ -62,9 +77,8 @@ class OSCommerce implements HashInterface
 
 		// Sets separated salt array as a variable for array_pop to reference correctly
 		$array = explode(self::SALT_SEPARATOR, $hash);
-		$salt = array_pop($array);
-
-		return $hash === $this->encrypt($string, $salt);
+		
+		return $hash === $this->encrypt($string, $array);
 	}
 
 	/**

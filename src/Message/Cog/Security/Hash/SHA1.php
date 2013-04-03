@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Security\Hash;
 
+use Message\Cog\Security\Salt;
+
 /**
  * A SHA1 implementation for the hashing component. Uses an optional appended
  * salt.

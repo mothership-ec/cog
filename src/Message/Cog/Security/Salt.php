@@ -14,7 +14,7 @@ namespace Message\Cog\Security;
  */
 class Salt
 {
-	const DEFAULT_LENGTH = 5;
+	const DEFAULT_LENGTH = 32;
 
 	/**
 	 * Generates a pseudorandom string using the most preferred method.
