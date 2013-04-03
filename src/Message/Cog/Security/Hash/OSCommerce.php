@@ -60,7 +60,9 @@ class OSCommerce implements HashInterface
 			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
 		}
 
-		$salt = array_pop(explode(self::SALT_SEPARATOR, $hash));
+		// Sets separated salt array as a variable for array_pop to reference correctly
+		$array = explode(self::SALT_SEPARATOR, $hash);
+		$salt = array_pop($array);
 
 		return $hash === $this->encrypt($string, $salt);
 	}
