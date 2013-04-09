@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Message\Cog\Security\Hash;
 
@@ -16,9 +16,9 @@ class MD5 implements HashInterface
 	protected $_saltGenerator;
 
 	/**
-	* __construct
+	* Constructor.
 	*
-	* @param Salt $saltGenerator - Instantiation of psuedorandom string generator class
+	* @param Salt $saltGenerator The pseudorandom string generator class
 	*/
 	public function __construct(Salt $saltGenerator)
 	{
@@ -28,10 +28,10 @@ class MD5 implements HashInterface
 	/**
 	 * Hash a string implementing md5, with optional encryption salt
 	 *
-	 * @param  string 		$string String to be exposed to the md5 hashing process
-	 * @param  string|null 	$salt
+	 * @param  string      $string String to be exposed to the md5 hashing process
+	 * @param  string|null $salt
 	 *
-	 * @return string 		Hashed value
+	 * @return string      Hashed value
 	 */
 	public function encrypt($string, $salt = null)
 	{
@@ -45,30 +45,26 @@ class MD5 implements HashInterface
 	/**
 	 * Check if encrypted string matches md5 value
 	 *
-	 * Detects for a separator value (self::SALT_SEPARATOR) and extracts a salt if set.
-	 * Salt is then used to compare against the string. Throws exception if
-	 * no salt is given.
-	 * 
-	 * @param  string $string 	 String to be exposed to the checking
-	 * @param  string $hash 	 md5 hashed string
+	 * Detects a separator value (`self::SALT_SEPARATOR`) and extracts the salt
+	 * if set. The salt is then used to compare against the string.
 	 *
-	 * @return boolean 		     Result of check
+	 * @param  string $string String to be exposed to the checking
+	 * @param  string $hash   MD5 hashed string
+	 *
+	 * @return boolean        Result of check
 	 *
 	 * @throws \InvalidArgumentException If the hash does not contain a salt
 	 */
 	public function check($string, $hash)
 	{
 		$salt = null;
-		
+
 		if (false === strpos($hash, self::SALT_SEPARATOR)) {
 			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
 		}
 
 		// Creates new array out of hashed components
-		$array = explode(self::SALT_SEPARATOR, $hash);
-
-		// Sets popped array as $salt
-		$salt = array_pop($array);
+		list($plainHash, $salt) = explode(self::SALT_SEPARATOR, $hash, 2);
 
 		return ($hash === $this->encrypt($string, $salt));
 	}

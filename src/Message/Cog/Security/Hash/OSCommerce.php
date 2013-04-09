@@ -22,7 +22,7 @@ class OSCommerce implements HashInterface
 	/**
 	 * __construct()
 	 *
-	 * @param Salt $saltGenerator - Instantiation of psuedorandom string generator class
+	 * @param Salt $saltGenerator The pseudorandom string generator class
 	 */
 	public function __construct($saltGenerator)
 	{

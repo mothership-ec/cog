@@ -36,7 +36,7 @@ class Bcrypt implements HashInterface
 	 *
 	 * The salt passed must be 22 bytes or more. Only the first 22 bytes will be
 	 * used as the salt.
-	 * 
+	 *
 	 * Generates *0 if invalid characters are used. Exception thrown if
   	 * *0 is returned.
 	 *
@@ -71,7 +71,7 @@ class Bcrypt implements HashInterface
 			throw new \InvalidArgumentException(sprintf(
 				'Salt `%s` contains invalid characters.',
 				$salt
-				));
+			));
 		} else {
 			return $crypto;
 		}
