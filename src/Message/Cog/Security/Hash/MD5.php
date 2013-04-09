@@ -46,26 +46,29 @@ class MD5 implements HashInterface
 	 * Check if encrypted string matches md5 value
 	 *
 	 * Detects for a separator value (self::SALT_SEPARATOR) and extracts a salt if set.
-	 * Salt is then used to compare against the string.
+	 * Salt is then used to compare against the string. Throws exception if
+	 * no salt is given.
 	 * 
 	 * @param  string $string 	 String to be exposed to the checking
 	 * @param  string $hash 	 md5 hashed string
 	 *
-	 * @return boolean 		     Result of check 
+	 * @return boolean 		     Result of check
+	 *
+	 * @throws \InvalidArgumentException If the hash does not contain a salt
 	 */
 	public function check($string, $hash)
 	{
 		$salt = null;
-
-		// Locates salt then extracts it
-		if (false !== strpos($hash, self::SALT_SEPARATOR)) {
-
-			// Creates new array out of hashed components
-			$array = explode(SELF::SALT_SEPARATOR, $hash);
-
-			// Sets popped array as $salt
-			$salt = array_pop($array);
+		
+		if (false === strpos($hash, self::SALT_SEPARATOR)) {
+			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
 		}
+
+		// Creates new array out of hashed components
+		$array = explode(self::SALT_SEPARATOR, $hash);
+
+		// Sets popped array as $salt
+		$salt = array_pop($array);
 
 		return ($hash === $this->encrypt($string, $salt));
 	}

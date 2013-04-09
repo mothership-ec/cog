@@ -38,12 +38,25 @@ class MD5Test extends \PHPUnit_Framework_TestCase
 
 	public function testCheckTrue()
 	{
-		
+		$hashed = $this->_hash->encrypt('aTestString', 'ThisIsASaltThisIsASalt');
+
+		$this->assertTrue($this->_hash->check('aTestString', $hashed));
 	}
 
-	public function testCheckFalse()
+	/**
+	 * @dataProvider getStrings
+	 */
+	public function testCheckFalse($string)
 	{
+		$this->assertFalse($this->_hash->check($string, 'invalidhash:invalidsalt'));
+	}
 
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testCheckInvalidHashThrowsException()
+	{
+		$this->assertFalse($this->_hash->check('test string', 'invalid hash'));
 	}
 
 	public function getStrings()

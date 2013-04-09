@@ -51,22 +51,28 @@ class SHA1 implements HashInterface
 	 * Check if a string matches a SHA1 hash.
 	 *
 	 * Detects presence of the separator value set as `self::SALT_SEPARATOR` and
-	 * finds the salt, if set, to use to compare the string.
+	 * finds the salt, if set, to use to compare the string. Throws exception if
+	 * no salt is given.
 	 *
 	 * @param  string $string String to check
 	 * @param  string $hash   Full SHA1 hashed string
 	 *
 	 * @return boolean        Result of match check
+	 *
+	 * @throws \InvalidArgumentException If the hash does not contain a salt
 	 */
 	public function check($string, $hash)
 	{
 		$salt = null;
 
-		// Look for a salt, extract it
-		if (false !== strpos($hash, self::SALT_SEPARATOR)) {
-			$salt = array_pop(explode(self::SALT_SEPARATOR, $hash));
+		if (false === strpos($hash, self::SALT_SEPARATOR)) {
+			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
 		}
 
+		// Look for a salt, extract it
+		$array = explode(self::SALT_SEPARATOR, $hash);
+		$salt = array_pop($array);
+	
 		return ($hash === $this->encrypt($string, $salt));
 	}
 }

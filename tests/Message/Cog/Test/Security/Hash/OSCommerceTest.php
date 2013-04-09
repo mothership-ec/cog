@@ -35,7 +35,7 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 		$this->assertNotEquals($hashed, $correctHash);
 	}
 
-	public function testCheckReturnsTrue()
+	public function testCheckTrue()
 	{
 		$hashed = $this->_hash->encrypt('aTestString', 'ThisIsASaltThisIsASalt');
 
@@ -46,7 +46,7 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @dataProvider getStrings 
 	 */
-	public function testFailedCheckReturnsFalse($string)
+	public function testCheckFalse($string)
 	{
 		$this->assertFalse($this->_hash->check($string, 'invalidhash:invalid'));
 	}
