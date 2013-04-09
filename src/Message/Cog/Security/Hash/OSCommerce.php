@@ -23,7 +23,7 @@ class OSCommerce implements HashInterface
 	 * __construct()
 	 *
 	 * @param Salt $saltGenerator - Instantiation of psuedorandom string generator class
-	 */ 
+	 */
 	public function __construct($saltGenerator)
 	{
 		$this->_saltGenerator = $saltGenerator;
@@ -75,10 +75,9 @@ class OSCommerce implements HashInterface
 			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
 		}
 
-		// Sets separated salt array as a variable for array_pop to reference correctly
-		$array = explode(self::SALT_SEPARATOR, $hash);
-		
-		return $hash === $this->encrypt($string, $array);
+		list($plainHash, $salt) = explode(self::SALT_SEPARATOR, $hash, 2);
+
+		return $hash === $this->encrypt($string, $salt);
 	}
 
 	/**
