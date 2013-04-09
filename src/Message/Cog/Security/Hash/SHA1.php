@@ -70,9 +70,8 @@ class SHA1 implements HashInterface
 		}
 
 		// Look for a salt, extract it
-		$array = explode(self::SALT_SEPARATOR, $hash);
-		$salt = array_pop($array);
-	
+		list($plainHash, $salt) = explode(self::SALT_SEPARATOR, $hash, 2);
+
 		return ($hash === $this->encrypt($string, $salt));
 	}
 }
