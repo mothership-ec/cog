@@ -12,13 +12,13 @@ class Text implements CollectionInterface
 {
 	public function register(Loader $loader)
 	{
-		$loader->registerRule('alnum', array($this, 'alnum'), '%s must%s be alphanumeric.');
-		$loader->registerRule('alpha', array($this, 'alpha'), '%s must%s be alphabetical.');
-		$loader->registerRule('digit', array($this, 'digit'), '%s must%s only contain digits.');
-		$loader->registerRule('length', array($this, 'length'), '%s must%s be between %s and %s characters.');
-		$loader->registerRule('email', array($this, 'email'), '%s must%s be a valid email address.');
-		$loader->registerRule('url', array($this, 'url'), '%s must%s be a valid URL.');
-		$loader->registerRule('match', array($this, 'match'), '%s must%s match the regular expression %s.');
+		$loader->registerRule('alnum', array($this, 'alnum'), '%s must%s be alphanumeric.')
+			->registerRule('alpha', array($this, 'alpha'), '%s must%s be alphabetical.')
+			->registerRule('digit', array($this, 'digit'), '%s must%s only contain digits.')
+			->registerRule('length', array($this, 'length'), '%s must%s be between %s and %s characters.')
+			->registerRule('email', array($this, 'email'), '%s must%s be a valid email address.')
+			->registerRule('url', array($this, 'url'), '%s must%s be a valid URL.')
+			->registerRule('match', array($this, 'match'), '%s must%s match the regular expression %s.');
 	}
 
 	public function alnum($var)

@@ -12,12 +12,12 @@ class Text implements CollectionInterface
 {
 	public function register(Loader $loader)
 	{
-		$loader->registerFilter('uppercase',  array($this, 'uppercase'));
-		$loader->registerFilter('lowercase',  array($this, 'lowercase'));
-		$loader->registerFilter('prefix',     array($this, 'prefix'));
-		$loader->registerFilter('suffix',     array($this, 'suffix'));
-		$loader->registerFilter('trim',       array($this, 'trim'));
-		$loader->registerFilter('capitalize', array($this, 'capitalize'));
+		$loader->registerFilter('uppercase',  array($this, 'uppercase'))
+			->registerFilter('lowercase',  array($this, 'lowercase'))
+			->registerFilter('prefix',     array($this, 'prefix'))
+			->registerFilter('suffix',     array($this, 'suffix'))
+			->registerFilter('trim',       array($this, 'trim'))
+			->registerFilter('capitalize', array($this, 'capitalize'));
 	}
 
 	/**

@@ -16,17 +16,17 @@ class Type implements CollectionInterface
 
 	public function register(Loader $loader)
 	{
-		$loader->registerFilter('string',  array($this, 'string'));
-		$loader->registerFilter('int',     array($this, 'integer'));
-		$loader->registerFilter('integer', array($this, 'integer'));
-		$loader->registerFilter('float',   array($this, 'float'));
-		$loader->registerFilter('boolean', array($this, 'boolean'));
-		$loader->registerFilter('bool',    array($this, 'boolean'));
-		$loader->registerFilter('array',   array($this, 'toArray'));
-		$loader->registerFilter('object',  array($this, 'object'));
-		$loader->registerFilter('date',    array($this, 'date'));
-		// Not sure why you'd want to use the following but included for completeness
-		$loader->registerFilter('null',    array($this, 'null')); 
+		$loader->registerFilter('string',  array($this, 'string'))
+			->registerFilter('int',     array($this, 'integer'))
+			->registerFilter('integer', array($this, 'integer'))
+			->registerFilter('float',   array($this, 'float'))
+			->registerFilter('boolean', array($this, 'boolean'))
+			->registerFilter('bool',    array($this, 'boolean'))
+			->registerFilter('array',   array($this, 'toArray'))
+			->registerFilter('\ArrayObject', array($this, 'toArrayObject'))
+			->registerFilter('date',    array($this, 'date'))
+			// Not sure why you'd want to use the following but included for completeness
+			->registerFilter('null',    array($this, 'null'));
 	}
 
 	/**

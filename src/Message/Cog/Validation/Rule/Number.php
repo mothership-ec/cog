@@ -12,9 +12,9 @@ class Number implements CollectionInterface
 {
 	public function register(Loader $loader)
 	{
-		$loader->registerRule('min', array($this, 'min'), '%s must%s be equal to or greater than %s.');
-		$loader->registerRule('max', array($this, 'max'), '%s must%s be less than or equal to %s.');
-		$loader->registerRule('between', array($this, 'between'), '%s must%s be between %s and %s.');
+		$loader->registerRule('min', array($this, 'min'), '%s must%s be equal to or greater than %s.')
+			->registerRule('max', array($this, 'max'), '%s must%s be less than or equal to %s.')
+			->registerRule('between', array($this, 'between'), '%s must%s be between %s and %s.');
 	}
 
 	public function min($var, $min)
@@ -29,7 +29,7 @@ class Number implements CollectionInterface
 
 	public function between($var, $min, $max)
 	{
-		return $this->min($min) && $this->max($max);
+		return $this->min($var, $min) && $this->max($var, $max);
 	}
 
 }

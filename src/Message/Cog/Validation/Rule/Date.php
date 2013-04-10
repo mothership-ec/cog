@@ -12,8 +12,8 @@ class Date implements CollectionInterface
 {
 	public function register(Loader $loader)
 	{
-		$loader->registerRule('before', array($this, 'before'), '%s must%s be before %s.');
-		$loader->registerRule('after', array($this, 'after'), '%s must%s be after %s.');
+		$loader->registerRule('before', array($this, 'before'), '%s must%s be before %s.')
+			->registerRule('after', array($this, 'after'), '%s must%s be after %s.');
 	}
 
 	public function before(\DateTime $var, \DateTime $target)
