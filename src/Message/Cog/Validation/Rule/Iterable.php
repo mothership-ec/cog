@@ -28,6 +28,12 @@ class Iterable implements CollectionInterface
 		return true;
 	}
 
+	/**
+	 * @param array $var
+	 * @param $func
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function validateEach($var, $func)
 	{
 		$validator = new Validator();

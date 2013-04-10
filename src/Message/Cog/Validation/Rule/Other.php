@@ -19,7 +19,12 @@ class Other implements CollectionInterface
 		$loader->registerRule('rule', array($this, 'rule'), '%s must%s pass a custom rule.');
 	}
 
-	public function rule($func)
+	/**
+	 * @param string $var
+	 * @param string $func
+	 * @return mixed
+	 */
+	public function rule($var, $func)
 	{
 		return $func($var, $this->_validator->getData());
 	}

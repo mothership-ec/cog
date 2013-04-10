@@ -73,7 +73,7 @@ class Text implements CollectionInterface
 
 	/**
 	 * @param string $text
-	 * @param null $chars
+	 * @param string | null $chars
 	 * @return string
 	 */
 	public function trim($text, $chars = null)
@@ -87,7 +87,7 @@ class Text implements CollectionInterface
 
 	/**
 	 * @param string $text
-	 * @param null $chars
+	 * @param string | null $chars
 	 * @return string
 	 */
 	public function rtrim($text, $chars = null)
@@ -101,7 +101,7 @@ class Text implements CollectionInterface
 
 	/**
 	 * @param string $text
-	 * @param null $chars
+	 * @param string | null $chars
 	 * @return string
 	 */
 	public function ltrim($text, $chars = null)
