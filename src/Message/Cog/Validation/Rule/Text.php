@@ -3,13 +3,14 @@
 namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\CollectionInterface;
+use Message\Cog\Validation\Loader;
 
 /**
 * Rules
 */
 class Text implements CollectionInterface
 {
-	public function register($loader)
+	public function register(Loader $loader)
 	{
 		$loader->registerRule('alnum', array($this, 'alnum'), '%s must%s be alphanumeric.');
 		$loader->registerRule('alpha', array($this, 'alpha'), '%s must%s be alphabetical.');

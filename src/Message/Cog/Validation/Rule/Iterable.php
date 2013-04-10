@@ -4,13 +4,14 @@ namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Validator;
+use Message\Cog\Validation\Loader;
 
 /**
 * Rules
 */
 class Iterable implements CollectionInterface
 {
-	public function register($loader)
+	public function register(Loader $loader)
 	{
 		$loader->registerRule('each', array($this, 'each'), '%s must%s be valid.');
 		$loader->registerRule('validateEach', array($this, 'validateEach'), '%s must%s be valid.');

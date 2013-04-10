@@ -20,6 +20,11 @@ class Loader
 		}
 	}
 
+	/**
+	 * @param array $classes
+	 * @return $this
+	 * @throws \Exception
+	 */
 	public function registerClasses(array $classes)
 	{
 		foreach($classes as $class) {
@@ -31,8 +36,14 @@ class Loader
 
 			$collection->register($this);
 		}
+
+		return $this;
 	}
 
+	/**
+	 * @param $name
+	 * @return bool
+	 */
 	public function getRule($name)
 	{
 		if(!isset($this->_rules[$name])) {
@@ -42,11 +53,18 @@ class Loader
 		return $this->_rules[$name];
 	}
 
+	/**
+	 * @return Validator
+	 */
 	public function getValidator()
 	{
 		return $this->_validator;
 	}
 
+	/**
+	 * @param $name
+	 * @return bool
+	 */
 	public function getFilter($name)
 	{
 		if(!isset($this->_filters[$name])) {
@@ -56,17 +74,39 @@ class Loader
 		return $this->_filters[$name];
 	}
 
+	/**
+	 * @param $name
+	 * @param $func
+	 * @param $errorMessage
+	 * @return $this
+	 */
 	public function registerRule($name, $func, $errorMessage)
 	{
 		$this->_register('rule', $name, $func);
 		$this->_messages->setDefaultErrorMessage($name, $errorMessage);
+
+		return $this;
 	}
 
+	/**
+	 * @param $name
+	 * @param $func
+	 * @return $this
+	 */
 	public function registerFilter($name, $func)
 	{
 		$this->_register('filter', $name, $func);
+
+		return $this;
 	}
 
+	/**
+	 * @param $type
+	 * @param $name
+	 * @param $func
+	 * @throws \Exception
+	 * @return $this
+	 */
 	protected function _register($type, $name, $func)
 	{
 		if(!is_callable($func)) {
@@ -79,5 +119,7 @@ class Loader
 
 		$attr = '_'.$type.'s';
 		$this->{$attr}[$name] = $func;
+
+		return $this;
 	}
 }

@@ -3,6 +3,7 @@
 namespace Message\Cog\Validation\Filter;
 
 use Message\Cog\Validation\CollectionInterface;
+use Message\Cog\Validation\Loader;
 
 /**
 * Type filters
@@ -13,7 +14,7 @@ class Type implements CollectionInterface
 {
 	protected $_defaultTimeZone = null;
 
-	public function register($loader)
+	public function register(Loader $loader)
 	{
 		$loader->registerFilter('string',  array($this, 'string'));
 		$loader->registerFilter('int',     array($this, 'integer'));
@@ -28,44 +29,77 @@ class Type implements CollectionInterface
 		$loader->registerFilter('null',    array($this, 'null')); 
 	}
 
+	/**
+	 * @param $var
+	 * @return string
+	 */
 	public function string($var)
 	{
 		return (string)$var;
 	}
 
+	/**
+	 * @param $var
+	 * @return int
+	 */
 	public function integer($var)
 	{
 		return (integer)$var;
 	}
 
+	/**
+	 * @param $var
+	 * @return float
+	 */
 	public function float($var)
 	{
 		return (float)$var;
 	}
 
+	/**
+	 * @param $var
+	 * @return bool
+	 */
 	public function boolean($var)
 	{
-		return (boolean)$var;
+		return (boolean) $var;
 	}
 
+	/**
+	 * @param $var
+	 * @return array
+	 */
 	public function toArray($var)
 	{
-		return (array)$var;
+		return (array) $var;
 	}
 
+	/**
+	 * @param $var
+	 * @return \ArrayObject
+	 */
+	public function toArrayObject($var)
+	{
+		return new \ArrayObject((array) $var);
+	}
+
+	/**
+	 * @param $var
+	 * @return object
+	 */
 	public function object($var)
 	{
-		return (object)$var;
+		return (object) $var;
 	}
 
 	/**
 	 * Attempts to turn a string, integer or array of integers into a DateTime object.
 	 * 
 	 * @param  mixed		$var      The variable to convert
-	 * @param  DateTimeZone $timezone An optional timezone to use
+	 * @param  \DateTimeZone $timezone An optional timezone to use
 	 * @param  array   		$keys     If $var is an array can be used to denote what values
 	 *                 		          should be keys.
-	 * @return DateTime				  The parsed DateTime value.
+	 * @return \DateTime				  The parsed DateTime value.
 	 */
 	public function date($var, \DateTimeZone $timezone = null, array $keys = array())
 	{
@@ -101,12 +135,22 @@ class Type implements CollectionInterface
 		return new \DateTime($var, $timezone);
 	}
 
+	/**
+	 * @param \DateTimeZone $tz
+	 * @return $this
+	 */
 	public function setDefaultTimeZone(\DateTimeZone $tz)
 	{
 		$this->_defaultTimeZone = $tz;
+
+		return $this;
 	}
 
- 	public function null($var)
+	/**
+	 * @param $var
+	 * @return null
+	 */
+	public function null($var)
  	{
  		return null;
  	}

@@ -24,6 +24,10 @@ class ConfigCache extends Config
 		}
 	}
 
+	/**
+	 * @param $path
+	 * @return string
+	 */
 	public function hashDirectory($path)
 	{
 		$hash      = '';

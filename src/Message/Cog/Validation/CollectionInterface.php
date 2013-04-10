@@ -4,5 +4,9 @@ namespace Message\Cog\Validation;
 
 interface CollectionInterface
 {
-	public function register($loader);
+	/**
+	 * @param Loader $loader
+	 * @return mixed
+	 */
+	public function register(Loader $loader);
 }

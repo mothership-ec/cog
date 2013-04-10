@@ -11,7 +11,15 @@ class Validator
 	protected $_fieldPointer;
 	protected $_rulePointer;
 	protected $_fields = array();
+
+	/**
+	 * @var Loader
+	 */
 	protected $_loader;
+
+	/**
+	 * @var Messages
+	 */
 	protected $_messages;
 
 	public function __construct()
@@ -20,6 +28,11 @@ class Validator
 		$this->_loadRules();
 	}
 
+	/**
+	 * Configures Loader class
+	 *
+	 * @return $this
+	 */
 	protected function _loadRules()
 	{
 		$this->_loader = new Loader($this, $this->_messages, array(
@@ -31,18 +44,31 @@ class Validator
 			'Message\\Cog\\Validation\\Filter\\Type',
 			'Message\\Cog\\Validation\\Filter\\Other',
 		));
+
+		return $this;
 	}
 
+	/**
+	 * @return Loader
+	 */
 	public function getLoader()
 	{
 		return $this->_loader;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getData()
 	{
 		return $this->_data;
 	}
 
+	/**
+	 * @param string $name
+	 * @param bool $readableName
+	 * @return $this
+	 */
 	public function field($name, $readableName = false)
 	{
 		if(!isset($this->_fields[$name])) {
@@ -53,6 +79,10 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * @param string $message
+	 * @return $this
+	 */
 	public function error($message)
 	{
 		$this->_rulePointer[4] = $message;
@@ -60,6 +90,9 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function optional()
 	{
 		$this->_fieldPointer['optional'] = true;
@@ -67,6 +100,12 @@ class Validator
 		return $this;
 	}
 
+	/**
+	 * @param $methodName
+	 * @param $args
+	 * @return $this
+	 * @throws \Exception
+	 */
 	public function __call($methodName, $args)
 	{
 		$invertResult = false;
@@ -97,24 +136,33 @@ class Validator
 		return $this;
 	}
 
-	public function validate($data)
+	/**
+	 * @param array $data
+	 * @return bool
+	 */
+	public function validate(array $data)
 	{
 		$this->_data = $data;
 		$this->_messages->clear();
-		$this->_applyFilters('pre');
-		$this->_applyRules();
-		$this->_applyFilters('post');
-		$this->_cleanData();
-
+		$this->_applyFilters('pre')
+			->_applyRules()
+			->_applyFilters('post')
+			->_cleanData();
 
 		return count($this->getMessages()) == 0;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getMessages()
 	{
 		return $this->_messages->get();
 	}
 
+	/**
+	 * @return $this
+	 */
 	protected function _cleanData()
 	{
 		$data = array();
@@ -126,8 +174,14 @@ class Validator
 		}
 
 		$this->_data = $data;
+
+		return $this;
 	}
 
+	/**
+	 * @param $type
+	 * @return $this
+	 */
 	protected function _applyFilters($type)
 	{
 		foreach($this->_fields as $name => $field) {
@@ -138,8 +192,13 @@ class Validator
 				$this->_data[$name] = $result;
 			}
 		}
+
+		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	protected function _applyRules()
 	{
 		foreach($this->_fields as $name => $field) {
@@ -165,8 +224,15 @@ class Validator
 			}
 			
 		}
+
+		return $this;
 	}
 
+	/**
+	 * @param $name
+	 * @param bool $readableName
+	 * @return $this
+	 */
 	protected function _createField($name, $readableName = false)
 	{
 		if($readableName === false) {
@@ -176,17 +242,16 @@ class Validator
 		}
 
 		$this->_fields[$name] = array(
-			'name'         => $name,
-			'readableName' => $readableName,
-			'optional'	   => false,
-			'rules'        => array(),
-			'filters'      => array(
-				'pre'	=> array(),
-				'post'  => array(),
+			'name'          => $name,
+			'readableName'  => $readableName,
+			'optional'	    => false,
+			'rules'         => array(),
+			'filters'       => array(
+			'pre'	        => array(),
+			'post'          => array(),
 			),
 		);
+
+		return $this;
 	}
-
-
-
 }

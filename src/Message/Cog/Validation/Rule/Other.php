@@ -3,6 +3,7 @@
 namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\CollectionInterface;
+use Message\Cog\Validation\Loader;
 
 /**
 * 
@@ -11,7 +12,7 @@ class Other implements CollectionInterface
 {
 	protected $_validator = null;
 
-	public function register($loader)
+	public function register(Loader $loader)
 	{
 		// Save the validator so that we can access it's data at a later time.
 		$this->_validator = $loader->getValidator();

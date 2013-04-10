@@ -50,6 +50,10 @@ class Config
 		return isset($this->_configs[$name]);
 	}
 
+	/**
+	 * @param $path
+	 * @return bool
+	 */
 	final protected function _loadDirectory($path)
 	{
 		if (!file_exists($path)) {
@@ -92,8 +96,15 @@ class Config
 				}
 			}
 		}
+
+		return true;
 	}
 
+	/**
+	 * @param $shortName
+	 * @param $yaml
+	 * @return $this
+	 */
 	final protected function _initConfig($shortName, $yaml)
 	{
 		// TODO: make this find configs in modules. How?
@@ -109,8 +120,15 @@ class Config
 				$this->_configs[$shortName] = is_array($yaml) ? array() : new stdClass;
 			}
 		}
+
+		return $this;
 	}
 
+	/**
+	 * @param $first
+	 * @param $second
+	 * @return array
+	 */
 	final protected function _replaceSettingsRecursive($first, $second)
 	{
 		// LOOP THROUGH FIRST GROUP

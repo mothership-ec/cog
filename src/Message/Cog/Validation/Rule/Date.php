@@ -3,13 +3,14 @@
 namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\CollectionInterface;
+use Message\Cog\Validation\Loader;
 
 /**
 * Date rules
 */
 class Date implements CollectionInterface
 {
-	public function register($loader)
+	public function register(Loader $loader)
 	{
 		$loader->registerRule('before', array($this, 'before'), '%s must%s be before %s.');
 		$loader->registerRule('after', array($this, 'after'), '%s must%s be after %s.');
@@ -17,11 +18,11 @@ class Date implements CollectionInterface
 
 	public function before(\DateTime $var, \DateTime $target)
 	{
-		return $var < $target
+		return $var < $target;
 	}
 
 	public function after(\DateTime $var, \DateTime $target)
 	{
-		return $var > $target
+		return $var > $target;
 	}
 }
