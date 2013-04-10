@@ -36,10 +36,10 @@ class Validator
 	protected function _loadRules()
 	{
 		$this->_loader = new Loader($this, $this->_messages, array(
-			'Message\\Cog\\Validation\\Rules\\Date',
-			'Message\\Cog\\Validation\\Rules\\Number',
-			'Message\\Cog\\Validation\\Rules\\Iterable',
-			'Message\\Cog\\Validation\\Rules\\Text',
+			'Message\\Cog\\Validation\\Rule\\Date',
+			'Message\\Cog\\Validation\\Rule\\Number',
+			'Message\\Cog\\Validation\\Rule\\Iterable',
+			'Message\\Cog\\Validation\\Rule\\Text',
 			'Message\\Cog\\Validation\\Filter\\Text',
 			'Message\\Cog\\Validation\\Filter\\Type',
 			'Message\\Cog\\Validation\\Filter\\Other',

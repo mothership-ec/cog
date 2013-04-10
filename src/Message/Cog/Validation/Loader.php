@@ -2,6 +2,7 @@
 
 namespace Message\Cog\Validation;
 
+
 /**
 * Loads and maintains a set of rules and filters to use in validation
 */

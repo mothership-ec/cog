@@ -12,12 +12,16 @@ class Text implements CollectionInterface
 {
 	public function register(Loader $loader)
 	{
-		$loader->registerFilter('uppercase',  array($this, 'uppercase'))
-			->registerFilter('lowercase',  array($this, 'lowercase'))
-			->registerFilter('prefix',     array($this, 'prefix'))
-			->registerFilter('suffix',     array($this, 'suffix'))
-			->registerFilter('trim',       array($this, 'trim'))
-			->registerFilter('capitalize', array($this, 'capitalize'));
+		$loader->registerFilter('uppercase',    array($this, 'uppercase'))
+			->registerFilter('lowercase',       array($this, 'lowercase'))
+			->registerFilter('titlecase',       array($this, 'titlecase'))
+			->registerFilter('prefix',          array($this, 'prefix'))
+			->registerFilter('suffix',          array($this, 'suffix'))
+			->registerFilter('trim',            array($this, 'trim'))
+			->registerFilter('rtrim',           array($this, 'rtrim'))
+			->registerFilter('ltrim',           array($this, 'ltrim'))
+			->registerFilter('capitalize',      array($this, 'capitalize'))
+			->registerFilter('replace',         array($this, 'replace'));
 	}
 
 	/**
@@ -65,6 +69,48 @@ class Text implements CollectionInterface
 	public function suffix($text, $suffix)
 	{
 		return $text.$suffix;
+	}
+
+	/**
+	 * @param string $text
+	 * @param null $chars
+	 * @return string
+	 */
+	public function trim($text, $chars = null)
+	{
+		if (!$chars) {
+			return trim($text);
+		}
+
+		return trim($text, $chars);
+	}
+
+	/**
+	 * @param string $text
+	 * @param null $chars
+	 * @return string
+	 */
+	public function rtrim($text, $chars = null)
+	{
+		if (!$chars) {
+			return rtrim($text);
+		}
+
+		return rtrim($text, $chars);
+	}
+
+	/**
+	 * @param string $text
+	 * @param null $chars
+	 * @return string
+	 */
+	public function ltrim($text, $chars = null)
+	{
+		if (!$chars) {
+			return ltrim($text);
+		}
+
+		return ltrim($text, $chars);
 	}
 
 	/**

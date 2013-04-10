@@ -26,5 +26,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 			'first_name' => 'assd64add]asd',
 			'email'	=> 'asda@sd.com',
 		));
+
+		$this->assertTrue(true);
 	}
 }

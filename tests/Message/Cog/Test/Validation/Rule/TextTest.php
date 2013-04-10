@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Test\Validation\Rule;
 
+use Message\Cog\Validation\Rule\Text;
+
 class TextTest extends \PHPUnit_Framework_TestCase
 {
 	public function setUp()
