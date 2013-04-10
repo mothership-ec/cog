@@ -21,7 +21,7 @@ class MD5Test extends \PHPUnit_Framework_TestCase
 	{
 		$hashed = $this->_hash->encrypt('aTestString', 'ThisIsASaltThisIsASalt');
 
-		$correctHash = '08073d3767ac0d725b01c620e432e4f4:';
+		$correctHash = '839fe6cd6eb560a2f9dbc19a2389c57d:ThisIsASaltThisIsASalt';
 		$this->assertEquals($hashed, $correctHash);
 	}
 

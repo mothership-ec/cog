@@ -50,7 +50,7 @@ class Bcrypt implements HashInterface
 	 */
 	public function encrypt($password, $salt = null)
 	{
-		if (!$salt) {
+		if (is_null($salt)) {
 			$salt = $this->_saltGenerator->generate(22);
 		}
 

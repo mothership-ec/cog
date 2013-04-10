@@ -35,7 +35,7 @@ class MD5 implements HashInterface
 	 */
 	public function encrypt($string, $salt = null)
 	{
-		if ($salt) {
+		if (is_null($salt)) {
 			$salt = $this->_saltGenerator->generate();
 		}
 

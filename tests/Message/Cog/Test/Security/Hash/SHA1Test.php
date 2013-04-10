@@ -19,7 +19,7 @@ class SHA1Test extends \PHPUnit_Framework_TestCase
 	{
 		$hashed = $this->_hash->encrypt('aTestString', 'ThisIsASaltThisIsASalt');
 
-		$correctHash = '67e761c6b62b03293cc7c0851a2a015266ec47cd:';
+		$correctHash = '6d8d7cc5a873f827bca59a36ad8b0b5e9b1f5698:ThisIsASaltThisIsASalt';
 		$this->assertEquals($hashed, $correctHash);
 	}
 
