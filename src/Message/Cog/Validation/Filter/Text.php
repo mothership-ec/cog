@@ -25,50 +25,72 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $text
+	 * @param string $text
 	 * @return string
 	 */
 	public function uppercase($text)
 	{
+		$this->_checkString($text);
+
 		return strtoupper($text);
 	}
 
 	/**
-	 * @param $text
+	 * @param string $text
 	 * @return string
 	 */
 	public function lowercase($text)
 	{
+		$this->_checkString($text);
+
 		return strtolower($text);
 	}
 
 	/**
-	 * @param $text
+	 * @todo make so it's not the same as capitalize
+	 *
+	 * @param string $text
+	 * @param bool $maintainCase
 	 * @return string
 	 */
-	public function titlecase($text)
+	public function titlecase($text, $maintainCase = false)
 	{
+		$this->_checkString($text);
+
+		if(!$maintainCase){
+			$text = strtolower($text);
+		}
 		return ucwords($text);
 	}
 
 	/**
 	 * @param $text
 	 * @param $prefix
+	 * @param string $delim
 	 * @return string
 	 */
-	public function prefix($text, $prefix)
+	public function prefix($text, $prefix, $delim = '')
 	{
-		return $prefix.$text;
+		$this->_checkString($text)
+			->_checkString($delim)
+			->_checkString($prefix);
+
+		return $prefix . $delim . $text;
 	}
 
 	/**
 	 * @param $text
 	 * @param $suffix
+	 * @param string $delim
 	 * @return string
 	 */
-	public function suffix($text, $suffix)
+	public function suffix($text, $suffix, $delim = '')
 	{
-		return $text.$suffix;
+		$this->_checkString($text)
+			->_checkString($delim)
+			->_checkString($suffix);
+
+		return $text . $delim . $suffix;
 	}
 
 	/**
@@ -78,9 +100,13 @@ class Text implements CollectionInterface
 	 */
 	public function trim($text, $chars = null)
 	{
+		$this->_checkString($text);
+
 		if (!$chars) {
 			return trim($text);
 		}
+
+		$this->_checkString($chars);
 
 		return trim($text, $chars);
 	}
@@ -92,9 +118,13 @@ class Text implements CollectionInterface
 	 */
 	public function rtrim($text, $chars = null)
 	{
+		$this->_checkString($text);
+
 		if (!$chars) {
 			return rtrim($text);
 		}
+
+		$this->_checkString($chars);
 
 		return rtrim($text, $chars);
 	}
@@ -106,9 +136,13 @@ class Text implements CollectionInterface
 	 */
 	public function ltrim($text, $chars = null)
 	{
+		$this->_checkString($text);
+
 		if (!$chars) {
 			return ltrim($text);
 		}
+
+		$this->_checkString($chars);
 
 		return ltrim($text, $chars);
 	}
@@ -119,6 +153,8 @@ class Text implements CollectionInterface
 	 */
 	public function capitalize($text)
 	{
+		$this->_checkString($text);
+
 		return ucfirst($text);
 	}
 
@@ -130,6 +166,31 @@ class Text implements CollectionInterface
 	 */
 	public function replace($text, $search, $replace)
 	{
+		$this->_checkString($text)
+			->_checkString($search)
+			->_checkString($replace);
+
 		return str_replace($search, $replace, $text);
+	}
+
+	/**
+	 * Confirm that method has been given a string, should be used in all text methods
+	 *
+	 * @param $string
+	 * @return $this
+	 * @throws \Exception
+	 */
+	protected function _checkString($string)
+	{
+		if (is_int($string)) {
+			$string = (string) $string;
+		}
+
+		if (!is_string($string)) {
+			$callers = debug_backtrace();
+			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $string param must be a string, ' . gettype($string) . ' given');
+		}
+
+		return $this;
 	}
 }
