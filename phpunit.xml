@@ -1,17 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-	backupGlobals="true"
-	backupStaticAttributes="false"
-	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	stopOnFailure="false"
-	bootstrap="vendor/autoload.php"
->
+		backupGlobals="true"
+		backupStaticAttributes="false"
+		colors="true"
+		convertErrorsToExceptions="true"
+		convertNoticesToExceptions="true"
+		convertWarningsToExceptions="true"
+		stopOnFailure="false"
+		bootstrap="vendor/autoload.php"
+		>
 	<testsuites>
-		<testsuite name="Cog Test Suite">
+		<testsuite name="Cog">
 			<directory>./tests/</directory>
+		</testsuite>
+		<testsuite name="Application">
+			<directory>./tests/Message/Cog/Test/Application/</directory>
+		</testsuite>
+		<testsuite name="Bootstrap">
+			<directory>./tests/Message/Cog/Test/Bootstrap/</directory>
+		</testsuite>
+		<testsuite name="Config">
+			<directory>./tests/Message/Cog/Test/Config/</directory>
+		</testsuite>
+		<testsuite name="Console">
+			<directory>./tests/Message/Cog/Test/Console/</directory>
+		</testsuite>
+		<testsuite name="Controller">
+			<directory>./tests/Message/Cog/Test/Controller/</directory>
+		</testsuite>
+		<testsuite name="DB">
+			<directory>./tests/Message/Cog/Test/DB/</directory>
+		</testsuite>
+		<testsuite name="Debug">
+			<directory>./tests/Message/Cog/Test/Debug/</directory>
+		</testsuite>
+		<testsuite name="Event">
+			<directory>./tests/Message/Cog/Test/Event/</directory>
+		</testsuite>
+		<testsuite name="Functions">
+			<directory>./tests/Message/Cog/Test/Functions/</directory>
+		</testsuite>
+		<testsuite name="HTTP">
+			<directory>./tests/Message/Cog/Test/HTTP/</directory>
+		</testsuite>
+		<testsuite name="Hash">
+			<directory>./tests/Message/Cog/Test/Hash/</directory>
+		</testsuite>
+		<testsuite name="Module">
+			<directory>./tests/Message/Cog/Test/Module/</directory>
+		</testsuite>
+		<testsuite name="Routing">
+			<directory>./tests/Message/Cog/Test/Routing/</directory>
+		</testsuite>
+		<testsuite name="Service">
+			<directory>./tests/Message/Cog/Test/Service/</directory>
+		</testsuite>
+		<testsuite name="Templating">
+			<directory>./tests/Message/Cog/Test/Templating/</directory>
+		</testsuite>
+		<testsuite name="Validation">
+			<directory>./tests/Message/Cog/Test/Validation/</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
