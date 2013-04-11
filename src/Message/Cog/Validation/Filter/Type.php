@@ -39,12 +39,22 @@ class Type implements CollectionInterface
 	}
 
 	/**
+	 * Set $round to 'up' or 'down' to force a direction $var will round, eg if you wanted to round 0.1 up to 1 you would set this to 'up'
+	 *
 	 * @param $var
+	 * @param string $round
 	 * @return int
 	 */
-	public function integer($var)
+	public function integer($var, $round = 'default')
 	{
-		return (integer)$var;
+		switch ($round) {
+			case 'up' :
+				return ((integer) $var) + 1;
+			case 'down' :
+				return (integer) $var;
+			default :
+				return (integer) round($var);
+		}
 	}
 
 	/**

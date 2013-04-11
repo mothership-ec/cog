@@ -13,13 +13,32 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 
 	public function testString()
 	{
-		$this->assertSame($this->_filter->string(2344), '2344');
+		$this->assertSame('2344', $this->_filter->string(2344));
 	}
 
-	public function testInteger()
+	public function testIntegerFromString()
 	{
-		$this->assertSame($this->_filter->integer('012345'), 12345);
-		$this->assertSame($this->_filter->integer(0.32233), 0);
+		$this->assertSame(12345, $this->_filter->integer('012345'));
+	}
+
+	public function testIntegerFromFloatRoundUp()
+	{
+		$this->assertSame(1, $this->_filter->integer(0.76677));
+	}
+
+	public function testIntegerFromFloatRoundDown()
+	{
+		$this->assertSame(0, $this->_filter->integer(0.32233));
+	}
+
+	public function testIntegerFromFloatForceRoundUp()
+	{
+		$this->assertSame(1, $this->_filter->integer(0.32233, 'up'));
+	}
+
+	public function testIntegerFromFloatForceRoundDown()
+	{
+		$this->assertSame(0, $this->_filter->integer(0.76677, 'down'));
 	}
 
 	public function testFloat()

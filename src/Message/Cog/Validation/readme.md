@@ -4,7 +4,7 @@ The validation component makes it easy to ensure that an associative array match
 
 ## Getting started
 
-Let's say we want to validate the following array of data which could have come from a user-sumitted form.
+Let's say we want to validate the following array of data which could have come from a user-submitted form.
 
     $data = array(
         'first_name'    => 'Bobby',
@@ -15,7 +15,7 @@ Let's say we want to validate the following array of data which could have come 
 
 Firstly we create and instance of the validation object:
 
-    $valiator = new \Message\Cog\Validation\Validator;
+    $validator = new \Message\Cog\Validation\Validator;
     
 Next we go about adding rules. In the validator component rules are associated to a field. A field is basically an expected key in the data array.
 
@@ -37,7 +37,7 @@ Fields and rules are declared using a fluent interface:
     
 Once fields and rules have been declared you run the `validate()` method and pass in the data we want to run our rules against.
 
-    if($validator->validate($data)) { //returns true or false
+    if ($validator->validate($data)) { //returns true or false
         addUserToDB($validator->getData);
     }
     
@@ -84,14 +84,14 @@ The `Validator` class is able to determine the field name and generate nice erro
 	    ->field('first_name', 'Forename')
 			->alnum()
 			->length(3, 10)
-			    ->error('%s must be below 11 and above 2 characters.')
+		    ->error('%s must be below 11 and above 2 characters.')
 		->field('last_name', 'Surname')
 		    ->length(0, 15)
 		->field('email_address') 
 		    ->email()
 		->field('age')
 		    ->min(18)
-		        ->error('You must be over 18 to signup')   
+	        ->error('You must be over 18 to signup')
     ;
     
 By declaring a field you automatically make it a required element. If the field is left blank then the validation will fail. To make a field optional call the `optional()` method. If the field is blank then the rules won't be applied and the field will be skipped when validating.
@@ -99,9 +99,3 @@ By declaring a field you automatically make it a required element. If the field 
 ## Filters
 
 Filters modify the data passed to `validate()`. They can be applied before or after rules are validated.
-
-
-
-
-
-
