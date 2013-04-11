@@ -6,6 +6,8 @@ use Message\Cog\Validation\Filter\Text;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
+	protected $_filter;
+
 	public function setUp()
 	{
 		$this->_filter = new Text;
