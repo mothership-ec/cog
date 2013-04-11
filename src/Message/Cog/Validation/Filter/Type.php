@@ -105,14 +105,16 @@ class Type implements CollectionInterface
 	/**
 	 * Attempts to turn a string, integer or array of integers into a DateTime object.
 	 * 
-	 * @param  mixed		$var      The variable to convert
-	 * @param  \DateTimeZone $timezone An optional timezone to use
-	 * @param  array   		$keys     If $var is an array can be used to denote what values
+	 * @param  mixed $var                               The variable to convert
+	 * @param  \DateTimeZone | string | null $timezone  An optional timezone to use
+	 * @param  array $keys                              If $var is an array can be used to denote what values
 	 *                 		          should be keys.
-	 * @return \DateTime				  The parsed DateTime value.
+	 * @return \DateTime				                The parsed DateTime value.
 	 */
-	public function date($var, \DateTimeZone $timezone = null, array $keys = array())
+	public function date($var, $timezone = null, array $keys = array())
 	{
+		$timezone = $this->_filterTimezone($timezone);
+
 		if(is_array($var)) {
 
 			$parts = array(
@@ -146,11 +148,12 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * @param \DateTimeZone $tz
+	 * @param \DateTimeZone | string $tz
 	 * @return $this
 	 */
-	public function setDefaultTimeZone(\DateTimeZone $tz)
+	public function setDefaultTimeZone($tz)
 	{
+		$tz = $this->_filterTimezone($tz);
 		$this->_defaultTimeZone = $tz;
 
 		return $this;
@@ -164,4 +167,23 @@ class Type implements CollectionInterface
  	{
  		return null;
  	}
-}	
+
+	/**
+	 * Checks to see if time zone is a valid data type, i.e. an instance of \DateTimeZone. If given a string it converts it to a \DateTimeZone
+	 *
+	 * @param mixed $tz
+	 * @return \DateTimeZone | null
+	 * @throws \Exception
+	 */
+	protected function _filterTimezone($tz)
+	{
+		if ($tz && !is_string($tz) && !$tz instanceof \DateTimeZone) {
+			$callers = debug_backtrace();
+			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $tz must be either a string or instance of \DateTimeZone, ' . gettype($tz) . ' given');
+		} elseif (is_string($tz)) {
+			$tz = new \DateTimeZone($tz);
+		}
+
+		return $tz;
+	}
+}
