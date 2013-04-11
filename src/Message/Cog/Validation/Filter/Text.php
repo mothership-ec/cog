@@ -48,7 +48,7 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @todo make so it's not the same as capitalize
+	 * This is a copy of Message\Cog\Functions\Text::toTitleCase, with the $maintainCase argument added in. In time one of these will be obsolete
 	 *
 	 * @param string $text
 	 * @param bool $maintainCase
@@ -61,7 +61,34 @@ class Text implements CollectionInterface
 		if(!$maintainCase){
 			$text = strtolower($text);
 		}
-		return ucwords($text);
+
+		$text = join("'", array_map('ucwords', explode("'", $text)));
+		$text = join("-", array_map('ucwords', explode("-", $text)));
+		$text = join("(", array_map('ucwords', explode("(", $text)));
+		$text = join("Mac", array_map('ucwords', explode("Mac", $text)));
+		$text = join("Mc", array_map('ucwords', explode("Mc", $text)));
+
+		$ignores = array(
+			' a ',
+			' or ',
+			' if ',
+			' it ',
+			' and ',
+			' or ',
+			' nor ',
+			' but ',
+			' so ',
+			' is ',
+			' the ',
+			' are ',
+			' on ',
+			' in ',
+			' of ',
+		);
+
+		$text = str_replace(array_map('ucwords', $ignores), $ignores, $text);
+
+		return $text;
 	}
 
 	/**
@@ -150,13 +177,24 @@ class Text implements CollectionInterface
 
 	/**
 	 * @param $text
+	 * @param bool $maintainCase
 	 * @return string
 	 */
-	public function capitalize($text)
+	public function capitalize($text, $maintainCase = false)
 	{
 		$this->_checkString($text);
 
-		return ucfirst($text);
+		if (!$maintainCase) {
+			$text = strtolower($text);
+		}
+
+		$text = explode(' ', $text);
+
+		foreach ($text as &$word) {
+			$word = ucfirst($word);
+		}
+
+		return implode(' ', $text);
 	}
 
 	/**

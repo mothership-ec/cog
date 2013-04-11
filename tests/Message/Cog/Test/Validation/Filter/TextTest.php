@@ -89,6 +89,18 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('Dr. DrE', $this->_filter->titlecase('dr. drE', true));
 	}
 
+	public function testTitlecaseScottishName()
+	{
+		$this->assertEquals('Mr. MacGuffin', $this->_filter->titlecase('mr. macguffin'));
+	}
+
+	public function testTitlecaseWithIgnores()
+	{
+		$this->assertEquals('Strangers on a Train', $this->_filter->titlecase('strangers on a train'));
+		$this->assertEquals('The Curious Incident of the Dog in the Night', $this->_filter->titlecase('the curious incident of the dog in the night'));
+
+	}
+
 	/**
 	 * Test to ensure exception is thrown
 	 */
@@ -220,9 +232,48 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->fail('Exception not thrown');
 	}
 
+	public function testCapitalizeFromLower()
+	{
+		$this->assertEquals('Dr. Dre', $this->_filter->capitalize('dr. dre'));
+	}
+
+	public function testCapitalizeFromUpper()
+	{
+		$this->assertEquals('Dr. Dre', $this->_filter->capitalize('DR. DRE'));
+	}
+
+	public function testCapitalizeFromMixed()
+	{
+		$this->assertEquals('Dr. Dre', $this->_filter->capitalize('DR. dre'));
+	}
+
+	public function testCapitalizeMaintainCase()
+	{
+		$this->assertEquals('Dr. DrE', $this->_filter->capitalize('dr. drE', true));
+	}
+
 	/**
-	 * @todo add capitalize tests once the method is made different from titlecase()
+	 * Test to ensure capitalize() behaves differently from titlecase()
 	 */
+	public function testCapitalizeTitlecaseIgnores()
+	{
+		$this->assertEquals('The Dog In The Night', $this->_filter->capitalize('the dog in the night'));
+	}
+
+	/**
+	 * Test to ensure exception is thrown
+	 */
+	public function testCapitalizeNonString()
+	{
+		try {
+			$this->_filter->capitalize(true);
+		}
+		catch (\Exception $e) {
+			return;
+		}
+
+		$this->fail('Exception not thrown');
+	}
 
 	public function testReplace()
 	{
