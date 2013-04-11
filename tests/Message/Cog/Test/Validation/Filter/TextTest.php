@@ -232,7 +232,6 @@ class TextTest extends \PHPUnit_Framework_TestCase
 	public function testReplaceWithInt()
 	{
 		$this->assertEquals('hell0 w0rld', $this->_filter->replace('hello world', 'o', 0));
-
 	}
 
 	/**
@@ -242,6 +241,45 @@ class TextTest extends \PHPUnit_Framework_TestCase
 	{
 		try {
 			$this->_filter->replace('hello', 'o', false);
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
+	public function testUrlNoPrefix()
+	{
+		$this->assertEquals('http://message.co.uk', $this->_filter->url('message.co.uk'));
+	}
+
+	public function testUrlExistingPrefix()
+	{
+		$this->assertEquals('http://message.co.uk', $this->_filter->url('http://message.co.uk'));
+	}
+
+	public function testUrlDifferentPrefix()
+	{
+		$this->assertEquals('https://message.co.uk', $this->_filter->url('message.co.uk', 'https'));
+	}
+
+	public function testUrlNoReplace()
+	{
+		$this->assertEquals('https://message.co.uk', $this->_filter->url('https://message.co.uk'));
+	}
+
+	public function testUrlReplacePrefix()
+	{
+		$this->assertEquals('https://message.co.uk', $this->_filter->url('http://message.co.uk', 'https', true));
+	}
+
+	/**
+	 * Test to ensure exception is thrown
+	 */
+	public function testUrlWithNonString()
+	{
+		try {
+			$this->_filter->url(null);
 		}
 		catch (\Exception $e) {
 			return;

@@ -21,7 +21,8 @@ class Text implements CollectionInterface
 			->registerFilter('rtrim',           array($this, 'rtrim'))
 			->registerFilter('ltrim',           array($this, 'ltrim'))
 			->registerFilter('capitalize',      array($this, 'capitalize'))
-			->registerFilter('replace',         array($this, 'replace'));
+			->registerFilter('replace',         array($this, 'replace'))
+			->registerFilter('url',             array($this, 'url'));
 	}
 
 	/**
@@ -171,6 +172,31 @@ class Text implements CollectionInterface
 			->_checkString($replace);
 
 		return str_replace($search, $replace, $text);
+	}
+
+	/**
+	 * Checks URL has correct protocol, with optional to replace existing e.g. http:// with https://
+	 * Regex only checks for http, https, or ftp at the moment
+	 *
+	 * @param $url
+	 * @param string $protocol
+	 * @param bool $replaceExisting
+	 * @return mixed|string
+	 */
+	public function url($url, $protocol = 'http', $replaceExisting = false)
+	{
+		$this->_checkString($url)
+			->_checkString($protocol);
+
+		$pattern = "~^(?:f|ht)tps?://~i";
+
+		if (!preg_match($pattern, $url)) {
+			$url = $protocol . '://' . $url;
+		} elseif ($replaceExisting) {
+			$url = preg_replace($pattern, $protocol . '://', $url);
+		}
+
+		return $url;
 	}
 
 	/**
