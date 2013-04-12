@@ -18,7 +18,22 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$this->_loader = new Loader(new Validator, new Messages);
 	}
 
-	public function testNothing()
+	public function testRegisterClasses()
+	{
+
+	}
+
+	public function testGetRule()
+	{
+
+	}
+
+	public function testGetValidator()
+	{
+
+	}
+
+	public function testRegisterFilter()
 	{
 
 	}

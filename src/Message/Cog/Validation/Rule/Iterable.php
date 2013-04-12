@@ -34,7 +34,7 @@ class Iterable implements CollectionInterface
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function validateEach($var, $func)
+	public function validateEach(array $var, $func)
 	{
 		$validator = new Validator();
 		$validator = $func($validator);
