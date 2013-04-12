@@ -20,6 +20,6 @@ class OtherTest extends \PHPUnit_Framework_TestCase
 
 	public function testRule()
 	{
-		
+
 	}
 }

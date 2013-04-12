@@ -4,7 +4,7 @@ namespace Message\Cog\Test\Validation;
 
 use Message\Cog\Validation\Messages;
 
-class MessagesTest extends PHPUnit_Framework_TestCase
+class MessagesTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_messages;
 

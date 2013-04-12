@@ -40,26 +40,78 @@ class Text implements CollectionInterface
 	{
 		$len = strlen($var);
 
+		$this->_checkNumeric($min);
+
 		// Overloaded option if one param is specified, checks exact length
-		if($max === null) {
+		if ($max === null) {
 			return $len === $min;
+		} elseif ($min >= $max) {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be greater than $min');
 		}
+
+		$this->_checkNumeric($max);
 
 		return ($len >= $min && $len <= $max);
 	}
 
+	public function minLength($var, $min)
+	{
+		$this->_checkNumeric($min);
+
+		$len = strlen($var);
+
+		return $len >= $min;
+	}
+
+	public function maxLength($var, $max)
+	{
+		$this->_checkNumeric($max);
+
+		$len = strlen($var);
+
+		return $len <= $max;
+	}
+
 	public function email($var)
 	{
-		return filter_var($var, \FILTER_VALIDATE_EMAIL);
+		$this->_checkString($var);
+		return (bool) filter_var($var, \FILTER_VALIDATE_EMAIL);
 	}
 
 	public function url($var)
 	{
-		return filter_var($var, \FILTER_VALIDATE_URL);
+		$this->_checkString($var);
+		return (bool) filter_var($var, \FILTER_VALIDATE_URL);
 	}
 
 	public function match($var, $pattern)
 	{
+		$this->_checkString($var);
 		return preg_match($var, $pattern);
 	}
+
+	protected function _checkNumeric($int)
+	{
+		if (!is_numeric($int)) {
+			$callers = debug_backtrace();
+			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $max must be numeric if set');
+		}
+
+		return $this;
+	}
+
+	protected function _checkString($string)
+	{
+		if (is_int($string)) {
+			$string = (string) $string;
+		}
+
+		if (!is_string($string)) {
+			$callers = debug_backtrace();
+			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $string param must be a string, ' . gettype($string) . ' given');
+		}
+
+		return $this;
+	}
+
 }

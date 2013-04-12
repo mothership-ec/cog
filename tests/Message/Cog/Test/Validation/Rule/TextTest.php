@@ -11,20 +11,175 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->_rule = new Text;
 	}
 
-	public function testAlnum()
+	public function testAlnumAllNumbers()
 	{
 		$this->assertTrue($this->_rule->alnum('0123456789'));
-		$this->assertTrue($this->_rule->alnum('aBcdeFGhiJk'));
-		$this->assertTrue($this->_rule->alnum('2aSf234saF3d'));
-		$this->assertFalse($this->_rule->alnum('sad75-@'));
 	}
 
-	public function testLength()
+	public function testAlnumAllLettersLowerCase()
 	{
-		$this->assertFalse($this->_rule->length('green', 3));
-		$this->assertTrue($this->_rule->length('red', 3));
-		$this->assertTrue($this->_rule->length('blue', 1, 10));
-		$this->assertFalse($this->_rule->length('turquoise', 5, 6));
-		$this->assertFalse($this->_rule->length('red', 6, 20));
+		$this->assertTrue($this->_rule->alnum('jkhasdasd'));
 	}
+
+	public function testAlnumAllLettersUpperCase()
+	{
+		$this->assertTrue($this->_rule->alnum('KAHSDJKHASD'));
+	}
+
+	public function testAlnumMixed()
+	{
+		$this->assertTrue($this->_rule->alnum('jJD96bdk'));
+	}
+
+	public function testAlnumFalse()
+	{
+		$this->assertFalse($this->_rule->alnum('ahs89da98sh£dahi(asd'));
+	}
+
+	public function testLengthTrue()
+	{
+		$this->assertTrue($this->_rule->length('red', 3));
+	}
+
+	public function testLengthTrueWithMax()
+	{
+		$this->assertTrue($this->_rule->length('red', 2, 4));
+	}
+
+	public function testLengthTrueAtMin()
+	{
+		$this->assertTrue($this->_rule->length('red', 3, 4));
+	}
+
+	public function testLengthTrueAtMax()
+	{
+		$this->assertTrue($this->_rule->length('green', 3, 5));
+	}
+
+	public function testLengthFalseBelowMin()
+	{
+		$this->assertFalse($this->_rule->length('red', 4));
+	}
+
+	public function testLengthFalseAboveMin()
+	{
+		$this->assertFalse($this->_rule->length('red', 2));
+	}
+
+	public function testLengthFalseWithMaxBelowMin()
+	{
+		$this->assertFalse($this->_rule->length('red', 4, 6));
+	}
+
+	public function testLengthFalseWithMaxAboveMax()
+	{
+		$this->assertFalse($this->_rule->length('turquoise', 3, 5));
+	}
+
+	public function testLengthInvalidMinGreaterThanMax()
+	{
+		try {
+			$this->_rule->length('red', 5, 3);
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
+	public function testLengthInvalidMinNonNumeric()
+	{
+		try {
+			$this->_rule->length('red', 'two');
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
+	public function testLengthInvalidMaxNonNumeric()
+	{
+		try {
+			$this->_rule->length('red', 2, 'five');
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
+	public function testMinLengthTrue()
+	{
+		$this->assertTrue($this->_rule->minLength('red', 2));
+	}
+
+	public function testMinLengthAtMin()
+	{
+		$this->assertTrue($this->_rule->minLength('red', 3));
+	}
+
+	public function testMinLengthFalse()
+	{
+		$this->assertFalse($this->_rule->minLength('red', 4));
+	}
+
+	public function testMinLengthInvalidNonNumeric()
+	{
+		try {
+			$this->_rule->minLength('fish', 'fingers');
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
+	public function testMaxLengthTrue()
+	{
+		$this->assertTrue($this->_rule->maxLength('red', 6));
+	}
+
+	public function testMaxLengthTrueAtMax()
+	{
+		$this->assertTrue($this->_rule->maxLength('red', 3));
+	}
+
+	public function testMaxLengthFalse()
+	{
+		$this->assertFalse($this->_rule->maxLength('yellow', 3));
+	}
+
+	public function testMaxLengthInvalidNonNumeric()
+	{
+		try {
+			$this->_rule->maxLength('fish', 'fingers');
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
+	public function testEmailTrue()
+	{
+		$this->assertTrue($this->_rule->email('thomas@message.co.uk'));
+	}
+
+	public function testEmailFalse()
+	{
+		$this->assertFalse($this->_rule->email('thomasatmessagedotcodotuk'));
+	}
+
+	public function testEmailNonString()
+	{
+		try {
+			$this->_rule->email(false);
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
 }
