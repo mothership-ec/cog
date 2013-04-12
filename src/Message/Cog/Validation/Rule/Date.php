@@ -16,13 +16,19 @@ class Date implements CollectionInterface
 			->registerRule('after', array($this, 'after'), '%s must%s be after %s.');
 	}
 
-	public function before(\DateTime $var, \DateTime $target)
+	public function before(\DateTime $var, \DateTime $target, $orEqualTo = false)
 	{
+		if ($orEqualTo) {
+			return $var <= $target;
+		}
 		return $var < $target;
 	}
 
-	public function after(\DateTime $var, \DateTime $target)
+	public function after(\DateTime $var, \DateTime $target, $orEqualTo = false)
 	{
+		if ($orEqualTo) {
+			return $var >= $target;
+		}
 		return $var > $target;
 	}
 }
