@@ -83,7 +83,7 @@ class TextTest extends \PHPUnit_Framework_TestCase
 
 	public function testTitlecaseFromMixed()
 	{
-		$this->assertEquals('Dr. Dre', $this->_filter->titlecase('DR. dre'));
+		$this->assertEquals('Dr. Dre', $this->_filter->titlecase('DR. drE'));
 	}
 
 	public function testTitlecaseMaintainCase()

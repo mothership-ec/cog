@@ -9,9 +9,7 @@ namespace Message\Cog\Validation\Check;
  * Class of static methods to check data types and throw exceptions if invalid.
  * May be an idea to move this out of Validation and into Functions or something.
  *
- * All methods return true if no exception is thrown, to allow for easy unit testing,
- * and also so they can theoretically be used in if statements (although they shouldn't be as there
- * is no false return value).
+ * All methods return true if no exception is thrown, to allow for easy unit testing.
  *
  * This class uses the debug_backtrace() function to provide relevant error messages, i.e. not
  * reference the actual class and method being used, and not these ones. Error messages can be

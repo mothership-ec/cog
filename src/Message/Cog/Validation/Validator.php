@@ -65,6 +65,14 @@ class Validator
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getFields()
+	{
+		return $this->_fields;
+	}
+
+	/**
 	 * @param string $name
 	 * @param bool $readableName
 	 * @return $this
@@ -118,7 +126,7 @@ class Validator
 		if(substr($methodName, -5) === 'After') {
 			$filterPrecendence = 'post';
 			$methodName = lcfirst(substr($methodName, 0, -5));
-		} else if(substr($methodName, -6) === 'Before') {
+		} else if (substr($methodName, -6) === 'Before') {
 			$methodName = lcfirst(substr($methodName, 0, -6));
 		}
 
@@ -185,11 +193,25 @@ class Validator
 	protected function _applyFilters($type)
 	{
 		foreach($this->_fields as $name => $field) {
+
+			// Check emptyness if optional
+			if ((empty($this->_data[$name]) || $this->_data[$name] == '') && !$field['optional']) {
+				$this->_messages->addError($name, $field['readableName'].' is a required field.');
+			}
+
+			if (empty($this->_data[$name])) {
+				continue;
+			}
+
 			foreach($field['filters'][$type] as $filter) {
+
 				list($ruleName, $func, $args) = $filter;
+
 				array_unshift($args, $this->_data[$name]);
 				$result = call_user_func_array($filter[1], $args);
+
 				$this->_data[$name] = $result;
+
 			}
 		}
 
@@ -206,6 +228,10 @@ class Validator
 			// Check emptyness if optional
 			if((!isset($this->_data[$name]) || $this->_data[$name] == '') && !$field['optional']) {
 				$this->_messages->addError($name, $field['readableName'].' is a required field.');
+			}
+
+			if (empty($this->_data[$name])) {
+				continue;
 			}
 
 			foreach($field['rules'] as $rule) {

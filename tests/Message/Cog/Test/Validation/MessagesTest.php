@@ -20,7 +20,7 @@ class MessagesTest extends \PHPUnit_Framework_TestCase
 
 	public function testClear()
 	{
-
+		$this->assertEquals($this->_messages, $this->_messages->clear());
 	}
 
 	public function testGetDefaultErrorMessage()
