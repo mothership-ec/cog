@@ -219,6 +219,8 @@ class Text implements CollectionInterface
 	 * Checks URL has correct protocol, with optional to replace existing e.g. http:// with https://
 	 * Regex only checks for http, https, or ftp at the moment
 	 *
+	 * Called toUrl so as not to conflict with url rule
+	 *
 	 * @param $url
 	 * @param string $protocol
 	 * @param bool $replaceExisting

@@ -108,6 +108,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	/**
+	 * Test that adding 'Before' to filter name edits string before it is checked for validity
+	 */
 	public function testBeforeFilter()
 	{
 		$this->_validator
@@ -125,6 +128,9 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('http://message.co.uk', $data['test']);
 	}
 
+	/**
+	 * Test that adding 'After' to filter name edits string after it is checked for validity
+	 */
 	public function testAfterFilter()
 	{
 		$this->_validator
