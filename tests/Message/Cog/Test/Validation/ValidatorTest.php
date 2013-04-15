@@ -148,4 +148,26 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('http://message.co.uk', $data['test']);
 	}
 
+	/**
+	 * Test that getFields returns an array, and includes a field that has been added
+	 */
+	public function testGetFields()
+	{
+		$this->_validator
+			->field('test');
+
+		$fields = $this->_validator->getFields();
+
+		$this->assertTrue(is_array($fields));
+		$this->assertTrue(array_key_exists('test', $fields));
+	}
+
+	public function testGetFieldsEmpty()
+	{
+		$fields = $this->_validator->getFields();
+
+		$this->assertTrue(is_array($fields));
+		$this->assertTrue(empty($fields));
+	}
+
 }
