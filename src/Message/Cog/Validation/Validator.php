@@ -194,12 +194,7 @@ class Validator
 	{
 		foreach($this->_fields as $name => $field) {
 
-			// Check emptyness if optional
-			if ((empty($this->_data[$name]) || $this->_data[$name] == '') && !$field['optional']) {
-				$this->_messages->addError($name, $field['readableName'].' is a required field.');
-			}
-
-			if (empty($this->_data[$name])) {
+			if (!isset($this->_data[$name])) {
 				continue;
 			}
 
@@ -230,7 +225,7 @@ class Validator
 				$this->_messages->addError($name, $field['readableName'].' is a required field.');
 			}
 
-			if (empty($this->_data[$name])) {
+			if (!isset($this->_data[$name])) {
 				continue;
 			}
 
