@@ -9,8 +9,12 @@ namespace Message\Cog\Validation\Check;
  * Class of static methods to check data types and throw exceptions if invalid.
  * May be an idea to move this out of Validation and into Functions or something.
  *
- * All methods return true if no exception is thrown, to allow for use in if statements,
- * although that's not really how these are meant to be used.
+ * All methods return true if no exception is thrown, to allow for easy unit testing,
+ * and also so they can theoretically be used in if statements (although they shouldn't be).
+ *
+ * This class uses the debug_backtrace() function to provide relevant error messages, i.e. not
+ * reference the actual class and method being used, and not these ones. Error messages can be
+ * improved by adding the second param (or third in checkInstanceOf()) of the variable name
  */
 
 class Type
@@ -68,7 +72,7 @@ class Type
 		$varName = (string) $varName;
 
 		if(!is_int($var)) {
-			$callers = debug_stacktrace();
+			$callers = debug_backtrace();
 			throw new \Exception($callers[1]['class'] . '::' . $callers[1]['function'] . '() - ' . $varName. ' must be an integer, ' . gettype($var) . ' given');
 		}
 
@@ -167,7 +171,7 @@ class Type
 
 	/**
 	 * @param $var
-	 * @param $className
+	 * @param object|string $className
 	 * @param string $varName
 	 * @return bool
 	 * @throws \Exception
