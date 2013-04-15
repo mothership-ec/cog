@@ -4,6 +4,7 @@ namespace Message\Cog\Validation\Filter;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
 * Filters
@@ -31,7 +32,7 @@ class Text implements CollectionInterface
 	 */
 	public function uppercase($text)
 	{
-		$this->_checkString($text);
+		CheckType::checkString($text, '$text');
 
 		return strtoupper($text);
 	}
@@ -42,7 +43,7 @@ class Text implements CollectionInterface
 	 */
 	public function lowercase($text)
 	{
-		$this->_checkString($text);
+		CheckType::checkString($text, '$text');
 
 		return strtolower($text);
 	}
@@ -56,7 +57,7 @@ class Text implements CollectionInterface
 	 */
 	public function titlecase($text, $maintainCase = false)
 	{
-		$this->_checkString($text);
+		CheckType::checkString($text, '$text');
 
 		if(!$maintainCase){
 			$text = strtolower($text);
@@ -99,9 +100,9 @@ class Text implements CollectionInterface
 	 */
 	public function prefix($text, $prefix, $delim = '')
 	{
-		$this->_checkString($text)
-			->_checkString($delim)
-			->_checkString($prefix);
+		CheckType::checkStringOrNumeric($text, '$text');
+		CheckType::checkStringOrNumeric($delim, '$delim');
+		CheckType::checkStringOrNumeric($prefix, '$prefix');
 
 		return $prefix . $delim . $text;
 	}
@@ -114,9 +115,9 @@ class Text implements CollectionInterface
 	 */
 	public function suffix($text, $suffix, $delim = '')
 	{
-		$this->_checkString($text)
-			->_checkString($delim)
-			->_checkString($suffix);
+		CheckType::checkStringOrNumeric($text, '$text');
+		CheckType::checkStringOrNumeric($delim, '$delim');
+		CheckType::checkStringOrNumeric($suffix, '$suffix');
 
 		return $text . $delim . $suffix;
 	}
@@ -128,13 +129,13 @@ class Text implements CollectionInterface
 	 */
 	public function trim($text, $chars = null)
 	{
-		$this->_checkString($text);
+		CheckType::checkString($text, '$text');
 
 		if (!$chars) {
 			return trim($text);
 		}
 
-		$this->_checkString($chars);
+		CheckType::checkString($chars, '$chars');
 
 		return trim($text, $chars);
 	}
@@ -146,13 +147,13 @@ class Text implements CollectionInterface
 	 */
 	public function rtrim($text, $chars = null)
 	{
-		$this->_checkString($text);
+		CheckType::checkString($text, '$text');
 
 		if (!$chars) {
 			return rtrim($text);
 		}
 
-		$this->_checkString($chars);
+		CheckType::checkString($chars, '$chars');
 
 		return rtrim($text, $chars);
 	}
@@ -164,13 +165,13 @@ class Text implements CollectionInterface
 	 */
 	public function ltrim($text, $chars = null)
 	{
-		$this->_checkString($text);
+		CheckType::checkString($text, '$text');
 
 		if (!$chars) {
 			return ltrim($text);
 		}
 
-		$this->_checkString($chars);
+		CheckType::checkString($chars, '$chars');
 
 		return ltrim($text, $chars);
 	}
@@ -182,7 +183,7 @@ class Text implements CollectionInterface
 	 */
 	public function capitalize($text, $maintainCase = false)
 	{
-		$this->_checkString($text);
+		CheckType::checkString($text, '$text');
 
 		if (!$maintainCase) {
 			$text = strtolower($text);
@@ -205,9 +206,9 @@ class Text implements CollectionInterface
 	 */
 	public function replace($text, $search, $replace)
 	{
-		$this->_checkString($text)
-			->_checkString($search)
-			->_checkString($replace);
+		CheckType::checkStringOrNumeric($text, '$text');
+		CheckType::checkStringOrNumeric($search, '$search');
+		CheckType::checkStringOrNumeric($replace, '$replace');
 
 		return str_replace($search, $replace, $text);
 	}
@@ -223,10 +224,12 @@ class Text implements CollectionInterface
 	 */
 	public function url($url, $protocol = 'http', $replaceExisting = false)
 	{
-		$this->_checkString($url)
-			->_checkString($protocol);
+		CheckType::checkString($url, '$url');
+		CheckType::checkString($protocol, '$protocol');
 
 		$pattern = "~^(?:f|ht)tps?://~i";
+
+		$protocol = str_replace('://', '', $protocol);
 
 		if (!preg_match($pattern, $url)) {
 			$url = $protocol . '://' . $url;
@@ -235,26 +238,5 @@ class Text implements CollectionInterface
 		}
 
 		return $url;
-	}
-
-	/**
-	 * Confirm that method has been given a string, should be used in all text methods
-	 *
-	 * @param $string
-	 * @return $this
-	 * @throws \Exception
-	 */
-	protected function _checkString($string)
-	{
-		if (is_int($string)) {
-			$string = (string) $string;
-		}
-
-		if (!is_string($string)) {
-			$callers = debug_backtrace();
-			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $string param must be a string, ' . gettype($string) . ' given');
-		}
-
-		return $this;
 	}
 }

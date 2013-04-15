@@ -9,7 +9,8 @@ namespace Message\Cog\Validation\Check;
  * Class of static methods to check data types and throw exceptions if invalid.
  * May be an idea to move this out of Validation and into Functions or something.
  *
- * All methods return true if no exception is thrown.
+ * All methods return true if no exception is thrown, to allow for use in if statements,
+ * although that's not really how these are meant to be used.
  */
 
 class Type
@@ -45,7 +46,7 @@ class Type
 		$varName = (string) $varName;
 
 		if (is_int($var) || is_float($var)) {
-			$var = (string) $var;
+			return true;
 		}
 
 		if (!is_string($var)) {

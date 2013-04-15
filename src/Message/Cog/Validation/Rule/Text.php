@@ -4,6 +4,7 @@ namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
 * Rules
@@ -40,7 +41,7 @@ class Text implements CollectionInterface
 	{
 		$len = strlen($var);
 
-		$this->_checkNumeric($min);
+		CheckType::checkNumeric($min, '$min');
 
 		// Overloaded option if one param is specified, checks exact length
 		if ($max === null) {
@@ -49,14 +50,14 @@ class Text implements CollectionInterface
 			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be greater than $min');
 		}
 
-		$this->_checkNumeric($max);
+		CheckType::checkNumeric($max, '$max');
 
 		return ($len >= $min && $len <= $max);
 	}
 
 	public function minLength($var, $min)
 	{
-		$this->_checkNumeric($min);
+		CheckType::checkNumeric($min, '$min');
 
 		$len = strlen($var);
 
@@ -65,7 +66,7 @@ class Text implements CollectionInterface
 
 	public function maxLength($var, $max)
 	{
-		$this->_checkNumeric($max);
+		CheckType::checkNumeric($max, '$max');
 
 		$len = strlen($var);
 
@@ -74,44 +75,20 @@ class Text implements CollectionInterface
 
 	public function email($var)
 	{
-		$this->_checkString($var);
+		CheckType::checkString($var);
 		return (bool) filter_var($var, \FILTER_VALIDATE_EMAIL);
 	}
 
 	public function url($var)
 	{
-		$this->_checkString($var);
+		CheckType::checkString($var);
 		return (bool) filter_var($var, \FILTER_VALIDATE_URL);
 	}
 
 	public function match($var, $pattern)
 	{
-		$this->_checkString($var);
+		CheckType::checkString($var);
 		return preg_match($var, $pattern);
-	}
-
-	protected function _checkNumeric($int)
-	{
-		if (!is_numeric($int)) {
-			$callers = debug_backtrace();
-			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $max must be numeric if set');
-		}
-
-		return $this;
-	}
-
-	protected function _checkString($string)
-	{
-		if (is_int($string)) {
-			$string = (string) $string;
-		}
-
-		if (!is_string($string)) {
-			$callers = debug_backtrace();
-			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $string param must be a string, ' . gettype($string) . ' given');
-		}
-
-		return $this;
 	}
 
 }
