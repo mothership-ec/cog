@@ -344,4 +344,33 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		}
 		$this->fail('Exception not thrown');
 	}
+
+	public function testSlug()
+	{
+		$this->assertEquals('kermit-the-frog', $this->_filter->slug('Kermit the Frog'));
+	}
+
+	public function testSlugWithSpecialChars()
+	{
+		$this->assertEquals('s-l-u-g', $this->_filter->slug('S&%£l_u*g'));
+	}
+
+	public function testSlugAllSpecialChars()
+	{
+		$this->assertEquals('n-a', $this->_filter->slug('*%&$&^^*%'));
+	}
+
+	/**
+	 * Test to ensure exception is thrown
+	 */
+	public function testSlugNonString()
+	{
+		try {
+			$this->_filter->slug(true);
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
 }

@@ -13,17 +13,19 @@ class Text implements CollectionInterface
 {
 	public function register(Loader $loader)
 	{
-		$loader->registerFilter('uppercase',    array($this, 'uppercase'))
-			->registerFilter('lowercase',       array($this, 'lowercase'))
-			->registerFilter('titlecase',       array($this, 'titlecase'))
-			->registerFilter('prefix',          array($this, 'prefix'))
-			->registerFilter('suffix',          array($this, 'suffix'))
-			->registerFilter('trim',            array($this, 'trim'))
-			->registerFilter('rtrim',           array($this, 'rtrim'))
-			->registerFilter('ltrim',           array($this, 'ltrim'))
-			->registerFilter('capitalize',      array($this, 'capitalize'))
-			->registerFilter('replace',         array($this, 'replace'))
-			->registerFilter('url',             array($this, 'url'));
+		$loader->registerFilter('uppercase', array($this, 'uppercase'))
+			->registerFilter('lowercase', array($this, 'lowercase'))
+			->registerFilter('titlecase', array($this, 'titlecase'))
+			->registerFilter('prefix', array($this, 'prefix'))
+			->registerFilter('suffix', array($this, 'suffix'))
+			->registerFilter('trim', array($this, 'trim'))
+			->registerFilter('rtrim', array($this, 'rtrim'))
+			->registerFilter('ltrim', array($this, 'ltrim'))
+			->registerFilter('capitalize', array($this, 'capitalize'))
+			->registerFilter('replace', array($this, 'replace'))
+			->registerFilter('url', array($this, 'url'))
+			->registerFilter('slug', array($this, 'slug'))
+			;
 	}
 
 	/**
@@ -238,5 +240,28 @@ class Text implements CollectionInterface
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Taken from http://sourcecookbook.com/en/recipes/8/function-to-slugify-strings-in-php
+	 *
+	 * @param $text
+	 * @return string
+	 */
+	public function slug($text)
+	{
+		CheckType::checkStringOrNumeric($text);
+
+		$text = preg_replace('~[^\\pL\d]+~u', '-', $text);
+		$text = trim($text, '-');
+		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+		$text = strtolower($text);
+		$text = preg_replace('~[^-\w]+~', '', $text);
+
+		if (empty($text)) {
+			return 'n-a';
+		}
+
+		return $text;
 	}
 }
