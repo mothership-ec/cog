@@ -16,6 +16,12 @@ class Date implements CollectionInterface
 			->registerRule('after', array($this, 'after'), '%s must%s be after %s.');
 	}
 
+	/**
+	 * @param \DateTime $var
+	 * @param \DateTime $target
+	 * @param bool $orEqualTo
+	 * @return bool
+	 */
 	public function before(\DateTime $var, \DateTime $target, $orEqualTo = false)
 	{
 		if ($orEqualTo) {
@@ -24,6 +30,12 @@ class Date implements CollectionInterface
 		return $var < $target;
 	}
 
+	/**
+	 * @param \DateTime $var
+	 * @param \DateTime $target
+	 * @param bool $orEqualTo
+	 * @return bool
+	 */
 	public function after(\DateTime $var, \DateTime $target, $orEqualTo = false)
 	{
 		if ($orEqualTo) {

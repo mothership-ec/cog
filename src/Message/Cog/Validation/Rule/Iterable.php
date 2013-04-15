@@ -11,12 +11,21 @@ use Message\Cog\Validation\Loader;
 */
 class Iterable implements CollectionInterface
 {
+	/**
+	 * @param Loader $loader
+	 * @return mixed|void
+	 */
 	public function register(Loader $loader)
 	{
 		$loader->registerRule('each', array($this, 'each'), '%s must%s be valid.')
 			->registerRule('validateEach', array($this, 'validateEach'), '%s must%s be valid.');
 	}
 
+	/**
+	 * @param $var
+	 * @param $func
+	 * @return bool
+	 */
 	public function each($var, $func)
 	{
 		foreach($var as $key => $value) {

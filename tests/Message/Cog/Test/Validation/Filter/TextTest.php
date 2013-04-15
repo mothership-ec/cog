@@ -316,6 +316,11 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('https://message.co.uk', $this->_filter->url('message.co.uk', 'https'));
 	}
 
+	public function testUrlDifferentPrefixWithColonSlashes()
+	{
+		$this->assertEquals('https://message.co.uk', $this->_filter->url('message.co.uk', 'https://'));
+	}
+
 	public function testUrlNoReplace()
 	{
 		$this->assertEquals('https://message.co.uk', $this->_filter->url('https://message.co.uk'));

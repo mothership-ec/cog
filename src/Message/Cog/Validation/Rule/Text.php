@@ -22,21 +22,40 @@ class Text implements CollectionInterface
 			->registerRule('match', array($this, 'match'), '%s must%s match the regular expression %s.');
 	}
 
+	/**
+	 * @param $var
+	 * @return bool
+	 */
 	public function alnum($var)
 	{
 		return ctype_alnum($var);
 	}
 
+	/**
+	 * @param $var
+	 * @return bool
+	 */
 	public function alpha($var)
 	{
 		return ctype_alpha($var);
 	}
 
+	/**
+	 * @param $var
+	 * @return bool
+	 */
 	public function digit($var)
 	{
 		return ctype_digit($var);
 	}
 
+	/**
+	 * @param $var
+	 * @param $min
+	 * @param null $max
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function length($var, $min, $max = null)
 	{
 		$len = strlen($var);
@@ -55,6 +74,11 @@ class Text implements CollectionInterface
 		return ($len >= $min && $len <= $max);
 	}
 
+	/**
+	 * @param $var
+	 * @param $min
+	 * @return bool
+	 */
 	public function minLength($var, $min)
 	{
 		CheckType::checkNumeric($min, '$min');
@@ -64,6 +88,11 @@ class Text implements CollectionInterface
 		return $len >= $min;
 	}
 
+	/**
+	 * @param $var
+	 * @param $max
+	 * @return bool
+	 */
 	public function maxLength($var, $max)
 	{
 		CheckType::checkNumeric($max, '$max');
@@ -73,18 +102,31 @@ class Text implements CollectionInterface
 		return $len <= $max;
 	}
 
+	/**
+	 * @param $var
+	 * @return bool
+	 */
 	public function email($var)
 	{
 		CheckType::checkString($var);
 		return (bool) filter_var($var, \FILTER_VALIDATE_EMAIL);
 	}
 
+	/**
+	 * @param $var
+	 * @return bool
+	 */
 	public function url($var)
 	{
 		CheckType::checkString($var);
 		return (bool) filter_var($var, \FILTER_VALIDATE_URL);
 	}
 
+	/**
+	 * @param $var
+	 * @param $pattern
+	 * @return int
+	 */
 	public function match($var, $pattern)
 	{
 		CheckType::checkString($var);

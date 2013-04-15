@@ -11,6 +11,10 @@ use Message\Cog\Validation\Check\Type as CheckType;
 */
 class Number implements CollectionInterface
 {
+	/**
+	 * @param Loader $loader
+	 * @return mixed|void
+	 */
 	public function register(Loader $loader)
 	{
 		$loader->registerRule('min', array($this, 'min'), '%s must%s be equal to or greater than %s.')
@@ -18,6 +22,11 @@ class Number implements CollectionInterface
 			->registerRule('between', array($this, 'between'), '%s must%s be between %s and %s.');
 	}
 
+	/**
+	 * @param $var
+	 * @param $min
+	 * @return bool
+	 */
 	public function min($var, $min)
 	{
 		CheckType::checkNumeric($var, '$var');
@@ -26,6 +35,11 @@ class Number implements CollectionInterface
 		return $var >= $min;
 	}
 
+	/**
+	 * @param $var
+	 * @param $max
+	 * @return bool
+	 */
 	public function max($var, $max)
 	{
 		CheckType::checkNumeric($var, '$var');
@@ -34,6 +48,13 @@ class Number implements CollectionInterface
 		return $var <= $max;
 	}
 
+	/**
+	 * @param $var
+	 * @param $min
+	 * @param $max
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function between($var, $min, $max)
 	{
 		CheckType::checkNumeric($var, '$var');

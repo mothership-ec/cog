@@ -10,11 +10,13 @@ namespace Message\Cog\Validation\Check;
  * May be an idea to move this out of Validation and into Functions or something.
  *
  * All methods return true if no exception is thrown, to allow for easy unit testing,
- * and also so they can theoretically be used in if statements (although they shouldn't be).
+ * and also so they can theoretically be used in if statements (although they shouldn't be as there
+ * is no false return value).
  *
  * This class uses the debug_backtrace() function to provide relevant error messages, i.e. not
  * reference the actual class and method being used, and not these ones. Error messages can be
- * improved by adding the second param (or third in checkInstanceOf()) of the variable name
+ * improved by adding the second param (or third in the case of checkInstanceOf()) of the variable
+ * name
  */
 
 class Type
