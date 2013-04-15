@@ -68,7 +68,6 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Test method name is inverted if proceeded with 'not'
-	 * @todo think of a decent way of actually testing this
 	 */
 	public function testNotMethod()
 	{
@@ -82,6 +81,13 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		));
 
 		$this->assertEquals(1, count($this->_validator->getMessages()));
+
+		$this->_validator->validate(array(
+			'test' => '@£4'
+		));
+
+		$this->assertEquals(0, count($this->_validator->getMessages()));
+
 	}
 
 	/**
@@ -100,6 +106,40 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 			'not_test' => 'where did it go?'
 		));
 
+	}
+
+	public function testBeforeFilter()
+	{
+		$this->_validator
+			->field('test')
+			->toUrlBefore()
+			->url();
+
+		$this->_validator->validate(
+			array('test' => 'message.co.uk')
+		);
+
+		$data = $this->_validator->getData();
+
+		$this->assertEquals(0, count($this->_validator->getMessages()));
+		$this->assertEquals('http://message.co.uk', $data['test']);
+	}
+
+	public function testAfterFilter()
+	{
+		$this->_validator
+			->field('test')
+			->toUrlAfter()
+			->url();
+
+		$this->_validator->validate(
+			array('test' => 'message.co.uk')
+		);
+
+		$data = $this->_validator->getData();
+
+		$this->assertEquals(1, count($this->_validator->getMessages()));
+		$this->assertEquals('http://message.co.uk', $data['test']);
 	}
 
 }

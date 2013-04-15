@@ -301,43 +301,43 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->fail('Exception not thrown');
 	}
 
-	public function testUrlNoPrefix()
+	public function testToUrlNoPrefix()
 	{
-		$this->assertEquals('http://message.co.uk', $this->_filter->url('message.co.uk'));
+		$this->assertEquals('http://message.co.uk', $this->_filter->toUrl('message.co.uk'));
 	}
 
-	public function testUrlExistingPrefix()
+	public function testToUrlExistingPrefix()
 	{
-		$this->assertEquals('http://message.co.uk', $this->_filter->url('http://message.co.uk'));
+		$this->assertEquals('http://message.co.uk', $this->_filter->toUrl('http://message.co.uk'));
 	}
 
-	public function testUrlDifferentPrefix()
+	public function testToUrlDifferentPrefix()
 	{
-		$this->assertEquals('https://message.co.uk', $this->_filter->url('message.co.uk', 'https'));
+		$this->assertEquals('https://message.co.uk', $this->_filter->toUrl('message.co.uk', 'https'));
 	}
 
-	public function testUrlDifferentPrefixWithColonSlashes()
+	public function testToUrlDifferentPrefixWithColonSlashes()
 	{
-		$this->assertEquals('https://message.co.uk', $this->_filter->url('message.co.uk', 'https://'));
+		$this->assertEquals('https://message.co.uk', $this->_filter->toUrl('message.co.uk', 'https://'));
 	}
 
-	public function testUrlNoReplace()
+	public function testToUrlNoReplace()
 	{
-		$this->assertEquals('https://message.co.uk', $this->_filter->url('https://message.co.uk'));
+		$this->assertEquals('https://message.co.uk', $this->_filter->toUrl('https://message.co.uk'));
 	}
 
-	public function testUrlReplacePrefix()
+	public function testToUrlReplacePrefix()
 	{
-		$this->assertEquals('https://message.co.uk', $this->_filter->url('http://message.co.uk', 'https', true));
+		$this->assertEquals('https://message.co.uk', $this->_filter->toUrl('http://message.co.uk', 'https', true));
 	}
 
 	/**
 	 * Test to ensure exception is thrown
 	 */
-	public function testUrlWithNonString()
+	public function testToUrlWithNonString()
 	{
 		try {
-			$this->_filter->url(null);
+			$this->_filter->toUrl(null);
 		}
 		catch (\Exception $e) {
 			return;

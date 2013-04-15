@@ -23,7 +23,7 @@ class Type implements CollectionInterface
 			->registerFilter('boolean', array($this, 'boolean'))
 			->registerFilter('bool',    array($this, 'boolean'))
 			->registerFilter('array',   array($this, 'toArray'))
-			->registerFilter('\ArrayObject', array($this, 'toArrayObject'))
+			->registerFilter('arrayObject', array($this, 'toArrayObject'))
 			->registerFilter('date',    array($this, 'date'))
 			// Not sure why you'd want to use the following but included for completeness
 			->registerFilter('null',    array($this, 'null'));

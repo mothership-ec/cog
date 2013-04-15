@@ -117,27 +117,31 @@ class Validator
 	public function __call($methodName, $args)
 	{
 		$invertResult = false;
-		if(substr($methodName, 0, 3) === 'not') {
+		if (substr($methodName, 0, 3) === 'not') {
 			$invertResult = true;
 			$methodName = lcfirst(substr($methodName, 3));
 		}
 
 		$filterPrecendence = 'pre';
-		if(substr($methodName, -5) === 'After') {
+
+		if (substr($methodName, -5) === 'After') {
 			$filterPrecendence = 'post';
 			$methodName = lcfirst(substr($methodName, 0, -5));
-		} else if (substr($methodName, -6) === 'Before') {
+		}
+		elseif (substr($methodName, -6) === 'Before') {
 			$methodName = lcfirst(substr($methodName, 0, -6));
 		}
 
-		if($rule = $this->_loader->getRule($methodName)) {
+		if ($rule = $this->_loader->getRule($methodName)) {
 			$this->_fieldPointer['rules'][] = array($methodName, $rule, $args, $invertResult, '');
 			// A convoluted way to get a reference to the last array element
 			end($this->_fieldPointer['rules']);
 			$this->_rulePointer = &$this->_fieldPointer['rules'][key($this->_fieldPointer['rules'])];
-		} else if($filter = $this->_loader->getFilter($methodName)) {
+		}
+		elseif ($filter = $this->_loader->getFilter($methodName)) {
 			$this->_fieldPointer['filters'][$filterPrecendence][] = array($methodName, $filter, $args);
-		} else {
+		}
+		else {
 			throw new \Exception(sprintf('No rule or filter exists named `%s`.', $methodName));
 		}
 
@@ -194,6 +198,7 @@ class Validator
 	{
 		foreach($this->_fields as $name => $field) {
 
+			// Escape if data field doesn't exist
 			if (!isset($this->_data[$name])) {
 				continue;
 			}
@@ -225,6 +230,7 @@ class Validator
 				$this->_messages->addError($name, $field['readableName'].' is a required field.');
 			}
 
+			// Escape if data field doesn't exist, after any necessary error messages have been assigned
 			if (!isset($this->_data[$name])) {
 				continue;
 			}

@@ -23,7 +23,7 @@ class Text implements CollectionInterface
 			->registerFilter('ltrim', array($this, 'ltrim'))
 			->registerFilter('capitalize', array($this, 'capitalize'))
 			->registerFilter('replace', array($this, 'replace'))
-			->registerFilter('url', array($this, 'url'))
+			->registerFilter('toUrl', array($this, 'toUrl'))
 			->registerFilter('slug', array($this, 'slug'))
 			;
 	}
@@ -224,7 +224,7 @@ class Text implements CollectionInterface
 	 * @param bool $replaceExisting
 	 * @return mixed|string
 	 */
-	public function url($url, $protocol = 'http', $replaceExisting = false)
+	public function toUrl($url, $protocol = 'http', $replaceExisting = false)
 	{
 		CheckType::checkString($url, '$url');
 		CheckType::checkString($protocol, '$protocol');
