@@ -6,6 +6,11 @@ use Message\Cog\Validation\Rule\Text;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Text
+	 */
+	protected $_rule;
+
 	public function setUp()
 	{
 		$this->_rule = new Text;
@@ -34,6 +39,41 @@ class TextTest extends \PHPUnit_Framework_TestCase
 	public function testAlnumFalse()
 	{
 		$this->assertFalse($this->_rule->alnum('ahs89da98sh£dahi(asd'));
+	}
+
+	public function testAlphaTrue()
+	{
+		$this->assertTrue($this->_rule->alpha('jhdfhsdfsdf'));
+	}
+
+	public function testAlphaFalse()
+	{
+		$this->assertFalse($this->_rule->alpha(23234234));
+	}
+
+	public function testAlphaFalseInvalid()
+	{
+		$this->assertFalse($this->_rule->alpha(array('asdasd')));
+	}
+
+	public function testDigitTrueWithInt()
+	{
+		$this->assertTrue($this->_rule->digit(123123));
+	}
+
+	public function testDigitTrueWithString()
+	{
+		$this->assertTrue($this->_rule->digit('123123'));
+	}
+
+	public function testDigitFalse()
+	{
+		$this->assertFalse($this->_rule->digit('asdasd'));
+	}
+
+	public function testDigitFalseInvalid()
+	{
+		$this->assertFalse($this->_rule->digit(array()));
 	}
 
 	public function testLengthTrue()

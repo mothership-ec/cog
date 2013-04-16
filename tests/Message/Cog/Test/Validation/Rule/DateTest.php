@@ -22,7 +22,7 @@ class DateTest extends \PHPUnit_Framework_TestCase
 //		$messages = $this->getMock('\Message\Cog\Validation\Messages');
 //
 //		$loader = $this->getMockBuilder('\Message\Cog\Validation\Loader')
-//			->setMethods('registerRule')
+//			->setMethods(array('registerRule'))
 //			->setConstructorArgs(array($validator, $messages))
 //			->getMock('\Message\Cog\Validation\Loader')
 //		;

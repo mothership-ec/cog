@@ -6,6 +6,9 @@ use Message\Cog\Validation\Filter\Other;
 
 class OtherTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Other
+	 */
 	protected $_filter;
 
 	public function setUp()
