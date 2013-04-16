@@ -14,19 +14,74 @@ class IterableTest extends \PHPUnit_Framework_TestCase
 		$this->_rule = new Iterable;
 	}
 
-	public function testRegister()
+	/**
+	 * Test true with sequential array
+	 */
+	public function testEachTrueSeqArray()
+	{
+		$data = array(1, 2);
+		$this->assertTrue($this->_rule->each($data, 'is_int'));
+	}
+
+	/**
+	 * Test true with associative array
+	 */
+	public function testEachTrueAssocArray()
+	{
+		$data = array(
+			'hello' => 'hello',
+			'world' => 'world',
+		);
+
+		$this->assertTrue($this->_rule->each($data, 'strstr'));
+	}
+
+	/**
+	 * Test false with sequential array
+	 */
+	public function testEachFalseSeqArray()
+	{
+		$data = array(1, 'two');
+
+		$this->assertFalse($this->_rule->each($data, 'is_int'));
+	}
+
+	/**
+	 * Test false with associative array
+	 */
+	public function testEachFalseAssocArray()
+	{
+		$data = array(
+			'hello' => 'hello',
+			'world' => 'hello'
+		);
+
+		$this->assertFalse($this->_rule->each($data, 'strstr'));
+	}
+
+	public function testValidateEachTrue()
 	{
 
 	}
 
-	public function testEach()
+	public function testValidateEachFalse()
 	{
 
 	}
 
-	public function testValidateEach()
+	/**
+	 * Test that exception is thrown when $func does not return instance of Validator
+	 */
+	public function testValidateEachFail()
 	{
-
+		try {
+			$data = array(1, 2);
+			$this->_rule->validateEach($data, 'is_int');
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
 	}
 
 }

@@ -22,19 +22,13 @@ class Iterable implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
+	 * @param array $var
 	 * @param $func
 	 * @return bool
 	 */
-	public function each($var, $func)
+	public function each(array $var, $func)
 	{
-		foreach($var as $key => $value) {
-			if(!$func($value, $key)) {
-				return false;
-			}
-		}
-
-		return true;
+		return ($this->_isAssoc($var)) ? $this->_eachAssoc($var, $func) : $this->_eachSeq($var, $func);
 	}
 
 	/**
@@ -54,6 +48,53 @@ class Iterable implements CollectionInterface
 
 		foreach($var as $key => $value) {
 			if(!$validator->validate($value)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if array is associative or sequential
+	 *
+	 * @param $arr array
+	 * @return bool
+	 */
+	protected function _isAssoc(array $arr)
+	{
+		return array_keys($arr) !== range(0, count($arr) - 1);
+	}
+
+	/**
+	 * Takes into account the keys and pass them as a second parameter to the function
+	 *
+	 * @param array $var
+	 * @param $func
+	 * @return bool
+	 */
+	protected function _eachAssoc($var, $func)
+	{
+		foreach($var as $key => $value) {
+			if(!$func($value, $key)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Ignores keys and only pass the value to the function
+	 *
+	 * @param array $var
+	 * @param $func
+	 * @return bool
+	 */
+	protected function _eachSeq($var, $func)
+	{
+		foreach($var as $value) {
+			if(!$func($value)) {
 				return false;
 			}
 		}
