@@ -55,14 +55,6 @@ class Loader
 	}
 
 	/**
-	 * @return Validator
-	 */
-	public function getValidator()
-	{
-		return $this->_validator;
-	}
-
-	/**
 	 * @param $name
 	 * @return bool
 	 */
@@ -73,6 +65,30 @@ class Loader
 		}
 
 		return $this->_filters[$name];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getRules()
+	{
+		return $this->_rules;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getFilters()
+	{
+		return $this->_filters;
+	}
+
+	/**
+	 * @return Validator
+	 */
+	public function getValidator()
+	{
+		return $this->_validator;
 	}
 
 	/**
@@ -102,6 +118,10 @@ class Loader
 	}
 
 	/**
+	 * Method to register filters and rules to the loader.
+	 * It validates that the rule/filter does not already exist in the register and that they are valid
+	 * i.e. callable
+	 *
 	 * @param $type
 	 * @param $name
 	 * @param $func
@@ -110,17 +130,19 @@ class Loader
 	 */
 	protected function _register($type, $name, $func)
 	{
+		$attr = '_' . $type . 's';
+
 		if(!is_callable($func)) {
 			throw new \Exception(sprintf('Cannot register %s `%s`; Second parameter must be callable.', $type, $name));
 		}
 
-		if(isset($this->_{$type}[$name])) {
+		if(isset($this->{$attr}[$name])) {
 			throw new \Exception(sprintf('A %s with the name `%s` has already been registered.', $type, $name));
 		}
 
-		$attr = '_'.$type.'s';
 		$this->{$attr}[$name] = $func;
 
 		return $this;
 	}
+
 }
