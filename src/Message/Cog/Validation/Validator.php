@@ -105,8 +105,7 @@ class Validator
 	}
 
 	/**
-	 * Determine that a rule is optional.
-	 * Does not work on
+	 * Determine that a field is optional
 	 *
 	 * @return $this
 	 */

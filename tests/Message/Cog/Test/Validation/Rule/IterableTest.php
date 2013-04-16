@@ -8,10 +8,13 @@ class IterableTest extends \PHPUnit_Framework_TestCase
 {
 
 	protected $_rule;
+	protected $_validator;
 
 	public function setUp()
 	{
 		$this->_rule = new Iterable;
+		$this->_validator = $this->getMockBuilder('\Message\Cog\Validation\Validator')
+			->getMock();
 	}
 
 	/**
