@@ -149,6 +149,66 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * Test that custom 'other' filter works
+	 */
+	public function testOtherFilter()
+	{
+		$this->_validator
+			->field('test')
+			->filter('md5');
+
+		$this->_validator->validate(
+			array('test' => 'test')
+		);
+
+		$data = $this->_validator->getData();
+
+		$this->assertTrue(strlen($data['test']) === 32);
+	}
+
+	public function testOtherRulePass()
+	{
+		$this->_validator
+			->field('test')
+			->rule('is_int');
+
+		$this->_validator->validate(
+			array('test' => 1)
+		);
+
+		$this->assertEquals(0, count($this->_validator->getMessages()));
+	}
+
+	public function testOtherRuleFail()
+	{
+		$this->_validator
+			->field('test')
+			->rule('is_int');
+
+		$this->_validator->validate(
+			array('test' => 'test')
+		);
+
+		$this->assertEquals(1, count($this->_validator->getMessages()));
+	}
+
+	public function testError()
+	{
+		$this->_validator
+			->field('test')
+			->max(1)
+			->error('this is an error');
+
+		$this->_validator->validate(
+			array('test' => 2)
+		);
+
+		$messages = $this->_validator->getMessages();
+
+		$this->assertEquals('this is an error', $messages['test'][0]);
+	}
+
+	/**
 	 * Test that getFields returns an array, and includes a field that has been added
 	 */
 	public function testGetFields()
@@ -168,11 +228,6 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertTrue(is_array($fields));
 		$this->assertTrue(empty($fields));
-	}
-
-	public function testError()
-	{
-		$this->assertEquals($this->_validator, $this->_validator->error('message'));
 	}
 
 }

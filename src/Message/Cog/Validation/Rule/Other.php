@@ -30,6 +30,6 @@ class Other implements CollectionInterface
 	 */
 	public function rule($var, $func)
 	{
-		return $func($var, $this->_validator->getData());
+		return $func($var);
 	}
 }

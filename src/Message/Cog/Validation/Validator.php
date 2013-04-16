@@ -40,6 +40,7 @@ class Validator
 			'Message\\Cog\\Validation\\Rule\\Number',
 			'Message\\Cog\\Validation\\Rule\\Iterable',
 			'Message\\Cog\\Validation\\Rule\\Text',
+			'Message\\Cog\\Validation\\Rule\\Other',
 			'Message\\Cog\\Validation\\Filter\\Text',
 			'Message\\Cog\\Validation\\Filter\\Type',
 			'Message\\Cog\\Validation\\Filter\\Other',
