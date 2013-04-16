@@ -16,7 +16,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * Checks last_name and first_name fields. Should create two error messages:
 	 * - non alpha numeric characters in first_name
-	 * - no last_name set, which is a required field
+	 * - last_name is a required field
 	 */
 	public function testGetMessages()
 	{
@@ -168,6 +168,11 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertTrue(is_array($fields));
 		$this->assertTrue(empty($fields));
+	}
+
+	public function testError()
+	{
+		$this->assertEquals($this->_validator, $this->_validator->error('message'));
 	}
 
 }

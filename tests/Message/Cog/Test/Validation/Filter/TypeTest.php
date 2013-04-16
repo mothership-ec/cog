@@ -120,6 +120,33 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(new \Datetime('10-10-1985'), $this->_filter->date('10-10-1985'));
 	}
 
+	public function testDateWithArray()
+	{
+		$date = array(
+			'year' => 1986,
+			'month' => 3,
+			'day' => 31
+		);
+
+		$dateTime = $this->_filter->date($date);
+
+		$this->assertEquals(new \DateTime('1986-03-31 00:00:00'), $dateTime);
+	}
+
+	/**
+	 * Tests creating a DateTime using a timestamp.
+	 * It's worth noting that when using a timestamp it uses a weird timezone format ('+00:00', with
+	 * a timezone_type of 1 instead of 3)
+	 */
+	public function testDateWithTimestamp()
+	{
+		$date = 512611200;
+
+		$dateTime = $this->_filter->date($date);
+
+		$this->assertEquals('1986-03-31 00:00:00', $dateTime->format('Y-m-d H:i:s'));
+	}
+
 	public function testDateWithDateTimeZone()
 	{
 		$tz = new \DateTimeZone('Europe/Rome');
@@ -160,6 +187,13 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 			return;
 		}
 		$this->fail('Exception not thrown');
+	}
+
+	public function testSetDefaultTimeZone()
+	{
+		$tz = new \DateTimeZone('Europe/Rome');
+		$this->_filter->setDefaultTimeZone($tz);
+		$this->assertEquals($tz, $this->_filter->getDefaultTimeZone());
 	}
 
 	public function testNull()

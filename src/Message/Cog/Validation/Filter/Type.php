@@ -4,6 +4,7 @@ namespace Message\Cog\Validation\Filter;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
 * Type filters
@@ -107,37 +108,18 @@ class Type implements CollectionInterface
 	 * 
 	 * @param  mixed $var                               The variable to convert
 	 * @param  \DateTimeZone | string | null $timezone  An optional timezone to use
-	 * @param  array $keys                              If $var is an array can be used to denote what values
-	 *                 		          should be keys.
 	 * @return \DateTime				                The parsed DateTime value.
 	 */
-	public function date($var, $timezone = null, array $keys = array())
+	public function date($var, $timezone = null)
 	{
 		$timezone = $this->_filterTimezone($timezone);
 
-		if(is_array($var)) {
-
-			$parts = array(
-				'year'   => 1970, 
-				'month'  => 1, 
-				'day'    => 1,
-				'hour'   => 0,
-				'minute' => 0,
-				'second' => 0,
-			);
-
-			foreach($parts as $part => &$value) {
-				if(isset($var[$part])) {
-					$value = (int)$var[$part];
-				}
-			}
-
-			$var = $parts['year'].'-'.$parts['month'].'-'.$parts['day'].' ';
-			$var.= $parts['hour'].':'.$parts['minute'].':'.$parts['second'];
+		if (is_array($var)) {
+			$var = $this->_getDateFromArray($var);
 		}
 
-		if(is_int($var)) {
-			$var = '@'.$var;
+		if(is_numeric($var)) {
+			$var = '@' . $var;
 		}
 
 		if(!$timezone) {
@@ -157,6 +139,14 @@ class Type implements CollectionInterface
 		$this->_defaultTimeZone = $tz;
 
 		return $this;
+	}
+
+	/**
+	 * @return \DateTimeZone | null
+	 */
+	public function getDefaultTimeZone()
+	{
+		return $this->_defaultTimeZone;
 	}
 
 	/**
@@ -186,4 +176,34 @@ class Type implements CollectionInterface
 
 		return $tz;
 	}
+
+	/**
+	 * Converts an array into a valid date string.
+	 *
+	 * @param array $date
+	 * @return string
+	 */
+	protected function _getDateFromArray(array $date)
+	{
+		foreach ($date as $value) {
+			CheckType::checkNumeric($value);
+		}
+
+		$parts = array(
+			'year'   => 1970,
+			'month'  => 1,
+			'day'    => 1,
+			'hour'   => 0,
+			'minute' => 0,
+			'second' => 0,
+		);
+
+		$parts = array_merge($parts, $date);
+
+		$date = $parts['year'] . '-' . $parts['month'] . '-' . $parts['day'] . ' ';
+		$date .= $parts['hour'].':'.$parts['minute'].':'.$parts['second'];
+
+		return $date;
+	}
+
 }

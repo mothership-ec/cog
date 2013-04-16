@@ -92,9 +92,9 @@ class Loader
 	}
 
 	/**
-	 * @param $name
-	 * @param $func
-	 * @param $errorMessage
+	 * @param string $name
+	 * @param array $func - callable array for class methods (array(Object, 'methodName'))
+	 * @param string $errorMessage
 	 * @return $this
 	 */
 	public function registerRule($name, $func, $errorMessage)
@@ -106,8 +106,8 @@ class Loader
 	}
 
 	/**
-	 * @param $name
-	 * @param $func
+	 * @param string $name
+	 * @param array $func - callable array for class methods (array(Object, 'methodName'))
 	 * @return $this
 	 */
 	public function registerFilter($name, $func)
@@ -122,9 +122,9 @@ class Loader
 	 * It validates that the rule/filter does not already exist in the register and that they are valid
 	 * i.e. callable
 	 *
-	 * @param $type
-	 * @param $name
-	 * @param $func
+	 * @param string $type - is it a filter or a rule?
+	 * @param string $name
+	 * @param array $func - callable array for class methods (array(Object, 'methodName'))
 	 * @throws \Exception
 	 * @return $this
 	 */

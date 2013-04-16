@@ -57,6 +57,8 @@ class Validator
 	}
 
 	/**
+	 * Get data that has been submitted
+	 *
 	 * @return array
 	 */
 	public function getData()
@@ -65,6 +67,8 @@ class Validator
 	}
 
 	/**
+	 * Get fields for data to be passed to
+	 *
 	 * @return array
 	 */
 	public function getFields()
@@ -73,8 +77,10 @@ class Validator
 	}
 
 	/**
+	 * Add a field to be validated
+	 *
 	 * @param string $name
-	 * @param bool $readableName
+	 * @param bool $readableName - how the name will appear in error messages etc.
 	 * @return $this
 	 */
 	public function field($name, $readableName = false)
@@ -99,6 +105,9 @@ class Validator
 	}
 
 	/**
+	 * Determine that a rule is optional.
+	 * Does not work on
+	 *
 	 * @return $this
 	 */
 	public function optional()
@@ -109,6 +118,9 @@ class Validator
 	}
 
 	/**
+	 * Runs through assigned rules and filters for validation
+	 * @todo refactor into something more less complex and more readable
+	 *
 	 * @param $methodName
 	 * @param $args
 	 * @return $this
@@ -219,6 +231,8 @@ class Validator
 	}
 
 	/**
+	 * @todo refactor into something less complex and more readable
+	 *
 	 * @return $this
 	 */
 	protected function _applyRules()

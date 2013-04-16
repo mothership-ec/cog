@@ -18,8 +18,20 @@ class OtherTest extends \PHPUnit_Framework_TestCase
 
 	}
 
-	public function testFilter()
+	public function testFilterWithNativeFunctions()
 	{
+		$this->assertTrue($this->_filter->filter(true, 'is_bool'));
+		$this->assertFalse($this->_filter->filter('string', 'is_numeric'));
+	}
 
+	public function testFilterWithMethod()
+	{
+		try {
+			$this->assertTrue($this->_filter->filter('var', array()));
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
 	}
 }
