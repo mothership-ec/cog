@@ -118,7 +118,7 @@ class Validator
 
 	/**
 	 * Runs through assigned rules and filters for validation
-	 * @todo refactor into something more less complex and more readable
+	 * @todo work on making this process simpler
 	 *
 	 * @param $methodName
 	 * @param $args
@@ -133,6 +133,22 @@ class Validator
 			$methodName = lcfirst(substr($methodName, 3));
 		}
 
+		list($methodName, $filterPrecendence) = $this->_beforeOrAfter($methodName);
+
+		$this->_setPointers($methodName, $filterPrecendence, $args, $invertResult);
+
+		return $this;
+	}
+
+	/**
+	 * Determines order in which filters should be applied.
+	 *
+	 * @param string $methodName
+	 * @return array - returns two variables in an array, use list() to make result more manageable
+	 *      $filterPrecendence is passed to the _setPointers() method to determine when a filter should be applied
+	 */
+	protected function _beforeOrAfter($methodName)
+	{
 		$filterPrecendence = 'pre';
 
 		if (substr($methodName, -5) === 'After') {
@@ -143,6 +159,19 @@ class Validator
 			$methodName = lcfirst(substr($methodName, 0, -6));
 		}
 
+		return array($methodName, $filterPrecendence);
+	}
+
+	/**
+	 * @param string $methodName
+	 * @param string $filterPrecendence
+	 * @param array $args
+	 * @param bool $invertResult
+	 * @return $this
+	 * @throws \Exception
+	 */
+	protected function _setPointers($methodName, $filterPrecendence, array $args, $invertResult)
+	{
 		if ($rule = $this->_loader->getRule($methodName)) {
 			$this->_fieldPointer['rules'][] = array($methodName, $rule, $args, $invertResult, '');
 			// A convoluted way to get a reference to the last array element
