@@ -277,21 +277,33 @@ class Validator
 				continue;
 			}
 
-			foreach($field['rules'] as $rule) {
-				list($ruleName, $func, $args, $invertResult, $error) = $rule;
+			$this->_setMessages($name, $field);
 
-				array_unshift($args, $this->_data[$name]);
-				$result = call_user_func_array($func, $args);
+		}
 
-				if($invertResult) {
-					$result = !$result;
-				}
+		return $this;
+	}
 
-				if(!$result) {
-					$this->_messages->addFromRule($field, $rule);
-				}
+	/**
+	 * @param $name
+	 * @param $field
+	 * @return $this
+	 */
+	protected function _setMessages($name, $field)
+	{
+		foreach($field['rules'] as $rule) {
+			list($ruleName, $func, $args, $invertResult, $error) = $rule;
+
+			array_unshift($args, $this->_data[$name]);
+			$result = call_user_func_array($func, $args);
+
+			if($invertResult) {
+				$result = !$result;
 			}
-			
+
+			if(!$result) {
+				$this->_messages->addFromRule($field, $rule);
+			}
 		}
 
 		return $this;
