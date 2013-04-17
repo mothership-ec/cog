@@ -223,6 +223,6 @@ using the Loader's `registerRule()` and `registerFilter()` methods:
 ## Limitations
 
 When creating filters and rules, due to the fluent interface, it is worth bearing in mind that you cannot register
-any two filters or rule that have the same name as this will cause a conflict. An example of this being worked around
+any two filters or rules that have the same name as this will cause a conflict. An example of this being worked around
 is the toUrl() filter. If this had been called url(), there would be no way for the validator to determine whether
 this is referring to the filter or the rule.
