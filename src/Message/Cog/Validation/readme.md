@@ -98,7 +98,7 @@ error messages:
 		    ->email()
 		->field('age')
 		    ->min(18)
-	        ->error('You must be over 18 to signup')
+	        ->error('You must be over 18 to sign up')
         ->field('address')
             ->optional()
     ;
@@ -115,7 +115,8 @@ This is determined by adding `Before` or `After` to the method call, for instanc
 	$validator
 		->field('url')
 			->toUrlBefore()
-			->url();
+			->url()
+	;
 
 In this example, if you were to validate the url `message.co.uk`, the toUrl() filter would be called
 before the url() rule, ensuring that the http:// protocol is prefixed to the string, making it
@@ -126,7 +127,8 @@ If you were to change this to:
 	$validator
 		->field('url')
 			->toUrlAfter()
-			->url();
+			->url()
+	;
 
 Passing `message.co.uk` to the validator would cause validation to fail and return false, as the filter is run after
 the rule.
@@ -138,14 +140,16 @@ In the example below, data will not pass validation is `age` doesn't fall betwee
 
 	$validator
 		->field('age')
-			->between(30, 40);
+			->between(30, 40)
+	;
 
 Rules can be inverted by prepending the method name with `not` (and camel casing it). So we can invert the example
 above so that data will not pass validation if `age` falls between 30 and 40:
 
 	$validator
 		->field(`age`)
-			->notBetween(30, 40);
+			->notBetween(30, 40)
+	;
 
 ## `Other` Filters and Rules
 
@@ -157,7 +161,29 @@ a string (although a rule already exists for this), you could do the following:
 	$validator
 		->field('password')
 			->filter('md5')
-			->rule('is_string');
+			->rule('is_string')
+	;
+
+## Adding Files and Rules to the Component
+
+To add new filters and rules to the component, you need to create classes that implement the CollectionInterface,
+and add a `register()` method. The `register()` method must have a Loader parameter. This is where you will register
+your filters/rules.
+
+Create a new method for each, and assign these as either a rule or a filter in the `register()` method using the Loader's
+`registerRule()` and `registerFilter()` methods:
+
+	// The first parameter is the name of the method being called.
+	// The second parameter is a callable array, so the first value is an object that contains the method, i.e. $this
+	//      and the second value is the name of the method.
+	// The third parameter is the error message that will show up when the data fails validation. It uses sprintf() so
+	//      the first %s represents the value, and the second represents whether 'not' has been set.
+
+	$loader->registerRule('example', array($this, 'example'), '%s must %s follow the example rule.')
+
+	// The first two parameters match those of `registerRule()`, but as it is a filter, no error message is necessary.
+
+	$loader->registerFilter('example', array($this, 'example'));
 
 ## Limitations
 
