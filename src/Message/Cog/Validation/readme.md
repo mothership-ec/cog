@@ -160,7 +160,7 @@ above so that data will not pass validation if `age` falls between 30 and 40:
 ## `Other` Filters and Rules
 
 The Filter\Other and Rule\Other classes allow users to create custom filters and validators without having to edit
-the component itself, i.e. from native PHP functions. You can do this using the 'filter()' and 'rule()' methods. For
+the component itself, i.e. from native PHP functions. You can do this using the `filter()` and `rule()` methods. For
 instance, if you wanted to create an md5 hash of the input before submitting it, and ensure it is a string (although a
 rule already exists for this), you could do the following:
 
