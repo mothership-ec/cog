@@ -150,37 +150,37 @@ class Validator
 	 */
 	protected function _beforeOrAfter($methodName)
 	{
-		$filterPrecendence = 'pre';
+		$filterPrec = 'pre';
 
 		if (substr($methodName, -5) === 'After') {
-			$filterPrecendence = 'post';
+			$filterPrec = 'post';
 			$methodName = lcfirst(substr($methodName, 0, -5));
 		}
 		elseif (substr($methodName, -6) === 'Before') {
 			$methodName = lcfirst(substr($methodName, 0, -6));
 		}
 
-		return array($methodName, $filterPrecendence);
+		return array($methodName, $filterPrec);
 	}
 
 	/**
 	 * @param string $methodName
-	 * @param string $filterPrecendence
+	 * @param string $filterPrec - Filter precendence i.e. pre or post
 	 * @param array $args
 	 * @param bool $invertResult
 	 * @return $this
 	 * @throws \Exception
 	 */
-	protected function _setPointers($methodName, $filterPrecendence, array $args, $invertResult)
+	protected function _setPointers($methodName, $filterPrec, array $args, $invertResult)
 	{
 		if ($rule = $this->_loader->getRule($methodName)) {
 			$this->_fieldPointer['rules'][] = array($methodName, $rule, $args, $invertResult, '');
-			// A convoluted way to get a reference to the last array element
-			end($this->_fieldPointer['rules']);
-			$this->_rulePointer = &$this->_fieldPointer['rules'][key($this->_fieldPointer['rules'])];
+
+			$end = count($this->_fieldPointer['rules']) - 1;
+			$this->_rulePointer = &$this->_fieldPointer['rules'][$end];
 		}
 		elseif ($filter = $this->_loader->getFilter($methodName)) {
-			$this->_fieldPointer['filters'][$filterPrecendence][] = array($methodName, $filter, $args);
+			$this->_fieldPointer['filters'][$filterPrec][] = array($methodName, $filter, $args);
 		}
 		else {
 			throw new \Exception(sprintf('No rule or filter exists named `%s`.', $methodName));
@@ -268,18 +268,28 @@ class Validator
 	{
 		foreach($this->_fields as $name => $field) {
 
-			// Check emptyness if optional
-			if((!isset($this->_data[$name]) || $this->_data[$name] == '') && !$field['optional']) {
-				$this->_messages->addError($name, $field['readableName'].' is a required field.');
+			$this->_setRequiredError($name, $field);
+
+			if (isset($this->_data[$name])) {
+				$this->_setMessages($name, $field);
 			}
 
-			// Escape if data field doesn't exist, after any necessary error messages have been assigned
-			if (!isset($this->_data[$name])) {
-				continue;
-			}
+		}
 
-			$this->_setMessages($name, $field);
+		return $this;
+	}
 
+	/**
+	 * Method to check if a field is required and set an error where appropriate
+	 *
+	 * @param $name
+	 * @param $field
+	 * @return $this
+	 */
+	protected function _setRequiredError($name, $field)
+	{
+		if((!isset($this->_data[$name]) || $this->_data[$name] == '') && !$field['optional']) {
+			$this->_messages->addError($name, $field['readableName'].' is a required field.');
 		}
 
 		return $this;
