@@ -66,14 +66,14 @@ class IterableTest extends \PHPUnit_Framework_TestCase
 	{
 		$callback = function(Validator $val){
 			$val
-//				->field('example')
+				->field('example')
 				->field('example_two');
 			return $val;
 		};
 
 		$data = array(
 			array(
-//				'example' => 'test',
+				'example' => 'test',
 				'example_two' => 0 // was a bug where if zero was passed it would return false
 			),
 		);
