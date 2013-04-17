@@ -61,7 +61,8 @@ This time let's pass in the following data and output any error messages:
     $errors = $validator->getMessages();
     var_dump($errors);
     
-`getMessages()` returns an array containing error messages which have been raised. The output of `var_dump` will look like this:
+`getMessages()` returns an array containing error messages which have been raised. The output of `var_dump` will look
+like this:
 
 	array(3) {
 	  'first_name' =>
@@ -102,6 +103,9 @@ error messages:
         ->field('address')
             ->optional()
     ;
+
+Here, the custom field name is the second parameter of the `field()` method, i.e. `Forename` in the `first_name` field.
+The error message is defined using the `error()` method.
     
 By declaring a field you automatically make it a required element. If the field is left blank then the validation will
 fail. To make a field optional call the `optional()` method, as shown on the `address` field above. If the field is
@@ -154,9 +158,9 @@ above so that data will not pass validation if `age` falls between 30 and 40:
 ## `Other` Filters and Rules
 
 The Filter\Other and Rule\Other classes allow users to create custom filters and validators without having to edit
-the component itself, either from native PHP functions or custom functions. You can do this using the 'filter()' and
-'rule()' methods. For instance, if you wanted to create an md5 hash of the input before submitting it, and ensure it is
-a string (although a rule already exists for this), you could do the following:
+the component itself, i.e. from native PHP functions. You can do this using the 'filter()' and 'rule()' methods. For
+instance, if you wanted to create an md5 hash of the input before submitting it, and ensure it is a string (although a
+rule already exists for this), you could do the following:
 
 	$validator
 		->field('password')
@@ -198,7 +202,7 @@ becomes this when called by the validator:
 
 	$validator
 		->field('field')
-			->example('valueForSecondField')
+			->example('valueForSecondParam')
 	;
 
 Once you have created your methods, you need to assign these as either rules or filters in the `register()` method

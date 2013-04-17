@@ -245,9 +245,14 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->fail('Exception not thrown');
 	}
 
+	/**
+	 * Tests a few match examples, as well as multiple matches and matching part of a string
+	 */
 	public function testMatchTrue()
 	{
 		$this->assertTrue($this->_rule->match('Hello there', '/[A-Z][a-z]+\s[a-z]+/'));
+		$this->assertTrue($this->_rule->match('Hello there', '/[A-Z][a-z]+/'));
+		$this->assertTrue($this->_rule->match('Hello There', '/[A-Z][a-z]+/'));
 		$this->assertTrue($this->_rule->match('123abc', '/[0-9]+[a-z]+/'));
 	}
 
