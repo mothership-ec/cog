@@ -66,22 +66,22 @@ like this:
 
 	array(3) {
 	  'first_name' =>
-	  array(2) {
-	    [0] =>
-	    string(36) "First Name must be alphanumeric."
-	    [1] =>
-	    string(47) "First Name must be between 3 and 10 characters."
-	  }
+		  array(2) {
+		    [0] =>
+		    string(36) "First Name must be alphanumeric."
+		    [1] =>
+		    string(47) "First Name must be between 3 and 10 characters."
+		  }
 	  'email_address' =>
-	  array(1) {
-	    [0] =>
-	    string(43) "Email Address must be a valid email address"
-	  }
+		  array(1) {
+		    [0] =>
+		    string(43) "Email Address must be a valid email address"
+		  }
 	  'age' =>
-	  array(1) {
-	    [0] =>
-	    string(40) "Age must be equal to or greater than 18."
-	  }
+		  array(1) {
+		    [0] =>
+		    string(40) "Age must be equal to or greater than 18."
+		  }
 	}
 	
 The `Validator` class is able to determine the field name and generate nice error messages just from the rules you
