@@ -11,10 +11,9 @@ namespace Message\Cog\Validation\Check;
  *
  * All methods return true if no exception is thrown, to allow for easy unit testing.
  *
- * This class uses the debug_backtrace() function to provide relevant error messages, i.e. not
- * reference the actual class and method being used, and not these ones. Error messages can be
- * improved by adding the second param (or third in the case of checkInstanceOf()) of the variable
- * name
+ * This class uses the debug_backtrace() function to provide relevant error messages, i.e.reference the actual class
+ * and method being used, and not these ones. Error messages can be improved by adding the second param (or third in
+ * the case of checkInstanceOf()) for the variable name
  */
 
 class Type
