@@ -150,28 +150,28 @@ class Validator
 	 */
 	protected function _beforeOrAfter($methodName)
 	{
-		$filterPrec = 'pre';
+		$precendence = 'pre';
 
 		if (substr($methodName, -5) === 'After') {
-			$filterPrec = 'post';
+			$precendence = 'post';
 			$methodName = lcfirst(substr($methodName, 0, -5));
 		}
 		elseif (substr($methodName, -6) === 'Before') {
 			$methodName = lcfirst(substr($methodName, 0, -6));
 		}
 
-		return array($methodName, $filterPrec);
+		return array($methodName, $precendence);
 	}
 
 	/**
 	 * @param string $methodName
-	 * @param string $filterPrec - Filter precendence i.e. pre or post
+	 * @param string $precendence - Filter precendence i.e. pre or post
 	 * @param array $args
-	 * @param bool $invertResult
+	 * @param bool $invertResult - has 'not' been set on the rule?
 	 * @return $this
 	 * @throws \Exception
 	 */
-	protected function _setPointers($methodName, $filterPrec, array $args, $invertResult)
+	protected function _setPointers($methodName, $precendence, array $args, $invertResult)
 	{
 		if ($rule = $this->_loader->getRule($methodName)) {
 			$this->_fieldPointer['rules'][] = array($methodName, $rule, $args, $invertResult, '');
@@ -180,7 +180,7 @@ class Validator
 			$this->_rulePointer = &$this->_fieldPointer['rules'][$end];
 		}
 		elseif ($filter = $this->_loader->getFilter($methodName)) {
-			$this->_fieldPointer['filters'][$filterPrec][] = array($methodName, $filter, $args);
+			$this->_fieldPointer['filters'][$precendence][] = array($methodName, $filter, $args);
 		}
 		else {
 			throw new \Exception(sprintf('No rule or filter exists named `%s`.', $methodName));

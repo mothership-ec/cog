@@ -137,6 +137,8 @@ If you were to change this to:
 Passing `message.co.uk` to the validator would cause validation to fail and return false, as the filter is run after
 the rule.
 
+It is worth noting that all filters are set to `Before` by default.
+
 ## Rules
 
 Where filters modify the data passed to `validate()`, rules determine what is required for data to pass validation.
