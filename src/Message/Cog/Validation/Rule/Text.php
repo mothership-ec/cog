@@ -130,7 +130,8 @@ class Text implements CollectionInterface
 	public function match($var, $pattern)
 	{
 		CheckType::checkString($var);
-		return preg_match($var, $pattern);
+		CheckType::checkString($pattern, '$pattern');
+		return (bool) preg_match($pattern, $var);
 	}
 
 }

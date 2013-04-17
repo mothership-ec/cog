@@ -222,4 +222,50 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->fail('Exception not thrown');
 	}
 
+	public function testUrlTrue()
+	{
+		$this->assertTrue($this->_rule->url('http://message.co.uk'));
+		$this->assertTrue($this->_rule->url('https://message.co.uk'));
+	}
+
+	public function testUrlFalse()
+	{
+		$this->assertFalse($this->_rule->url('message.co.uk'));
+		$this->assertFalse($this->_rule->url('message'));
+	}
+
+	public function testUrlNonString()
+	{
+		try {
+			$this->_rule->url(true);
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
+	public function testMatchTrue()
+	{
+		$this->assertTrue($this->_rule->match('Hello there', '/[A-Z][a-z]+\s[a-z]+/'));
+		$this->assertTrue($this->_rule->match('123abc', '/[0-9]+[a-z]+/'));
+	}
+
+	public function testMatchFalse()
+	{
+		$this->assertFalse($this->_rule->match('123abc', '/[A-Z][a-z]+\s[a-z]+/'));
+		$this->assertFalse($this->_rule->match('Hello there', '/[0-9]+[a-z]+/'));
+	}
+
+	public function testMatchNonString()
+	{
+		try {
+			$this->_rule->match('123', 123);
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
+	}
+
 }
