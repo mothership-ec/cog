@@ -164,14 +164,45 @@ a string (although a rule already exists for this), you could do the following:
 			->rule('is_string')
 	;
 
-## Adding Files and Rules to the Component
+## Adding Filters and Rules to the Component
 
 To add new filters and rules to the component, you need to create classes that implement the CollectionInterface,
 and add a `register()` method. The `register()` method must have a Loader parameter. This is where you will register
 your filters/rules.
 
-Create a new method for each, and assign these as either a rule or a filter in the `register()` method using the Loader's
-`registerRule()` and `registerFilter()` methods:
+Each rule or filter is essentially a method within a CollectionInterface. A rule must always return a boolean, but a
+filter can return any type of data. In all cases, the first parameter of the method is the data that is passed to it
+to be validated. When calling the method in the fluent interface, this first parameter is assumed and therefore is
+not stated, for instance the following method:
+
+	public function example($var)
+	{
+		return true;
+	}
+
+would be called by the validator as so:
+
+	$validator
+		->field('field')
+			->example()
+	;
+
+If there are extra parameters, these are shifted over when called by the validator, so this:
+
+	public function example($var, $secondParam)
+	{
+		return true;
+	}
+
+becomes this when called by the validator:
+
+	$validator
+		->field('field')
+			->example('valueForSecondField')
+	;
+
+Once you have created your methods, you need to assign these as either rules or filters in the `register()` method
+using the Loader's `registerRule()` and `registerFilter()` methods:
 
 	// The first parameter is the name of the method being called.
 	// The second parameter is a callable array, so the first value is an object that contains the method, i.e. $this
