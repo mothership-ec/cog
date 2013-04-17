@@ -15,12 +15,7 @@ class MessagesTest extends \PHPUnit_Framework_TestCase
 
 	public function testGet()
 	{
-
-	}
-
-	public function testClear()
-	{
-		$this->assertEquals($this->_messages, $this->_messages->clear());
+		$this->assertEquals(array(), $this->_messages->get());
 	}
 
 	public function testGetSetDefaultErrorMessage()
@@ -36,6 +31,17 @@ class MessagesTest extends \PHPUnit_Framework_TestCase
 
 	public function testAddError()
 	{
+		$this->_messages->addError('test', 'test error');
+		$fields = $this->_messages->get();
 
+		$this->assertEquals('test error', $fields['test'][0]);
+	}
+
+	public function testClear()
+	{
+		$this->_messages->addError('test', 'test error');
+		$this->_messages->clear();
+
+		$this->assertEquals(array(), $this->_messages->get());
 	}
 }
