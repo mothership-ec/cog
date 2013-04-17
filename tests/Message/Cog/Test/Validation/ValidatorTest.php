@@ -23,8 +23,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		$this->_validator
 			->field('last_name') 
 			->field('first_name')
-			->optional()
-			->alnum()
+				->optional()
+				->alnum()
 		;
 
 		$this->_validator->validate(array(
@@ -58,7 +58,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		try {
 			$this->_validator
 				->field('first_name')
-				->khaskd();
+					->khaskd();
 		}
 		catch (\Exception $e) {
 			return;
@@ -73,7 +73,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->notAlnum()
+				->notAlnum()
 		;
 
 		$this->_validator->validate(array(
@@ -99,7 +99,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->alnum()
+				->alnum()
 		;
 
 		$this->_validator->validate(array(
@@ -115,8 +115,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->toUrlBefore()
-			->url();
+				->toUrlBefore()
+				->url();
 
 		$this->_validator->validate(
 			array('test' => 'message.co.uk')
@@ -135,8 +135,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->toUrlAfter()
-			->url();
+				->toUrlAfter()
+				->url();
 
 		$this->_validator->validate(
 			array('test' => 'message.co.uk')
@@ -155,7 +155,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->filter('md5');
+				->filter('md5');
 
 		$this->_validator->validate(
 			array('test' => 'test')
@@ -170,7 +170,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->rule('is_int');
+				->rule('is_int');
 
 		$this->_validator->validate(
 			array('test' => 1)
@@ -183,7 +183,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->rule('is_int');
+				->rule('is_int');
 
 		$this->_validator->validate(
 			array('test' => 'test')
@@ -196,8 +196,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-			->max(1)
-			->error('this is an error');
+				->max(1)
+				->error('this is an error');
 
 		$this->_validator->validate(
 			array('test' => 2)

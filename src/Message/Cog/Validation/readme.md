@@ -14,7 +14,7 @@ Let's say we want to validate the following array of data which could have come 
         'age'           => '24',
     );
 
-Firstly we create and instance of the validation object:
+Firstly we create an instance of the validation object:
 
     $validator = new \Message\Cog\Validation\Validator;
     
@@ -22,7 +22,7 @@ Next we go about adding rules. In the validator component rules are associated t
 expected key in the data array.
 
 A field can have multiple rules and each rule defines how the data in that field should look. For a field to validate
-it must conform to every rule which has been declared.  For the entire array to validate each field must be valid.
+it must conform to every rule which has been declared. For the entire array to validate each field must be valid.
 
 Fields and rules are declared using a fluent interface:
 
