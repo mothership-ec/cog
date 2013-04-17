@@ -289,7 +289,7 @@ class Validator
 	protected function _setRequiredError($name, $field)
 	{
 		// Check if data has been submitted
-		$notSet = (!isset($this->_data[$name]) || $this->_data[$name] == '');
+		$notSet = (!isset($this->_data[$name]) || $this->_data[$name] === '');
 
 		if($notSet && !$field['optional']) {
 			$this->_messages->addError($name, $field['readableName'].' is a required field.');

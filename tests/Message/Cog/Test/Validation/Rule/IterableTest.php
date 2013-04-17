@@ -3,6 +3,7 @@
 namespace Message\Cog\Test\Validation\Rule;
 
 use Message\Cog\Validation\Rule\Iterable;
+use Message\Cog\Validation\Validator;
 
 class IterableTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,8 +14,7 @@ class IterableTest extends \PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		$this->_rule = new Iterable;
-		$this->_validator = $this->getMockBuilder('\Message\Cog\Validation\Validator')
-			->getMock();
+		$this->_validator = new Validator;
 	}
 
 	/**
@@ -64,12 +64,37 @@ class IterableTest extends \PHPUnit_Framework_TestCase
 
 	public function testValidateEachTrue()
 	{
+		$callback = function(Validator $val){
+			$val
+//				->field('example')
+				->field('example_two');
+			return $val;
+		};
 
+		$data = array(
+			array(
+//				'example' => 'test',
+				'example_two' => 0 // was a bug where if zero was passed it would return false
+			),
+		);
+
+		$this->assertTrue($this->_rule->validateEach($data, $callback));
 	}
 
 	public function testValidateEachFalse()
 	{
+		$callback = function(Validator $val){
+			$val->field('example');
+			return $val;
+		};
 
+		$data = array(
+			array(
+				'example_two' => 'test',
+			),
+		);
+
+		$this->assertFalse($this->_rule->validateEach($data, $callback));
 	}
 
 	/**
