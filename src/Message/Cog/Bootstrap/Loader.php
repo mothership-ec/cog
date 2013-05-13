@@ -55,6 +55,10 @@ class Loader implements LoaderInterface
 				}
 				// Determine class name
 				$className = $namespace . '\\' . $file->getBasename('.php');
+				// Check class can be loaded, skip if not
+				if (!class_exists($className)) {
+					continue;
+				}
 				// Load the bootstrap
 				$class = new $className;
 				if ($class instanceof ContainerAwareInterface) {
@@ -82,7 +86,6 @@ class Loader implements LoaderInterface
 	 */
 	public function add(BootstrapInterface $bootstrap)
 	{
-		// Add to list
 		$this->_bootstraps[] = $bootstrap;
 
 		return $this;
@@ -121,7 +124,7 @@ class Loader implements LoaderInterface
 			if ($bootstrap instanceof EventsInterface) {
 				$bootstrap->registerEvents($this->_services['event.dispatcher']);
 			}
-			if ($this->_services['environment']->context() == 'console'
+			if ('console' === $this->_services['environment']->context()
 			 && $bootstrap instanceof TasksInterface) {
 				$bootstrap->registerTasks($this->_services['task.collection']);
 			}
@@ -129,6 +132,16 @@ class Loader implements LoaderInterface
 
 		// Clear the bootstrap list
 		$this->clear();
+	}
+
+	/**
+	 * Get all bootstraps registered on this loader.
+	 *
+	 * @return array Array of bootstraps set on this loader
+	 */
+	public function getBootstraps()
+	{
+		return $this->_bootstraps;
 	}
 
 	/**

@@ -31,18 +31,14 @@ abstract class Loader
 	/**
 	 * Constructor.
 	 *
-	 * Sets the application base directory.
+	 * Sets the application base directory, ensuring it ends with a trailing
+	 * slash.
 	 *
 	 * @param string $baseDir Absolute path to the installation base directory
 	 */
 	public function __construct($baseDir)
 	{
-		// Ensure base directory ends with directory separator
-		if (DIRECTORY_SEPARATOR !== substr($baseDir, -1)) {
-			$baseDir .= DIRECTORY_SEPARATOR;
-		}
-
-		$this->_baseDir = $baseDir;
+		$this->_baseDir = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -53,6 +49,21 @@ abstract class Loader
 	public function getBaseDir()
 	{
 		return $this->_baseDir;
+	}
+
+	/**
+	 * Get the application name.
+	 *
+	 * This gets the first namespace for the application's loader (the subclass
+	 * that extends this abstract class).
+	 *
+	 * E.g. a loader named TestApp\MySetupModule\AppLoader would return `TestApp`
+	 *
+	 * @return string The application name
+	 */
+	public function getAppName()
+	{
+		return strstr(get_class($this), '\\', true);
 	}
 
 	/**

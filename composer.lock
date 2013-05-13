@@ -1,5 +1,5 @@
 {
-    "hash": "b6d561285aa0b5234240b6c88b2fe616",
+    "hash": "46b7ae338682e27bdb4e1aea48c2503a",
     "packages": [
         {
             "name": "mtdowling/cron-expression",
@@ -20,7 +20,6 @@
             },
             "time": "2012-07-15 14:19:48",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Cron": "src/"
@@ -48,25 +47,24 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/fabpot/Pimple.git",
-                "reference": "86df0604a10c5faf20b466ae6a0b762cc6ed0a35"
+                "reference": "d58cec632dfdd3305d6b4f2563a5cf2a75b4d978"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/fabpot/Pimple/archive/86df0604a10c5faf20b466ae6a0b762cc6ed0a35.zip",
-                "reference": "86df0604a10c5faf20b466ae6a0b762cc6ed0a35",
+                "url": "https://github.com/fabpot/Pimple/archive/d58cec632dfdd3305d6b4f2563a5cf2a75b4d978.zip",
+                "reference": "d58cec632dfdd3305d6b4f2563a5cf2a75b4d978",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "2012-11-11 08:32:34",
+            "time": "2013-01-07 10:39:26",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "1.0.x-dev"
                 }
             },
-            "installation-source": "source",
             "autoload": {
                 "psr-0": {
                     "Pimple": "lib/"
@@ -91,30 +89,24 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.1.4",
+            "version": "v2.1.7",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console",
-                "reference": "v2.1.4"
+                "reference": "v2.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Console/archive/v2.1.4.zip",
-                "reference": "v2.1.4",
+                "url": "https://github.com/symfony/Console/archive/v2.1.7.zip",
+                "reference": "v2.1.7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-11-09 08:52:51",
+            "time": "2013-01-17 15:20:05",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\Console": ""
@@ -139,17 +131,17 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.1.4",
+            "version": "v2.1.7",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher",
-                "reference": "v2.1.4"
+                "reference": "v2.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/EventDispatcher/archive/v2.1.4.zip",
-                "reference": "v2.1.4",
+                "url": "https://github.com/symfony/EventDispatcher/archive/v2.1.7.zip",
+                "reference": "v2.1.7",
                 "shasum": ""
             },
             "require": {
@@ -162,14 +154,8 @@
                 "symfony/dependency-injection": "2.1.*",
                 "symfony/http-kernel": "2.1.*"
             },
-            "time": "2012-11-08 09:51:48",
+            "time": "2013-01-11 00:31:43",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\EventDispatcher": ""
@@ -194,30 +180,24 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.1.4",
+            "version": "v2.1.7",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation",
-                "reference": "v2.1.4"
+                "reference": "v2.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/HttpFoundation/archive/v2.1.4.zip",
-                "reference": "v2.1.4",
+                "url": "https://github.com/symfony/HttpFoundation/archive/v2.1.7.zip",
+                "reference": "v2.1.7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-11-30 12:53:14",
+            "time": "2013-01-11 00:31:43",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\HttpFoundation": "",
@@ -243,30 +223,24 @@
         },
         {
             "name": "symfony/process",
-            "version": "v2.1.4",
+            "version": "v2.1.7",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process",
-                "reference": "v2.1.4"
+                "reference": "v2.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Process/archive/v2.1.4.zip",
-                "reference": "v2.1.4",
+                "url": "https://github.com/symfony/Process/archive/v2.1.7.zip",
+                "reference": "v2.1.7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-11-19 20:53:52",
+            "time": "2013-01-16 09:27:54",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\Process": ""
@@ -291,17 +265,17 @@
         },
         {
             "name": "symfony/routing",
-            "version": "v2.1.4",
+            "version": "v2.1.7",
             "target-dir": "Symfony/Component/Routing",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Routing",
-                "reference": "v2.1.4"
+                "reference": "v2.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Routing/archive/v2.1.4.zip",
-                "reference": "v2.1.4",
+                "url": "https://github.com/symfony/Routing/archive/v2.1.7.zip",
+                "reference": "v2.1.7",
                 "shasum": ""
             },
             "require": {
@@ -318,14 +292,8 @@
                 "symfony/yaml": "2.1.*",
                 "doctrine/common": ">=2.2,<2.4-dev"
             },
-            "time": "2012-11-19 10:35:29",
+            "time": "2013-01-09 08:51:07",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\Routing": ""
@@ -350,30 +318,24 @@
         },
         {
             "name": "symfony/templating",
-            "version": "v2.1.4",
+            "version": "v2.1.7",
             "target-dir": "Symfony/Component/Templating",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Templating",
-                "reference": "v2.1.4"
+                "reference": "v2.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Templating/archive/v2.1.4.zip",
-                "reference": "v2.1.4",
+                "url": "https://github.com/symfony/Templating/archive/v2.1.7.zip",
+                "reference": "v2.1.7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-11-08 09:51:48",
+            "time": "2013-01-09 08:51:07",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\Templating": ""
@@ -398,30 +360,24 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.1.4",
+            "version": "v2.1.7",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml",
-                "reference": "v2.1.4"
+                "reference": "v2.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony/Yaml/archive/v2.1.4.zip",
-                "reference": "v2.1.4",
+                "url": "https://github.com/symfony/Yaml/archive/v2.1.7.zip",
+                "reference": "v2.1.7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
-            "time": "2012-11-08 09:51:48",
+            "time": "2013-01-17 21:21:51",
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.1-dev"
-                }
-            },
-            "installation-source": "dist",
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\Yaml": ""
@@ -443,6 +399,54 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com"
+        },
+        {
+            "name": "treasure-chest/treasure-chest",
+            "version": "0.1.5",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:jamesmoss/treasure-chest.git",
+                "reference": "0.1.5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/jamesmoss/treasure-chest/archive/0.1.5.zip",
+                "reference": "0.1.5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "suggest": {
+                "ext-apc": "Install to use the APC datastore",
+                "ext-memcache": "Install to use the memcached datastore"
+            },
+            "time": "2013-01-25 17:27:49",
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "TreasureChest": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "James Moss",
+                    "email": "email@jamesmoss.co.uk",
+                    "homepage": "http://jamesmoss.co.uk"
+                }
+            ],
+            "description": "A simple key/value store with namespace support and backends for memcached, apc, and more.",
+            "homepage": "http://github.com/jamesmoss/treasure-chest",
+            "keywords": [
+                "cache",
+                "apc",
+                "caching",
+                "memcached"
+            ]
         }
     ],
     "packages-dev": null,
@@ -450,7 +454,7 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pimple/pimple": 20
-    }
+    "stability-flags": [
+
+    ]
 }

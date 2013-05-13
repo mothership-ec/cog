@@ -18,7 +18,7 @@ class Services implements ServicesInterface
 	/**
 	 * Register the services to the given service container.
 	 *
-	 * @param  object $serviceContainer The service container
+	 * @param object $serviceContainer The service container
 	 */
 	public function registerServices($serviceContainer)
 	{
@@ -33,6 +33,21 @@ class Services implements ServicesInterface
 		$serviceContainer['env'] = function($c) {
 			return $c['environment']->get();
 		};
+
+		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
+			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
+			$cache        = new \Message\Cog\Cache\Instance(
+				new $adapterClass
+			);
+			$cache->setPrefix(implode('.', array(
+				$s['app.loader']->getAppName(),
+				$s['environment']->get(),
+				$s['environment']->installation(),
+			)));
+
+			return $cache;
+		});
 
 		$serviceContainer['event'] = function() {
 			return new \Message\Cog\Event\Event;
@@ -92,11 +107,16 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$serviceContainer['config'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\ConfigCache(
-				$c['app.loader']->getBaseDir().'config/',
-				$c['env']
+		$serviceContainer['config.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Config\LoaderCache(
+				$c['app.loader']->getBaseDir() . 'config/',
+				$c['environment'],
+				$c['cache']
 			);
+		});
+
+		$serviceContainer['cfg'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Config\Registry($c['config.loader']);
 		});
 
 		$serviceContainer['module.locator'] = $serviceContainer->share(function($c) {
@@ -122,9 +142,9 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Functions\Debug;
 		});
 
-		$serviceContainer['reference_parser'] = function($c) {
+		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
-		};
+		});
 
 		// Application Contexts
 		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {
@@ -135,5 +155,4 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Application\Context\Console($c);
 		});
 	}
-
 }

@@ -8,10 +8,17 @@ namespace Message\Cog\Application;
  * An environment is made up of two things:
  *  - A name
  *  - A context
+ *  - An installation name (optional)
  *
  * Environments define the 'place' where a Cog app is running. The environment
  * names are predefined and can't be changed. The allowed options are
  * currently: live, local, dev, staging and test.
+ *
+ * An installation name can defined. This is a way to distinguish a specific
+ * installation of the application in a given environment. For example, a
+ * specific development testing site called "dev2", or on a load-balanced set
+ * up with two front-end servers, you might have two installations in the live
+ * environment called "live1" and "live2".
  *
  * This class also determines what context the request is running in: 'web' if
  * the app is being access via HTTP or 'console' if it's being run via the
@@ -21,11 +28,14 @@ namespace Message\Cog\Application;
  *
  * @todo security protocol for live
  */
-class Environment
+class Environment implements EnvironmentInterface
 {
+	const ENV_SEPARATOR = '-';
+
 	protected $_flagEnv = 'COG_ENV';
 	protected $_context;
 	protected $_name;
+	protected $_installation;
 	protected $_allowedEnvironments = array(
 		'local', 	// Developers machine
 		'test', 	// When test suite is running
@@ -97,6 +107,16 @@ class Environment
 	}
 
 	/**
+	 * Gets the name of the current installation.
+	 *
+	 * @return string The current installation name
+	 */
+	public function installation()
+	{
+		return $this->_installation;
+	}
+
+	/**
 	 * Manually set the context of the environment. This method should very
 	 * rarely need to be used, most likely only for testing purposes.
 	 *
@@ -159,10 +179,22 @@ class Environment
 
 	/**
 	 * Tries to detect the current environment name automatically.
+	 *
+	 * If the environment includes the character defined as `self::ENV_SEPARATOR`
+	 * then the string after the separator is set as the installation name.
 	 */
 	protected function _detectEnvironment()
 	{
-		$this->set($this->getEnvironmentVar($this->_flagEnv) ?: $this->_allowedEnvironments[0]);
+		if ($env = $this->getEnvironmentVar($this->_flagEnv)) {
+			if (false !== strpos($env, self::ENV_SEPARATOR)) {
+				list($env, $installation) = explode(self::ENV_SEPARATOR, $env);
+				$this->_installation = $installation;
+			}
+
+			return $this->set($env);
+		}
+
+		return $this->set($this->_allowedEnvironments[0]);
 	}
 
 	/**
