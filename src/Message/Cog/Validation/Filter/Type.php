@@ -7,69 +7,89 @@ use Message\Cog\Validation\Loader;
 use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
-* Type filters
-*
-* Casts a field into a specific type.
-*/
+ * Type filters.
+ *
+ * Casts fields to specific data types.
+ */
 class Type implements CollectionInterface
 {
 	protected $_defaultTimeZone = null;
 
+	/**
+	 * Register the filters to the validation loader.
+	 *
+	 * @param Loader $loader The validation loader instance
+	 */
 	public function register(Loader $loader)
 	{
-		$loader->registerFilter('string',  array($this, 'string'))
-			->registerFilter('int',     array($this, 'integer'))
-			->registerFilter('integer', array($this, 'integer'))
-			->registerFilter('float',   array($this, 'float'))
-			->registerFilter('boolean', array($this, 'boolean'))
-			->registerFilter('bool',    array($this, 'boolean'))
-			->registerFilter('array',   array($this, 'toArray'))
+		$loader
+			->registerFilter('string',      array($this, 'string'))
+			->registerFilter('int',         array($this, 'integer'))
+			->registerFilter('integer',     array($this, 'integer'))
+			->registerFilter('float',       array($this, 'float'))
+			->registerFilter('boolean',     array($this, 'boolean'))
+			->registerFilter('bool',        array($this, 'boolean'))
+			->registerFilter('array',       array($this, 'toArray'))
 			->registerFilter('arrayObject', array($this, 'toArrayObject'))
-			->registerFilter('date',    array($this, 'date'))
-			// Not sure why you'd want to use the following but included for completeness
-			->registerFilter('null',    array($this, 'null'));
+			->registerFilter('date',        array($this, 'date'))
+			->registerFilter('null',        array($this, 'null'));
 	}
 
 	/**
-	 * @param $var
-	 * @return string
+	 * Cast a field to a string.
+	 *
+	 * @param mixed $var The variable to cast
+	 *
+	 * @return string    The field calue cast to a string
 	 */
 	public function string($var)
 	{
-		return (string)$var;
+		return (string) $var;
 	}
 
 	/**
-	 * Set $round to 'up' or 'down' to force a direction $var will round, eg if you wanted to round 0.1 up to 1 you would set this to 'up'
+	 * Cast a field to an integer.
 	 *
-	 * @param $var
-	 * @param string $round
-	 * @return int
+	 * Supports rounding control using the second parameter `$round`.
+	 *
+	 * Set $round to 'up' or 'down' to force a direction $var will round, eg if
+	 * you wanted to round 0.1 up to 1 you would set this to 'up'.
+	 *
+	 * @param mixed $var    The variable to cast
+	 * @param string $round Rounding rule. Possible values: 'up', 'down' & 'default'
+	 *
+	 * @return int          The field value cast to an integer
 	 */
 	public function integer($var, $round = 'default')
 	{
 		switch ($round) {
-			case 'up' :
-				return ((integer) $var) + 1;
-			case 'down' :
-				return (integer) $var;
-			default :
-				return (integer) round($var);
+			case 'up':
+				return ((int) $var) + 1;
+			case 'down':
+				return (int) $var;
+			default:
+				return (int) round($var);
 		}
 	}
 
 	/**
-	 * @param $var
-	 * @return float
+	 * Cast a field to a float.
+	 *
+	 * @param mixed $var The variable to cast
+	 *
+	 * @return float     The field value cast to a float
 	 */
 	public function float($var)
 	{
-		return (float)$var;
+		return (float) $var;
 	}
 
 	/**
-	 * @param $var
-	 * @return bool
+	 * Cast a field to a boolean.
+	 *
+	 * @param mixed $var The variable to cast
+	 *
+	 * @return bool      The field value cast to a boolean
 	 */
 	public function boolean($var)
 	{
@@ -77,8 +97,11 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @return array
+	 * Cast a field to an array.
+	 *
+	 * @param mixed $var The variable to cast
+	 *
+	 * @return array     The field value cast to an array
 	 */
 	public function toArray($var)
 	{
@@ -86,8 +109,11 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @return \ArrayObject
+	 * Cast a field to an `ArrayObject` instance.
+	 *
+	 * @param mixed $var    The variable to cast
+	 *
+	 * @return \ArrayObject The field value cast to an `ArrayObject`
 	 */
 	public function toArrayObject($var)
 	{
@@ -95,8 +121,11 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @return object
+	 * Cast a field to a `stdClass` object.
+	 *
+	 * @param mixed $var The variable to cast
+	 *
+	 * @return object    The value cast to an object.
 	 */
 	public function object($var)
 	{
@@ -104,11 +133,13 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * Attempts to turn a string, integer or array of integers into a DateTime object.
-	 * 
-	 * @param  mixed $var                               The variable to convert
-	 * @param  \DateTimeZone | string | null $timezone  An optional timezone to use
-	 * @return \DateTime				                The parsed DateTime value.
+	 * Attempts to turn a string, integer or array of integers into a `DateTime`
+	 * object.
+	 *
+	 * @param  mixed $var                          The variable to convert
+	 * @param  \DateTimeZone|string|null $timezone An optional timezone to use
+	 *
+	 * @return \DateTime				           The parsed DateTime instance
 	 */
 	public function date($var, $timezone = null)
 	{
@@ -118,11 +149,11 @@ class Type implements CollectionInterface
 			$var = $this->_getDateFromArray($var);
 		}
 
-		if(is_numeric($var)) {
+		if (is_numeric($var)) {
 			$var = '@' . $var;
 		}
 
-		if(!$timezone) {
+		if (!$timezone) {
 			$timezone = $this->_defaultTimeZone;
 		}
 
@@ -130,8 +161,12 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * @param \DateTimeZone | string $tz
-	 * @return $this
+	 * Set the default time zone to use for
+	 *
+	 * @param \DateTimeZone|string $tz A `DateTimeZone` instance or a string
+	 *                                 representing the timezone
+	 *
+	 * @return Type                    Returns $this for chainability
 	 */
 	public function setDefaultTimeZone($tz)
 	{
@@ -142,7 +177,9 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * @return \DateTimeZone | null
+	 * Get the default time zone set on this instance.
+	 *
+	 * @return \DateTimeZone|null The default time zone, or `null` if not set
 	 */
 	public function getDefaultTimeZone()
 	{
@@ -150,7 +187,10 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
+	 * Casts a variable to `null`. This method always returns `null`.
+	 *
+	 * @param mixed $var The variable to cast
+	 *
 	 * @return null
 	 */
 	public function null($var)
@@ -159,18 +199,28 @@ class Type implements CollectionInterface
  	}
 
 	/**
-	 * Checks to see if time zone is a valid data type, i.e. an instance of \DateTimeZone. If given a string it converts it to a \DateTimeZone
+	 * Turns a string representing a timezone (i.e. 'Europe/London') into an
+	 * instance of `DateTimeZone`.
 	 *
-	 * @param mixed $tz
-	 * @return \DateTimeZone | null
-	 * @throws \Exception
+	 * @param \DateTimeZone|string $tz A `DateTimeZone` instance or a string
+	 *                                 representing the timezone
+	 *
+	 * @return \DateTimeZone           The timezone as an instance of `DateTimeZone`
+	 *
+	 * @throws \InvalidArgumentException if the input variable was neither a
+	 *                                   string nor an instance of `DateTimeZone`
 	 */
 	protected function _filterTimezone($tz)
 	{
 		if ($tz && !is_string($tz) && !$tz instanceof \DateTimeZone) {
 			$callers = debug_backtrace();
-			throw new \Exception(__CLASS__ . '::' . $callers[1]['function'] . ' - $tz must be either a string or instance of \DateTimeZone, ' . gettype($tz) . ' given');
-		} elseif (is_string($tz)) {
+			throw new \InvalidArgumentException(sprintf(
+				'%s: $tz must be either a string or instance of \DateTimeZone, `%s` given',
+				__CLASS__ . '::' . $callers[1]['function'],
+				gettype($tz)
+			));
+		}
+		elseif (is_string($tz)) {
 			$tz = new \DateTimeZone($tz);
 		}
 

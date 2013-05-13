@@ -78,11 +78,13 @@ class Validator
 	}
 
 	/**
-	 * Add a field to be validated
+	 * Add a new field to be validated.
 	 *
-	 * @param string $name
-	 * @param bool $readableName - how the name will appear in error messages etc.
-	 * @return $this
+	 * @param  string $name         Name of the field to be added
+	 * @param  bool   $readableName If true, a "readable name" is saved, assuming
+	 *                              the name is formatted as camel case
+	 *
+	 * @return Validation           Returns $this for chainability
 	 */
 	public function field($name, $readableName = false)
 	{
