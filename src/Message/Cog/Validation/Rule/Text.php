@@ -7,10 +7,19 @@ use Message\Cog\Validation\Loader;
 use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
-* Rules
-*/
+ * Text rule
+ *
+ * Validating text inputs
+ */
 class Text implements CollectionInterface
 {
+	/**
+	 * Register rules to loader
+	 *
+	 * @param Loader $loader
+	 *
+	 * @return mixed|void
+	 */
 	public function register(Loader $loader)
 	{
 		$loader->registerRule('alnum', array($this, 'alnum'), '%s must%s be alphanumeric.')
@@ -23,8 +32,11 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @return bool
+	 * Checks that a string is alpha numeric
+	 *
+	 * @param $var string       The variable to validate
+	 *
+	 * @return bool             Returns true if $var is alphanumeric
 	 */
 	public function alnum($var)
 	{
@@ -32,8 +44,11 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @return bool
+	 * Checks that a string contains only letters
+	 *
+	 * @param string $var   The variable to validate
+	 *
+	 * @return bool         Returns true if $var is only letters
 	 */
 	public function alpha($var)
 	{
@@ -41,8 +56,11 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @return bool
+	 * Checks that a string contains only digits
+	 *
+	 * @param string $var   The variable to validate
+	 *
+	 * @return bool         Returns true if $var is only digits
 	 */
 	public function digit($var)
 	{
@@ -50,11 +68,14 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @param $min
-	 * @param null $max
-	 * @return bool
-	 * @throws \Exception
+	 * Checks that a string is a certain length
+	 *
+	 * @param string $var           The variable to validate
+	 * @param int|string $min       The minimum length of $var
+	 * @param null|int|string $max  The maximum length of $var. If set to null, method will check for the exact length
+	 * @throws \Exception           Throws exception is $min is greater than $max
+	 *
+	 * @return bool                 Returns true if $var is a longer than $min and shorter than $max
 	 */
 	public function length($var, $min, $max = null)
 	{
@@ -75,9 +96,12 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @param $min
-	 * @return bool
+	 * Checks that string complies to a minimum length
+	 *
+	 * @param string $var       The variable to validate
+	 * @param int|string $min   The minimum length that $var can be
+	 *
+	 * @return bool             Returns true if $var is longer than $min
 	 */
 	public function minLength($var, $min)
 	{
@@ -89,9 +113,12 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @param $max
-	 * @return bool
+	 * Checks that string complies to a maximum length
+	 *
+	 * @param string $var       The variable to validate
+	 * @param int|string $max   The maximum length that $var can be
+	 *
+	 * @return bool             Returns true if $var is shorter than $min
 	 */
 	public function maxLength($var, $max)
 	{
@@ -103,34 +130,46 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @return bool
+	 * Checks that string is a valid email address
+	 *
+	 * @param string $var   The variable to validate
+	 *
+	 * @return bool         Returns true if variable is a valid email address
 	 */
 	public function email($var)
 	{
 		CheckType::checkString($var);
+
 		return (bool) filter_var($var, \FILTER_VALIDATE_EMAIL);
 	}
 
 	/**
-	 * @param $var
-	 * @return bool
+	 * Checks that string is a valid url
+	 *
+	 * @param string $var   The variable to validate
+	 *
+	 * @return bool         Returns true if variable is a valid URL
 	 */
 	public function url($var)
 	{
 		CheckType::checkString($var);
+
 		return (bool) filter_var($var, \FILTER_VALIDATE_URL);
 	}
 
 	/**
-	 * @param $var
-	 * @param $pattern
-	 * @return int
+	 * Checks that string matches a regular expression pattern
+	 *
+	 * @param string $var       The variable to validate
+	 * @param string $pattern   The regex pattern for $var to match
+	 *
+	 * @return bool             Returns true if a match is found
 	 */
 	public function match($var, $pattern)
 	{
 		CheckType::checkString($var);
 		CheckType::checkString($pattern, '$pattern');
+
 		return (bool) preg_match($pattern, $var);
 	}
 

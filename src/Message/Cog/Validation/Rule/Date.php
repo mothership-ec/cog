@@ -6,10 +6,19 @@ use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
 
 /**
-* Date rules
-*/
+ * Date rule
+ *
+ * Class used to validating and comparing dates.
+ */
 class Date implements CollectionInterface
 {
+	/**
+	 * Register rules to Loader
+	 *
+	 * @param Loader $loader
+	 *
+	 * @return void
+	 */
 	public function register(Loader $loader)
 	{
 		$loader->registerRule('before', array($this, 'before'), '%s must%s be before %s.')
@@ -17,10 +26,13 @@ class Date implements CollectionInterface
 	}
 
 	/**
-	 * @param \DateTime $var
-	 * @param \DateTime $target
-	 * @param bool $orEqualTo
-	 * @return bool
+	 * Checks that an inputted date is set before a pre-determined date.
+	 *
+	 * @param \DateTime $var        The variable to validate
+	 * @param \DateTime $target     The target date that $var must not be later than
+	 * @param bool $orEqualTo       If set to true, $var may be equal to $target
+	 *
+	 * @return bool                 Returns true if $var is before $target
 	 */
 	public function before(\DateTime $var, \DateTime $target, $orEqualTo = false)
 	{
@@ -31,10 +43,13 @@ class Date implements CollectionInterface
 	}
 
 	/**
-	 * @param \DateTime $var
-	 * @param \DateTime $target
-	 * @param bool $orEqualTo
-	 * @return bool
+	 * Checks that an inputted date is set after a pre-determined date.
+	 *
+	 * @param \DateTime $var        The variable to validate
+	 * @param \DateTime $target     The target date that $var must be later than
+	 * @param bool $orEqualTo       If set to true, $var may be equal to $target
+	 *
+	 * @return bool                 Returns true if $var is after $target
 	 */
 	public function after(\DateTime $var, \DateTime $target, $orEqualTo = false)
 	{

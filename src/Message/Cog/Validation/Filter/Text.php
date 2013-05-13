@@ -7,10 +7,20 @@ use Message\Cog\Validation\Loader;
 use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
-* Filters
-*/
+ * Text filters.
+ *
+ * Casts fields through string filters
+ */
 class Text implements CollectionInterface
 {
+
+	/**
+	 * Register filters to the loader
+	 *
+	 * @param Loader $loader
+	 *
+	 * @return void
+	 */
 	public function register(Loader $loader)
 	{
 		$loader->registerFilter('uppercase', array($this, 'uppercase'))
@@ -29,7 +39,10 @@ class Text implements CollectionInterface
 	}
 
 	/**
+	 * Filter to convert text to uppercase
+	 *
 	 * @param string $text
+	 *
 	 * @return string
 	 */
 	public function uppercase($text)
@@ -40,7 +53,10 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param string $text
+	 * Filter to convert text to lowercase
+	 *
+	 * @param string $text  The variable to be cast
+	 *
 	 * @return string
 	 */
 	public function lowercase($text)
@@ -51,10 +67,15 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * This is a copy of Message\Cog\Functions\Text::toTitleCase, with the $maintainCase argument added in. In time one of these will be obsolete
+	 * This is a copy of Message\Cog\Functions\Text::toTitleCase, with the $maintainCase argument added in. In time one
+	 * of these will be obsolete.
 	 *
-	 * @param string $text
-	 * @param bool $maintainCase
+	 * Note: This does not capitalize strings, it ignores 'minor' words such as conjunctions (unless it is the first
+	 * word of the string). See $ignores array defined in method to see which words get ignored.
+	 *
+	 * @param string $text          The variable to be cast
+	 * @param bool $maintainCase    If set to false, string will be converted to lowercase before the comment is run.
+	 *
 	 * @return string
 	 */
 	public function titlecase($text, $maintainCase = false)
@@ -95,9 +116,13 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $text
-	 * @param $prefix
-	 * @param string $delim
+	 * Prepends a string onto another string
+	 *
+	 * @param $text             The variable to be cast
+	 * @param $prefix           Text to be attached to $text
+	 * @param string $delim     A delimiter to go between the text and its prefix, for instance, a space. Defaults to
+	 *                          an empty string
+	 *
 	 * @return string
 	 */
 	public function prefix($text, $prefix, $delim = '')
@@ -110,9 +135,13 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $text
-	 * @param $suffix
-	 * @param string $delim
+	 * Appends a string onto another string
+	 *
+	 * @param string $text      The variable to be cast
+	 * @param $suffix           Text to be atteched to $text variable
+	 * @param string $delim     A delimiter to go between the text and its prefix, for instance, a space. Defaults to
+	 *                          an empty string
+	 *
 	 * @return string
 	 */
 	public function suffix($text, $suffix, $delim = '')
@@ -125,8 +154,11 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param string $text
-	 * @param string | null $chars
+	 * Trims unwanted characters off a string
+	 *
+	 * @param string $text          The variable to be cast
+	 * @param string | null $chars  Characters to be trimmed off string. If not set, only white space will be trimmed
+	 *
 	 * @return string
 	 */
 	public function trim($text, $chars = null)
@@ -143,8 +175,11 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param string $text
-	 * @param string | null $chars
+	 * Trims unwanted characters off the end of a string
+	 *
+	 * @param string $text          The variable to be cast
+	 * @param string | null $chars  Characters to be trimmed off string. If not set, only white space will be trimmed
+	 *
 	 * @return string
 	 */
 	public function rtrim($text, $chars = null)
@@ -161,8 +196,11 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param string $text
-	 * @param string | null $chars
+	 * Trims unwanted characters off the start of a string
+	 *
+	 * @param string $text          The variable to be cast
+	 * @param string | null $chars  Characters to be trimmed off string. If not set, only white space will be trimmed
+	 *
 	 * @return string
 	 */
 	public function ltrim($text, $chars = null)
@@ -179,8 +217,11 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $text
-	 * @param bool $maintainCase
+	 * Capitalizes the first letter of every word in a string.
+	 *
+	 * @param $text                 The variable to be cast
+	 * @param bool $maintainCase    If set to false, string will be converted to lowercase before the comment is run.
+	 *
 	 * @return string
 	 */
 	public function capitalize($text, $maintainCase = false)
@@ -201,10 +242,13 @@ class Text implements CollectionInterface
 	}
 
 	/**
-	 * @param $text
-	 * @param $search
-	 * @param $replace
-	 * @return mixed
+	 * Filter to replace strings
+	 *
+	 * @param mixeed $text  The variable to be cast
+	 * @param $search       Value that will be replaced
+	 * @param $replace      Replacement for $search
+	 *
+	 * @return string
 	 */
 	public function replace($text, $search, $replace)
 	{
@@ -221,10 +265,12 @@ class Text implements CollectionInterface
 	 *
 	 * Called toUrl so as not to conflict with url rule
 	 *
-	 * @param $url
-	 * @param string $protocol
-	 * @param bool $replaceExisting
-	 * @return mixed|string
+	 * @param string $url               The variable to be cast
+	 * @param string $protocol          Protocol to append to URLs, defaults to 'http'. Adding '://' is not necessary
+	 * @param bool $replaceExisting     If set to true, all protocols will be replaced with $protocol i.e. 'http'
+	 *                                  could be replaced with 'https'
+	 *
+	 * @return string
 	 */
 	public function toUrl($url, $protocol = 'http', $replaceExisting = false)
 	{
@@ -245,9 +291,13 @@ class Text implements CollectionInterface
 	}
 
 	/**
+	 * Converts string to a slug, i.e. a lowercase string where non-url friendly characters are replaced with a
+	 * hyphen
+	 *
 	 * Taken from http://sourcecookbook.com/en/recipes/8/function-to-slugify-strings-in-php
 	 *
-	 * @param $text
+	 * @param $text     The variable to be cast
+	 *
 	 * @return string
 	 */
 	public function slug($text)

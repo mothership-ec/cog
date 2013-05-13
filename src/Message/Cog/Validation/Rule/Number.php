@@ -7,13 +7,18 @@ use Message\Cog\Validation\Loader;
 use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
-* Rules
-*/
+ * Number rule
+ *
+ * Validating numeric values
+ */
 class Number implements CollectionInterface
 {
 	/**
+	 * Register rules
+	 *
 	 * @param Loader $loader
-	 * @return mixed|void
+	 *
+	 * @return void
 	 */
 	public function register(Loader $loader)
 	{
@@ -23,9 +28,12 @@ class Number implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @param $min
-	 * @return bool
+	 * Checks that variable is above the minumum
+	 *
+	 * @param int|float|string $var     The variable to validate
+	 * @param int|float|string $min     The minimum that $var can be
+	 *
+	 * @return bool                     Returns true if $var is greater than or equal to $min
 	 */
 	public function min($var, $min)
 	{
@@ -36,9 +44,12 @@ class Number implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @param $max
-	 * @return bool
+	 * Checks that variable is below the maximum
+	 *
+	 * @param int|float|string $var     The variable to validate
+	 * @param int"float|string $max     The minimum that $var can be
+	 *
+	 * @return bool                     Returns true if $var is less than or equal to $max
 	 */
 	public function max($var, $max)
 	{
@@ -49,11 +60,14 @@ class Number implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @param $min
-	 * @param $max
-	 * @return bool
-	 * @throws \Exception
+	 * Checks that variable falls between two numbers
+	 *
+	 * @param int|float|string $var     The variable to validate
+	 * @param int|float|string $min     The minimum that $var can be
+	 * @param int|float|string $max     The maximum that $var can be
+	 * @throws \Exception               Throws exception if $min is greater than $max
+	 *
+	 * @return bool                     Returns true if $var falls between $min and $max
 	 */
 	public function between($var, $min, $max)
 	{

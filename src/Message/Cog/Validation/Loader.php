@@ -8,7 +8,10 @@ namespace Message\Cog\Validation;
 */
 class Loader
 {
-
+	/**
+	 * @param Messages $messages    Messages object for storing error messages
+	 * @param array $classes        Classes to be registered
+	 */
 	public function __construct(Messages $messages, array $classes = null)
 	{
 		$this->_messages = $messages;

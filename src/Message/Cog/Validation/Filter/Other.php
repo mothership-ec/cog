@@ -7,10 +7,10 @@ use Message\Cog\Validation\Loader;
 use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
-* Filters
+ * Other filter
  *
- * Use this method for running through other callables, such as native PHP functions
-*/
+ * Parse variables through callables such as native PHP functions
+ */
 class Other implements CollectionInterface
 {
 	public function register(Loader $loader)
@@ -19,8 +19,9 @@ class Other implements CollectionInterface
 	}
 
 	/**
-	 * @param $var
-	 * @param string $func
+	 * @param $var          Variable to be filtered
+	 * @param string $func  Function used to filter $var
+	 *
 	 * @return mixed
 	 */
 	public function filter($var, $func)

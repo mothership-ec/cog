@@ -19,6 +19,8 @@ class Type implements CollectionInterface
 	 * Register the filters to the validation loader.
 	 *
 	 * @param Loader $loader The validation loader instance
+	 *
+	 * @return void
 	 */
 	public function register(Loader $loader)
 	{
