@@ -29,8 +29,7 @@ class OtherTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$this->_loader = $this->getMockBuilder('\Message\Cog\Validation\Loader')
-			->setConstructorArgs(array($this->_validator, $this->_messages))
-			->setMethods(array('getValidator'))
+			->setConstructorArgs(array($this->_messages))
 			->getMock();
 	}
 

@@ -8,10 +8,9 @@ namespace Message\Cog\Validation;
 */
 class Loader
 {
-	
-	public function __construct(Validator $validator, Messages $messages, array $classes = null)
+
+	public function __construct(Messages $messages, array $classes = null)
 	{
-		$this->_validator = $validator;
 		$this->_messages = $messages;
 		$this->_rules = array();
 		$this->_filters = array();
@@ -81,14 +80,6 @@ class Loader
 	public function getFilters()
 	{
 		return $this->_filters;
-	}
-
-	/**
-	 * @return Validator
-	 */
-	public function getValidator()
-	{
-		return $this->_validator;
 	}
 
 	/**

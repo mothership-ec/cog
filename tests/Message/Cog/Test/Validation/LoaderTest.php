@@ -20,7 +20,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_loader = new Loader(new Validator, new Messages);
+		$this->_loader = new Loader(new Messages);
 		$this->_collection = new DummyCollection;
 	}
 
@@ -85,11 +85,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	public function testGetFilterFalse()
 	{
 		$this->assertFalse($this->_loader->getFilter('Test'));
-	}
-
-	public function testGetValidator()
-	{
-		$this->assertInstanceOf('\Message\Cog\Validation\Validator', $this->_loader->getValidator());
 	}
 
 	public function testGetRules()
