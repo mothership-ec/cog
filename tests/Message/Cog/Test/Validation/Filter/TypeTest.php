@@ -23,7 +23,8 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 
 	public function testIntegerFromFloatRoundUp()
 	{
-		$this->assertSame(1, $this->_filter->integer(0.76677));
+		$this->assertEquals(1, $this->_filter->integer(0.76677));
+		$this->assertEquals(2, $this->_filter->integer(1.9999));
 	}
 
 	public function testIntegerFromFloatRoundDown()
