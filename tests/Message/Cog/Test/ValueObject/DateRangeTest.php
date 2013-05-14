@@ -31,124 +31,85 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 		$dateRange = new DateRange($from, $to);
 
 		// Pass through null, should use current datetime
-		$this->assertTrue($dateRange->isInRange());
+		$this->assertTrue($dateRange->isInRange(null));
 
 		// Check for differnet times
-		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 09:13:52');
-		$from = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 18:13:22');
+		$from = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 09:13:52');
+		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 18:13:22');
 		$dateRange = new DateRange($from, $to);
 
 		// Check that the different times work as expected
 		// Should return true
-		$dateRange->assertTrue($dateRange->isInRange(DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 10:13:22')));
+		$this->assertTrue($dateRange->isInRange(DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 10:13:22')));
 
 		// Should return false
-		$dateRange->assertFalse($dateRange->isInRange(DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 09:59:99')));
+		$this->assertFalse($dateRange->isInRange(DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 09:13:51')));
 
 	}
 
 	public function testGetIntervalToStart()
 	{
-		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
+		$from = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
 		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '12/04/2013 14:10:58');
-		$dateRange = new DateRange(null, $to);
+		$dateRange = new DateRange($from, null);
 
+		$testResult = $testDate->diff($from);
+		
 		// Set the result
 		$result = $dateRange->getIntervalToStart($testDate);
-
-		// Check that a DateInterval Object is returned
-		$this->assertTrue($result instanceof \DateInterval);
-
-		// Check that the difference between the results is what it should be
-		// Check it is positive result
-		$this->assertEquals(0,$result->invert);
 		
-		// Check date
-		$this->assertEquals(0, $result->y);
-		$this->assertEquals(1, $result->m);
-		$this->assertEquals(3, $result->d);
+		$this->assertEquals($testResult,$result);
 
-		// Check times
-		$this->assertEquals(13, $result->h);
-		$this->assertEquals(9, $result->i);
-		$this->assertEquals(57, $result->s);
 
-		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
+		$from = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
 		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '13/06/2011 09:02:11');
-		$dateRange = new DateRange(null, $to);
+		$dateRange = new DateRange($from, null);
+
+		$testResult = $testDate->diff($from);
 
 		// Set the result
 		$result = $dateRange->getIntervalToStart($testDate);
 
-		// Check that a DateInterval Object is returned
-		$this->assertTrue($result instanceof \DateInterval);
-
-		// Check that the difference between the results is what it should be
-		// Check that it is now a negative result
-		$this->assertEquals(1,$result->invert);
-		
-		// Check date
-		$this->assertEquals(2, $result->y);
-		$this->assertEquals(1, $result->m);
-		$this->assertEquals(2, $result->d);
-
-		// Check times
-		$this->assertEquals(8, $result->h);
-		$this->assertEquals(1, $result->i);
-		$this->assertEquals(10, $result->s);
-
+		$this->assertEquals($testResult,$result);
 	}
 
 	public function testGetIntervalToEnd()
 	{
-		$from = DateTime::createFromFormat('d/m/Y H:i:s', '14/06/2012 00:00:00');
-		$dateRange = new DateRange($from, null);
-
+		$to = DateTime::createFromFormat('d/m/Y H:i:s', '14/06/2012 00:00:00');
 		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '12/04/2013 14:10:58');
+		$dateRange = new DateRange(null, $to);
+
+		$testResult = $testDate->diff($to);
 
 		// Set the result
 		$result = $dateRange->getIntervalToEnd($testDate);
 
-		// Check that a DateInterval Object is returned
-		$this->assertTrue($result instanceof \DateInterval);
+		$this->assertEquals($testResult,$result);
 
-		// Check that the difference between the results is what it should be
-		// Check it is positive result
-		$this->assertEquals(0,$result->invert);
-
-		// Check that the difference between the results is what it should be
-		// Check date
-		$this->assertEquals(1, $result->y);
-		$this->assertEquals(2, $result->m);
-		$this->assertEquals(2, $result->d);
-
-		// Check times
-		$this->assertEquals(14, $result->h);
-		$this->assertEquals(10, $result->i);
-		$this->assertEquals(58, $result->s);
 
 		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
 		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '13/01/2011 09:02:11');
 		$dateRange = new DateRange(null, $to);
 
+		$testResult = $testDate->diff($to);
+
 		// Set the result
 		$result = $dateRange->getIntervalToEnd($testDate);
 
-		// Check that a DateInterval Object is returned
-		$this->assertTrue($result instanceof \DateInterval);
+		$this->assertEquals($testResult,$result);
 
-		// Check that the difference between the results is what it should be
-		// Check that it is now a negative result
-		$this->assertEquals(1,$result->invert);
-		
-		// Check date
-		$this->assertEquals(2, $result->y);
-		$this->assertEquals(4, $result->m);
-		$this->assertEquals(2, $result->d);
-
-		// Check times
-		$this->assertEquals(8, $result->h);
-		$this->assertEquals(1, $result->i);
-		$this->assertEquals(10, $result->s);
 	}
+	
+	public function testToString()
+	{
+		$from = new DateTime('1 jan 2013 9:30am');
+		$to = new DateTime('28 feb 2014 8:30:55pm');
+		$dateRange = new DateRange($from, $to);
+		$this->expectOutputString(
+			'2013-01-01T09:30:00+00:00 - 2014-02-28T20:30:55+00:00'
+		);
+		echo $dateRange;
+	}
+	
+	
 }

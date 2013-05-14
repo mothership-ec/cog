@@ -24,7 +24,12 @@ class DateRange
 	 */
 	public function __construct(DateTime $from = null, DateTime $to = null)
 	{
-
+		if (!$from && !$to) {
+			throw new \LogicException('$from or $to must be provided');
+		}
+	
+		$this->_end = $to;
+		$this->_start = $from;
 	}
 
 	/**
@@ -37,7 +42,23 @@ class DateRange
 	 */
 	public function isInRange(DateTime $datetime = null)
 	{
+		if (!$datetime) {
+			$datetime = new DateTime;
+		}
+		
+		// If there is not a start date, ensure that the given timestamp is less than
+		// or equal to the end date
+		if (!$this->_start) {
+			return ($datetime->getTimestamp() <= $this->_end->getTimestamp());
+		}
+		
+		// If there is not an end date, then esnure that the given timestamp is greater
+		// or equal to the start date
+		if (!$this->_end) {
+			return ($datetime->getTimestamp() >= $this->_start->getTimestamp());
+		}
 
+		return ($datetime->getTimestamp() >= $this->_start->getTimestamp() && $datetime->getTimestamp() <= $this->_end->getTimestamp());
 	}
 
 	/**
@@ -52,7 +73,15 @@ class DateRange
 	 */
 	public function getIntervalToStart(DateTime $datetime = null)
 	{
-
+		if (!$datetime) {
+			$datetime = new DateTime;
+		}
+		
+		if (!$this->_start) {
+			throw new \LogicException('A from date must be provided');
+		}
+		
+		return $datetime->diff($this->_start);
 	}
 
 	/**
@@ -67,7 +96,15 @@ class DateRange
 	 */
 	public function getIntervalToEnd(DateTime $datetime = null)
 	{
+		if (!$datetime) {
+			$datetime = new DateTime;
+		}
 
+		if (!$this->_end) {
+			throw new \LogicException('A from date must be provided');
+		}
+
+		return $datetime->diff($this->_end);
 	}
 
 	/**
@@ -77,6 +114,6 @@ class DateRange
 	 */
 	public function __toString()
 	{
-
+		return $this->_start->format('c').' - '.$this->_end->format('c');
 	}
 }
