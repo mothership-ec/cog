@@ -47,12 +47,34 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 
 	}
 
-	public function testGetIntervalToEnd()
+	public function getIntervalToStart()
 	{
+		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
+		$from = DateTime::createFromFormat('d/m/Y H:i:s', '14/04/2012 00:00:00');
+		$dateRange = new DateRange($from, $to);
 
+		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '12/04/2013 14:10:58');
+
+		// Set the result
+		$result = $dateRange->getIntervalToStart($testDate);
+
+		// Check that a DateInterval Object is returned
+		$this->assertTrue($result instanceof \DateInterval);
+
+		// Check that the difference between the results is what it should be
+
+		// Check date
+		$this->assertEquals(0, $result->y);
+		$this->assertEquals(1, $result->m);
+		$this->assertEquals(3, $result->d);
+
+		// Check times
+		$this->assertEquals(13, $result->h);
+		$this->assertEquals(9, $result->i);
+		$this->assertEquals(57, $result->s);
 	}
 
-	public function getIntervalToStart()
+	public function testGetIntervalToEnd()
 	{
 
 	}
