@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\ValueObjects;
+namespace Message\Cog\ValueObject;
 
 use DateTime;
 
@@ -19,12 +19,17 @@ class DateRange
 
 	}
 
-	public function getPeriodToEnd(\DateTime $datetime = null)
+	public function getIntervalToEnd(\DateTime $datetime = null)
 	{
 
 	}
 
-	public function getPeriodToEnd(\DateTime $datetime = null)
+	public function getIntervalToEnd(\DateTime $datetime = null)
+	{
+
+	}
+
+	public function __toString()
 	{
 
 	}
