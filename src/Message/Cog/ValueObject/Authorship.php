@@ -146,4 +146,14 @@ class Authorship
 	{
 
 	}
+
+	/**
+	 * Print out the authorship metadata as a string.
+	 *
+	 * @return string The authorship metadata represented as a string
+	 */
+	public function __toString()
+	{
+
+	}
 }
