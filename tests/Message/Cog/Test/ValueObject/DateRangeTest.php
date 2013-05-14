@@ -74,7 +74,7 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(57, $result->s);
 
 		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
-		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '13/01/2011 09:02:11');
+		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '13/06/2011 09:02:11');
 		$dateRange = new DateRange(null, $to);
 
 		// Set the result
@@ -89,7 +89,7 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 		
 		// Check date
 		$this->assertEquals(2, $result->y);
-		$this->assertEquals(4, $result->m);
+		$this->assertEquals(1, $result->m);
 		$this->assertEquals(2, $result->d);
 
 		// Check times
@@ -113,6 +113,10 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($result instanceof \DateInterval);
 
 		// Check that the difference between the results is what it should be
+		// Check it is positive result
+		$this->assertEquals(0,$result->invert);
+
+		// Check that the difference between the results is what it should be
 		// Check date
 		$this->assertEquals(1, $result->y);
 		$this->assertEquals(2, $result->m);
@@ -122,5 +126,29 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(14, $result->h);
 		$this->assertEquals(10, $result->i);
 		$this->assertEquals(58, $result->s);
+
+		$to = DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 01:01:01');
+		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '13/01/2011 09:02:11');
+		$dateRange = new DateRange(null, $to);
+
+		// Set the result
+		$result = $dateRange->getIntervalToEnd($testDate);
+
+		// Check that a DateInterval Object is returned
+		$this->assertTrue($result instanceof \DateInterval);
+
+		// Check that the difference between the results is what it should be
+		// Check that it is now a negative result
+		$this->assertEquals(1,$result->invert);
+		
+		// Check date
+		$this->assertEquals(2, $result->y);
+		$this->assertEquals(4, $result->m);
+		$this->assertEquals(2, $result->d);
+
+		// Check times
+		$this->assertEquals(8, $result->h);
+		$this->assertEquals(1, $result->i);
+		$this->assertEquals(10, $result->s);
 	}
 }
