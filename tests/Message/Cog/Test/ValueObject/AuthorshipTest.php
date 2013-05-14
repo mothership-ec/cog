@@ -27,7 +27,6 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @depends           testCreating
-	 * @expectedException \LogicException
 	 */
 	public function testCreatingTwiceThrowsException($authorship)
 	{
@@ -40,6 +39,8 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		catch (\LogicException $e) {
 			$this->assertEquals($createdAt, $authorship->createdAt());
 			$this->assertEquals($createdBy, $authorship->createdBy());
+
+			return;
 		}
 
 		$this->fail('No exception was thrown when trying to set create metadata twice');
@@ -95,7 +96,6 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @depends testDeleting
-	 * @expectedException \LogicException
 	 */
 	public function testDeletingTwiceThrowsException($authorship)
 	{
@@ -108,6 +108,8 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		catch (\LogicException $e) {
 			$this->assertEquals($deletedAt, $authorship->deletedAt());
 			$this->assertEquals($deletedBy, $authorship->deletedBy());
+
+			return;
 		}
 
 		$this->fail('No exception was thrown when trying to set delete metadata twice');

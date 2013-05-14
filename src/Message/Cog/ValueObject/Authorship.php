@@ -26,7 +26,7 @@ class Authorship
 	 */
 	public function createdAt()
 	{
-
+		return $this->_createdAt;
 	}
 
 	/**
@@ -36,7 +36,7 @@ class Authorship
 	 */
 	public function createdBy()
 	{
-
+		return $this->_createdBy;
 	}
 
 	/**
@@ -46,7 +46,7 @@ class Authorship
 	 */
 	public function updatedAt()
 	{
-
+		return $this->_updatedAt;
 	}
 
 	/**
@@ -56,7 +56,7 @@ class Authorship
 	 */
 	public function updatedBy()
 	{
-
+		return $this->_updatedBy;
 	}
 
 	/**
@@ -66,7 +66,7 @@ class Authorship
 	 */
 	public function deletedAt()
 	{
-
+		return $this->_deletedAt;
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Authorship
 	 */
 	public function deletedBy()
 	{
-
+		return $this->_deletedBy;
 	}
 
 	/**
@@ -86,7 +86,7 @@ class Authorship
 	 */
 	public function isDeleted()
 	{
-
+		return !is_null($this->_deletedAt);
 	}
 
 	/**
@@ -102,7 +102,14 @@ class Authorship
 	 */
 	public function create(DateTime $datetime = null, $user = null)
 	{
+		if (!is_null($this->_createdAt)) {
+			throw new \LogicException('Cannot set created metadata: it has already been set');
+		}
 
+		$this->_createdAt = ($datetime) ? $datetime : new DateTime('now');
+		$this->_createdBy = $user;
+
+		return $this;
 	}
 
 	/**
@@ -116,7 +123,10 @@ class Authorship
 	 */
 	public function update(DateTime $datetime = null, $user = null)
 	{
+		$this->_updatedAt = ($datetime) ? $datetime : new DateTime('now');
+		$this->_updatedBy = $user;
 
+		return $this;
 	}
 
 	/**
@@ -132,7 +142,14 @@ class Authorship
 	 */
 	public function delete(DateTime $datetime = null, $user = null)
 	{
+		if (!is_null($this->_deletedAt)) {
+			throw new \LogicException('Cannot set deleted metadata: it has already been set');
+		}
 
+		$this->_deletedAt = ($datetime) ? $datetime : new DateTime('now');
+		$this->_deletedBy = $user;
+
+		return $this;
 	}
 
 	/**
