@@ -86,10 +86,14 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$this->assertNull($authorship->deletedAt());
 		$this->assertNull($authorship->deletedBy());
 
+		$this->assertFalse($authorship->isDeleted());
+
 		$this->assertEquals($authorship, $authorship->delete($timestamp, $author));
 
 		$this->assertEquals($timestamp, $authorship->deletedAt());
 		$this->assertEquals($author, $authorship->deletedBy());
+
+		$this->assertTrue($authorship->isDeleted());
 
 		return $authorship;
 	}
