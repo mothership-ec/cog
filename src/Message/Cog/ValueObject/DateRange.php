@@ -78,7 +78,7 @@ class DateRange
 		}
 		
 		if (!$this->_start) {
-			throw new \LogicException('A from date must be provided');
+			throw new \LogicException('A to date must be provided');
 		}
 		
 		return $datetime->diff($this->_start);

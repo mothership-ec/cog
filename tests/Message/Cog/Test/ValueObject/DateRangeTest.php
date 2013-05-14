@@ -8,6 +8,14 @@ use DateTime;
 class DateRangeTest extends \PHPUnit_Framework_TestCase
 {
 
+ 	/**
+     * @expectedException LogicException
+     */
+	public function testConstruct()
+	{
+		$dateRange = new DateRange;		
+	}
+
 	public function testIsInRange()
 	{
 		// Set the to time
@@ -44,6 +52,27 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 
 		// Should return false
 		$this->assertFalse($dateRange->isInRange(DateTime::createFromFormat('d/m/Y H:i:s', '15/05/2013 09:13:51')));
+		
+		
+		// Check with only one paramater
+		$to = new DateTime('28 feb 2014 8:30:55pm');
+		$dateRange = new DateRange(null, $to);
+		$testDate = new DateTime('27 feb 2014 8:30:55pm');
+
+		$this->assertTrue($dateRange->isInRange($testDate));
+		
+		$testDate = new DateTime('28 feb 2014 8:30:56pm');
+		$this->assertFalse($dateRange->isInRange($testDate));
+
+		// Check with only one paramater
+		$from = new DateTime('28 feb 2014 8:30:55pm');
+		$dateRange = new DateRange($from, null);
+		$testDate = new DateTime('27 feb 2014 8:30:55pm');
+
+		$this->assertFalse($dateRange->isInRange($testDate));
+		
+		$testDate = new DateTime('28 feb 2014 8:30:56pm');
+		$this->assertTrue($dateRange->isInRange($testDate));
 
 	}
 
@@ -71,6 +100,25 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 		$result = $dateRange->getIntervalToStart($testDate);
 
 		$this->assertEquals($testResult,$result);
+
+		$from = new DateTime('-2 days');
+		$to = new DateTime('+1 day');
+		$dateRange = new DateRange($from, $to);
+		$testDateRange = new DateTime;
+		
+		$this->assertEquals($dateRange->getIntervalToStart(),$testDateRange->diff($from));	
+		
+        $this->setExpectedException(
+          'LogicException', 'A to date must be provided'
+        );
+        
+        $to = $from;
+        $from = null;
+		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '13/06/2011 09:02:11');
+
+        $dateRange = new DateRange($from, $to);
+        $dateRange->getIntervalToStart($testDate);
+        
 	}
 
 	public function testGetIntervalToEnd()
@@ -97,6 +145,24 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 		$result = $dateRange->getIntervalToEnd($testDate);
 
 		$this->assertEquals($testResult,$result);
+
+		$from = new DateTime('-2 days');
+		$to = new DateTime('+1 day');
+		$dateRange = new DateRange($from, $to);
+		$testDateRange = new DateTime;
+		
+		$this->assertEquals($dateRange->getIntervalToEnd(),$testDateRange->diff($to));	
+		
+        $this->setExpectedException(
+          'LogicException', 'A from date must be provided'
+        );
+		
+		$from = new DateTime('-2 days');
+        $to = null;
+		$testDate = DateTime::createFromFormat('d/m/Y H:i:s', '13/06/2011 09:02:11');
+
+        $dateRange = new DateRange($from, $to);
+        $dateRange->getIntervalToEnd($testDate);
 
 	}
 	
