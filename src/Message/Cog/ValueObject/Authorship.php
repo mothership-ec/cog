@@ -12,6 +12,8 @@ use DateTime;
  */
 class Authorship
 {
+	const DATE_FORMAT = 'j F Y \a\t g:ia';
+
 	protected $_createdAt;
 	protected $_createdBy;
 	protected $_updatedAt;
@@ -157,11 +159,20 @@ class Authorship
 	 *
 	 * @return Authorship      Returns $this for chainability
 	 *
+	 * @return Authorship      Returns $this for chainability
+	 *
 	 * @throws \LogicException If the model hasn't been deleted yet
 	 */
 	public function restore()
 	{
+		if (is_null($this->_deletedAt)) {
+			throw new \LogicException('Cannot restore an entity that has not been deleted');
+		}
 
+		$this->_deletedAt = null;
+		$this->_deletedBy = null;
+
+		return $this;
 	}
 
 	/**
@@ -171,6 +182,23 @@ class Authorship
 	 */
 	public function __toString()
 	{
+		$return = '';
 
+		if (!is_null($this->_createdAt)) {
+			$return .= 'Created ' . ($this->_createdBy ? 'by ' . $this->_createdBy . ' ' : '');
+			$return .= 'on ' . $this->_createdAt->format(self::DATE_FORMAT) . "\n";
+		}
+
+		if (!is_null($this->_updatedAt)) {
+			$return .= 'Last updated ' . ($this->_updatedBy ? 'by ' . $this->_updatedBy . ' ' : '');
+			$return .= 'on ' . $this->_updatedAt->format(self::DATE_FORMAT) . "\n";
+		}
+
+		if (!is_null($this->_deletedAt)) {
+			$return .= 'Deleted ' . ($this->_deletedBy ? 'by ' . $this->_deletedBy . ' ' : '');
+			$return .= 'on ' . $this->_deletedAt->format(self::DATE_FORMAT);
+		}
+
+		return trim($return);
 	}
 }

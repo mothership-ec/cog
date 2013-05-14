@@ -192,7 +192,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$authorship
 			->create(new DateTime('17 February 2000 18:00'), 'Tester')
 			->update(new DateTime('26 March 2005 16:00'), 'Someone else')
-			->update(new DateTime('4 September 2014 04:00'), 'Danny');
+			->delete(new DateTime('4 September 2014 04:00'), 'Danny');
 
 		echo $authorship;
 	}
@@ -203,7 +203,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 
 		$authorship = new Authorship;
 
-		$authorship->create(new DateTime('1 January 2010 12:30'), 'Jamie');
+		$authorship->update(new DateTime('1 January 2010 12:30'), 'Jamie');
 
 		echo $authorship;
 	}
