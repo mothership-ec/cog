@@ -204,13 +204,13 @@ class Type implements CollectionInterface
 	 * Turns a string representing a timezone (i.e. 'Europe/London') into an
 	 * instance of `DateTimeZone`.
 	 *
-	 * @param \DateTimeZone|string $tz A `DateTimeZone` instance or a string
-	 *                                 representing the timezone
+	 * @param \DateTimeZone|string $tz      A `DateTimeZone` instance or a string
+	 *                                      representing the timezone
 	 *
-	 * @return \DateTimeZone           The timezone as an instance of `DateTimeZone`
+	 * @return \DateTimeZone                The timezone as an instance of `DateTimeZone`
 	 *
-	 * @throws \InvalidArgumentException if the input variable was neither a
-	 *                                   string nor an instance of `DateTimeZone`
+	 * @throws \InvalidArgumentException    Throws exception if the input variable was neither a
+	 *                                      string nor an instance of `DateTimeZone`
 	 */
 	protected function _filterTimezone($tz)
 	{
@@ -232,7 +232,9 @@ class Type implements CollectionInterface
 	/**
 	 * Converts an array into a valid date string.
 	 *
-	 * @param array $date
+	 * @param array $date       Date as an array, to be merged with defaults to create a complete date string
+	 * @throws \Exception       Throws exception if there are any invalid date keys
+	 *
 	 * @return string
 	 */
 	protected function _getDateFromArray(array $date)
@@ -249,6 +251,11 @@ class Type implements CollectionInterface
 			'minute' => 0,
 			'second' => 0,
 		);
+
+		foreach ($date as $key => $value) {
+			if (!array_key_exists($key, $parts))
+				throw new \Exception(__CLASS__ . '::' . __METHOD__ . " - '" . $key . " is not a valid date part");
+		}
 
 		$parts = array_merge($parts, $date);
 

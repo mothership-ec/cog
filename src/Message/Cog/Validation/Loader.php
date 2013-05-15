@@ -24,9 +24,12 @@ class Loader
 	}
 
 	/**
-	 * @param array $classes
-	 * @return $this
-	 * @throws \Exception
+	 * Assign rules and filters to loader for use in validation
+	 *
+	 * @param array $classes    Array of collections to register to loader
+	 * @throws \Exception       Throws exception if any classes are not an instance of CollectionInterface
+	 *
+	 * @return Loader           Returns $this for chainability
 	 */
 	public function registerClasses(array $classes)
 	{
@@ -44,8 +47,11 @@ class Loader
 	}
 
 	/**
-	 * @param $name
-	 * @return bool
+	 * Return instance of a registered rule
+	 *
+	 * @param $name                             Name of rule to search for
+	 *
+	 * @return bool | CollectionInterface       Returns rule if found, false if not
 	 */
 	public function getRule($name)
 	{
@@ -57,8 +63,11 @@ class Loader
 	}
 
 	/**
-	 * @param $name
-	 * @return bool
+	 * Return instance of registered filter
+	 *
+	 * @param $name                             Name of filter to search for
+	 *
+	 * @return bool | CollectionInterface       Returns filter if found, false if not
 	 */
 	public function getFilter($name)
 	{
@@ -70,7 +79,7 @@ class Loader
 	}
 
 	/**
-	 * @return array
+	 * @return array    Returns array of registered rules
 	 */
 	public function getRules()
 	{
@@ -78,7 +87,7 @@ class Loader
 	}
 
 	/**
-	 * @return array
+	 * @return array    Returns array of registered filters
 	 */
 	public function getFilters()
 	{
@@ -86,10 +95,13 @@ class Loader
 	}
 
 	/**
-	 * @param string $name
-	 * @param array $func - callable array for class methods (array(Object, 'methodName'))
-	 * @param string $errorMessage
-	 * @return $this
+	 * Register a rule to the loader
+	 *
+	 * @param string $name          Name of rule to register
+	 * @param array $func           Callable array for class methods (array(Object, 'methodName'))
+	 * @param string $errorMessage  Error message for failed validation, use sprint syntax
+	 *
+	 * @return Loader               Returns $this for chainability
 	 */
 	public function registerRule($name, $func, $errorMessage)
 	{
@@ -100,9 +112,12 @@ class Loader
 	}
 
 	/**
-	 * @param string $name
-	 * @param array $func - callable array for class methods (array(Object, 'methodName'))
-	 * @return $this
+	 * Register a filter to the loader
+	 *
+	 * @param string $name          Name of filter to register
+	 * @param array $func           Callable array for class methods (array(Object, 'methodName'))
+	 *
+	 * @return Loader               Returns $this for chainability
 	 */
 	public function registerFilter($name, $func)
 	{
@@ -116,15 +131,17 @@ class Loader
 	 * It validates that the rule/filter does not already exist in the register and that they are valid
 	 * i.e. callable
 	 *
-	 * @param string $type - is it a filter or a rule?
-	 * @param string $name
-	 * @param array $func - callable array for class methods (array(Object, 'methodName'))
-	 * @throws \Exception
-	 * @return $this
+	 * @param string $type      Type of collection, i.e. a filter or a rule
+	 * @param string $name      Name of collection
+	 * @param array $func       Callable array for class methods (array(Object, 'methodName'))
+	 * @throws \Exception       Throws exception if $func is not callable or if there is already a collection of that
+	 *                          type and name registered
+	 *
+	 * @return Loader           Returns $this for chainability
 	 */
 	protected function _register($type, $name, $func)
 	{
-		$attr = '_' . $type . 's';
+		$attr = '_' . strtolower($type) . 's';
 
 		if(!is_callable($func)) {
 			throw new \Exception(sprintf('Cannot register %s `%s`; Second parameter must be callable.', $type, $name));

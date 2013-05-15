@@ -121,7 +121,7 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(new \Datetime('10-10-1985'), $this->_filter->date('10-10-1985'));
 	}
 
-	public function testDateWithArray()
+	public function testDateWithArrayDateOnly()
 	{
 		$date = array(
 			'year' => 1986,
@@ -132,6 +132,37 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 		$dateTime = $this->_filter->date($date);
 
 		$this->assertEquals(new \DateTime('1986-03-31 00:00:00'), $dateTime);
+	}
+
+	public function testDateWithArrayTimeOnly()
+	{
+		$date = array(
+			'hour' => 12,
+			'minute' => 51,
+			'second' => 34
+		);
+
+		$dateTime = $this->_filter->date($date);
+
+		$this->assertEquals(new \DateTime('1970-01-01 12:51:34'), $dateTime);
+	}
+
+	public function testDateWithArrayInvalid()
+	{
+		try {
+			$date = array(
+				'hour' => 12,
+				'invalid date key' => 12
+			);
+
+			$this->_filter->date($date);
+
+		}
+		catch (\Exception $e) {
+			return;
+		}
+
+		$this->fail('Exception not thrown');
 	}
 
 	/**

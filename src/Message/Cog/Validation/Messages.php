@@ -11,7 +11,7 @@ class Messages
 	protected $_fields = array();
 
 	/**
-	 * @return array
+	 * @return array        Return array of fields
 	 */
 	public function get()
 	{
@@ -19,7 +19,9 @@ class Messages
 	}
 
 	/**
-	 * @return $this
+	 * Resets array of fields
+	 *
+	 * @return Messages     Returns $this for chainability
 	 */
 	public function clear()
 	{
@@ -29,8 +31,11 @@ class Messages
 	}
 
 	/**
-	 * @param string $ruleName
-	 * @return string
+	 * Get the default error message for a certain rule
+	 *
+	 * @param string $ruleName      The rule whom the error message belongs to
+	 *
+	 * @return string               Returns the error message for $ruleName
 	 */
 	public function getDefaultErrorMessage($ruleName)
 	{
@@ -38,9 +43,11 @@ class Messages
 	}
 
 	/**
-	 * @param string $ruleName
-	 * @param string $message
-	 * @return $this
+	 * Set the default error message for a certain rule
+	 *
+	 * @param string $ruleName      The rule whom the error message belongs to
+	 * @param string $message       The error message to set
+	 * @return Messages             Returns $this for chainability
 	 */
 	public function setDefaultErrorMessage($ruleName, $message)
 	{
@@ -50,9 +57,11 @@ class Messages
 	}
 
 	/**
-	 * @param $field
-	 * @param $rule
-	 * @return $this
+	 * Adds an error from a rule to a field
+	 *
+	 * @param string $field     Field to add error message to
+	 * @param string $rule      Rule to pull error message from
+	 * @return Messages         Returns self for chainability
 	 */
 	public function addFromRule($field, $rule)
 	{
@@ -73,9 +82,12 @@ class Messages
 	}
 
 	/**
-	 * @param $fieldName
-	 * @param $error
-	 * @return $this
+	 * Add an error message to an invalid field
+	 *
+	 * @param string $fieldName         Field that is invalid
+	 * @param string $error             Error message to be added
+	 *
+	 * @return Messages                 Returns $this for chainability
 	 */
 	public function addError($fieldName, $error)
 	{

@@ -13,6 +13,13 @@ use Message\Cog\Validation\Check\Type as CheckType;
  */
 class Other implements CollectionInterface
 {
+	/**
+	 * Register filters to loader
+	 *
+	 * @param Loader $loader
+	 *
+	 * @return void
+	 */
 	public function register(Loader $loader)
 	{
 		$loader->registerFilter('filter',  array($this, 'filter'));
