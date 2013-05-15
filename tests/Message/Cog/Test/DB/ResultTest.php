@@ -30,7 +30,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 	public function testGettingFirstRow()
 	{
 		$result = $this->getQuery()->run("SELECT * FROM staff");
-		$data = $result->row();
+		$data = $result->first();
 
 		$this->assertEquals((object)array(
 			'forename' => 'James',
@@ -45,24 +45,60 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$data = $result->hash('surname', 'age');
 
 		$this->assertEquals(array(
-			'Moss' => 24,
+			'Moss'      => 24,
 			'Holdcroft' => 20,
-			'Hannah' => 25,
-			'Bloggs' => 37,
+			'Hannah'    => 25,
+			'Bloggs'    => 37,
+		), $data);
+	}
+
+	public function testHashWithAutoColumns()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$data = $result->hash();
+
+		$this->assertEquals(array(
+			'James' => 'Moss',
+			'Joe'   => 'Bloggs',
+			'Danny' => 'Hannah',
 		), $data);
 	}
 
 	public function testCollect()
 	{
 		$result = $this->getQuery()->run("SELECT * FROM staff");
-		$data = $result->hash('surname', 'age');
+		$data = $result->collect('forename');
 
-		$this->assertEquals(array(
-			'Moss'      => 24,
-			'Holdcroft' => 20,
-			'Hannah'    => 25,
-			'Bloggs'    => 37,
-		), $data);
+		$this->assertEquals(
+			array(
+				'James' => array(
+					(object)array(
+						'forename' => 'James',
+						'surname' => 'Moss',
+						'age'	=> 24,
+					),
+				),
+				'Joe' => array(
+					(object)array(
+						'forename' => 'Joe',
+						'surname' => 'Holdcroft',
+						'age'	=> 20,
+					),
+					(object)array(
+						'forename' => 'Joe',
+						'surname' => 'Bloggs',
+						'age'	=> 37,
+					),
+				),
+				'Danny' => array(
+					(object)array(
+						'forename' => 'Danny',
+						'surname' => 'Hannah',
+						'age'	=> 25,
+					),
+				),
+
+			), $data);
 	}
 
 	public function testTranspose()
@@ -117,6 +153,56 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($obj2, $obj);
 	}
 
+	public function testBindWithArray()
+	{
+		$classes =  array(
+			new BindClass,
+			new BindClass,
+			new BindClass,
+			new BindClass,
+		);
+
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$classes = $result->bind($classes);
+
+		$testClasses = array();
+
+		$obj = new BindClass;
+		$obj->forename = 'James';
+		$obj->surname = 'Moss';
+		$obj->age = 24;
+		$testClasses[] = $obj;
+
+		$obj = new BindClass;
+		$obj->forename = 'Joe';
+		$obj->surname = 'Holdcroft';
+		$obj->age = 20;
+		$testClasses[] = $obj;
+
+		$obj = new BindClass;
+		$obj->forename = 'Danny';
+		$obj->surname = 'Hannah';
+		$obj->age = 25;
+		$testClasses[] = $obj;
+
+		$obj = new BindClass;
+		$obj->forename = 'Joe';
+		$obj->surname = 'Bloggs';
+		$obj->age = 37;
+		$testClasses[] = $obj;
+
+		$this->assertEquals($testClasses, $classes);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testBindWithString()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$result->bind('Derp');
+	}
+
 	public function testBindTo()
 	{
 		$className = 'Message\Cog\Test\DB\BindClass';
@@ -125,6 +211,24 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$obj = $result->bindTo($className);
 
 		$this->assertInstanceOf($className, $obj);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testBindToWithObject()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$obj = $result->bindTo(new \stdClass);
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testBindToWithBadClass()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$obj = $result->bindTo('FLOBITYBOBITY}{}}}');
 	}
 
 	public function testColumns()
@@ -137,6 +241,61 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			'surname',
 			'age',
 		), $data);
+	}
+
+	public function testId()
+	{
+		$connection = new \Message\Cog\DB\Adapter\Faux\Connection(array(
+			'insertId' => 1337,
+		));
+		$connection->setResult(array(
+			array(
+				'forename' => 'James',
+				'surname' => 'Moss',
+				'age'	=> 24,
+			),
+		));
+
+		$query = new \Message\Cog\DB\Transaction($connection);
+		$result = $query->run("SELECT * FROM staff");
+
+		$this->assertEquals(1337, $result->id());
+	}
+
+	public function testAffectedRows()
+	{
+		$connection = new \Message\Cog\DB\Adapter\Faux\Connection(array(
+			'affectedRows' => 2345,
+		));
+		$connection->setResult(array(
+			array(
+				'forename' => 'James',
+				'surname' => 'Moss',
+				'age'	=> 24,
+			),
+		));
+
+		$query = new \Message\Cog\DB\Transaction($connection);
+		$result = $query->run("SELECT * FROM staff");
+
+		$this->assertEquals(2345, $result->affected());
+	}
+
+	public function testIsFromTransaction()
+	{
+		$connection = new \Message\Cog\DB\Adapter\Faux\Connection;
+		$connection->setResult(array(
+			array(
+				'forename' => 'James',
+				'surname' => 'Moss',
+				'age'	=> 24,
+			),
+		));
+
+		$query = new \Message\Cog\DB\Transaction($connection);
+		$result = $query->run("SELECT * FROM staff");
+
+		$this->assertTrue($result->isFromTransaction());
 	}
 
 	public function getQuery()

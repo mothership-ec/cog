@@ -72,4 +72,14 @@ class Connection implements ConnectionInterface
 	{
 		return $this->_params['lastError'];
 	}
+
+	public function getInsertId()
+	{
+		return $this->_params['insertId'];
+	}
+
+	public function getAffectedRows()
+	{
+		return $this->_params['affectedRows'];
+	}
 }

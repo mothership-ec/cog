@@ -59,11 +59,11 @@ class Result implements ResultInterface
 
 	public function getAffectedRows()
 	{
-		return 0;
+		return $this->_connection->getAffectedRows();
 	}
 
 	public function getLastInsertId()
 	{
-		return 1;
+		return $this->_connection->getInsertId();
 	}
 }

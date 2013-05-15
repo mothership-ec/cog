@@ -174,6 +174,8 @@ class Result extends ResultArrayAccess
 
 			return $subject;
 		}
+
+		throw new \InvalidArgumentException('Only object instances and class names can be passed to Result::bind()');
 	}
 
 	/**
@@ -186,12 +188,19 @@ class Result extends ResultArrayAccess
 	 */
 	public function bindTo($subject)
 	{
-		// Valid class name
-		if(is_string($subject)) {
-			$class = new $subject;
-
-			return $this->bind($class);
+		// Only strings can be passed in
+		if(!is_string($subject)) {
+			throw new \InvalidArgumentException('Only a fully qualified classname can be passed to Result::bindTo()');
 		}
+
+		// Existing, valid class name?
+		if(!class_exists($subject)) {
+			throw new \InvalidArgumentException(sprintf('`%s` class not found', $subject));
+		}
+
+		$class = new $subject;
+
+		return $this->bind($class);
 	}
 
 	/**
