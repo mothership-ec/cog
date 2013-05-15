@@ -44,7 +44,10 @@ class Result extends ResultArrayAccess
 		$this->reset();
 		$first = $this->_result->fetchArray();
 
-		return $first[0];
+		reset($first);
+		$index = key($first);
+
+		return $first[$index];
 	}
 
 	/**
@@ -92,6 +95,7 @@ class Result extends ResultArrayAccess
 		$this->_setDefaultKeys($key);
 		$rows = array();
 		$this->reset();
+		
 		while($row = $this->_result->fetchObject()) {
 			$rows[$row->{$key}] = $row;
 		}
@@ -142,10 +146,18 @@ class Result extends ResultArrayAccess
 		return $rows;
 	}
 
+	/**
+	 * Sets the properties of an object (or array of objects) based on the rows
+	 * in the resultset.
+	 *
+	 * @param  object|array $subject The object(s) you wish to bind data to.
+	 *
+	 * @return object|array          The updated object(s) with data bound to them.
+	 */
 	public function bind($subject)
 	{
 		if(is_object($subject)) {
-			// get the first row and bind it as the properties of the object
+			// get the next row and bind it as the properties of the object
 			$data = $this->_result->fetchObject();
 			foreach($data as $key => $value) {
 				$subject->{$key} = $value;
@@ -164,6 +176,14 @@ class Result extends ResultArrayAccess
 		}
 	}
 
+	/**
+	 * Instatiates an object based (using its name as a string) and sets the
+	 * properties of it based on the keys/values returned from the first row 
+	 * of the result set.
+	 *
+	 * @param  string $subject The fully qualified name of a class you wish to
+	 *                         instantiate and bind data to.
+	 */
 	public function bindTo($subject)
 	{
 		// Valid class name
@@ -205,7 +225,7 @@ class Result extends ResultArrayAccess
 	public function columns($position = null)
 	{
 		$this->reset();
-		$columns = array_keys($this->row());
+		$columns = array_keys((array)$this->row());
 
 		if($position !== null) {
 			return isset($columns[$position]) ? $columns[$position] : false;
@@ -233,7 +253,7 @@ class Result extends ResultArrayAccess
 	 */
 	protected function _setDefaultKeys(&$key = null, &$value = null)
 	{
-		if($key === null) {
+		if($key === null || empty($key)) {
 			$key = $this->columns(0);
 		}
 

@@ -52,6 +52,6 @@ abstract class ResultIterator implements Iterator, Countable
 
 	final public function row()
 	{
-		$this->_result->fetchObject();
+		return $this->_result->fetchObject();
 	}
 }
