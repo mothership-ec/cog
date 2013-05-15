@@ -7,7 +7,13 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 {
 	public function testIteratingAsArray()
 	{
-		
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$data = $result->value();
+
+		// This test is kinda lame
+		foreach($result as $row) {
+			$this->assertInstanceOf('stdClass', $row);
+		}
 	}
 
 	public function testGettingFirstRowFirstField()
@@ -16,6 +22,9 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$data = $result->value();
 
 		$this->assertEquals('James', $data);
+
+		$result->reset();
+		$this->assertEquals('James', $result[0]->forename);
 	}
 
 	public function testGettingFirstRow()
@@ -40,6 +49,19 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			'Holdcroft' => 20,
 			'Hannah' => 25,
 			'Bloggs' => 37,
+		), $data);
+	}
+
+	public function testCollect()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$data = $result->hash('surname', 'age');
+
+		$this->assertEquals(array(
+			'Moss'      => 24,
+			'Holdcroft' => 20,
+			'Hannah'    => 25,
+			'Bloggs'    => 37,
 		), $data);
 	}
 
@@ -82,12 +104,39 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
 	public function testBind()
 	{
-		
+		$obj =  new BindClass;
+
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$obj = $result->bind($obj);
+
+		$obj2 = new BindClass;
+		$obj2->forename = 'James';
+		$obj2->surname = 'Moss';
+		$obj2->age = 24;
+
+		$this->assertEquals($obj2, $obj);
+	}
+
+	public function testBindTo()
+	{
+		$className = 'Message\Cog\Test\DB\BindClass';
+
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$obj = $result->bindTo($className);
+
+		$this->assertInstanceOf($className, $obj);
 	}
 
 	public function testColumns()
 	{
-		
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$data = $result->columns();
+
+		$this->assertEquals(array(
+			'forename',
+			'surname',
+			'age',
+		), $data);
 	}
 
 	public function getQuery()
