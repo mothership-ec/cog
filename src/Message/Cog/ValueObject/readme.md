@@ -2,7 +2,7 @@
 
 This component contains some standard value objects that are likely to be used in most web applications using Cog.
 
-## `Authorship`
+## Authorship
 
 This class represents the metadata of when a model was created, updated and deleted; and also which user performed these actions.
 
@@ -53,6 +53,6 @@ It is possible to remove the "deleted" metadata by calling the `restore` method.
 
 	echo $authorship->deletedBy; // null
 
-## `Money`
+## Money
 
-## `DateRange`
+## DateRange
