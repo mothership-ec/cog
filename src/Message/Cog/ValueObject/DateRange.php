@@ -101,7 +101,7 @@ class DateRange
 		}
 
 		if (!$this->_end) {
-			throw new \LogicException('A end date must be provided');
+			throw new \LogicException('An end date must be provided');
 		}
 
 		return $datetime->diff($this->_end);

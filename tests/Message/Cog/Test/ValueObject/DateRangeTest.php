@@ -108,7 +108,7 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($dateRange->getIntervalToStart(), $testDateRange->diff($from));
 
-		$this->setExpectedException('LogicException', 'A end date must be provided');
+		$this->setExpectedException('LogicException', 'A start date must be provided');
 
         $to = $from;
         $from = null;
@@ -151,7 +151,7 @@ class DateRangeTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($dateRange->getIntervalToEnd(), $testDateRange->diff($to));
 
-        $this->setExpectedException('LogicException', 'A from date must be provided');
+        $this->setExpectedException('LogicException', 'An end date must be provided');
 
 		$from = new DateTime('-2 days');
 		$to = null;
