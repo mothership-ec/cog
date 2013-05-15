@@ -108,7 +108,7 @@ class Authorship
 			throw new \LogicException('Cannot set created metadata: it has already been set');
 		}
 
-		$this->_createdAt = ($datetime) ? $datetime : new DateTime('now');
+		$this->_createdAt = $datetime ?: new DateTime('now');
 		$this->_createdBy = $user;
 
 		return $this;
@@ -125,7 +125,7 @@ class Authorship
 	 */
 	public function update(DateTime $datetime = null, $user = null)
 	{
-		$this->_updatedAt = ($datetime) ? $datetime : new DateTime('now');
+		$this->_updatedAt = $datetime ?: new DateTime('now');
 		$this->_updatedBy = $user;
 
 		return $this;
@@ -148,7 +148,7 @@ class Authorship
 			throw new \LogicException('Cannot set deleted metadata: it has already been set');
 		}
 
-		$this->_deletedAt = ($datetime) ? $datetime : new DateTime('now');
+		$this->_deletedAt = $datetime ?: new DateTime('now');
 		$this->_deletedBy = $user;
 
 		return $this;
