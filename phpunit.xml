@@ -58,6 +58,9 @@
 		<testsuite name="Templating">
 			<directory>./tests/Message/Cog/Test/Templating/</directory>
 		</testsuite>
+		<testsuite name="ValueObject">
+			<directory>./tests/Message/Cog/Test/ValueObject/</directory>
+		</testsuite>
 	</testsuites>
 	<filter>
 		<whitelist>
