@@ -3,6 +3,7 @@
 namespace Message\Cog\Test\HTTP;
 
 use Message\Cog\HTTP\CookieCollection;
+use Message\Cog\HTTP\Cookie;
 
 class CookieCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,38 +18,38 @@ class CookieCollectionTest extends \PHPUnit_Framework_TestCase
 		);
 		$collection = new CookieCollection($cookies);
 
-		$this->assertEquals(count($pageTypes), $collection->count());
+		$this->assertEquals(count($cookies), $collection->count());
 
-		foreach ($collection as $key => $pageType) {
-			$this->assertEquals($pageTypes[$key], $pageType);
+		foreach ($collection as $key => $cookie) {
+			$this->assertEquals($cookies[$key], $cookie);
 		}
 	}
 
 	public function testAdd()
 	{
-		$collection = new PageTypeCollection;
-		$pageType   = new PageType\Blog;
+		$collection = new CookieCollection;
+		$cookie = new Cookie('Hello','123hello');
 
-		$this->assertEquals($collection, $collection->add($pageType));
+		$this->assertEquals($collection, $collection->add($cookie));
 
-		foreach ($collection as $type) {
-			$this->assertEquals($pageType, $type);
+		foreach ($collection as $c) {
+			$this->assertEquals($cookie, $c);
 		}
 	}
 
 	public function testCount()
 	{
-		$collection = new PageTypeCollection;
+		$collection = new CookieCollection;
 
 		$this->assertEquals(0, count($collection));
 		$this->assertEquals(0, $collection->count());
 
-		$collection->add(new PageType\Blog);
+		$collection->add(new Cookie('test',1));
 
 		$this->assertEquals(1, count($collection));
 		$this->assertEquals(1, $collection->count());
 
-		$collection->add(new PageType\Blog);
+		$collection->add(new Cookie('test2',2));
 
 		$this->assertEquals(2, count($collection));
 		$this->assertEquals(2, $collection->count());
@@ -56,7 +57,7 @@ class CookieCollectionTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetIterator()
 	{
-		$collection = new PageTypeCollection;
+		$collection = new CookieCollection;
 		$this->assertInstanceOf('\Iterator', $collection->getIterator());
 	}
 }
