@@ -66,4 +66,24 @@ class Result implements ResultInterface
 	{
 		return $this->_connection->getInsertId();
 	}
+
+	public function getTransactionStart()
+	{
+		return '';
+	}
+
+	public function getTransactionEnd()
+	{
+		return '';
+	}
+
+	public function getTransactionRollback()
+	{
+		return '';
+	}
+
+	public function getLastInsertIdFunc()
+	{
+		return '';
+	}
 }

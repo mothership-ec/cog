@@ -11,7 +11,7 @@ abstract class ResultArrayAccess extends ResultIterator implements ArrayAccess
 {
 	final public function offsetSet($offset, $value)
 	{
-		throw new Exception('Cannot set array values on DB\Result');
+		throw new \Exception('Cannot set array values on DB\Result');
 	}
 
 	final public function offsetExists($offset)
@@ -21,7 +21,7 @@ abstract class ResultArrayAccess extends ResultIterator implements ArrayAccess
 
 	final public function offsetUnset($offset)
 	{
-		throw new Exception('Cannot unset array values on DB\Result');
+		throw new \Exception('Cannot unset array values on DB\Result');
 	}
 
 	final public function offsetGet($offset)

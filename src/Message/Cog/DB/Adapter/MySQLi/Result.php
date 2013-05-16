@@ -14,7 +14,7 @@ class Result implements ResultInterface
 
 	public function __construct($handle, ConnectionInterface $connection)
 	{
-		$this->_handle = $handle;
+		$this->_handle     = $handle;
 		$this->_connection = $connection;
 	}
 
@@ -46,5 +46,25 @@ class Result implements ResultInterface
 	public function getLastInsertId()
 	{
 		return $this->_connection->insert_id;
+	}
+
+	public function getTransactionStart()
+	{
+		return 'START TRANSACTION';
+	}
+
+	public function getTransactionEnd()
+	{
+		return 'COMMIT';
+	}
+
+	public function getTransactionRollback()
+	{
+		return 'ROLLBACK';
+	}
+
+	public function getLastInsertIdFunc()
+	{
+		return 'LAST_INSERT_ID()';
 	}
 }

@@ -16,15 +16,64 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		}
 	}
 
+	public function testArrayAccessor()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$this->assertEquals('James', $result[0]->forename);
+		$this->assertNull($result[123465]);
+	}
+
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testArraySet()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$result[10] = 'You cant do this';
+	}
+
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testArrayUnset()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		unset($result[0]);
+	}
+
+	public function testArrayIsset()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$this->assertTrue(isset($result[2]));
+		$this->assertFalse(isset($result[20839587]));
+	}
+
+	public function testArrayCount()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+
+		$this->assertEquals(4, count($result));
+	}
+
+	public function testArrayKey()
+	{
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$this->assertEquals(0, $result->key());
+
+		foreach($result as $row) {
+			// testing iterating
+		}
+
+		$this->assertEquals(4, $result->key());
+	}
+
 	public function testGettingFirstRowFirstField()
 	{
 		$result = $this->getQuery()->run("SELECT * FROM staff");
 		$data = $result->value();
 
 		$this->assertEquals('James', $data);
-
-		$result->reset();
-		$this->assertEquals('James', $result[0]->forename);
+		
 	}
 
 	public function testGettingFirstRow()

@@ -21,6 +21,7 @@ abstract class ResultIterator implements Iterator, Countable
 	final public function reset()
 	{
 		$this->_result->seek(0);
+		$this->_position = 0;
 	}
 
 	final public function current()

@@ -16,9 +16,14 @@ class Transaction extends Query
 		return $this;
 	}
 
+	public function rollback()
+	{
+		return $this->run($this->_result->getTransactionRollback());
+	}
+
 	public function commit()
 	{
-		$this->run('START TRANSACTION');
+		$this->run($this->_result->getTransactionStart());
 		try {
 			foreach($this->_queries as $query) {
 				$this->run($query[0], $query[1]);
@@ -28,16 +33,16 @@ class Transaction extends Query
 			throw $e;
 		}
 
-		return $this->run('COMMIT');
+		return $this->run($this->_result->getTransactionEnd());
 	}
 
 	public function setID($name)
 	{
-		return $this->add("SET @".$name." = LAST_INSERT_ID()");
+		return $this->add("SET @".$name." = ".$this->_result->getLastInsertIdFunc());
 	}
 
 	public function getID()
 	{
-		return $this->add("SELECT LAST_INSERT_ID()");
+		return $this->add("SELECT ".$this->_result->getLastInsertIdFunc());
 	}
 }
