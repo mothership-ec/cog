@@ -24,6 +24,7 @@ class ReferenceParser implements ReferenceParserInterface
 {
 	const SEPARATOR        = ':';
 	const METHOD_SEPARATOR = '#';
+	const MODULE_SEPARATOR = '::';
 	const RELATIVE_MARKER  = '::';
 
 	protected $_moduleLocator;
@@ -123,6 +124,8 @@ class ReferenceParser implements ReferenceParserInterface
 	 */
 	public function getClassName($pathNamespace = null)
 	{
+		$this->_checkEmpty();
+
 		return $this->getModuleName() . '\\' . $this->getPath($pathNamespace, '\\');
 	}
 
@@ -156,6 +159,8 @@ class ReferenceParser implements ReferenceParserInterface
 	 */
 	public function getModuleName()
 	{
+		$this->_checkEmpty();
+
 		return $this->_vendor . '\\' . $this->_module;
 	}
 
@@ -199,10 +204,11 @@ class ReferenceParser implements ReferenceParserInterface
 	 */
 	public function clear()
 	{
-		$this->_vendor = null;
-		$this->_module = null;
-		$this->_path   = null;
-		$this->_method = null;
+		$this->_reference = null;
+		$this->_vendor    = null;
+		$this->_module    = null;
+		$this->_path      = null;
+		$this->_method    = null;
 	}
 
 	/**
@@ -235,14 +241,11 @@ class ReferenceParser implements ReferenceParserInterface
 			$fullModuleName = explode('\\', $this->_fnsUtility->traceCallingModuleName(), 2);
 		}
 		else {
-			// Find the full module name (vendor and module) by getting text
-			// before the second separator
-			$firstSeparatorPos  = strpos($this->_reference, self::SEPARATOR);
-			$secondSeparatorPos = strpos($this->_reference, self::SEPARATOR, $firstSeparatorPos + 1);
-			$fullModuleName     = explode(
-				self::SEPARATOR,
-				substr($this->_reference, 0, $secondSeparatorPos + 1)
-			);
+			// Find the full module name (text before the module separator)
+			$separatorPos   = strpos($this->_reference, self::MODULE_SEPARATOR);
+			$fullModuleName = ($separatorPos)
+								? explode(self::SEPARATOR, substr($this->_reference, 0, $separatorPos), 2)
+								: array(); // triggers the exception
 		}
 
 		// Remove any empty elements from the full module name array
@@ -254,6 +257,9 @@ class ReferenceParser implements ReferenceParserInterface
 				sprintf('Vendor and module name could not be determined from reference: `%s`', $this->_reference)
 			);
 		}
+
+		// Replace any extra separators with a namespace separator (so they match module name)
+		$fullModuleName = str_replace(self::SEPARATOR, '\\', $fullModuleName);
 
 		// Assign the vendor and module name
 		list($this->_vendor, $this->_module) = $fullModuleName;
@@ -277,15 +283,9 @@ class ReferenceParser implements ReferenceParserInterface
 		}
 
 		// Determine start position for path
-		if ($this->isRelative()) {
-			$startPos = strlen(self::RELATIVE_MARKER);
-		}
-		else {
-			$startPos = strlen(implode(self::SEPARATOR, array(
-				$this->_vendor,
-				$this->_module
-			)) . self::SEPARATOR);
-		}
+		$startPos = ($this->isRelative())
+						? strlen(self::RELATIVE_MARKER)
+						: strpos($reference, self::MODULE_SEPARATOR) + strlen(self::MODULE_SEPARATOR);
 
 		// Remove relative indicator or vendor/module name
 		$reference = substr($reference, $startPos);

@@ -12,7 +12,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 	protected $_parser;
 	protected $_modulePaths = array(
 		'Message\Cog'                   => '/path/to/installation/vendor/message/cog/src',
-		'Message\CMS'                   => '/path/to/installation/vendor/message/cog-cms',
+		'Message\Mothership\CMS'        => '/path/to/installation/vendor/message/cog-cms',
 		'Commerce\Core'                 => '/path/to/installation/vendor/message/commerce',
 		'Commerce\Epos'                 => '/path/to/installation/vendor/message/commerce',
 		'UniformWares\CustomModuleName' => '/path/to/installation/app',
@@ -38,6 +38,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @expectedException \RuntimeException
+	 * @expectedExceptionMessage No reference has been parsed yet
 	 */
 	public function testGetSymfonyLogicalControllerNameThrowsExceptionWhenNoReferenceSet()
 	{
@@ -46,6 +47,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @expectedException \RuntimeException
+	 * @expectedExceptionMessage No reference has been parsed yet
 	 */
 	public function testGetFullPathThrowsExceptionWhenNoReferenceSet()
 	{
@@ -54,6 +56,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @expectedException \RuntimeException
+	 * @expectedExceptionMessage No reference has been parsed yet
 	 */
 	public function testGetClassNameThrowsExceptionWhenNoReferenceSet()
 	{
@@ -62,6 +65,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @expectedException \RuntimeException
+	 * @expectedExceptionMessage No reference has been parsed yet
 	 */
 	public function testGetAllPartsThrowsExceptionWhenNoReferenceSet()
 	{
@@ -70,6 +74,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @expectedException \RuntimeException
+	 * @expectedExceptionMessage No reference has been parsed yet
 	 */
 	public function testIsRelativeThrowsExceptionWhenNoReferenceSet()
 	{
@@ -96,14 +101,58 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @dataProvider getValidReferences
 	 */
-	public function testGetFullPath($reference, $allParts)
+	public function testGetPathAndFullPath($reference, $allParts)
 	{
-		$parsed   = $this->_parser->parse($reference);
-		$expected = $this->_modulePaths[$allParts['vendor'] . '\\' . $allParts['module']]
-				  . DIRECTORY_SEPARATOR
-				  . implode(DIRECTORY_SEPARATOR, $allParts['path']);
+		$parsed     = $this->_parser->parse($reference);
+		$relative   = implode(DIRECTORY_SEPARATOR, $allParts['path']);
+		$modulePath = $this->_modulePaths[$allParts['vendor'] . '\\' . $allParts['module']];
 
-		$this->assertEquals($expected, $parsed->getFullPath());
+		$this->assertEquals(
+			implode(DIRECTORY_SEPARATOR, $allParts['path']),
+			$parsed->getPath(null, DIRECTORY_SEPARATOR)
+		);
+
+		$this->assertEquals(
+			implode(DIRECTORY_SEPARATOR, $allParts['path']),
+			$parsed->getPath()
+		);
+
+		$this->assertEquals(
+			'SomeFolder-' . implode('-', $allParts['path']),
+			$parsed->getPath('SomeFolder', '-')
+		);
+
+		$this->assertEquals(
+			'SomeFolder/SomeOtherFolder/' . implode('/', $allParts['path']),
+			$parsed->getPath(array('SomeFolder', 'SomeOtherFolder'), '/')
+		);
+
+		$this->assertEquals(
+			implode(DIRECTORY_SEPARATOR, array(
+				$modulePath,
+				implode(DIRECTORY_SEPARATOR, $allParts['path'])
+			)),
+			$parsed->getFullPath()
+		);
+
+		$this->assertEquals(
+			implode(DIRECTORY_SEPARATOR, array(
+				$modulePath,
+				'Controller',
+				implode(DIRECTORY_SEPARATOR, $allParts['path'])
+			)),
+			$parsed->getFullPath('Controller')
+		);
+
+		$this->assertEquals(
+			implode(DIRECTORY_SEPARATOR, array(
+				$modulePath,
+				'Controller',
+				'MyFolder',
+				implode(DIRECTORY_SEPARATOR, $allParts['path'])
+			)),
+			$parsed->getFullPath(array('Controller', 'MyFolder'))
+		);
 	}
 
 	/**
@@ -118,7 +167,6 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($expected, $parsed->getClassName());
 
-		$parsed   = $this->_parser->parse($reference);
 		$expected = $allParts['vendor'] . '\\' .
 					$allParts['module'] . '\\' .
 					'Controller\\TestNamespace\\' .
@@ -126,7 +174,6 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($expected, $parsed->getClassName(array('Controller', 'TestNamespace')));
 
-		$parsed   = $this->_parser->parse($reference);
 		$expected = $allParts['vendor'] . '\\' .
 					$allParts['module'] . '\\' .
 					'Namespace\\' .
@@ -143,6 +190,16 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 		$parsed = $this->_parser->parse($reference);
 
 		$this->assertEquals($parsed->getAllParts(), $allParts);
+	}
+
+	/**
+	 * @dataProvider getValidReferences
+	 */
+	public function testGetModuleName($reference, $allParts)
+	{
+		$parsed = $this->_parser->parse($reference);
+
+		$this->assertEquals($allParts['vendor'] . '\\' . $allParts['module'], $parsed->getModuleName());
 	}
 
 	/**
@@ -181,7 +238,6 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 		$this->_parser->parse($reference);
 	}
 
-
 	/**
 	 * @dataProvider getRelativeReferences
 	 */
@@ -193,8 +249,21 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(self::DEFAULT_MODULE, $allParts['module']);
 	}
 
+	/**
+	 * @expectedException        \RuntimeException
+	 * @expectedExceptionMessage No reference has been parsed yet
+	 */
+	public function testClear()
+	{
+		$parsed = $this->_parser->parse('Vendor:Module::Path:To:Something');
 
-	public function getRelativeReferences()
+		$parsed->clear();
+
+		$parsed->getModuleName();
+	}
+
+
+	static public function getRelativeReferences()
 	{
 		return array(
 			array(
@@ -246,11 +315,11 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function getAbsoluteReferences()
+	static public function getAbsoluteReferences()
 	{
 		return array(
 			array(
-				'UniformWares:CustomModuleName:ClassFile',
+				'UniformWares:CustomModuleName::ClassFile',
 				array(
 					'vendor' => 'UniformWares',
 					'module' => 'CustomModuleName',
@@ -261,10 +330,10 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 				)
 			),
 			array(
-				'Message:CMS:Controller:Private#view',
+				'Message:Mothership:CMS::Controller:Private#view',
 				array(
 					'vendor' => 'Message',
-					'module' => 'CMS',
+					'module' => 'Mothership\CMS',
 					'path'   => array(
 						'Controller',
 						'Private',
@@ -273,7 +342,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 				)
 			),
 			array(
-				'Commerce:Epos:Till:Return:View',
+				'Commerce:Epos::Till:Return:View',
 				array(
 					'vendor' => 'Commerce',
 					'module' => 'Epos',
@@ -286,7 +355,7 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 				)
 			),
 			array(
-				'Commerce:Core:Admin#List',
+				'Commerce:Core::Admin#List',
 				array(
 					'vendor' => 'Commerce',
 					'module' => 'Core',
@@ -299,15 +368,15 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function getValidReferences()
+	static public function getValidReferences()
 	{
 		return array_merge(
-			$this->getRelativeReferences(),
-			$this->getAbsoluteReferences()
+			self::getRelativeReferences(),
+			self::getAbsoluteReferences()
 		);
 	}
 
-	public function getInvalidReferences()
+	static public function getInvalidReferences()
 	{
 		return array(
 			array(
