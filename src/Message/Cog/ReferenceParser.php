@@ -241,8 +241,7 @@ class ReferenceParser implements ReferenceParserInterface
 			$secondSeparatorPos = strpos($this->_reference, self::SEPARATOR, $firstSeparatorPos + 1);
 			$fullModuleName     = explode(
 				self::SEPARATOR,
-				substr($this->_reference, 0, $secondSeparatorPos + 1),
-				2
+				substr($this->_reference, 0, $secondSeparatorPos + 1)
 			);
 		}
 
