@@ -4,6 +4,7 @@ namespace Message\Cog\Module;
 
 use Message\Cog\Bootstrap\LoaderInterface as BootstrapLoaderInterface;
 use Message\Cog\Event\DispatcherInterface;
+use Message\Cog\Event\Event;
 
 /**
  * Loads Cog modules and their related files.
@@ -100,7 +101,7 @@ class Loader implements LoaderInterface
 			// Fire the "module loaded" event
 			$this->_eventDispatcher->dispatch(
 				sprintf(
-					Event::MODULE_LOADED,
+					'module.%s.load.success',
 					strtolower(str_replace('\\', '.', $module))
 				),
 				new Event

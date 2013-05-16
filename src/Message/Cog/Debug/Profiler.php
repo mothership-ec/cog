@@ -8,6 +8,8 @@ use Closure;
  * Profiler
  *
  * Snapshots execution time, memory and query usage during page generation.
+ *
+ * @author James Moss <james@message.co.uk>
  */
 class Profiler
 {

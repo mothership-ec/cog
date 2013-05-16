@@ -13,8 +13,8 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 	protected $_modulePaths = array(
 		'Message\Cog'                   => '/path/to/installation/vendor/message/cog/src',
 		'Message\CMS'                   => '/path/to/installation/vendor/message/cog-cms',
-		'Mothership\Core'               => '/path/to/installation/vendor/message/mothership',
-		'Mothership\Epos'               => '/path/to/installation/vendor/message/mothership',
+		'Commerce\Core'                 => '/path/to/installation/vendor/message/commerce',
+		'Commerce\Epos'                 => '/path/to/installation/vendor/message/commerce',
 		'UniformWares\CustomModuleName' => '/path/to/installation/app',
 	);
 
@@ -84,7 +84,6 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 		$parsed   = $this->_parser->parse($reference);
 		$expected = $allParts['vendor'] . '\\' .
 					$allParts['module'] . '\\' .
-					'Controller' . '\\' .
 					implode('\\', $allParts['path']);
 
 		if (!is_null($allParts)) {
@@ -274,9 +273,9 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 				)
 			),
 			array(
-				'Mothership:Epos:Till:Return:View',
+				'Commerce:Epos:Till:Return:View',
 				array(
-					'vendor' => 'Mothership',
+					'vendor' => 'Commerce',
 					'module' => 'Epos',
 					'path'   => array(
 						'Till',
@@ -287,9 +286,9 @@ class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 				)
 			),
 			array(
-				'Mothership:Core:Admin#List',
+				'Commerce:Core:Admin#List',
 				array(
-					'vendor' => 'Mothership',
+					'vendor' => 'Commerce',
 					'module' => 'Core',
 					'path'   => array(
 						'Admin',

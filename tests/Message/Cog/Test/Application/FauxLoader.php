@@ -2,17 +2,12 @@
 
 namespace Message\Cog\Test\Application;
 
-class FauxLoader
+use Message\Cog\Application\Loader;
+
+class FauxLoader extends Loader
 {
-	protected $_baseDir;
-
-	public function __construct($baseDir)
+	public function _registerModules()
 	{
-		$this->_baseDir = $baseDir;
-	}
-
-	public function getBaseDir()
-	{
-		return $this->_baseDir;
+		return array();
 	}
 }

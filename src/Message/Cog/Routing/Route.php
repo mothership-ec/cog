@@ -18,7 +18,7 @@ class Route extends \Symfony\Component\Routing\Route
 
 	public function setMethod($method)
 	{
-		return $this->setRequirement('_method', $method);
+		return $this->setRequirement('_method', strtoupper($method));
 	}
 
 	public function setFormat($format)

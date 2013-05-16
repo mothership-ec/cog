@@ -3,7 +3,7 @@
 namespace Message\Cog\Test\Application\Context;
 
 use Message\Cog\Application\Context\Console;
-use Message\Cog\Environment;
+use Message\Cog\Application\Environment;
 use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Console\Command\Foo1Command;
 

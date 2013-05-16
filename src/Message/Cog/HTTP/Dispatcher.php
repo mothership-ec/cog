@@ -2,6 +2,8 @@
 
 namespace Message\Cog\HTTP;
 
+use Message\Cog\Service\Container as ServiceContainer;
+use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Controller\ControllerResolverInterface;
 use Message\Cog\Event\DispatcherInterface;
 
@@ -62,8 +64,13 @@ class Dispatcher
 			$controller = $this->_controllerResolver->getController($request);
 			$arguments  = $this->_controllerResolver->getArguments($request, $controller);
 
-			// If the controller has a 'setRequest' method, call it and set the request
-			if (isset($controller[0]) && is_object($controller[0]) && method_exists($controller[0], 'setRequest')) {
+			// If the controller implements ContainerAwareInterface, set the container
+			if ($controller[0] instanceof ContainerAwareInterface) {
+				$controller[0]->setContainer(ServiceContainer::instance());
+			}
+
+			// If the controller implements RequestAwareInterface, set the request
+			if ($controller[0] instanceof RequestAwareInterface) {
 				$controller[0]->setRequest($request);
 			}
 

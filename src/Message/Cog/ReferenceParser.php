@@ -62,7 +62,7 @@ class ReferenceParser implements ReferenceParserInterface
 	{
 		$this->_checkEmpty();
 
-		return $this->getClassName('Controller') . '::' . $this->_method;
+		return $this->getClassName() . '::' . $this->_method;
 	}
 
 	/**
@@ -232,7 +232,7 @@ class ReferenceParser implements ReferenceParserInterface
 	{
 		if ($this->isRelative()) {
 			// Fill in the current vendor and module
-			$fullModuleName = explode('\\', $this->_fnsUtility->traceCallingModuleName());
+			$fullModuleName = explode('\\', $this->_fnsUtility->traceCallingModuleName(), 2);
 		}
 		else {
 			// Find the full module name (vendor and module) by getting text
@@ -241,7 +241,8 @@ class ReferenceParser implements ReferenceParserInterface
 			$secondSeparatorPos = strpos($this->_reference, self::SEPARATOR, $firstSeparatorPos + 1);
 			$fullModuleName     = explode(
 				self::SEPARATOR,
-				substr($this->_reference, 0, $secondSeparatorPos + 1)
+				substr($this->_reference, 0, $secondSeparatorPos + 1),
+				2
 			);
 		}
 
