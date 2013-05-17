@@ -241,9 +241,9 @@ class ReferenceParser implements ReferenceParserInterface
 			$fullModuleName = explode('\\', $this->_fnsUtility->traceCallingModuleName(), 2);
 		}
 		else {
-			// Find the full module name (text before the module separator)
+			// Find the full module name (the text before the module separator)
 			$separatorPos   = strpos($this->_reference, self::MODULE_SEPARATOR);
-			$fullModuleName = ($separatorPos)
+			$fullModuleName = $separatorPos
 								? explode(self::SEPARATOR, substr($this->_reference, 0, $separatorPos), 2)
 								: array(); // triggers the exception
 		}
@@ -283,7 +283,7 @@ class ReferenceParser implements ReferenceParserInterface
 		}
 
 		// Determine start position for path
-		$startPos = ($this->isRelative())
+		$startPos = $this->isRelative()
 						? strlen(self::RELATIVE_MARKER)
 						: strpos($reference, self::MODULE_SEPARATOR) + strlen(self::MODULE_SEPARATOR);
 
