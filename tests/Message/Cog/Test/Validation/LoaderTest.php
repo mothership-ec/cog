@@ -4,7 +4,6 @@ namespace Message\Cog\Test\Validation;
 
 use Message\Cog\Validation\Loader;
 use Message\Cog\Validation\Messages;
-use Message\Cog\Validation\Validator;
 
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -95,6 +94,18 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	public function testGetFilters()
 	{
 		$this->assertTrue(is_array($this->_loader->getFilters()));
+	}
+
+	public function testSetGetMessages()
+	{
+		$messages = new Messages;
+		$this->_loader->setMessages($messages);
+		$this->assertSame($messages, $this->_loader->getMessages());
+	}
+
+	public function testGetMessagesNoneSet()
+	{
+		$this->assertEquals(new Messages, $this->_loader->getMessages());
 	}
 
 	/**

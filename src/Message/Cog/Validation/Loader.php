@@ -114,10 +114,6 @@ class Loader
 	 */
 	public function getMessages()
 	{
-		if (!$this->_messages) {
-			$this->setMessages(new Messages);
-		}
-
 		return $this->_messages;
 	}
 
