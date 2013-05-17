@@ -20,7 +20,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_loader = new Loader(new Messages);
+		$this->_loader = new Loader;
 		$this->_collection = new DummyCollection;
 	}
 

@@ -2,19 +2,23 @@
 
 namespace Message\Cog\Validation;
 
-
 /**
-* Loads and maintains a set of rules and filters to use in validation
-*/
+ * Loader
+ * @package Message\Cog\Validation
+ *
+ * Loads and maintains a set of rules and filters to use in validation
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
+ */
 class Loader
 {
 	/**
-	 * @param Messages $messages    Messages object for storing error messages
 	 * @param array $classes        Classes to be registered
 	 */
-	public function __construct(Messages $messages, array $classes = null)
+	public function __construct(array $classes = null)
 	{
-		$this->_messages = $messages;
+		$this->_messages = new Messages;
 		$this->_rules = array();
 		$this->_filters = array();
 
@@ -34,22 +38,21 @@ class Loader
 	public function registerClasses(array $classes)
 	{
 		foreach($classes as $class) {
-			$collection = new $class;
 
-			if(!$collection instanceof CollectionInterface) {
+			if(!$class instanceof CollectionInterface) {
 				throw new \Exception(sprintf('%s must implement CollectionInterface.', $class));
 			}
 
-			$collection->register($this);
+			$class->register($this);
 		}
 
 		return $this;
 	}
 
 	/**
-	 * Return instance of a registered rule
+	 * Return instance of registered rule
 	 *
-	 * @param $name                             Name of rule to search for
+	 * @param string $name                      Name of rule to search for
 	 *
 	 * @return bool | CollectionInterface       Returns rule if found, false if not
 	 */
@@ -65,7 +68,7 @@ class Loader
 	/**
 	 * Return instance of registered filter
 	 *
-	 * @param $name                             Name of filter to search for
+	 * @param string $name                      Name of filter to search for
 	 *
 	 * @return bool | CollectionInterface       Returns filter if found, false if not
 	 */
@@ -95,9 +98,34 @@ class Loader
 	}
 
 	/**
+	 * Assign Messages object to loader
+	 *
+	 * @param Messages $messages    Messages object to assign to Loader
+	 */
+	public function setMessages(Messages $messages)
+	{
+		$this->_messages = $messages;
+	}
+
+	/**
+	 * Get Messages instance, if not set, creates a new one.
+	 *
+	 * @return Messages     Return Messages object
+	 */
+	public function getMessages()
+	{
+		if (!$this->_messages) {
+			$this->setMessages(new Messages);
+		}
+
+		return $this->_messages;
+	}
+
+	/**
 	 * Register a rule to the loader
 	 *
-	 * @param string $name          Name of rule to register
+	 * @param string $name          Name of rule to register, this is how it will be called by validator i.e.
+	 *                              $field('field')->$name()
 	 * @param array $func           Callable array for class methods (array(Object, 'methodName'))
 	 * @param string $errorMessage  Error message for failed validation, use sprint syntax
 	 *
@@ -114,7 +142,8 @@ class Loader
 	/**
 	 * Register a filter to the loader
 	 *
-	 * @param string $name          Name of filter to register
+	 * @param string $name          Name of filter to register, this is how it will be called by validator i.e.
+	 *                              $field('field')->$name()
 	 * @param array $func           Callable array for class methods (array(Object, 'methodName'))
 	 *
 	 * @return Loader               Returns $this for chainability

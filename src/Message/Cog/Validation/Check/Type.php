@@ -14,6 +14,8 @@ namespace Message\Cog\Validation\Check;
  * This class uses the debug_backtrace() function to provide relevant error messages, i.e. reference the actual class
  * and method being used, and not these ones. Error messages can be improved by adding the second param (or third in
  * the case of checkInstanceOf()) for the variable name
+ *
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 
 class Type
@@ -22,7 +24,7 @@ class Type
 	/**
 	 * Method to check if variable is a string
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not string
 	 *
@@ -44,7 +46,7 @@ class Type
 	/**
 	 * Method to check if a variable is either a string or a numeric value that could be parsed as a string
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is neither a string. integer nor float
 	 *
@@ -69,7 +71,7 @@ class Type
 	/**
 	 * Method to check if a variable is an integer
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not an integer
 	 *
@@ -90,7 +92,7 @@ class Type
 	/**
 	 * Method to check if a variable is a float
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not a float
 	 *
@@ -111,7 +113,7 @@ class Type
 	/**
 	 * Method to check if a variable is an integer or a float
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is neither an integer nor a float
 	 *
@@ -132,7 +134,7 @@ class Type
 	/**
 	 * Method to check if a variable is an integer, float or numeric string
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not numeric
 	 *
@@ -153,7 +155,7 @@ class Type
 	/**
 	 * Method to check if a variable is an array
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not an array
 	 *
@@ -174,7 +176,7 @@ class Type
 	/**
 	 * Method to check if a variable is a boolean
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not a boolean
 	 *
@@ -196,7 +198,7 @@ class Type
 	 * Method to check if a variable is an instance of a specific class
 	 * The variable can be checked against a class name, or an instance of the class itself
 	 *
-	 * @param $var                          Data being checked
+	 * @param mixed $var                    Data being checked
 	 * @param object|string $className      Name or instance of class $var is being checked against
 	 * @param string $varName               Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception                   Throws exception if $var is not an instance of $className
@@ -224,7 +226,7 @@ class Type
 	/**
 	 * Method to check if a variable is an object of any kind
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not an object
 	 *
@@ -245,7 +247,7 @@ class Type
 	/**
 	 * Method to check if a variable is null
 	 *
-	 * @param $var              Data being checked
+	 * @param mixed $var        Data being checked
 	 * @param string $varName   Variable name as it will appear in error message, defaults to '$var'
 	 * @throws \Exception       Throws exception if $var is not null
 	 *

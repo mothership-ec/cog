@@ -8,8 +8,12 @@ use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Text rule
+ * @package Message\Cog\Validation\Rule
  *
  * Validating text inputs
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Text implements CollectionInterface
 {

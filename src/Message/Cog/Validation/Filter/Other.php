@@ -8,8 +8,12 @@ use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Other filter
+ * @package Message\Cog\Validation\Filter
  *
  * Parse variables through callables such as native PHP functions
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Other implements CollectionInterface
 {

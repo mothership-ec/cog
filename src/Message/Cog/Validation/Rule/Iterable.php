@@ -8,8 +8,12 @@ use Message\Cog\Validation\Loader;
 
 /**
  * Iterable rule
+ * @package Message\Cog\Validation\Rule
  *
  * Class for looping through values for validation
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Iterable implements CollectionInterface
 {

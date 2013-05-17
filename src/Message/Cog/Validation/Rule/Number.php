@@ -8,8 +8,12 @@ use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Number rule
+ * @package Message\Cog\Validation\Rule
  *
  * Validating numeric values
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Number implements CollectionInterface
 {

@@ -23,22 +23,26 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 
 	public function testIntegerFromFloatRoundUp()
 	{
-		$this->assertEquals(1, $this->_filter->integer(0.76677));
-		$this->assertEquals(2, $this->_filter->integer(1.9999));
+		$this->assertSame(1, $this->_filter->integer(0.76677));
+		$this->assertSame(2, $this->_filter->integer(1.9999));
 	}
 
 	public function testIntegerFromFloatRoundDown()
 	{
 		$this->assertSame(0, $this->_filter->integer(0.32233));
+		$this->assertSame(1, $this->_filter->integer(1.39973));
 	}
 
 	public function testIntegerFromFloatForceRoundUp()
 	{
+		$this->assertSame(0, $this->_filter->integer(-1.3, 'up'));
 		$this->assertSame(1, $this->_filter->integer(0.32233, 'up'));
+		$this->assertSame(2, $this->_filter->integer(1.00003, 'up'));
 	}
 
 	public function testIntegerFromFloatForceRoundDown()
 	{
+		$this->assertSame(0, $this->_filter->integer(0.76677, 'down'));
 		$this->assertSame(0, $this->_filter->integer(0.76677, 'down'));
 	}
 
@@ -121,6 +125,22 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(new \Datetime('10-10-1985'), $this->_filter->date('10-10-1985'));
 	}
 
+	public function testDateWithArray()
+	{
+		$date = array(
+			'year' => 1986,
+			'month' => 3,
+			'day' => 31,
+			'hour' => 8,
+			'minute' => 35,
+			'second' => 14
+		);
+
+		$dateTime = $this->_filter->date($date);
+
+		$this->assertEquals(new \DateTime('1986-03-31 08:35:14'), $dateTime);
+	}
+
 	public function testDateWithArrayDateOnly()
 	{
 		$date = array(
@@ -147,6 +167,9 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals(new \DateTime('1970-01-01 12:51:34'), $dateTime);
 	}
 
+	/**
+	 * Test exception is thrown
+	 */
 	public function testDateWithArrayInvalid()
 	{
 		try {

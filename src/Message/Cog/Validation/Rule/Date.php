@@ -7,8 +7,12 @@ use Message\Cog\Validation\Loader;
 
 /**
  * Date rule
+ * @package Message\Cog\Validation\Rule
  *
  * Class used to validating and comparing dates.
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Date implements CollectionInterface
 {

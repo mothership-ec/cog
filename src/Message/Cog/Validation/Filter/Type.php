@@ -8,8 +8,12 @@ use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Type filters.
+ * @package Message\Cog\Validation\Filter
  *
  * Casts fields to specific data types.
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Type implements CollectionInterface
 {

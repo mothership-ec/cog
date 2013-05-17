@@ -6,9 +6,13 @@ use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
 
 /**
- *  Other rule
+ * Other rule
+ * @package Message\Cog\Validation\Rule
  *
- *  Can use callables such as native PHP functions to validate inputs
+ * Can use callables such as native PHP functions to validate inputs
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Other implements CollectionInterface
 {

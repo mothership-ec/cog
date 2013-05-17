@@ -3,8 +3,14 @@
 namespace Message\Cog\Validation;
 
 /**
-* Messages
-*/
+ * Messages
+ * @package Message\Cog\Validation
+ *
+ * Stores and manages error messages for validation
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
+ */
 class Messages
 {
 	protected $_defaults = array();
@@ -47,6 +53,7 @@ class Messages
 	 *
 	 * @param string $ruleName      The rule whom the error message belongs to
 	 * @param string $message       The error message to set
+	 *
 	 * @return Messages             Returns $this for chainability
 	 */
 	public function setDefaultErrorMessage($ruleName, $message)
@@ -61,6 +68,7 @@ class Messages
 	 *
 	 * @param string $field     Field to add error message to
 	 * @param string $rule      Rule to pull error message from
+	 *
 	 * @return Messages         Returns self for chainability
 	 */
 	public function addFromRule($field, $rule)

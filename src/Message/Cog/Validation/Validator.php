@@ -3,7 +3,13 @@
 namespace Message\Cog\Validation;
 
 /**
+ * Validator
+ * @package Message\Cog\Validation
+ *
  * A wrapper around Respect\Validation which makes using it easier
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Validator
 {
@@ -22,34 +28,39 @@ class Validator
 	 */
 	protected $_messages;
 
+	/**
+	 * Register rules and pull Messages instance from newly created Loader instance
+	 */
 	public function __construct()
 	{
-		$this->_messages = new Messages;
-		$this->_loadRules();
+		$this->_loadCollections();
+		$this->_messages = $this->_loader->getMessages();
 	}
 
 	/**
 	 * Configures Loader class
 	 *
-	 * @return $this
+	 * @return Validator        Returns $this for chainability
 	 */
-	protected function _loadRules()
+	protected function _loadCollections()
 	{
-		$this->_loader = new Loader($this->_messages, array(
-			'Message\\Cog\\Validation\\Rule\\Date',
-			'Message\\Cog\\Validation\\Rule\\Number',
-			'Message\\Cog\\Validation\\Rule\\Iterable',
-			'Message\\Cog\\Validation\\Rule\\Text',
-			'Message\\Cog\\Validation\\Rule\\Other',
-			'Message\\Cog\\Validation\\Filter\\Text',
-			'Message\\Cog\\Validation\\Filter\\Type',
-			'Message\\Cog\\Validation\\Filter\\Other',
+		$this->_loader = new Loader(array(
+			new Rule\Date,
+			new Rule\Number,
+			new Rule\Iterable,
+			new Rule\Text,
+			new Rule\Other,
+			new Filter\Text,
+			new Filter\Type,
+			new Filter\Other,
 		));
 
 		return $this;
 	}
 
 	/**
+	 * Get assigned loader class
+	 *
 	 * @return Loader
 	 */
 	public function getLoader()
@@ -60,7 +71,7 @@ class Validator
 	/**
 	 * Get data that has been submitted
 	 *
-	 * @return array
+	 * @return array        Returns data
 	 */
 	public function getData()
 	{
@@ -70,7 +81,7 @@ class Validator
 	/**
 	 * Get fields for data to be passed to
 	 *
-	 * @return array
+	 * @return array        Returns fields for validation
 	 */
 	public function getFields()
 	{
@@ -97,8 +108,11 @@ class Validator
 	}
 
 	/**
-	 * @param string $message
-	 * @return $this
+	 * Method used to create custom error messages
+	 *
+	 * @param string $message       Error message to display
+	 *
+	 * @return Validator            Returns $this for chainability
 	 */
 	public function error($message)
 	{
@@ -110,7 +124,7 @@ class Validator
 	/**
 	 * Determine that a field is optional
 	 *
-	 * @return $this
+	 * @return Validator            Returns $this for chainability
 	 */
 	public function optional()
 	{
@@ -121,12 +135,12 @@ class Validator
 
 	/**
 	 * Runs through assigned rules and filters for validation
-	 * @todo work on making this process simpler
+	 * @todo see if we can make this process simpler
 	 *
-	 * @param $methodName
-	 * @param $args
-	 * @return $this
-	 * @throws \Exception
+	 * @param $methodName       Rule or filter to be called. The result can be inverted by prepending it with 'not'
+	 * @param $args             Arguments for rule or filter
+	 *
+	 * @return Validator        Returns $this for chainability
 	 */
 	public function __call($methodName, $args)
 	{
@@ -146,9 +160,12 @@ class Validator
 	/**
 	 * Determines order in which filters should be applied.
 	 *
-	 * @param string $methodName
-	 * @return array - returns two variables in an array, use list() to make result more manageable
-	 *      $filterPrecendence is passed to the _setPointers() method to determine when a filter should be applied
+	 * @param string $methodName        Filter name. If the $methodName ends with 'After' or 'Before', it will
+	 *                                  ensure that the filter will be applied after/before validation
+	 *
+	 * @return array                    Returns two variables in an array, use list() to make result more manageable
+	 *                                  $precendence is passed to the _setPointers()method to determine when
+	 *                                  a filter should be applied
 	 */
 	protected function _beforeOrAfter($methodName)
 	{
@@ -166,12 +183,15 @@ class Validator
 	}
 
 	/**
-	 * @param string $methodName
-	 * @param string $precendence - Filter precendence i.e. pre or post
-	 * @param array $args
-	 * @param bool $invertResult - has 'not' been set on the rule?
-	 * @return $this
-	 * @throws \Exception
+	 * Method to arrange rules and filters into the correct sets and order
+	 *
+	 * @param string $methodName    Name of method to have pointer set
+	 * @param string $precendence   Filter precendence i.e. pre or post
+	 * @param array $args           Arguments to be passed to $methodName
+	 * @param bool $invertResult    Has 'not' been set on the rule?
+	 * @throws \Exception           Throws exception of the $methodName does not exist
+	 *
+	 * @return Validation           Returns $this for chainability
 	 */
 	protected function _setPointers($methodName, $precendence, array $args, $invertResult)
 	{
@@ -192,13 +212,18 @@ class Validator
 	}
 
 	/**
-	 * @param array $data
-	 * @return bool
+	 * Method to actually validate the data
+	 *
+	 * @param array $data       Data to be validated
+	 *
+	 * @return bool             Returns true if the data is valid
 	 */
 	public function validate(array $data)
 	{
 		$this->_data = $data;
 		$this->_messages->clear();
+
+		// Run 'pre' filters first, then validate the data, then run the 'post' filters
 		$this->_applyFilters('pre')
 			->_applyRules()
 			->_applyFilters('post')
@@ -208,6 +233,8 @@ class Validator
 	}
 
 	/**
+	 * Returns any error messages that are generated
+	 *
 	 * @return array
 	 */
 	public function getMessages()
@@ -216,14 +243,16 @@ class Validator
 	}
 
 	/**
-	 * @return $this
+	 * Removes any data that is not validated/necessary
+	 *
+	 * @return Validator        Returns $this for chainability
 	 */
 	protected function _cleanData()
 	{
 		$data = array();
 
-		foreach($this->_data as $key => $value) {
-			if(isset($this->_fields[$key])) {
+		foreach ($this->_data as $key => $value) {
+			if (isset($this->_fields[$key])) {
 				$data[$key] = $value;
 			}
 		}
@@ -234,11 +263,18 @@ class Validator
 	}
 
 	/**
-	 * @param $type
-	 * @return $this
+	 * Parse data through filters
+	 *
+	 * @param string $type      'Pre' or 'post' validation - Determines which set of data should be validated
+	 * @throws \Exception       Throws exception if $type is not set to 'pre' or 'post'
+	 *
+	 * @return Validator        Returns $this for chainability
 	 */
 	protected function _applyFilters($type)
 	{
+		if (($type !== 'pre') && ($type !== 'post'))
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $type must be either \'pre\' or \'post\', \'' . $type . '\' given');
+
 		foreach($this->_fields as $name => $field) {
 
 			// Escape if data field doesn't exist
@@ -262,9 +298,9 @@ class Validator
 	}
 
 	/**
-	 * @todo refactor into something less complex and more readable
+	 * Validate data with rules
 	 *
-	 * @return $this
+	 * @return Validator        Returns $this for chainability
 	 */
 	protected function _applyRules()
 	{
@@ -284,9 +320,10 @@ class Validator
 	/**
 	 * Method to check if a field is required and set an error where appropriate
 	 *
-	 * @param $name
-	 * @param $field
-	 * @return $this
+	 * @param string $name          Name of field
+	 * @param array $field          Array of field data and information
+	 *
+	 * @return Validator            Returns $this for chainability
 	 */
 	protected function _setRequiredError($name, $field)
 	{
@@ -301,9 +338,12 @@ class Validator
 	}
 
 	/**
-	 * @param $name
-	 * @param $field
-	 * @return $this
+	 * Method that handles the actual validation, and assigns messages to any fields that do
+	 *
+	 * @param string $name      Name of field
+	 * @param array $field      Array of field information
+	 *
+	 * @return Validator        Returns $this for chainability
 	 */
 	protected function _setMessages($name, $field)
 	{
@@ -326,9 +366,13 @@ class Validator
 	}
 
 	/**
-	 * @param $name
-	 * @param bool $readableName
-	 * @return $this
+	 * Add a new field to be validated
+	 *
+	 * @param $name                     Name of new field
+	 * @param bool $readableName        Readable name for field. If set to false, method will create a name based on
+	 *                                  $name
+	 *
+	 * @return Validator                Returns $this for chainability
 	 */
 	protected function _createField($name, $readableName = false)
 	{
