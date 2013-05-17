@@ -6,18 +6,29 @@ use Message\Cog\DB;
 
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
-	
+	protected function setUp()
+	{
+		if(!$this->isOnOfficeNetwork()) {
+			$this->markTestSkipped(
+				'Must be in the Message office to test MySQLi Adapter'
+			);
+		}
+	}
+
 	public function testCanConnect()
 	{
 		$connection = new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-			'host'     => '127.0.0.1',
-			'user'     => 'root',
+			'host'     => '192.168.201.99',
+			'user'     => 'joe',
 			'password' => 'cheese',
-			'db'	   => 'classicmodels',
+			'db'	   => 'message',
 			'lazy'	   => false,
 		));
 	}
 
+	/**
+	* @expectedException PHPUnit_Framework_Error
+	*/
 	public function testCannotConnect()
 	{
 		$connection = new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
@@ -27,14 +38,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 			'db'	   => 'thisdbdoesntexist',
 			'lazy'	   => false,
 		));
-	}
-
-	public function testQuery()
-	{
-		$connection = $this->_getConnection();
-
-		// Connections are lazy so we need for force it.
-		$connection->query("SELECT * FROM table LIMIT 10");
 	}
 
 	public function testEscape()
@@ -57,15 +60,20 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
 	}
 
-	protected function _getConnection()
+	public function isOnOfficeNetwork()
 	{
-		return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
-			'host'     => '127.0.0.1',
-			'user'     => 'root',
-			'password' => 'cheese',
-			'db'	   => 'classicmodels',
-		));
+		// For the moment dont run these tests
+		return false;
 
+		static $result;
+
+		if(!isset($result)) {
+			$output = shell_exec('ping -c1 -t1 192.168.201.99');
+
+			$result =  strpos($output, ' 0.0% packet loss') !== false;	
+		}
+		
+		return $result;
 	}
 
 }

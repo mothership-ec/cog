@@ -5,6 +5,7 @@ namespace Message\Cog\Application\Bootstrap;
 use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Cog\Application\Environment;
 use Message\Cog\Routing\RouteCollection;
+use Message\Cog\DB;
 
 /**
  * Cog services bootstrap.
@@ -32,6 +33,29 @@ class Services implements ServicesInterface
 		};
 		$serviceContainer['env'] = function($c) {
 			return $c['environment']->get();
+		};
+
+		$serviceContainer['db.connection'] = $serviceContainer->share(function($s) {
+			return new DB\MySQLi\Connection(array(
+				'host'		=> $services['cfg']->db->hostname,
+				'user'		=> $services['cfg']->db->user,
+				'password' 	=> $services['cfg']->db->pass,
+				'db'		=> $services['cfg']->db->name,
+				'charset'	=> $services['cfg']->db->charset,
+			));
+		});
+
+		$serviceContainer['db.query'] = function($s) {
+			return new DB\Query($s['db.connection']);
+		};
+
+		// shortcut for easier access
+		$serviceContainer['db'] = function($s) {
+			return $s['db.query'];
+		};
+
+		$serviceContainer['db.transaction'] = function($s) {
+			return new DB\Transaction($s['db.connection']);
 		};
 
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {

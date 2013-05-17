@@ -43,9 +43,10 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
 	public function testArrayIsset()
 	{
+		
 		$result = $this->getQuery()->run("SELECT * FROM staff");
 		$this->assertTrue(isset($result[2]));
-		$this->assertFalse(isset($result[20839587]));
+		$this->assertFalse(isset($result[5]));
 	}
 
 	public function testArrayCount()

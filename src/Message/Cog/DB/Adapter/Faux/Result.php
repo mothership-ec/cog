@@ -43,7 +43,7 @@ class Result implements ResultInterface
 	{
 		// Move the pointer back to the start
 		reset($this->_data);
-
+		
 		// Move it forward $position number of places
 		for($i = 0; $i < $position; $i++) {
 			next($this->_data);
