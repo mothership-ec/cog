@@ -105,6 +105,10 @@ class Services implements ServicesInterface
 			return new \Symfony\Component\HttpFoundation\Session\Session;
 		});
 
+		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
+			return new \Message\Cog\HTTP\CookieCollection;
+		});
+
 		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Controller\ResponseBuilder(
 				$c['templating']
