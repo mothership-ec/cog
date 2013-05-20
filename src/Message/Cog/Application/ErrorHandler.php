@@ -4,7 +4,7 @@ namespace Message\Cog\Application;
 
 
 /**
- * 
+ *
  */
 class ErrorHandler
 {
@@ -30,13 +30,13 @@ class ErrorHandler
 
 		// For fatal errors throw an ErrorException
 		if(in_array($errno, array(E_USER_ERROR, E_RECOVERABLE_ERROR))) {
-			throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+			throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 		}
 
 		// For  NON-FATAL ERROR/WARNING/NOTICE Log the error if it's enabled, otherwise just ignore it
 		error_log($errstr, 0);
 
 		// Make sure this ends up in $php_errormsg, if appropriate
-		return false; 
+		return false;
 	}
 }
