@@ -4,7 +4,6 @@ namespace Message\Cog\Validation\Filter;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
-use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Type filters.
@@ -243,10 +242,6 @@ class Type implements CollectionInterface
 	 */
 	protected function _getDateFromArray(array $date)
 	{
-		foreach ($date as $value) {
-			CheckType::checkNumeric($value);
-		}
-
 		$parts = array(
 			'year'   => 1970,
 			'month'  => 1,

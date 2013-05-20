@@ -127,17 +127,6 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->fail('Exception not thrown');
 	}
 
-	public function testLengthInvalidMinNonNumeric()
-	{
-		try {
-			$this->_rule->length('red', 'two');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
-	}
-
 	public function testLengthInvalidMaxNonNumeric()
 	{
 		try {
@@ -213,13 +202,7 @@ class TextTest extends \PHPUnit_Framework_TestCase
 
 	public function testEmailNonString()
 	{
-		try {
-			$this->_rule->email(false);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->assertFalse($this->_rule->email(false));
 	}
 
 	public function testUrlTrue()
@@ -236,13 +219,7 @@ class TextTest extends \PHPUnit_Framework_TestCase
 
 	public function testUrlNonString()
 	{
-		try {
-			$this->_rule->url(true);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->assertFalse($this->_rule->url(true));
 	}
 
 	/**

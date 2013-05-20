@@ -4,7 +4,6 @@ namespace Message\Cog\Validation\Filter;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
-use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Text filters.
@@ -51,8 +50,6 @@ class Text implements CollectionInterface
 	 */
 	public function uppercase($text)
 	{
-		CheckType::checkString($text, '$text');
-
 		return strtoupper($text);
 	}
 
@@ -65,8 +62,6 @@ class Text implements CollectionInterface
 	 */
 	public function lowercase($text)
 	{
-		CheckType::checkString($text, '$text');
-
 		return strtolower($text);
 	}
 
@@ -84,8 +79,6 @@ class Text implements CollectionInterface
 	 */
 	public function titlecase($text, $maintainCase = false)
 	{
-		CheckType::checkString($text, '$text');
-
 		if(!$maintainCase){
 			$text = strtolower($text);
 		}
@@ -131,10 +124,6 @@ class Text implements CollectionInterface
 	 */
 	public function prefix($text, $prefix, $delim = '')
 	{
-		CheckType::checkStringOrNumeric($text, '$text');
-		CheckType::checkStringOrNumeric($delim, '$delim');
-		CheckType::checkStringOrNumeric($prefix, '$prefix');
-
 		return $prefix . $delim . $text;
 	}
 
@@ -150,10 +139,6 @@ class Text implements CollectionInterface
 	 */
 	public function suffix($text, $suffix, $delim = '')
 	{
-		CheckType::checkStringOrNumeric($text, '$text');
-		CheckType::checkStringOrNumeric($delim, '$delim');
-		CheckType::checkStringOrNumeric($suffix, '$suffix');
-
 		return $text . $delim . $suffix;
 	}
 
@@ -167,13 +152,9 @@ class Text implements CollectionInterface
 	 */
 	public function trim($text, $chars = null)
 	{
-		CheckType::checkString($text, '$text');
-
 		if (!$chars) {
 			return trim($text);
 		}
-
-		CheckType::checkString($chars, '$chars');
 
 		return trim($text, $chars);
 	}
@@ -188,13 +169,9 @@ class Text implements CollectionInterface
 	 */
 	public function rtrim($text, $chars = null)
 	{
-		CheckType::checkString($text, '$text');
-
 		if (!$chars) {
 			return rtrim($text);
 		}
-
-		CheckType::checkString($chars, '$chars');
 
 		return rtrim($text, $chars);
 	}
@@ -209,13 +186,9 @@ class Text implements CollectionInterface
 	 */
 	public function ltrim($text, $chars = null)
 	{
-		CheckType::checkString($text, '$text');
-
 		if (!$chars) {
 			return ltrim($text);
 		}
-
-		CheckType::checkString($chars, '$chars');
 
 		return ltrim($text, $chars);
 	}
@@ -230,8 +203,6 @@ class Text implements CollectionInterface
 	 */
 	public function capitalize($text, $maintainCase = false)
 	{
-		CheckType::checkString($text, '$text');
-
 		if (!$maintainCase) {
 			$text = strtolower($text);
 		}
@@ -256,10 +227,6 @@ class Text implements CollectionInterface
 	 */
 	public function replace($text, $search, $replace)
 	{
-		CheckType::checkStringOrNumeric($text, '$text');
-		CheckType::checkStringOrNumeric($search, '$search');
-		CheckType::checkStringOrNumeric($replace, '$replace');
-
 		return str_replace($search, $replace, $text);
 	}
 
@@ -278,9 +245,6 @@ class Text implements CollectionInterface
 	 */
 	public function toUrl($url, $protocol = 'http', $replaceExisting = false)
 	{
-		CheckType::checkString($url, '$url');
-		CheckType::checkString($protocol, '$protocol');
-
 		$pattern = "~^(?:f|ht)tps?://~i";
 
 		$protocol = str_replace('://', '', $protocol);
@@ -306,8 +270,6 @@ class Text implements CollectionInterface
 	 */
 	public function slug($text)
 	{
-		CheckType::checkStringOrNumeric($text);
-
 		$text = preg_replace('~[^\\pL\d]+~u', '-', $text);
 		$text = trim($text, '-');
 		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);

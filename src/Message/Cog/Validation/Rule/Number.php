@@ -4,7 +4,6 @@ namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
-use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Number rule
@@ -36,13 +35,15 @@ class Number implements CollectionInterface
 	 *
 	 * @param int|float|string $var     The variable to validate
 	 * @param int|float|string $min     The minimum that $var can be
+	 * @throws \Exception               Throws exception if $min is not numeric
 	 *
 	 * @return bool                     Returns true if $var is greater than or equal to $min
 	 */
 	public function min($var, $min)
 	{
-		CheckType::checkNumeric($var, '$var');
-		CheckType::checkNumeric($min, '$min');
+		if (!is_numeric($min)) {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $min must be numeric');
+		}
 
 		return $var >= $min;
 	}
@@ -52,13 +53,15 @@ class Number implements CollectionInterface
 	 *
 	 * @param int|float|string $var     The variable to validate
 	 * @param int"float|string $max     The minimum that $var can be
+	 * @throws \Exception               Throws exception is $max is not numeric
 	 *
 	 * @return bool                     Returns true if $var is less than or equal to $max
 	 */
 	public function max($var, $max)
 	{
-		CheckType::checkNumeric($var, '$var');
-		CheckType::checkNumeric($max, '$max');
+		if (!is_numeric($max)) {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be numeric');
+		}
 
 		return $var <= $max;
 	}
@@ -69,17 +72,17 @@ class Number implements CollectionInterface
 	 * @param int|float|string $var     The variable to validate
 	 * @param int|float|string $min     The minimum that $var can be
 	 * @param int|float|string $max     The maximum that $var can be
+	 * @throws \Exception               Throws exception if $min or $max aren't numeric
 	 * @throws \Exception               Throws exception if $min is greater than $max
 	 *
 	 * @return bool                     Returns true if $var falls between $min and $max
 	 */
 	public function between($var, $min, $max)
 	{
-		CheckType::checkNumeric($var, '$var');
-		CheckType::checkNumeric($min, '$min');
-		CheckType::checkNumeric($max, '$max');
-
-		if ($min >= $max) {
+		if ((!is_numeric($min)) || (!is_numeric($max))) {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $min and $max must both be numeric');
+		}
+		elseif ($min >= $max) {
 			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be greater than $min');
 		}
 

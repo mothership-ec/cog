@@ -36,7 +36,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 	public function testMinNonNumeric()
 	{
 		try {
-			$this->_rule->min(true, false);
+			$this->_rule->min(1, false);
 		}
 		catch (\Exception $e) {
 			return;
@@ -62,7 +62,7 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 	public function testMaxNonNumeric()
 	{
 		try {
-			$this->_rule->max(true, false);
+			$this->_rule->max(1, false);
 		}
 		catch (\Exception $e) {
 			return;

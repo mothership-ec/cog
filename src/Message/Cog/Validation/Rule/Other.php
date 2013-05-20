@@ -29,12 +29,19 @@ class Other implements CollectionInterface
 	}
 
 	/**
-	 * @param string $var       The variable to validate
+	 * @param mixed $var        The variable to validate
 	 * @param string $func      A callable function to use to validate $var
+	 * @throws \Exception       Throws exception if $func is not callable
+	 *
 	 * @return mixed
 	 */
 	public function rule($var, $func)
 	{
-		return $func($var);
+		if (is_callable($func)) {
+			return call_user_func($func, $var);
+		}
+		else {
+			throw new \Exception (__CLASS__ . '::' . __METHOD__ . ' - $func must be callable');
+		}
 	}
 }

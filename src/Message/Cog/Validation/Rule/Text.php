@@ -4,7 +4,6 @@ namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
-use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Text rule
@@ -85,16 +84,12 @@ class Text implements CollectionInterface
 	{
 		$len = strlen($var);
 
-		CheckType::checkNumeric($min, '$min');
-
 		// Overloaded option if one param is specified, checks exact length
 		if ($max === null) {
 			return $len === $min;
 		} elseif ($min >= $max) {
 			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be greater than $min');
 		}
-
-		CheckType::checkNumeric($max, '$max');
 
 		return ($len >= $min && $len <= $max);
 	}
@@ -104,13 +99,15 @@ class Text implements CollectionInterface
 	 *
 	 * @param string $var       The variable to validate
 	 * @param int|string $min   The minimum length that $var can be
+	 * @throws \Exception       Throws exception if $min is not numeric
 	 *
 	 * @return bool             Returns true if $var is longer than $min
 	 */
 	public function minLength($var, $min)
 	{
-		CheckType::checkNumeric($min, '$min');
-
+		if (!is_numeric($min)) {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $min must be numeric');
+		}
 		$len = strlen($var);
 
 		return $len >= $min;
@@ -121,13 +118,15 @@ class Text implements CollectionInterface
 	 *
 	 * @param string $var       The variable to validate
 	 * @param int|string $max   The maximum length that $var can be
+	 * @throws \Exception       Throws exception if $max is not numeric
 	 *
 	 * @return bool             Returns true if $var is shorter than $min
 	 */
 	public function maxLength($var, $max)
 	{
-		CheckType::checkNumeric($max, '$max');
-
+		if (!is_numeric($max)) {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be numeric');
+		}
 		$len = strlen($var);
 
 		return $len <= $max;
@@ -142,8 +141,6 @@ class Text implements CollectionInterface
 	 */
 	public function email($var)
 	{
-		CheckType::checkString($var);
-
 		return (bool) filter_var($var, \FILTER_VALIDATE_EMAIL);
 	}
 
@@ -156,8 +153,6 @@ class Text implements CollectionInterface
 	 */
 	public function url($var)
 	{
-		CheckType::checkString($var);
-
 		return (bool) filter_var($var, \FILTER_VALIDATE_URL);
 	}
 
@@ -171,9 +166,6 @@ class Text implements CollectionInterface
 	 */
 	public function match($var, $pattern)
 	{
-		CheckType::checkString($var);
-		CheckType::checkString($pattern, '$pattern');
-
 		return (bool) preg_match($pattern, $var);
 	}
 

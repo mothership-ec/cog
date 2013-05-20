@@ -4,7 +4,6 @@ namespace Message\Cog\Validation\Filter;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
-use Message\Cog\Validation\Check\Type as CheckType;
 
 /**
  * Other filter
@@ -30,14 +29,19 @@ class Other implements CollectionInterface
 	}
 
 	/**
-	 * @param $var          Variable to be filtered
+	 * @param mixed $var    Variable to be filtered
 	 * @param string $func  Function used to filter $var
+	 * @throws \Exception   Throws exception is $func is not callable
 	 *
 	 * @return mixed
 	 */
 	public function filter($var, $func)
 	{
-		CheckType::checkString($func);
-		return $func($var);
+		if (is_callable($func)) {
+			return call_user_func($func, $var);
+		}
+		else {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $func must be callable');
+		}
 	}
 }
