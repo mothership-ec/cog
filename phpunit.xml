@@ -37,6 +37,9 @@
 		<testsuite name="Event">
 			<directory>./tests/Message/Cog/Test/Event/</directory>
 		</testsuite>
+		<testsuite name="Form">
+			<directory>./tests/Message/Cog/Test/Form/</directory>
+		</testsuite>
 		<testsuite name="Functions">
 			<directory>./tests/Message/Cog/Test/Functions/</directory>
 		</testsuite>

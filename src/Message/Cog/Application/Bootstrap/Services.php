@@ -186,5 +186,38 @@ class Services implements ServicesInterface
 		$serviceContainer['app.context.console'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Application\Context\Console($c);
 		});
+
+		// Forms
+		$serviceContainer['form'] = function($c) {
+			return new \Message\Cog\Form\Form($c['form.config']);
+		};
+
+		$serviceContainer['form.config'] = function($c) {
+			return new \Message\Cog\Form\ConfigBuilder(
+				'formName',
+				'\Message\Cog\Form\Data',
+				$c['event.dispatcher']
+			);
+		};
+
+		$serviceContainer['form.data'] = function($c) {
+			return new \Message\Cog\Form\Data;
+		};
+
+		$serviceContainer['form.builder'] = function($c) {
+			return new \Message\Cog\Form\Builder(
+				'formName',
+				'\Message\Cog\Form\Data',
+				$c['event.dispatcher'],
+				new \Symfony\Component\Form\FormFactory(
+					new \Symfony\Component\Form\FormRegistry(
+						array(), // form extensions. We are using our own validator and templating but there may be
+								 // stuff worth adding!
+						new \Symfony\Component\Form\ResolvedFormTypeFactory()
+					),
+					new \Symfony\Component\Form\ResolvedFormTypeFactory()
+				)
+			);
+		};
 	}
 }
