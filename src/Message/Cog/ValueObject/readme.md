@@ -58,7 +58,7 @@ It is possible to remove the "deleted" metadata by calling the `restore` method.
 ## DateRange
 
 This class is used to work out whether a given date falls between a given date range. The class also has methods to work out the interval between the start and end periods.
-At least one date must be passed through when initiating the class like so:
+At least one date must be passed through when instantiating the class like so:
 
 ```
 $from = new DateTime('-1 hour');
