@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Filesystem;
 
-interface WrapperInterface 
+interface StreamWrapperInterface 
 { 
     public function __construct(); 
     public function dir_closedir(); 
