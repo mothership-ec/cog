@@ -23,18 +23,18 @@ class Slug implements \IteratorAggregate, \Countable
 			$segments = explode('/', $segments);
 		}
 
-		$this->_segments = $segments;
+		$this->_segments = array_values(array_filter($segments)); // reset numeric indices
 	}
 
 	/**
 	 * Get the full slug as a string, with a forward slash separating each
-	 * segment.
+	 * segment, prepended with a forward slash.
 	 *
 	 * @return string The full slug as a string
 	 */
 	public function getFull()
 	{
-		return implode('/', $this->_segments);
+		return '/' . implode('/', $this->_segments);
 	}
 
 	/**

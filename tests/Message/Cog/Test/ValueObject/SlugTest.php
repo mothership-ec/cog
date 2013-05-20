@@ -34,7 +34,7 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 			'deals',
 			'old-hat',
 		);
-		$full = 'products/hats-and-shoes/deals/old-hat';
+		$full = '/products/hats-and-shoes/deals/old-hat';
 		$slug = new Slug($segments);
 
 		$this->assertEquals($full, $slug->getFull());
@@ -52,7 +52,7 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 			'the',
 			'website',
 		);
-		$fullSlug = 'secret/place/in/the/website';
+		$fullSlug = '/secret/place/in/the/website';
 		$slug     = new Slug($fullSlug);
 
 		$this->assertEquals(count($segments), count($slug));
@@ -60,5 +60,17 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 		foreach ($slug as $key => $segment) {
 			$this->assertEquals($segments[$key], $segment);
 		}
+	}
+
+	public function testNormalisation()
+	{
+		$slugs = array(
+			new Slug('/path/to/thing/'),
+			new Slug('path/to/thing'),
+			new Slug(array('path', 'to', 'thing')),
+			new Slug('/path/to/thing'),
+		);
+
+		$this->assertEquals(1, count(array_unique($slugs, SORT_REGULAR)));
 	}
 }
