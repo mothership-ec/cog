@@ -12,6 +12,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected $_loader;
 
+	protected $_messages;
 	/**
 	 * @var DummyCollection
 	 */
@@ -19,8 +20,9 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_loader = new Loader;
+		$this->_messages = $this->getMock('\Message\Cog\Validation\Messages');
 		$this->_collection = new DummyCollection;
+		$this->_loader = new Loader($this->_messages, array());
 	}
 
 	public function testRegisterClasses()
@@ -101,11 +103,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$messages = new Messages;
 		$this->_loader->setMessages($messages);
 		$this->assertSame($messages, $this->_loader->getMessages());
-	}
-
-	public function testGetMessagesNoneSet()
-	{
-		$this->assertEquals(new Messages, $this->_loader->getMessages());
 	}
 
 	/**

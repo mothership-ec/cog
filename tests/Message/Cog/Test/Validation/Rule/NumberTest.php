@@ -3,19 +3,25 @@
 namespace Message\Cog\Test\Validation\Rule;
 
 use Message\Cog\Validation\Rule\Number;
+use Message\Cog\Validation\Loader;
 
 class NumberTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Number
+	 */
 	protected $_rule;
+
+	protected $_messages;
+	protected $_loader;
 
 	public function setUp()
 	{
 		$this->_rule = new Number;
-	}
 
-	public function testRegister()
-	{
+		$this->_messages = $this->getMock('\Message\Cog\Validation\Messages');
 
+		$this->_loader = new Loader($this->_messages, array($this->_rule));
 	}
 
 	public function testMinTrue()

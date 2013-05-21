@@ -3,6 +3,7 @@
 namespace Message\Cog\Test\Validation\Rule;
 
 use Message\Cog\Validation\Rule\Other;
+use Message\Cog\Validation\Loader;
 
 class OtherTest extends \PHPUnit_Framework_TestCase
 {
@@ -12,50 +13,39 @@ class OtherTest extends \PHPUnit_Framework_TestCase
 	protected $_rule;
 
 	protected $_loader;
-
 	protected $_messages;
-
 	protected $_validator;
 
 	public function setUp()
 	{
 		$this->_rule = new Other;
 
-		$this->_validator = $this->getMockBuilder('\Message\Cog\Validation\Validator')
-			->setMethods(array('getData'))
-			->getMock();
+		$this->_messages = $this->getMock('\Message\Cog\Validation\Messages');
 
-		$this->_messages = $this->getMockBuilder('\Message\Cog\Validation\Messages')
-			->getMock();
+		$this->_loader = new Loader($this->_messages, array($this->_rule));
 
-		$this->_loader = $this->getMockBuilder('\Message\Cog\Validation\Loader')
-			->getMock();
-	}
-
-	public function testRegister()
-	{
-		$this->_rule->register($this->_loader);
+		$this->_validator = $this->getMock('\Message\Cog\Validation\Validator', array(), array($this->_loader));
 	}
 
 	public function testRuleWithNativeFunctions()
 	{
-//		$this->_rule->rule(true, 'is_bool');
-//		$this->_rule->rule('string', 'is_numeric');
-//
-//		$this->_validator->expects($this->atLeastOnce())
-//			->method('getData');
+		$true = $this->_rule->rule(true, 'is_bool');
+		$false = $this->_rule->rule('string', 'is_numeric');
+
+		$this->assertTrue($true);
+		$this->assertFalse($false);
 	}
 
-	public function testRuleWithNonString()
+	public function testRuleWithNonCallable()
 	{
-//		try {
-//			$this->assertTrue($this->_rule->rule('var', array()));
-//			$this->_validator->expects($this->atLeastOnce())
-//				->method('getData');
-//		}
-//		catch (\Exception $e) {
-//			return;
-//		}
-//		$this->fail('Exception not thrown');
+		try {
+			$this->assertTrue($this->_rule->rule('var', array()));
+			$this->_validator->expects($this->atLeastOnce())
+				->method('getData');
+		}
+		catch (\Exception $e) {
+			return;
+		}
+		$this->fail('Exception not thrown');
 	}
 }

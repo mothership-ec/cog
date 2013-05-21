@@ -3,6 +3,7 @@
 namespace Message\Cog\Test\Validation\Rule;
 
 use Message\Cog\Validation\Rule\Text;
+use Message\Cog\Validation\Loader;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,9 +12,16 @@ class TextTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected $_rule;
 
+	protected $_messages;
+	protected $_loader;
+
 	public function setUp()
 	{
 		$this->_rule = new Text;
+
+		$this->_messages = $this->getMock('\Message\Cog\Validation\Messages');
+
+		$this->_loader = new Loader($this->_messages, array($this->_rule));
 	}
 
 	public function testAlnumAllNumbers()

@@ -31,31 +31,10 @@ class Validator
 	/**
 	 * Register rules and pull Messages instance from newly created Loader instance
 	 */
-	public function __construct()
+	public function __construct(Loader $loader)
 	{
-		$this->_loadCollections();
+		$this->_loader = $loader;
 		$this->_messages = $this->_loader->getMessages();
-	}
-
-	/**
-	 * Configures Loader class
-	 *
-	 * @return Validator        Returns $this for chainability
-	 */
-	protected function _loadCollections()
-	{
-		$this->_loader = new Loader(array(
-			new Rule\Date,
-			new Rule\Number,
-			new Rule\Iterable,
-			new Rule\Text,
-			new Rule\Other,
-			new Filter\Text,
-			new Filter\Type,
-			new Filter\Other,
-		));
-
-		return $this;
 	}
 
 	/**

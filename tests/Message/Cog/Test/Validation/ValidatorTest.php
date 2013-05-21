@@ -3,14 +3,31 @@
 namespace Message\Cog\Test\Validation;
 
 use Message\Cog\Validation\Validator;
+use Message\Cog\Validation\Messages;
+use Message\Cog\Validation\Loader;
+use Message\Cog\Validation\Filter\Other as OtherFilter;
+use Message\Cog\Validation\Rule\Other as OtherRule;
+use Message\Cog\Test\Validation\DummyCollection;
 
 class ValidatorTest extends \PHPUnit_Framework_TestCase
 {
+	protected $_messages;
 	protected $_validator;
+	protected $_loader;
 
 	public function setUp()
 	{
-		$this->_validator = new Validator;
+		$this->_messages = new Messages;
+
+		$this->_loader = new Loader(
+			$this->_messages, array(
+				new DummyCollection,
+				new OtherFilter,
+				new OtherRule
+			));
+
+
+		$this->_validator = new Validator($this->_loader);
 	}
 
 	/**
@@ -18,20 +35,19 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	 * - non alpha numeric characters in first_name
 	 * - last_name is a required field
 	 */
-	public function testGetMessages()
+	public function testOptional()
 	{
 		$this->_validator
 			->field('last_name') 
 			->field('first_name')
 				->optional()
-				->alnum()
 		;
 
 		$this->_validator->validate(array(
 			'first_name' => 'assd64add]asd',
 		));
 
-		$this->assertEquals(2, count($this->_validator->getMessages()));
+		$this->assertEquals(1, count($this->_validator->getMessages()));
 
 	}
 
@@ -73,7 +89,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-				->notAlnum()
+				->notTestRule()
 		;
 
 		$this->_validator->validate(array(
@@ -81,12 +97,6 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		));
 
 		$this->assertEquals(1, count($this->_validator->getMessages()));
-
-		$this->_validator->validate(array(
-			'test' => '@£4'
-		));
-
-		$this->assertEquals(0, count($this->_validator->getMessages()));
 
 	}
 
@@ -99,7 +109,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_validator
 			->field('test')
-				->alnum()
+				->testRule()
 		;
 
 		$this->_validator->validate(array(
@@ -114,18 +124,18 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testBeforeFilter()
 	{
 		$this->_validator
-			->field('test')
-				->toUrlBefore()
-				->url();
+			->field('field')
+				->isTest()
+				->testFilterBefore();
 
 		$this->_validator->validate(
-			array('test' => 'message.co.uk')
+			array('field' => 'lkjaslkdjas')
 		);
 
 		$data = $this->_validator->getData();
 
 		$this->assertEquals(0, count($this->_validator->getMessages()));
-		$this->assertEquals('http://message.co.uk', $data['test']);
+		$this->assertEquals('test', $data['field']);
 	}
 
 	/**
@@ -134,18 +144,18 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testAfterFilter()
 	{
 		$this->_validator
-			->field('test')
-				->toUrlAfter()
-				->url();
+			->field('field')
+				->testFilterAfter()
+				->isTest();
 
 		$this->_validator->validate(
-			array('test' => 'message.co.uk')
+			array('field' => 'message.co.uk')
 		);
 
 		$data = $this->_validator->getData();
 
 		$this->assertEquals(1, count($this->_validator->getMessages()));
-		$this->assertEquals('http://message.co.uk', $data['test']);
+		$this->assertEquals('test', $data['field']);
 	}
 
 	/**
@@ -195,17 +205,17 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testError()
 	{
 		$this->_validator
-			->field('test')
-				->max(1)
+			->field('field')
+				->testFail()
 				->error('this is an error');
 
 		$this->_validator->validate(
-			array('test' => 2)
+			array('field' => 'data')
 		);
 
 		$messages = $this->_validator->getMessages();
 
-		$this->assertEquals('this is an error', $messages['test'][0]);
+		$this->assertEquals('this is an error', $messages['field'][0]);
 	}
 
 	/**

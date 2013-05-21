@@ -7,32 +7,21 @@ use Message\Cog\Validation\Loader;
 
 class DateTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Date
+	 */
 	protected $_rule;
+
+	protected $_messages;
+	protected $_loader;
 
 	public function setUp()
 	{
 		$this->_rule = new Date;
-	}
 
-	public function testRegister()
-	{
-//		@todo get this to work!
-//
-//		$validator = $this->getMock('\Message\Cog\Validation\Validator');
-//		$messages = $this->getMock('\Message\Cog\Validation\Messages');
-//
-//		$loader = $this->getMockBuilder('\Message\Cog\Validation\Loader')
-//			->setMethods(array('registerRule'))
-//			->setConstructorArgs(array($validator, $messages))
-//			->getMock('\Message\Cog\Validation\Loader')
-//		;
-//
-//		$this->_rule->register($loader);
-//
-//		$loader->expects($this->atLeastOnce())
-//			->method('registerRule')
-//			->will($this->returnSelf())
-//		;
+		$this->_messages = $this->getMock('\Message\Cog\Validation\Messages');
+
+		$this->_loader = new Loader($this->_messages, array($this->_rule));
 	}
 
 	public function testBeforeTrue()

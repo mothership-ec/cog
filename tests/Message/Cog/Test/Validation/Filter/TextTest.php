@@ -3,14 +3,25 @@
 namespace Message\Cog\Test\Validation\Filter;
 
 use Message\Cog\Validation\Filter\Text;
+use Message\Cog\Validation\Loader;
 
 class TextTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Text
+	 */
 	protected $_filter;
+
+	protected $_messages;
+	protected $_loader;
 
 	public function setUp()
 	{
 		$this->_filter = new Text;
+
+		$this->_messages = $this->getMock('\Message\Cog\Validation\Messages');
+
+		$this->_loader = new Loader($this->_messages, array($this->_filter));
 	}
 
 	public function testUppercaseFromLowercase()

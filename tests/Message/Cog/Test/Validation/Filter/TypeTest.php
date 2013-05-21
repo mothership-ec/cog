@@ -3,12 +3,25 @@
 namespace Message\Cog\Test\Validation\Filter;
 
 use Message\Cog\Validation\Filter\Type;
+use Message\Cog\Validation\Loader;
 
 class TypeTest extends \PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Type
+	 */
+	protected $_filter;
+
+	protected $_messages;
+	protected $_loader;
+
 	public function setUp()
 	{
 		$this->_filter = new Type;
+
+		$this->_messages = $this->getMock('\Message\Cog\Validation\Messages');
+
+		$this->_loader = new Loader($this->_messages, array($this->_filter));
 	}
 
 	public function testString()
