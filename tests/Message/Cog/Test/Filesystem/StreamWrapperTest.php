@@ -36,8 +36,8 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 			$fnsUtility
 		);
 
-		$this->wrapper = new StreamWrapper($this->parser, 'test');
-		$this->wrapper->register();
+		$this->wrapper = new StreamWrapper();
+		$this->wrapper->register('test');
 	}
 
 	public function tearDown()
@@ -50,15 +50,13 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testBadStreamName()
 	{
-		$wrapper = new StreamWrapper($this->parser, '`bad`{}');
-		$wrapper->register();
+		$wrapper = new StreamWrapper();
+		$wrapper->register('test');
 	}
 
 	public function testReadingFile()
 	{
-		$this->wrapper->map('/^\/tmp\/(.*)/u', __DIR__.'/tmp/$1');
-
 		$output = file_get_contents('test://tmp/hello.txt');
-
+		$this->assertSame($output, 'world');
 	}
 }

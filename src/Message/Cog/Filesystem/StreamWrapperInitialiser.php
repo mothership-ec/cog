@@ -5,7 +5,7 @@ namespace Message\Cog\Filesystem;
 use Message\Cog\ReferenceParser;
 
 
-class StreamWrapperHelper
+class StreamWrapperInitialiser
 {
 	public static $nextHandler;
 	protected $_handler;
