@@ -222,6 +222,21 @@ using the Loader's `registerRule()` and `registerFilter()` methods:
 
 	$loader->registerFilter('example', array($this, 'example'));
 
+Now all that is left is to assign it to the loader itself. Edit the Message\Cog\Application\Bootstrap\Services class to add it to the dependency injector. Edit the 'validator' key as shown below:
+
+		// Validator
+		$serviceContainer['validator'] = function($c) {
+			return new \Message\Cog\Validation\Validator(
+				new \Message\Cog\Validation\Loader(
+					new \Message\Cog\Validation\Messages,
+					array(
+						new \Message\Cog\Validation\Rule\Date,
+						new \Message\Cog\Validation\Filter\Text,
+						new \Message\Cog\Validation\Your\New\Collection // enter your new filter or rule class
+				)
+			);
+		};
+
 ## Limitations
 
 When creating filters and rules, due to the fluent interface, it is worth bearing in mind that you cannot register
