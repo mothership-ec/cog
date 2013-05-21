@@ -36,17 +36,17 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['db.connection'] = $serviceContainer->share(function($s) {
-			return new DB\MySQLi\Connection(array(
-				'host'		=> $services['cfg']->db->hostname,
-				'user'		=> $services['cfg']->db->user,
-				'password' 	=> $services['cfg']->db->pass,
-				'db'		=> $services['cfg']->db->name,
-				'charset'	=> $services['cfg']->db->charset,
+			return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
+				'host'		=> $s['cfg']->db->hostname,
+				'user'		=> $s['cfg']->db->user,
+				'password' 	=> $s['cfg']->db->pass,
+				'db'		=> $s['cfg']->db->name,
+				'charset'	=> $s['cfg']->db->charset,
 			));
 		});
 
 		$serviceContainer['db.query'] = function($s) {
-			return new DB\Query($s['db.connection']);
+			return new \Message\Cog\DB\Query($s['db.connection']);
 		};
 
 		// shortcut for easier access
@@ -55,7 +55,7 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['db.transaction'] = function($s) {
-			return new DB\Transaction($s['db.connection']);
+			return new \Message\Cog\DB\Transaction($s['db.connection']);
 		};
 
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
