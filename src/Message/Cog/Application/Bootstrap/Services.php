@@ -193,11 +193,17 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.config'] = function($c) {
-			return new \Message\Cog\Form\ConfigBuilder(
+			$config = new \Message\Cog\Form\ConfigBuilder(
 				'formName',
 				'\Message\Cog\Form\Data',
 				$c['event.dispatcher']
 			);
+
+			$config->setCompound(true);
+			$config->setDataMapper($c['form.data']);
+			$config->setFormFactory($c['form.factory']);
+
+			return $config;
 		};
 
 		$serviceContainer['form.data'] = function($c) {
@@ -209,15 +215,20 @@ class Services implements ServicesInterface
 				'formName',
 				'\Message\Cog\Form\Data',
 				$c['event.dispatcher'],
-				new \Symfony\Component\Form\FormFactory(
-					new \Symfony\Component\Form\FormRegistry(
-						array(), // form extensions. We are using our own validator and templating but there may be
-								 // stuff worth adding!
-						new \Symfony\Component\Form\ResolvedFormTypeFactory()
-					),
-					new \Symfony\Component\Form\ResolvedFormTypeFactory()
-				)
+				$c['form.factory']
 			);
+		};
+
+		$serviceContainer['form.factory'] = function($c) {
+			$factory = new \Symfony\Component\Form\FormFactory(
+				new \Symfony\Component\Form\FormRegistry(
+					array(),
+					new \Symfony\Component\Form\ResolvedFormTypeFactory()
+				),
+				new \Symfony\Component\Form\ResolvedFormTypeFactory()
+			);
+
+			$factory->addType(new )
 		};
 	}
 }
