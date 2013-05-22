@@ -133,11 +133,8 @@ class Query
 				}
 
 				return $safe;
-			}, 
+			},
 		$this->_query);
-
-echo(	$this->_parsedQuery);
-
 
 		return true;
 	}
