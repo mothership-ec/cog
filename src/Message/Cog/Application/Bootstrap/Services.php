@@ -220,15 +220,23 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.factory'] = function($c) {
-			$factory = new \Symfony\Component\Form\FormFactory(
+			return new \Symfony\Component\Form\FormFactory(
 				new \Symfony\Component\Form\FormRegistry(
-					array(),
+					array(
+						new \Symfony\Component\Form\Extension\Core\CoreExtension()
+					),
 					new \Symfony\Component\Form\ResolvedFormTypeFactory()
 				),
 				new \Symfony\Component\Form\ResolvedFormTypeFactory()
 			);
+		};
 
-			$factory->addType(new )
+		$serviceContainer['form.helper'] = function($c) {
+			$engine = new \Symfony\Component\Templating\PhpEngine(
+				new \Symfony\Component\Templating\TemplateNameParser,
+				new \Symfony\Component\Templating\Loader\FilesystemLoader(array())
+			);
+
 		};
 	}
 }
