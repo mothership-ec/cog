@@ -195,7 +195,7 @@ class Services implements ServicesInterface
 					array(
 						new \Message\Cog\Validation\Rule\Date,
 						new \Message\Cog\Validation\Rule\Number,
-						new \Message\Cog\Validation\Rule\Iterable,
+//						new \Message\Cog\Validation\Rule\Iterable, - not working yet
 						new \Message\Cog\Validation\Rule\Text,
 						new \Message\Cog\Validation\Rule\Other,
 						new \Message\Cog\Validation\Filter\Text,
