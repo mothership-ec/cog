@@ -65,15 +65,12 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($this->_rule->max(1, 1));
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testMaxNonNumeric()
 	{
-		try {
-			$this->_rule->max(1, false);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->max(1, false);
 	}
 
 	public function testBetweenTrue()
@@ -86,26 +83,20 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_rule->between(1, 2, 3));
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testBetweenNonNumeric()
 	{
-		try {
-			$this->_rule->between(true, false, array());
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->between(true, false, array());
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testBetweenMinGreaterThanMax()
 	{
-		try {
-			$this->_rule->between(1, 3, 2);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->between(1, 3, 2);
 	}
 
 	public function testMultipleOfTrue()

@@ -124,26 +124,20 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_rule->length('turquoise', 3, 5));
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testLengthInvalidMinGreaterThanMax()
 	{
-		try {
-			$this->_rule->length('red', 5, 3);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->length('red', 5, 3);
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testLengthInvalidMaxNonNumeric()
 	{
-		try {
-			$this->_rule->length('red', 2, 'five');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->length('red', 2, 'five');
 	}
 
 	public function testMinLengthTrue()
@@ -161,15 +155,12 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_rule->minLength('red', 4));
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testMinLengthInvalidNonNumeric()
 	{
-		try {
-			$this->_rule->minLength('fish', 'fingers');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->minLength('fish', 'fingers');
 	}
 
 	public function testMaxLengthTrue()
@@ -187,15 +178,12 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_rule->maxLength('yellow', 3));
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testMaxLengthInvalidNonNumeric()
 	{
-		try {
-			$this->_rule->maxLength('fish', 'fingers');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->maxLength('fish', 'fingers');
 	}
 
 	public function testEmailTrue()
@@ -247,15 +235,12 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_rule->match('Hello there', '/[0-9]+[a-z]+/'));
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testMatchNonString()
 	{
-		try {
-			$this->_rule->match('123', 123);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->match('123', 123);
 	}
 
 }

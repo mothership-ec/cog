@@ -167,24 +167,18 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * Test exception is thrown
+	 * @expectedException \Exception
 	 */
 	public function testDateWithArrayInvalid()
 	{
-		try {
-			$date = array(
-				'hour' => 12,
-				'invalid date key' => 12
-			);
 
-			$this->_filter->date($date);
+		$date = array(
+			'hour' => 12,
+			'invalid date key' => 12
+		);
 
-		}
-		catch (\Exception $e) {
-			return;
-		}
+		$this->_filter->date($date);
 
-		$this->fail('Exception not thrown');
 	}
 
 	/**
@@ -231,16 +225,12 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * Test to check if an exception is thrown when given an invalid timezone argument i.e. not an instance of \DateTimeZone or a string
+	 * @expectedException \Exception
 	 */
 	public function testDateInvalidTimeZoneDataType()
 	{
-		try {
-			$this->_filter->date('10-10-1985', true);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_filter->date('10-10-1985', true);
+
 	}
 
 	public function testSetDefaultTimeZone()

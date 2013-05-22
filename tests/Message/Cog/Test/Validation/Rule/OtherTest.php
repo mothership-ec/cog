@@ -4,6 +4,7 @@ namespace Message\Cog\Test\Validation\Rule;
 
 use Message\Cog\Validation\Rule\Other;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Test\Validation\DummyCollection;
 
 class OtherTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,16 +37,21 @@ class OtherTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($false);
 	}
 
+	public function testRuleWithMethod()
+	{
+		$callable = array(
+			new DummyCollection,
+			'isTest'
+		);
+		$this->assertTrue($this->_rule->rule('test', $callable));
+		$this->assertFalse($this->_rule->rule('not test', $callable));
+	}
+
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testRuleWithNonCallable()
 	{
-		try {
-			$this->assertTrue($this->_rule->rule('var', array()));
-			$this->_validator->expects($this->atLeastOnce())
-				->method('getData');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->rule('var', array());
 	}
 }
