@@ -5,6 +5,12 @@ namespace Message\Cog\Test\Validation\Filter;
 use Message\Cog\Validation\Filter\Number;
 use Message\Cog\Validation\Loader;
 
+/**
+ * Class NumberTest
+ * @package Message\Cog\Test\Validation\Filter
+ *
+ * Tests use assertEquals instead of assertSame as filters may return floats or integers
+ */
 class NumberTest extends \PHPUnit_Framework_TestCase
 {
 	/**
