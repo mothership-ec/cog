@@ -4,7 +4,6 @@ namespace Message\Cog\Test\Security\Hash;
 
 use Message\Cog\Security\Hash\MD5;
 
-
 class MD5Test extends \PHPUnit_Framework_TestCase
 {
 

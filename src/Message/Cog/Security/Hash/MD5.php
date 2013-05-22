@@ -7,7 +7,8 @@ use Message\Cog\Security\Salt;
 /**
  * MD5 implementation of the hash interface.
  *
- * @author Ewan Valentine <ewan@message.co.uk>
+ * @author 		Ewan Valentine <ewan@message.co.uk>
+ * @copyright 	Message Digital 2013
  */
 class MD5 implements HashInterface
 {
