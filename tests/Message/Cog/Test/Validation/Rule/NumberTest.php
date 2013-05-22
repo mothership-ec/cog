@@ -107,4 +107,18 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 		}
 		$this->fail('Exception not thrown');
 	}
+
+	public function testMultipleOfTrue()
+	{
+		$this->assertTrue($this->_rule->multipleOf(6, 6));
+		$this->assertTrue($this->_rule->multipleOf(23423, 1));
+		$this->assertTrue($this->_rule->multipleOf(99, 11));
+	}
+
+	public function testMultipleOfFalse()
+	{
+		$this->assertFalse($this->_rule->multipleOf(6, 5));
+		$this->assertFalse($this->_rule->multipleOf(3, 2));
+		$this->assertFalse($this->_rule->multipleOf(100, 150));
+	}
 }

@@ -317,12 +317,12 @@ class TextTest extends \PHPUnit_Framework_TestCase
 
 	public function testSlugWithSpecialChars()
 	{
-		$this->assertSame('s-l-u-g', $this->_filter->slug('S&%£l_u*g'));
+		$this->assertSame('slug', $this->_filter->slug('S%£l_u*g'));
 	}
 
 	public function testSlugAllSpecialChars()
 	{
-		$this->assertSame('n-a', $this->_filter->slug('*%&$&^^*%'));
+		$this->assertSame('', $this->_filter->slug('*%$^^*%'));
 	}
 
 	public function testSlugWithInt()
@@ -332,6 +332,6 @@ class TextTest extends \PHPUnit_Framework_TestCase
 
 	public function testSlugWithFloat()
 	{
-		$this->assertSame('1-1', $this->_filter->slug(1.1));
+		$this->assertSame('11', $this->_filter->slug(1.1));
 	}
 }

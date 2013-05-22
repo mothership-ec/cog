@@ -83,6 +83,8 @@ class Loader
 	}
 
 	/**
+	 * Return array of registered rule collections
+	 *
 	 * @return array    Returns array of registered rules
 	 */
 	public function getRules()
@@ -91,6 +93,8 @@ class Loader
 	}
 
 	/**
+	 * Return array of registered filter collections
+	 *
 	 * @return array    Returns array of registered filters
 	 */
 	public function getFilters()

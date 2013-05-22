@@ -112,20 +112,6 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame(array(123), $this->_filter->toArray(123));
 	}
 
-	public function testArrayObjectFromArray()
-	{
-		$arrayObject = $this->_filter->toArrayObject(array('hello'));
-		$this->assertInstanceOf('\ArrayObject', $arrayObject);
-		$this->assertEquals('hello', $arrayObject[0]);
-	}
-
-	public function testArrayObjectFromString()
-	{
-		$arrayObject = $this->_filter->toArrayObject('hello');
-		$this->assertInstanceOf('\ArrayObject', $arrayObject);
-		$this->assertEquals('hello', $arrayObject[0]);
-	}
-
 	public function testObject()
 	{
 		$obj = new \stdClass;

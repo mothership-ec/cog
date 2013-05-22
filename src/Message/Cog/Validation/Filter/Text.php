@@ -4,6 +4,7 @@ namespace Message\Cog\Validation\Filter;
 
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Functions\Text as TextFunction;
 
 /**
  * Text filters.
@@ -270,16 +271,6 @@ class Text implements CollectionInterface
 	 */
 	public function slug($text)
 	{
-		$text = preg_replace('~[^\\pL\d]+~u', '-', $text);
-		$text = trim($text, '-');
-		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-		$text = strtolower($text);
-		$text = preg_replace('~[^-\w]+~', '', $text);
-
-		if (empty($text)) {
-			return 'n-a';
-		}
-
-		return $text;
+		return TextFunction::toSlug($text, false);
 	}
 }

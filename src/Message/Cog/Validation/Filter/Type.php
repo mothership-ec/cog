@@ -35,7 +35,7 @@ class Type implements CollectionInterface
 			->registerFilter('boolean',     array($this, 'boolean'))
 			->registerFilter('bool',        array($this, 'boolean'))
 			->registerFilter('array',       array($this, 'toArray'))
-			->registerFilter('arrayObject', array($this, 'toArrayObject'))
+			->registerFilter('object',      array($this, 'object'))
 			->registerFilter('date',        array($this, 'date'))
 			->registerFilter('null',        array($this, 'null'));
 	}
@@ -114,23 +114,11 @@ class Type implements CollectionInterface
 	}
 
 	/**
-	 * Cast a field to an `ArrayObject` instance.
+	 * Cast a field to a `stdClass` object.
 	 *
 	 * @param mixed $var    The variable to cast
 	 *
-	 * @return \ArrayObject The field value cast to an `ArrayObject`
-	 */
-	public function toArrayObject($var)
-	{
-		return new \ArrayObject((array) $var);
-	}
-
-	/**
-	 * Cast a field to a `stdClass` object.
-	 *
-	 * @param mixed $var The variable to cast
-	 *
-	 * @return object    The value cast to an object.
+	 * @return \stdClass    The value cast to an object.
 	 */
 	public function object($var)
 	{

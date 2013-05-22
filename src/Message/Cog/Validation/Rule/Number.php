@@ -27,7 +27,8 @@ class Number implements CollectionInterface
 	{
 		$loader->registerRule('min', array($this, 'min'), '%s must%s be equal to or greater than %s.')
 			->registerRule('max', array($this, 'max'), '%s must%s be less than or equal to %s.')
-			->registerRule('between', array($this, 'between'), '%s must%s be between %s and %s.');
+			->registerRule('between', array($this, 'between'), '%s must%s be between %s and %s.')
+			->registerRule('multipleOf', array($this, 'multipleOf'), '%s must%s be a multiple of %s');
 	}
 
 	/**
@@ -87,6 +88,19 @@ class Number implements CollectionInterface
 		}
 
 		return $this->min($var, $min) && $this->max($var, $max);
+	}
+
+	/**
+	 * Checks that variable is a multiple of a certain number
+	 *
+	 * @param int|float|string $var         The variable to validate
+	 * @param int|float|string $multiple    The number to check that $var is a multiple of
+	 *
+	 * @return bool
+	 */
+	public function multipleOf($var, $multiple)
+	{
+		return (($var % $multiple) == 0);
 	}
 
 }
