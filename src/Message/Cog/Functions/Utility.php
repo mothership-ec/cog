@@ -21,18 +21,17 @@ class Utility
 	 * modules.
 	 *
 	 * @return string         Module name found in the backtrace
+	 *
 	 * @throws LogicException If stack trace could not be traced back to a module
 	 */
 	public function traceCallingModuleName()
 	{
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($backtrace as $call) {
-			// Turn a class name like Message\CMS\Model\Page into Message\CMS
-			$namespaces = explode('\\', $call['class']);
-			$moduleName = implode('\\', array_slice($namespaces, 0, 2));
-
-			if(in_array($moduleName, $this->_moduleLoader->getModules())) {
-				return $moduleName;
+			foreach ($this->_moduleLoader->getModules() as $moduleName) {
+				if ($moduleName === substr($call['class'], 0, strlen($moduleName))) {
+					return $moduleName;
+				}
 			}
 		}
 

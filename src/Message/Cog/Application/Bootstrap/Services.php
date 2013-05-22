@@ -5,6 +5,7 @@ namespace Message\Cog\Application\Bootstrap;
 use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Cog\Application\Environment;
 use Message\Cog\Routing\RouteCollection;
+use Message\Cog\DB;
 
 /**
  * Cog services bootstrap.
@@ -32,6 +33,29 @@ class Services implements ServicesInterface
 		};
 		$serviceContainer['env'] = function($c) {
 			return $c['environment']->get();
+		};
+
+		$serviceContainer['db.connection'] = $serviceContainer->share(function($s) {
+			return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
+				'host'		=> $s['cfg']->db->hostname,
+				'user'		=> $s['cfg']->db->user,
+				'password' 	=> $s['cfg']->db->pass,
+				'db'		=> $s['cfg']->db->name,
+				'charset'	=> $s['cfg']->db->charset,
+			));
+		});
+
+		$serviceContainer['db.query'] = function($s) {
+			return new \Message\Cog\DB\Query($s['db.connection']);
+		};
+
+		// shortcut for easier access
+		$serviceContainer['db'] = function($s) {
+			return $s['db.query'];
+		};
+
+		$serviceContainer['db.transaction'] = function($s) {
+			return new \Message\Cog\DB\Transaction($s['db.connection']);
 		};
 
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
@@ -100,6 +124,14 @@ class Services implements ServicesInterface
 				(isset($c['http.request.master']) ? $c['http.request.master'] : null)
 			);
 		};
+
+		$serviceContainer['http.session'] = $serviceContainer->share(function() {
+			return new \Symfony\Component\HttpFoundation\Session\Session;
+		});
+
+		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
+			return new \Message\Cog\HTTP\CookieCollection;
+		});
 
 		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Controller\ResponseBuilder(
