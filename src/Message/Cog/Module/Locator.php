@@ -10,6 +10,7 @@ namespace Message\Cog\Module;
 class Locator implements LocatorInterface
 {
 	protected $_namespaces;
+	protected $_paths;
 
 	/**
 	 * Constructor.
@@ -26,14 +27,15 @@ class Locator implements LocatorInterface
 	 * Gets the path to the module directory.
 	 *
 	 * @param  string $moduleName Module name (e.g. Message\Raven)
+	 *
 	 * @return string             The path to the module directory
+	 *
+	 * @throws \InvalidArgumentException If the module could not be loaded
 	 */
 	public function getPath($moduleName)
 	{
-		static $paths = array();
-
 		// If we haven't been asked for this module's directory before
-		if (!isset($paths[$moduleName])) {
+		if (!isset($this->_paths[$moduleName])) {
 			$namespaceToFind = $moduleName;
 			// Initiate infinite loop
 			while (1) {
@@ -45,12 +47,16 @@ class Locator implements LocatorInterface
 						$directory .= DIRECTORY_SEPARATOR;
 					}
 					// Add PSR-0 namespace
-					$paths[$moduleName] = $directory . str_replace('\\', DIRECTORY_SEPARATOR, $moduleName) . DIRECTORY_SEPARATOR;
+					$this->_paths[$moduleName] = $directory . str_replace('\\', DIRECTORY_SEPARATOR, $moduleName) . DIRECTORY_SEPARATOR;
 
 					// Quit the loop
 					break;
 				}
 				else {
+					// Quit the loop & throw exceptiob if we can't remove any more namespaces
+					if (!strpos($namespaceToFind, '\\')) {
+						throw new \InvalidArgumentException(sprintf('Module `%s` could not be located.', $moduleName));
+					}
 					// Take a namespace off the end and try again
 					$namespaceToFind = substr($namespaceToFind, 0, strrpos($namespaceToFind, '\\'));
 				}
@@ -58,6 +64,6 @@ class Locator implements LocatorInterface
 			}
 		}
 
-		return $paths[$moduleName];
+		return $this->_paths[$moduleName];
 	}
 }

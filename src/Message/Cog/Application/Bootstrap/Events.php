@@ -43,7 +43,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 			)
 		);
 		$eventDispatcher->addSubscriber(
-			new \Message\Cog\HTTP\EventListener\Response
+			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
 		);
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Exception

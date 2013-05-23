@@ -12,11 +12,18 @@ class Transaction extends Query
 	public function add($query, $params = array())
 	{
 		$this->_queries[] = array($query, $params);
+
+		return $this;
+	}
+
+	public function rollback()
+	{
+		return $this->run($this->_result->getTransactionRollback());
 	}
 
 	public function commit()
 	{
-		$this->run('BEGIN');
+		$this->run($this->_result->getTransactionStart());
 		try {
 			foreach($this->_queries as $query) {
 				$this->run($query[0], $query[1]);
@@ -26,11 +33,16 @@ class Transaction extends Query
 			throw $e;
 		}
 
-		$this->query('COMMIT');
+		return $this->run($this->_result->getTransactionEnd());
 	}
 
-	public function rollback()
+	public function setID($name)
 	{
-		$this->run('ROLLBACK');
+		return $this->add("SET @".$name." = ".$this->_result->getLastInsertIdFunc());
+	}
+
+	public function getID()
+	{
+		return $this->add("SELECT ".$this->_result->getLastInsertIdFunc());
 	}
 }
