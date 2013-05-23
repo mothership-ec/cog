@@ -4,7 +4,7 @@ namespace Message\Cog\Filesystem;
 
 use Message\Cog\ReferenceParser;
 
-class StreamWrapper implements StreamWrapperInterface {
+class CogStreamWrapper implements StreamWrapperInterface {
 	/**
 	* Stream context resource. This must be public
 	*
@@ -47,9 +47,15 @@ class StreamWrapper implements StreamWrapperInterface {
 	*/
 	public function stream_open($uri, $mode, $options, &$opened_path)
 	{
+		
+
 		$this->uri = $uri;
 
 		$parts = parse_url($uri);
+
+		
+
+		StreamWrapperManager::getHandler($uri);
 
 		$path = '/'.$parts['host'].$parts['path'];
 

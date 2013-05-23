@@ -10,5 +10,11 @@ use Symfony\Component\Finder\Finder as SymfonyFinder;
 */
 class Finder extends SymfonyFinder
 {
-
+	public function getIterator()
+	{
+		$parent = parent::getIterator();
+		$iterator = new FileIterator($parent);
+		
+		return $iterator;
+	}
 }

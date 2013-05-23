@@ -2,9 +2,14 @@
 
 namespace Message\Cog\Test\Filesystem;
 
-use Message\Cog\Filesystem\StreamWrapper;
+use Message\Cog\Filesystem\StreamWrapperManager;
+use Message\Cog\Filesystem\CogStreamWrapper;
+
 use Message\Cog\ReferenceParser;
 use Message\Cog\Test\Module;
+
+use Message\Cog\Filesystem\Finder;
+
 
 class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,6 +26,7 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
+
 		$fnsUtility = $this->getMockBuilder('Message\\Cog\\Functions\\Utility')
 			->disableOriginalConstructor()
 			->getMock();
@@ -36,27 +42,16 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 			$fnsUtility
 		);
 
-		$this->wrapper = new StreamWrapper();
-		$this->wrapper->register('test');
+		$this->manager = new StreamWrapperManager();
 	}
 
 	public function tearDown()
 	{
-		$this->wrapper->unregister();
+	//	$this->manager->clear();
 	}
 
-	/**
-	 * @expectedException PHPUnit_Framework_Error_Warning
-	 */
-	public function testBadStreamName()
+	public function testMapping()
 	{
-		$wrapper = new StreamWrapper();
-		$wrapper->register('test');
-	}
-
-	public function testReadingFile()
-	{
-		$output = file_get_contents('test://tmp/hello.txt');
-		$this->assertSame($output, 'world');
+		# code...
 	}
 }
