@@ -13,9 +13,9 @@ namespace Message\Cog;
  * Examples:
  *
  * * ::ClassName#methodName
- * * ModuleBundleName:Core:DirectoryName:ClassName#methodName
- * * ModuleName:DirectoryName:ClassName#methodName
- * * Bespoke:Wishlist:FolderName:ViewName
+ * * VendorName:ModuleName::DirectoryName:ClassName#methodName
+ * * VendorName:BundleName:ModuleName::DirectoryName:ClassName#methodName
+ * * Bespoke:Wishlist::FolderName:ViewName
  * * ::DirectoryName:ViewName
  *
  * @author Joe Holdcroft <joe@message.uk.com>
