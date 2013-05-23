@@ -192,16 +192,42 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Form\Form($c['form.config']);
 		};
 
+		$serviceContainer['form.php'] = function($c) {
+			$form = $c['form'];
+			$form->setHelper($c['form.helper.php']);
+			return $form;
+		};
+
+		// @todo add form.twig
+
 		$serviceContainer['form.config'] = function($c) {
 			$config = new \Message\Cog\Form\ConfigBuilder(
 				'formName',
 				'\Message\Cog\Form\Data',
-				$c['event.dispatcher']
+				$c['event.dispatcher'],
+				// @todo work out what all these settings are for!
+				array(
+					'type' => '',
+					'options' => '',
+					'allow_add' => '',
+					'allow_delete' => '',
+					'block_name' => '',
+					'read_only' => '',
+					'translation_domain' => '',
+					'max_length' => '',
+					'pattern' => '',
+					'label' => '',
+					'attr' => '',
+					'label_attr' => ''
+				)
 			);
 
 			$config->setCompound(true);
 			$config->setDataMapper($c['form.data']);
 			$config->setFormFactory($c['form.factory']);
+			$config->setType(new \Symfony\Component\Form\ResolvedFormType(
+				new \Symfony\Component\Form\Extension\Core\Type\FormType()
+			));
 
 			return $config;
 		};
@@ -231,12 +257,34 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$serviceContainer['form.helper'] = function($c) {
-			$engine = new \Symfony\Component\Templating\PhpEngine(
+		$serviceContainer['form.helper.php'] = function($c) {
+			$engine = $c['form.engine.php'];
+
+			$formHelper = new \Symfony\Bundle\FrameworkBundle\Templating\Helper\FormHelper(
+				new \Symfony\Component\Form\FormRenderer(
+					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine($engine)
+				),
+				array()
+			);
+
+			$engine->setHelpers(array(
+				$formHelper,
+				// @todo add translation helpers
+			));
+
+			return $formHelper;
+
+		};
+
+		// @todo add form.helper.twig
+
+		$serviceContainer['form.engine.php'] = function($c) {
+			return new \Symfony\Component\Templating\PhpEngine(
 				new \Symfony\Component\Templating\TemplateNameParser,
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(array())
 			);
-
 		};
+
+		// @todo add form.helper.twig
 	}
 }
