@@ -8,11 +8,17 @@ class SHA1Test extends \PHPUnit_Framework_TestCase
 {
 	protected $_saltGenerator;
 	protected $_hash;
+	protected $_generatedSalt = 12345;
 
 	public function setUp()
 	{
 		$this->_saltGenerator = $this->getMock('Message\Cog\Security\Salt');
 		$this->_hash 		  = new SHA1($this->_saltGenerator);
+
+		$this->_saltGenerator
+			 ->expects($this->any())
+			 ->method('generate')
+			 ->will($this->returnValue($this->_generatedSalt));
 	}
 
 	public function testEncryptTrue()
@@ -32,6 +38,34 @@ class SHA1Test extends \PHPUnit_Framework_TestCase
 
 		$correctHash = '67e761c6b62b03293cc7c0851a2a015266ec47cd:';
 		$this->assertNotEquals($hashed, $correctHash);
+	}
+
+	/**
+	 * @dataProvider Message\Cog\Test\Security\Hash\DataProvider::getStrings
+	 */
+	public function testSaltGeneratorHasSalt($string)
+	{
+		$salt = 'ThisIsASaltThisIsASalt';
+
+		$hashed = $this->_hash->encrypt($string, $salt);
+
+		$output_array = explode(SHA1::SALT_SEPARATOR, $hashed);
+
+		$this->assertEquals($salt, $output_array[1]);
+	}
+
+	/**
+	 * @dataProvider Message\Cog\Test\Security\Hash\DataProvider::getStrings
+	 */
+	public function testSaltGeneratorHasNoSalt($string)
+	{
+		$hashed = $this->_hash->encrypt($string);
+
+		$output_array = explode(SHA1::SALT_SEPARATOR, $hashed);
+
+		$salt = $output_array[1];
+
+		$this->assertNotEquals($salt, '');
 	}
 
 	public function testCheckTrue()

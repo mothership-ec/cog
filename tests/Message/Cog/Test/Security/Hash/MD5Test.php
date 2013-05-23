@@ -9,11 +9,17 @@ class MD5Test extends \PHPUnit_Framework_TestCase
 
 	protected $_saltGenerator;
 	protected $_hash;
+	protected $_generatedSalt = 12345;
 
 	public function setUp()
 	{
 		$this->_saltGenerator = $this->getMock('Message\Cog\Security\Salt');
 		$this->_hash 		  = new MD5($this->_saltGenerator);
+		$this->_saltGenerator
+			 ->expects($this->any())
+			 ->method('generate')
+			 ->will($this->returnValue($this->_generatedSalt));
+
 	}
 
 	public function testEncryptTrue()
@@ -33,6 +39,35 @@ class MD5Test extends \PHPUnit_Framework_TestCase
 
 		$correctHash = '08073d3767ac0d725b01c620e432e4f4:';
 		$this->assertNotEquals($hashed, $correctHash);
+	}
+
+	/**
+	 * @dataProvider Message\Cog\Test\Security\Hash\DataProvider::getStrings
+	 */
+	public function testSaltGeneratorHasSalt($string)
+	{
+		$salt = 'ThisIsASaltThisIsASalt';
+
+		$hashed = $this->_hash->encrypt($string, $salt);
+
+		$output_array = explode(MD5::SALT_SEPARATOR, $hashed);
+
+		$this->assertEquals($salt, $output_array[1]);
+	}
+
+	/**
+	 * @dataProvider Message\Cog\Test\Security\Hash\DataProvider::getStrings
+	 */
+	public function testSaltGeneratorHasNoSalt($string)
+	{
+		$hashed = $this->_hash->encrypt($string);
+
+		$output_array = explode(MD5::SALT_SEPARATOR, $hashed);
+
+		$salt = $output_array[1];
+
+		$this->assertNotEquals($salt, '');
+
 	}
 
 	public function testCheckTrue()

@@ -59,4 +59,33 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_hash->check('test string', 'invalid hash'));
 	}
 
+
+	/**
+	 * @dataProvider Message\Cog\Test\Security\Hash\DataProvider::getStrings
+	 */
+	public function testSaltGeneratorHasSalt($string)
+	{
+		$salt = 'ThisIsASaltThisIsASalt';
+
+		$hashed = $this->_hash->encrypt($string, $salt);
+
+		$output_array = explode(OSCommerce::SALT_SEPARATOR, $hashed);
+
+		$this->assertEquals($salt, $output_array[1]);
+	}
+
+	/**
+	 * @dataProvider Message\Cog\Test\Security\Hash\DataProvider::getStrings
+	 */
+	public function testSaltGeneratorHasNoSalt($string)
+	{
+		$hashed = $this->_hash->encrypt($string);
+
+		$output_array = explode(OSCommerce::SALT_SEPARATOR, $hashed);
+
+		$salt = $output_array[1];
+
+		$this->assertNotEquals($salt, '');
+	}
+
 }
