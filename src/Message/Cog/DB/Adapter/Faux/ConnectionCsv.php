@@ -38,17 +38,20 @@ class ConnectionCsv extends Connection
 
 		$keys = array();
 		$data = array();
+		$i = 0;
 		while (($row = fgetcsv($handle, 4096)) !== FALSE) {
-			if(!count($data)) { // first row must always be keys
+			if ($i == 0) { // first row must always be keys
 				$keys = $row;
+				$i++;
 				continue;
 			}
 
 			$data[] = array_combine($keys, $row);
+			
+			$i++;
 		}
 
 		fclose($handle);
-
 		return $data;
 	}
 }
