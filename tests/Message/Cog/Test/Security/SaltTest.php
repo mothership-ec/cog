@@ -12,24 +12,34 @@ use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 class SaltTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_salt;
+	protected $_badHash;
 
 	public function setUp()
 	{
 		$this->_salt = new Salt;
+		
+		$this->_salt
+			 ->expects($this->once())
+			 ->method('generateFromUnixRandom', 'generateFromOpenSSL', 'generateNatively')
+			 ->will($this->returnFalse());
 	}
 
-	/**
-	 * @dataProvider getValidLengths
-	 */
 	public function testAllGenerateMethodsRespectLength()
 	{
-		// test all of them with strlen() after generating and passing in the length
+		$this->assertSame(10, strlen($this->_salt->generateFromUnixRandom(10)));
+		$this->assertSame(10, strlen($this->_salt->generateFromOpenSSL(10)));
+		$this->assertSame(10, strlen($this->_salt->generateNatively(10)));
+		$this->assertSame(10, strlen($this->_salt->generate(10)));
 	}
 
 	public function testDefaultLengthUsed()
 	{
-		// test that if you do not pass a length to all the generate functions, they
-		// all return a lenth that matches Salt::DEFAULT_LENGTH
+		$dlength = Salt::DEFAULT_LENGTH;
+
+		$this->assertSame($dlength, strlen($this->_salt->generateFromUnixRandom($dlength)));
+		$this->assertSame($dlength, strlen($this->_salt->generateFromOpenSSL($dlength)));
+		$this->assertSame($dlength, strlen($this->_salt->generateNatively($dlength)));
+		$this->assertSame($dlength, strlen($this->_salt->generate($dlength)));
 	}
 
 	/**
@@ -41,6 +51,7 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 		// mock the 3 generating methods so they all return false, then run ->generate()
 
 		// this is just to make the test pass: remove it once the test is built
+
 		throw new \UnexpectedValueException('could not be generated');
 	}
 
@@ -52,6 +63,15 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 	public function testGenerateReturnValuesFormat()
 	{
 		// for each, check the results are strings and match the regex [./0-9A-Za-z]
+
+
+		// Mock class so three methods return false
+
+		// param 2 = 3 methods
+
+		// called once 
+
+		// return false
 	}
 
 	/**
