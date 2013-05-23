@@ -55,10 +55,12 @@ It is possible to remove the "deleted" metadata by calling the `restore` method.
 
 ## Money
 
+**Not yet implemented**
+
 ## DateRange
 
 This class is used to work out whether a given date falls between a given date range. The class also has methods to work out the interval between the start and end periods.
-At least one date must be passed through when initiating the class like so:
+At least one date must be passed through when instantiating the class like so:
 
 ```
 $from = new DateTime('-1 hour');
@@ -89,3 +91,32 @@ $dateRange = new DateRange($from, $to);
 echo $dateRange; // 2013-05-15T12:24:10+00:00 - 2013-05-15T12:44:10+00:00
 
 ```
+
+## Slug
+
+This class represents a slug (URL segments) to a resource. It can be instantiated with either the full slug as a string (using `/` as the separator), or as an array of the segments. Extraneous slashes or empty segments (if passed as an array) are trimmed. All of the following will give the same result:
+
+	$slug = new Slug('path/to/my/resource');
+	$slug = new Slug('/path/to/my/resource/');
+	$slug = new Slug(array(
+		'path',
+		'to',
+		'my',
+		'resource',
+	));
+	$slug = new Slug(array(
+		'path',
+		'to',
+		'my',
+		'',
+		'resource',
+	));
+
+The `Slug` class implements both `\Iterator` and `\Countable`, so it behaves pretty much as an array. You can `count()` it and loop over it.
+
+To get the full slug as a string, call the method `getFull()`. This will always return the slug segments separated and prepended with `/`. There is no trailing `/`. In the above example, `getFull()` would return **/path/to/my/resource** in all instances.
+
+Printing out the class directly will also return the value of `getFull()`. The following will give the same result:
+
+	echo $slug->getFull();
+	echo $slug;

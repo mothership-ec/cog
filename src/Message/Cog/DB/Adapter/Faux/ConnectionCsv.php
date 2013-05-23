@@ -29,11 +29,11 @@ class ConnectionCsv extends Connection
 	protected function _loadDataFromCsv($path)
 	{
 		if (file_exists($path) === false) {
-			throw \Exception(sprintf('`%s` does not exist.', $path));
+			throw new \Exception(sprintf('`%s` does not exist.', $path));
 		}
 
 		if (($handle = fopen($path, 'r')) === false) {
-			throw \Exception(sprintf('Cannot open `%s` for reading.', $path));
+			throw new \Exception(sprintf('Cannot open `%s` for reading.', $path));
 		}
 
 		$keys = array();
