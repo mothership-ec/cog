@@ -61,15 +61,15 @@ class NestedSetHelper
 	/**
 	 * Converts a flat database result into an array.
 	 *
-	 * Adapted from http://stackoverflow.com/a/886931
+	 * @see http://stackoverflow.com/a/886931
 	 *
 	 * @param  DBquery $result 		A database result to iterate over
 	 * @param  string  $childrenKey The array key to store child elements in
 	 *
-	 * @return array   The result in a multidimensional array
+	 * @return array                The result in a multidimensional array
 	 *
-	 * @todo  Dont hardcode the depth key.
-	 * @todo  use new DB result, make it work.
+	 * @todo Make this work. It's disabled because it doesn't work very well.
+	 *       The behaviour seems to change depending how the $result is ordered.
 	 */
 	public function toArray(Result $result, $childrenKey = 'children')
 	{
@@ -81,15 +81,15 @@ class NestedSetHelper
 		// Node Stack. Used to help building the hierarchy
 		$stack = array();
 
-		while($node = $result->row()) {
-			$item = $node;
+		foreach ($result as $node) {
+			$item = (array) $node;
 			$item[$childrenKey] = array();
 
 			// Number of stack items
 			$l = count($stack);
 
 			// Check if we're dealing with different levels
-			while($l > 0 && $stack[$l - 1]['depth'] >= $item['depth']) {
+			while($l > 0 && $stack[$l - 1][$this->_depth] >= $item[$this->_depth]) {
 				array_pop($stack);
 				$l--;
 			}
