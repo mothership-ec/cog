@@ -76,7 +76,7 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 			return $wrapper;
 		});
 		
-		$contents = file_get_contents('test://UniformWares:CustomModuleName:assets/example.pdf');
+		$contents = file_get_contents('test://UniformWares:CustomModuleName::assets/example.pdf');
 
 		$this->assertSame('I am a PDF', $contents);
 	}
