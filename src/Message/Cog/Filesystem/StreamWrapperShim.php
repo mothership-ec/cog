@@ -2,12 +2,24 @@
 
 namespace Message\Cog\Filesystem;
 
+/**
+ * StreamWrapperShim
+ *
+ * An instance of this class is always passed to stream_wrapper_register via StreamWrapperManager.
+ * It acts as a proxy between php internals and the class that implements the StreamWrapperInterface and allows
+ * dependencies to be injected rather than hard coded.
+ */
 abstract class StreamWrapperShim
 {
 	abstract public function getStreamWrapperPrefix();
 
 	protected $_handler;
 
+	/**
+	 * Loads the handler and sets up this proxy class.
+	 * getHandler() has to be called statically (boo) as it's the only way to reference
+	 * the world outside of this instance.
+	 */
 	public function __construct()
 	{
 		// get the handler
@@ -16,6 +28,9 @@ abstract class StreamWrapperShim
 		$this->_handler->prefix = $prefix;
 	}
 
+	/**
+	 * Proxies method calls through to the handler.
+	 */
 	public function __call($method, $args)
 	{
 		if(!method_exists($this->_handler, $method)) {
@@ -25,6 +40,9 @@ abstract class StreamWrapperShim
 		return call_user_func_array(array($this->_handler, $method), $args);
 	}
 
+	/**
+	 * Proxies property access through to the handler.
+	 */
 	public function __get($name)
 	{
 		if(!isset($this->_handler->{$name})) {
@@ -34,11 +52,17 @@ abstract class StreamWrapperShim
 		return $this->_handler->{$name};
 	}
 
+	/**
+	 * Proxies property setting through to the handler.
+	 */
 	public function __set($name, $value)
 	{
 		$this->_handler->{$name} = $value;
 	}
 
+	/**
+	 * Proxies isset access through to the handler.
+	 */
 	public function __isset($property)
 	{
 		return isset($this->_handler->{$name});

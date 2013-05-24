@@ -2,9 +2,11 @@
 
 namespace Message\Cog\Filesystem;
 
-use Message\Cog\ReferenceParser;
+use Message\Cog\ReferenceParserInterface;
 
-class StreamWrapper implements StreamWrapperInterface {
+
+class StreamWrapper implements StreamWrapperInterface
+{
 	/**
 	* Stream context resource. This must be public
 	*
@@ -29,22 +31,50 @@ class StreamWrapper implements StreamWrapperInterface {
 	protected $uri;
 
 	protected $_mapping = array();
+	protected $_parser;
 
-	public function setReferenceParser($parser)
+	/**
+	 * Sets the reference parser to use for this wrapper.
+	 *
+	 * @param ReferenceParserInterface $parser
+	 */
+	public function setReferenceParser(ReferenceParserInterface $parser)
 	{
 		$this->_parser = $parser;
 	}
 
+	/**
+	 * Mappings are a way of rewriting one path to another using regular expressions replacements.
+	 * For example you could map cog://tmp/ to /www/data/example.org/tmp/
+	 *
+	 * An important note: When matching cog:// style paths the prefix is removed. This means regexs should
+	 * match paths starting with /.
+	 * 
+	 * For example the path cog://tmp/hello.txt would be sent into the regex replacement as /tmp/hello.txt
+	 *
+	 * @param array $mapping An array where the key is the key is the regex and the value is the replacement value
+	 */
 	public function setMapping(array $mapping)
 	{
 		$this->_mapping = $mapping;
 	}
 
+	/**
+	 * Turns a uri (such as cog://public/images/) into a path of a real file.
+	 *
+	 * Mappings are checked first, if there's no matching mapping then the reference parser is checked.
+	 *
+	 * @param  [type] $uri [description]
+	 *
+	 * @return [type]      [description]
+	 */
 	public function getLocalPath($uri)
 	{
+		// strip off the prefix and slashes
 		$len = strlen($this->prefix . '://');
 		$path = substr($uri, $len);
 
+		// Try and match a mapping regex
 		foreach($this->_mapping as $regex => $mapping) {
 			$result = preg_replace($regex, $mapping, '/'.$path, 100, $matches);
 
@@ -54,7 +84,7 @@ class StreamWrapper implements StreamWrapperInterface {
 		}
 
 		// Now check our reference parser
-		if($fullPath = $this->_parser->parse($path)->getFullPath()) {
+		if($this->_parser && $fullPath = $this->_parser->parse($path)->getFullPath()) {
 			return $fullPath;
 		}
 
@@ -82,6 +112,10 @@ class StreamWrapper implements StreamWrapperInterface {
 	{
 		$this->uri = $uri;
 		$path = $this->getLocalPath($uri);
+
+		if(!$path) {
+			return false;
+		}
 
 		$this->handle = ($options & STREAM_REPORT_ERRORS) ? fopen($path, $mode) : @fopen($path, $mode);
 
@@ -328,20 +362,13 @@ class StreamWrapper implements StreamWrapperInterface {
 	{
 		$this->uri = $uri;
 		$recursive = (bool) ($options & STREAM_MKDIR_RECURSIVE);
-		if ($recursive) {
-			// $this->getLocalPath() fails if $uri has multiple levels of directories
-			// that do not yet exist.
-			$localpath = $this->getDirectoryPath() . '/' . $this->getTarget($uri);
-		}
-		else {
-			$localpath = $this->getLocalPath($uri);
-		}
+		$localpath = $this->getLocalPath($uri);
+
 		if ($options & STREAM_REPORT_ERRORS) {
 			return mkdir($localpath, $mode, $recursive);
 		}
-		else {
-			return mkdir($localpath, $mode, $recursive);
-		}
+		
+		return mkdir($localpath, $mode, $recursive);
 	}
 
 	/**
@@ -363,9 +390,8 @@ class StreamWrapper implements StreamWrapperInterface {
 		if ($options & STREAM_REPORT_ERRORS) {
 			return rmdir($this->getLocalPath());
 		}
-		else {
-			return rmdir($this->getLocalPath());
-		}
+		
+		return rmdir($this->getLocalPath());
 	}
 
 	/**
@@ -391,9 +417,8 @@ class StreamWrapper implements StreamWrapperInterface {
 		if ($flags & STREAM_URL_STAT_QUIET || !file_exists($path)) {
 			return @stat($path);
 		}
-		else {
-			return stat($path);
-		}
+		
+		return stat($path);
 	}
 
 	/**

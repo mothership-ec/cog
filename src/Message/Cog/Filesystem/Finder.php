@@ -10,6 +10,12 @@ use Symfony\Component\Finder\Finder as SymfonyFinder;
 */
 class Finder extends SymfonyFinder
 {
+	/**
+	 * Before the finder returns the iterator, inject our own FileIterator which ensures
+	 * a File object is always returned.
+	 *
+	 * @return FileIterator The iterator which injects a File object
+	 */
 	public function getIterator()
 	{
 		$parent = parent::getIterator();

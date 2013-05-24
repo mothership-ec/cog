@@ -27,6 +27,10 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Debug\Profiler(null, null, false);
 		});
 
+		$serviceContainer['profiler'] = $serviceContainer->share(function() {
+			return new \Message\Cog\Debug\Profiler(null, null, false);
+		});
+
 		$env = new Environment;
 		$serviceContainer['environment'] = function() use ($env) {
 			return $env;
@@ -177,6 +181,19 @@ class Services implements ServicesInterface
 		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
 		});
+
+		// Filesystem
+		$serviceContainer['filesystem.stream_wrapper_manager'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Filesystem\StreamWrapperManager;
+		});
+
+		$serviceContainer['filesystem'] = function($c) {
+			return new \Message\Cog\Filesystem\Filesystem;
+		};
+
+		$serviceContainer['filesystem.finder'] = function($c) {
+			return new \Message\Cog\Filesystem\Finder;
+		};
 
 		// Application Contexts
 		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {
