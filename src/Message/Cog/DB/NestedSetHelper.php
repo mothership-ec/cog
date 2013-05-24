@@ -16,7 +16,7 @@ namespace Message\Cog\DB;
 class NestedSetHelper
 {
 	protected $_query;
-	protected $_transaction;
+	protected $_trans;
 
 	protected $_table;
 	protected $_pk;
@@ -32,8 +32,8 @@ class NestedSetHelper
 	 */
 	public function __construct(Query $query, Transaction $transaction)
 	{
-		$this->_query       = $query;
-		$this->_transaction = $transaction;
+		$this->_query = $query;
+		$this->_trans = $transaction;
 	}
 
 	/**
@@ -53,7 +53,7 @@ class NestedSetHelper
 		$this->_pk    = $pk    ?: $table . '.' . $table . '_id';
 		$this->_left  = $left  ?: $table . '.left';
 		$this->_right = $right ?: $table . '.right';
-		$this->_depth = $right ?: $table . '.depth';
+		$this->_depth = $depth ?: $table . '.depth';
 
 		return $this;
 	}
@@ -69,10 +69,12 @@ class NestedSetHelper
 	 * @return array   The result in a multidimensional array
 	 *
 	 * @todo  Dont hardcode the depth key.
-	 * @todo  use new DB result
+	 * @todo  use new DB result, make it work.
 	 */
 	public function toArray(Result $result, $childrenKey = 'children')
 	{
+		return false;
+
 		// Trees mapped
 		$trees = array();
 		$l = 0;
@@ -118,55 +120,53 @@ class NestedSetHelper
 	 *                             sibling node
 	 * @param  int  $siblingNodeID Identifier for the sibling node
 	 *
-	 * @return Transaction         The transaction object with the queries added
+	 * @return Transaction         The transaction instance with the queries added
 	 */
 	public function insertAfter($nodeID, $siblingNodeID)
 	{
 		$this->_checkTableInfoSet();
 
-		$targetNode = $this->_getNode($siblingNodeID, $force);
+		$targetNode = $this->_getNode($siblingNodeID);
 
 		// Make space for the new element
 		$this->_trans->add('
 			UPDATE
-				:table?s
+				`' . $this->_table . '`
 			SET
-				:left?s  = :left?s + 2,
-				:right?s = :right?s + 2
+				`' . $this->_left . '`  = `' . $this->_left . '` + 2,
+				`' . $this->_right . '` = `' . $this->_right . '` + 2
 			WHERE
-				:right?s > :targetRight?i
-		', array(
-			'table'       => $this->_table,
-			'left'        => $this->_left,
-			'right'       => $this->_right,
-			'targetRight' => (int) $targetNode[$this->_right]
-		));
+				`' . $this->_right . '` > ?i
+		', $targetNode[$this->_right]);
 
 		// Add the node into the tree
 		$this->_trans->add('
 			UPDATE
-				:table?s
+				`' . $this->_table . '`
 			SET
-				:left?s  = :leftVal?i,
-				:right?s = :rightVal?i,
-				:depth?s = :depthVal?i
+				`' . $this->_left . '`  = :left?i,
+				`' . $this->_right . '` = :right?i,
+				`' . $this->_depth . '` = :depth?i
 			WHERE
-				:pk?s = :id?i
+				`' . $this->_pk . '` = :id?i
 		', array(
-			'table'    => $this->_table,
-			'left'     => $this->_left,
-			'right'    => $this->_right,
-			'depth'    => $this->_depth,
-			'pk'       => $this->_pk,
-			'leftVal'  => (int) $targetNode[$this->_right] + 1,
-			'rightVal' => (int) $targetNode[$this->_right] + 2,
-			'depthVal' => (int) $targetNode[$this->_depth],
-			'id'       => (int) $nodeID,
+			'left'  => $targetNode[$this->_right] + 1,
+			'right' => $targetNode[$this->_right] + 2,
+			'depth' => $targetNode[$this->_depth],
+			'id'    => $nodeID,
 		));
 
 		return $this->_trans;
 	}
 
+	/**
+	 * Move a node left in the tree.
+	 *
+	 * @param  int $nodeID       The ID of the node to move
+	 *
+	 * @return Transaction|false The transaction instance with the queries added,
+	 *                           or false if the node could not be moved left
+	 */
 	public function moveLeft($nodeID)
 	{
 		$this->_checkTableInfoSet();
@@ -184,55 +184,47 @@ class NestedSetHelper
 		$this->_trans->add('
 			SET @LEFT_NODE = (
 				SELECT
-					:left?s
+					`' . $this->_left . '`
 				FROM
-					:table?s
+					`' . $this->_table . '`
 				WHERE
-					:right?s = :value?i
+					`' . $this->_right . '` = ?i
 			)
-		', array(
-			'table' => $this->_table,
-			'left'  => $this->_left,
-			'right' => $this->_right,
-			'value' => $node[$this->_left] - 1,
-		));
+		', $node[$this->_left] - 1);
 
 		$this->_trans->add('
 			UPDATE
-				:table?s
+				`' . $this->_table . '`
 			SET
-				:left?s  = :left?s + 2,
-				:right?s = :right?s + 2
+				`' . $this->_left . '`  = `' . $this->_left . '` + 2,
+				`' . $this->_right . '` = `' . $this->_right . '` + 2
 			WHERE
-				:left?s >= @LEFT_NODE
-				AND :right?s < :currentLeft?i
-		', array(
-			'table'       => $this->_table,
-			'left'        => $this->_left,
-			'right'       => $this->_right,
-			'currentLeft' => $node[$this->_left],
-		));
+				`' . $this->_left . '` >= @LEFT_NODE
+			AND `' . $this->_right . '` < ?i
+		', $node[$this->_left]);
 
 		// Move the target element
 		$trans->add('
 			UPDATE
-				:table?s
+				`' . $this->_table . '`
 			SET
-				:left?s  = :left?s - 2,
-				:right?s = :right?s - 2
+				`' . $this->_left . '`  = `' . $this->_left . '` - 2,
+				`' . $this->_right . '` = `' . $this->_right . '` - 2
 			WHERE
-				:pk?s = :id?i
-		', array(
-			'table' => $this->_table,
-			'left'  => $this->_left,
-			'right' => $this->_right,
-			'pk'    => $this->_pk,
-			'id'    => (int) $nodeID,
-		));
+				`' . $this->_pk . '` = ?i
+		', $nodeID);
 
 		return $this->_trans;
 	}
 
+	/**
+	 * Move a node right in the tree.
+	 *
+	 * @param  int $nodeID       The ID of the node to move
+	 *
+	 * @return Transaction|false The transaction instance with the queries added,
+	 *                           or false if the node could not be moved right
+	 */
 	public function moveRight($nodeID)
 	{
 		$this->_checkTableInfoSet();
@@ -240,53 +232,60 @@ class NestedSetHelper
 		$node   = $this->_getNode($nodeID);
 		$parent = $this->_getParentNode($node);
 
-		// Check if we can't move any further right if this nodes right edge is directly before its parents right edge.
-		if($node[$this->_right] === $parent[$this->_right] - 1) {
+		// We can't move any further right if this nodes right edge is directly
+		// before its parents right edge
+		if ($node[$this->_right] === $parent[$this->_right] - 1) {
 			return false;
 		}
 
 		// Take the element directly to the left and move it right one place
-		$trans = new DBtransaction;
-		$trans->add("
+		$this->_trans->add('
 			SET @LEFT_NODE = (
 				SELECT
-					" . $this->_left . "
+					`' . $this->_left . '`
 				FROM
-					" . $this->_table . "
+					`' . $this->_table . '`
 				WHERE
-					" . $this->_right . " = " . ($node[$this->_left] - 1) . "
+					`' . $this->_right . '` = ?i
 			)
-		");
-		$trans->add("
+		', $node[$this->_left] - 1);
+
+		$this->_trans->add('
 			UPDATE
-				" . $this->_table . "
+				`' . $this->_table . '`
 			SET
-				" . $this->_left . "  = " . $this->_left . " + 2,
-				" . $this->_right . " = " . $this->_right . " + 2
+				`' . $this->_left . '`  = `' . $this->_left . '` + 2,
+				`' . $this->_right . '` = `' . $this->_right . '` + 2
 			WHERE
-				" . $this->_left . " >= @LEFT_NODE
-				AND " . $this->_right . " < " . $node[$this->_left] . "
-		");
+				`' . $this->_left . '` >= @LEFT_NODE
+			AND `' . $this->_right . '` < ?i
+		', $node[$this->_left]);
 
 		// Move the target element
-		$trans->add("
+		$this->_trans->add('
 			UPDATE
-				" . $this->_table . "
+				`' . $this->_table . '`
 			SET
-				" . $this->_left . "  = " . $this->_left . " - 2,
-				" . $this->_right . " = " . $this->_right . " - 2
+				`' . $this->_left . '`  = `' . $this->_left . '` - 2,
+				`' . $this->_right . '` = `' . $this->_right . '` - 2
 			WHERE
-				" . $this->_pk . " = " . (int)$nodeID . "
-		");
+				`' . $this->_pk . '` = ?i
+		', $nodeID);
 
-		return $trans->run();
+		return $this->_trans;
 	}
 
 	/**
-	 * Adds a node as the very first child of a parent node
+	 * Adds a node as the very first child of a parent node.
 	 *
-	 * @param int $nodeID   The ID of the child node
-	 * @param int $parentID The ID of the parent node
+	 * @see _insertChild()
+	 *
+	 * @param int  $nodeID   The ID of the child node
+	 * @param int  $parentID The ID of the parent node
+	 * @param bool $force    True to suppress exceptions if the parent node
+	 *                       doesn't exist
+	 *
+	 * @return Transaction   The transaction instance with the queries added
 	 */
 	public function insertChildAtStart($nodeID, $parentID, $force = false)
 	{
@@ -294,10 +293,16 @@ class NestedSetHelper
 	}
 
 	/**
-	 * Adds a node as the very first child of a parent node
+	 * Adds a node as the very last child of a parent node.
 	 *
-	 * @param int $nodeID   The ID of the child node
-	 * @param int $parentID The ID of the parent node
+	 * @see _insertChild()
+	 *
+	 * @param int  $nodeID   The ID of the child node
+	 * @param int  $parentID The ID of the parent node
+	 * @param bool $force    True to suppress exceptions if the parent node
+	 *                       doesn't exist
+	 *
+	 * @return Transaction   The transaction instance with the queries added
 	 */
 	public function insertChildAtEnd($nodeID, $parentID, $force = false)
 	{
@@ -305,11 +310,17 @@ class NestedSetHelper
 	}
 
 	/**
-	 * Adds a child element to a parent node as a direct descendant, either as the very first element or the very last.
+	 * Adds a child element to a parent node as a direct descendant, either as
+	 * the very first or very last node.
 	 *
 	 * @param int 	  $nodeID   The ID of the child node
 	 * @param int 	  $parentID The ID of the parent node
-	 * @param boolean $atStart  When true child is inserted as the first element, otherwise the last.
+	 * @param boolean $atStart  When true the child is inserted as the first
+	 *                          element, otherwise the last
+	 * @param bool $force       True to suppress exceptions if the parent node
+	 *                          doesn't exist
+	 *
+	 * @return Transaction      The transaction instance with the queries added
 	 */
 	protected function _insertChild($nodeID, $parentID, $atStart = true, $force)
 	{
@@ -318,89 +329,97 @@ class NestedSetHelper
 		$parent = $this->_getNode($parentID, $force);
 
 		// Make space for the new element
-		$trans = new DBtransaction;
+		if (true === $atStart) {
+			$this->_trans->add('
+				UPDATE
+					`' . $this->_table . '`
+				SET
+					`' . $this->_left . '`  = `' . $this->_left . '` + 2,
+					`' . $this->_right . '` = `' . $this->_right . '` + 2
+				WHERE
+					`' . $this->_left . '` > ?i
+			', $parent[$this->_left]);
 
+			$newLeft  = (int) $parent[$this->_left] + 1;
+			$newRight = (int) $parent[$this->_left] + 2;
+		}
+		else {
+			$this->_trans->add('
+				UPDATE
+					`' . $this->_table . '`
+				SET
+					`' . $this->_left . '` = `' . $this->_left . '` + 2
+				WHERE
+					`' . $this->_left . '` > ?i
+			', $parent[$this->_right]);
 
-		if($atStart === true) {
-			$trans->add("
+			$this->_trans->add('
 				UPDATE
-					" . $this->_table . "
+					`' . $this->_table . '`
 				SET
-					" . $this->_left . "  = " . $this->_left . " + 2,
-					" . $this->_right . " = " . $this->_right . " + 2
+					`' . $this->_right . '` = `' . $this->_right . '` + 2
 				WHERE
-					" . $this->_left . " > " . (int)$parent[$this->_left] . "
-			");
-			$newLeft  = (int)$parent[$this->_left]+1;
-			$newRight = (int)$parent[$this->_left]+2;
-		} else {
-			$trans->add("
-				UPDATE
-					" . $this->_table . "
-				SET
-					" . $this->_left . " = " . $this->_left . " + 2
-				WHERE
-					" . $this->_left . " > " . (int)$parent[$this->_right] . "
-			");
-			$trans->add("
-				UPDATE
-					" . $this->_table . "
-				SET
-					" . $this->_right . " = " . $this->_right . " + 2
-				WHERE
-					" . $this->_right . " >= " . (int)$parent[$this->_right] . "
-			");
-			$newLeft  = (int)$parent[$this->_right];
-			$newRight = (int)$parent[$this->_right]+1;
+					`' . $this->_right . '` >= ?i
+			', $parent[$this->_right]);
+
+			$newLeft  = (int) $parent[$this->_right];
+			$newRight = (int) $parent[$this->_right] + 1;
 		}
 
-
-		// insert the new element
-		$trans->add("
+		// Insert the new element
+		$this->_trans->add('
 			UPDATE
-				" . $this->_table . "
+				`' . $this->_table . '`
 			SET
-				" . $this->_left . "  = " . $newLeft . ",
-				" . $this->_right . " = " . $newRight . ",
-				" . $this->_depth . " = " . ($parent[$this->_depth]+1) . "
+				`' . $this->_left . '`  = :left?i,
+				`' . $this->_right . '` = :right?i,
+				`' . $this->_depth . '` = :depth?i
 			WHERE
-				" . $this->_pk . " = " . (int)$nodeID . "
-		");
+				`' . $this->_pk . '` = :id?i
+		', array(
+			'id'    => $nodeID,
+			'left'  => $newLeft,
+			'right' => $newRight,
+			'depth' => $parent[$this->_depth] + 1,
+		));
 
-		return $trans->run();
+		return $this->_trans;
 	}
 
 	/**
-	 * Removes a node from the tree but doesnt delete it.
+	 * Removes a node from the tree without deleting it.
 	 *
-	 * @param  int 		$nodeID The ID of the node to remove.
-	 * @return boolean True if the node was removed successfully.
+	 * @param  int $nodeID The ID of the node to remove
+	 *
+	 * @return Transaction The transaction instance with the queries added
 	 */
 	public function remove($nodeID)
 	{
+		$this->_checkTableInfoSet();
+
 		$node = $this->_getNode($nodeID);
 
-		$trans->add("
+		$this->_trans->add('
 			UPDATE
-				" . $this->_table . "
+				`' . $this->_table . '`
 			SET
-				" . $this->_left . "  = " . $this->_left . " - 2,
-				" . $this->_right . " = " . $this->_right . " - 2
+				`' . $this->_left . '`  = `' . $this->_left . '` - 2,
+				`' . $this->_right . '` = `' . $this->_right . '` - 2
 			WHERE
-				" . $this->_right . " > " . (int)$node[$this->_right] . "
-		");
+				`' . $this->_right . '` > ?i
+		', $node[$this->_right]);
 
-		$trans->add("
+		$this->_trans->add('
 			UPDATE
-				" . $this->_table . "
+				`' . $this->_table . '`
 			SET
-				" . $this->_left . "  = NULL,
-				" . $this->_right . " = NULL
+				`' . $this->_left . '`  = NULL,
+				`' . $this->_right . '` = NULL
 			WHERE
-				" . $this->_pk . " = " . (int)$nodeID . "
-		");
+				`' . $this->_pk . '` = ?i
+		', $nodeID);
 
-		return $trans->run();
+		return $this->_trans;
 	}
 
 	/**
@@ -421,75 +440,90 @@ class NestedSetHelper
 	 * Gets the left, right and depth values for a specific node ID
 	 *
 	 * @param  int     $nodeID The ID of the node to fetch
-	 * @param  boolean $force  If the node doesnt exist an exception is thrown. Setting to true surpresses this.
-	 * @return array   An array where the left, right and depth values are keys in the array.
+	 * @param  boolean $force  True to suppress the exception thrown if the node
+	 *                         does not exist
+	 *
+	 * @return array           An array with the left, right and depth values
+	 *
+	 * @throws \InvalidArgumentException If the node does not exist
 	 */
 	protected function _getNode($nodeID, $force = false)
 	{
-		if($force && !$nodeID) {
-			$db = new DBquery("
+		if ($force && !$nodeID) {
+			$result = $this->_query->run('
 				SELECT
-					-1  AS `" . $this->_pk . "`,
-					0   AS `" . $this->_left . "`,
-					MAX(" . $this->_right . ") + 1 AS `" . $this->_right . "`,
-					-1  AS `" . $this->_depth . "`
+					-1  AS `' . $this->_pk . '`,
+					0   AS `' . $this->_left . '`,
+					MAX(`' . $this->_right . '`) + 1 AS `' . $this->_right . '`,
+					-1  AS `' . $this->_depth . '`
 				FROM
-					". $this->_table ."
-			");
-		} else {
-			$db = new DBquery("
+					`' . $this->_table . '`
+			');
+		}
+		else {
+			$result = $this->_query->run('
 				SELECT
-					" . $this->_pk . "     AS `" . $this->_pk . "`,
-					" . $this->_left . "   AS `" . $this->_left . "`,
-					" . $this->_right . "  AS `" . $this->_right . "`,
-					" . $this->_depth  . " AS `" . $this->_depth . "`
+					`' . $this->_pk . '`,
+					`' . $this->_left . '`,
+					`' . $this->_right . '`,
+					`' . $this->_depth . '`
 				FROM
-					" . $this->_table . "
+					`' . $this->_table . '`
 				WHERE
-					" . $this->_pk . " = " . (int)$nodeID . "
-			");
+					`' . $this->_pk . '` = ?s
+			', $nodeID);
 		}
 
-
-		if(!($node = $db->row()) && !$force) {
-			throw new \Exception(sprintf('Node `%s:%s` does not exist.', $this->_pk, $nodeID));
+		if (!($node = $result->first()) && !$force) {
+			throw new \InvalidArgumentException(sprintf('Node `%s:%s` does not exist.', $this->_pk, $nodeID));
 		}
 
-		return $node;
+		return (array) $node;
 	}
 
+	/**
+	 * Gets the left, right and depth values for the parent of a specific node.
+	 *
+	 * @param  array $node An array of left, right and depth values for the node
+	 *                     to find the parent for (from `_getNode()`)
+	 *
+	 * @return array       An array with the left, right and depth values
+	 */
 	protected function _getParentNode($node)
 	{
-		// If we're at the top level get a faux parent node so we can still move 0 depth nodes left and right
-		if($node[$this->_depth] === 0) {
-			$sql = "
+		// If we're at the top level get a faux parent node so we can still move
+		// 0 depth nodes left and right
+		if ($node[$this->_depth] === 0) {
+			$result = $this->_query->run('
 				SELECT
-					-1  AS `" . $this->_pk . "`,
-					0   AS `" . $this->_left . "`,
-					MAX(" . $this->_right . ") + 1 AS `" . $this->_right . "`,
-					-1  AS `" . $this->_depth . "`
+					-1  AS `' . $this->_pk . '`,
+					0   AS `' . $this->_left . '`,
+					MAX(`' . $this->_right . '`) + 1 AS `' . $this->_right . '`,
+					-1  AS `' . $this->_depth . '`
 				FROM
-					". $this->_table ."
-			";
+					`' . $this->_table . '`
+			');
 		} else {
-			$sql = "
+			$result = $this->_query->run('
 				SELECT
-					" . $this->_pk . "     AS `" . $this->_pk . "`,
-					" . $this->_left . "   AS `" . $this->_left . "`,
-					" . $this->_right . "  AS `" . $this->_right . "`,
-					" . $this->_depth  . " AS `" . $this->_depth . "`
+					`' . $this->_pk . '`,
+					`' . $this->_left . '`,
+					`' . $this->_right . '`,
+					`' . $this->_depth . '`
 				FROM
-					" . $this->_table . "
+					`' . $this->_table . '`
 				WHERE
-					" . $this->_left . " < " . $node[$this->_left] . "
-					AND " . $this->_right . " > " . $node[$this->_right] . "
-					AND depth = " . ($node[$this->_depth] - 1) . "
-			";
+					`' . $this->_left . '` < :left?i
+				AND `' . $this->_right . '` > :right?i
+				AND `' . $this->_depth . '` = :depth?i
+			', array(
+				'left'  => $node[$this->_left],
+				'right' => $node[$this->_right],
+				'depth' => $node[$this->_depth] - 1,
+			));
 		}
 
-		$db = new DBquery($sql);
-
-		return $db->row();
+		return (array) $result->first();
 	}
 }
 
