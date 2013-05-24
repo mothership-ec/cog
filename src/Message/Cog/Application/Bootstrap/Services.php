@@ -189,7 +189,7 @@ class Services implements ServicesInterface
 
 		// Forms
 		$serviceContainer['form'] = function($c) {
-			return new \Message\Cog\Form\Form($c['form.config']);
+			return new \Message\Cog\Form\Form($c);
 		};
 
 		$serviceContainer['form.php'] = function($c) {
@@ -198,39 +198,11 @@ class Services implements ServicesInterface
 			return $form;
 		};
 
-		// @todo add form.twig
-
-		$serviceContainer['form.config'] = function($c) {
-			$config = new \Message\Cog\Form\ConfigBuilder(
-				'formName',
-				'\Message\Cog\Form\Data',
-				$c['event.dispatcher'],
-				// @todo work out what all these settings are for!
-				array(
-					'type' => '',
-					'options' => '',
-					'allow_add' => '',
-					'allow_delete' => '',
-					'block_name' => '',
-					'read_only' => '',
-					'translation_domain' => '',
-					'max_length' => '',
-					'pattern' => '',
-					'label' => '',
-					'attr' => '',
-					'label_attr' => ''
-				)
-			);
-
-			$config->setCompound(true);
-			$config->setDataMapper($c['form.data']);
-			$config->setFormFactory($c['form.factory']);
-			$config->setType(new \Symfony\Component\Form\ResolvedFormType(
-				new \Symfony\Component\Form\Extension\Core\Type\FormType()
-			));
-
-			return $config;
+		$serviceContainer['form.provider'] = function($c) {
+			return new \Message\Cog\Form\ServiceProvider;
 		};
+
+		// @todo add form.twig
 
 		$serviceContainer['form.data'] = function($c) {
 			return new \Message\Cog\Form\Data;
@@ -262,6 +234,7 @@ class Services implements ServicesInterface
 
 			$formHelper = new \Symfony\Bundle\FrameworkBundle\Templating\Helper\FormHelper(
 				new \Symfony\Component\Form\FormRenderer(
+//				new \Message\Cog\Form\Renderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine($engine)
 				),
 				array()
