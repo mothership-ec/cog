@@ -82,4 +82,25 @@ class Connection implements ConnectionInterface
 	{
 		return $this->_params['affectedRows'];
 	}
+
+
+	public function getTransactionStart()
+	{
+		return '';
+	}
+
+	public function getTransactionEnd()
+	{
+		return '';
+	}
+
+	public function getTransactionRollback()
+	{
+		return '';
+	}
+
+	public function getLastInsertIdFunc()
+	{
+		return '';
+	}
 }

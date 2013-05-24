@@ -13,8 +13,4 @@ interface ResultInterface
 	public function seek($position);
 	public function getAffectedRows();
 	public function getLastInsertId();
-	public function getTransactionStart();
-	public function getTransactionEnd();
-	public function getTransactionRollback();
-	public function getLastInsertIdFunc();
 }
