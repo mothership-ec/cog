@@ -11,6 +11,11 @@ class StreamWrapperManagerTest extends \PHPUnit_Framework_TestCase
 		$this->manager = new StreamWrapperManager();
 	}
 
+	public function tearDown()
+	{
+		$this->manager->clear();
+	}
+
 	public function testClearing()
 	{
 		$this->manager->register('test-one',   function(){});
@@ -22,15 +27,6 @@ class StreamWrapperManagerTest extends \PHPUnit_Framework_TestCase
 		$this->manager->clear();
 
 		$this->assertSame(0, count($this->manager->getHandlers()));
-	}
-
-	/**
-	 * @expectedException \Exception
-	 */
-	public function testStreamIsRegistered()
-	{
-		$this->manager->register('test', function(){});
-		$this->manager->register('test', function(){});
 	}
 
 	/**

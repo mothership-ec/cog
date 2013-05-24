@@ -14,13 +14,13 @@ class StreamWrapperManager
 			throw new \Exception(sprintf('Stream wrapper `%s://` already registered', $prefix));
 		}
 
-		static::$handlers[$prefix] = $func;
-
 		$className = $this->_createTempClass($prefix);
 
 		if(!stream_wrapper_register($prefix, $className)) {
 			throw new \Exception(sprintf('Could not register stream wrapper `%s://`', $prefix));
 		}
+
+		static::$handlers[$prefix] = $func;
 	}
 
 	public function unregister($prefix)
@@ -61,7 +61,7 @@ class StreamWrapperManager
 		$php = '
 			namespace '.__NAMESPACE__.';
 			class '.$className.' extends '.self::SHIM_CLASS_NAME.' {
-				protected function _getStreamWrapperPrefix() {
+				public function getStreamWrapperPrefix() {
 					return \''.$prefix.'\';
 				}
 			}

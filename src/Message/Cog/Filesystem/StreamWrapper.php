@@ -4,7 +4,7 @@ namespace Message\Cog\Filesystem;
 
 use Message\Cog\ReferenceParser;
 
-class CogStreamWrapper implements StreamWrapperInterface {
+class StreamWrapper implements StreamWrapperInterface {
 	/**
 	* Stream context resource. This must be public
 	*
@@ -28,6 +28,39 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*/
 	protected $uri;
 
+	protected $_mapping = array();
+
+	public function setReferenceParser($parser)
+	{
+		$this->_parser = $parser;
+	}
+
+	public function setMapping(array $mapping)
+	{
+		$this->_mapping = $mapping;
+	}
+
+	public function getLocalPath($uri)
+	{
+		$len = strlen($this->prefix . '://');
+		$path = substr($uri, $len);
+
+		foreach($this->_mapping as $regex => $mapping) {
+			$result = preg_replace($regex, $mapping, '/'.$path, 100, $matches);
+
+			if(count($matches) > 0) {
+				return $result;
+			}
+		}
+
+		// Now check our reference parser
+		if($fullPath = $this->_parser->parse($path)->getFullPath()) {
+			return $fullPath;
+		}
+
+		return false;
+	}
+
 	/**
 	* Support for fopen(), file_get_contents(), file_put_contents() etc.
 	*
@@ -41,36 +74,14 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*	 A string containing the path actually opened.
 	*
 	* @return bool
-	*	 Returns TRUE if file was opened successfully.
+	*	 Returns true if file was opened successfully.
 	*
 	* @see http://php.net/manual/streamwrapper.stream-open.php
 	*/
 	public function stream_open($uri, $mode, $options, &$opened_path)
 	{
-		
-
 		$this->uri = $uri;
-
-		$parts = parse_url($uri);
-
-		
-
-		StreamWrapperManager::getHandler($uri);
-
-		$path = '/'.$parts['host'].$parts['path'];
-
-		$mappings = array(
-			"/^\/tmp\/(.*)/us" => __DIR__.'/../../../../tests/Message/Cog/Test/Filesystem/fs/tmp/$1',
-		);
-
-		foreach($mappings as $regex => $mapping) {
-			$result = preg_replace($regex, $mapping, $path, 100, $matches);
-
-			if(count($matches) > 0) {
-				$path = $result;
-				break;
-			}
-		}
+		$path = $this->getLocalPath($uri);
 
 		$this->handle = ($options & STREAM_REPORT_ERRORS) ? fopen($path, $mode) : @fopen($path, $mode);
 
@@ -79,20 +90,6 @@ class CogStreamWrapper implements StreamWrapperInterface {
 		}
 
 		return (bool) $this->handle;
-	}
-
-	public function register($prefix)
-	{
-		if(!stream_wrapper_register($prefix, __CLASS__)) {
-			throw new \Exception(sprintf('Could not register stream wrapper `%s://`', $prefix));
-		}
-	}
-
-	public function unregister($prefix = 'test')
-	{
-		if(!stream_wrapper_unregister($prefix)) {
-			throw new \Exception(sprintf('Could not register stream wrapper `%s://`', $prefix));
-		}
 	}
 
 	/**
@@ -107,7 +104,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*		 supported on Windows).
 	*
 	* @return bool
-	*	 Always returns TRUE at the present time.
+	*	 Always returns true at the present time.
 	*
 	* @see http://php.net/manual/streamwrapper.stream-lock.php
 	*/
@@ -156,7 +153,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	* Support for feof().
 	*
 	* @return bool
-	*	 TRUE if end-of-file has been reached.
+	*	 true if end-of-file has been reached.
 	*
 	* @see http://php.net/manual/streamwrapper.stream-eof.php
 	*/
@@ -174,7 +171,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*	 SEEK_SET, SEEK_CUR, or SEEK_END.
 	*
 	* @return bool
-	*	 TRUE on success.
+	*	 true on success.
 	*
 	* @see http://php.net/manual/streamwrapper.stream-seek.php
 	*/
@@ -189,7 +186,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	* Support for fflush().
 	*
 	* @return bool
-	*	 TRUE if data was successfully stored (or there was no data to store).
+	*	 true if data was successfully stored (or there was no data to store).
 	*
 	* @see http://php.net/manual/streamwrapper.stream-flush.php
 	*/
@@ -229,7 +226,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	* Support for fclose().
 	*
 	* @return bool
-	*	 TRUE if stream was successfully closed.
+	*	 true if stream was successfully closed.
 	*
 	* @see http://php.net/manual/streamwrapper.stream-close.php
 	*/
@@ -262,14 +259,14 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*	 A string containing the URI to the resource to delete.
 	*
 	* @return bool
-	*	 TRUE if resource was successfully deleted.
+	*	 true if resource was successfully deleted.
 	*
 	* @see http://php.net/manual/streamwrapper.unlink.php
 	*/
 	public function unlink($uri)
 	{
 		$this->uri = $uri;
-		return drupal_unlink($this->getLocalPath());
+		return unlink($this->getLocalPath());
 	}
 
 	/**
@@ -281,7 +278,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*	 The new URI for file.
 	*
 	* @return bool
-	*	 TRUE if file was successfully renamed.
+	*	 true if file was successfully renamed.
 	*
 	* @see http://php.net/manual/streamwrapper.rename.php
 	*/
@@ -293,17 +290,11 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	/**
 	* Gets the name of the directory from a given path.
 	*
-	* This method is usually accessed through drupal_dirname(), which wraps
-	* around the PHP dirname() function because it does not support stream
-	* wrappers.
-	*
 	* @param string $uri
 	*	 A URI or path.
 	*
 	* @return string
 	*	 A string containing the directory name.
-	*
-	* @see drupal_dirname()
 	*/
 	public function dirname($uri = NULL)
 	{
@@ -329,7 +320,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*	 A bit mask of STREAM_REPORT_ERRORS and STREAM_MKDIR_RECURSIVE.
 	*
 	* @return bool
-	*	 TRUE if directory was successfully created.
+	*	 true if directory was successfully created.
 	*
 	* @see http://php.net/manual/streamwrapper.mkdir.php
 	*/
@@ -346,10 +337,10 @@ class CogStreamWrapper implements StreamWrapperInterface {
 			$localpath = $this->getLocalPath($uri);
 		}
 		if ($options & STREAM_REPORT_ERRORS) {
-			return drupal_mkdir($localpath, $mode, $recursive);
+			return mkdir($localpath, $mode, $recursive);
 		}
 		else {
-			return @drupal_mkdir($localpath, $mode, $recursive);
+			return mkdir($localpath, $mode, $recursive);
 		}
 	}
 
@@ -362,7 +353,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*	 A bit mask of STREAM_REPORT_ERRORS.
 	*
 	* @return bool
-	*	 TRUE if directory was successfully removed.
+	*	 true if directory was successfully removed.
 	*
 	* @see http://php.net/manual/streamwrapper.rmdir.php
 	*/
@@ -370,10 +361,10 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	{
 		$this->uri = $uri;
 		if ($options & STREAM_REPORT_ERRORS) {
-			return drupal_rmdir($this->getLocalPath());
+			return rmdir($this->getLocalPath());
 		}
 		else {
-			return @drupal_rmdir($this->getLocalPath());
+			return rmdir($this->getLocalPath());
 		}
 	}
 
@@ -414,7 +405,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	*	 Unknown (parameter is not documented in PHP Manual).
 	*
 	* @return bool
-	*	 TRUE on success.
+	*	 true on success.
 	*
 	* @see http://php.net/manual/streamwrapper.dir-opendir.php
 	*/
@@ -443,7 +434,7 @@ class CogStreamWrapper implements StreamWrapperInterface {
 	* Support for rewinddir().
 	*
 	* @return bool
-	*	 TRUE on success.
+	*	 true on success.
 	*
 	* @see http://php.net/manual/streamwrapper.dir-rewinddir.php
 	*/
@@ -453,14 +444,14 @@ class CogStreamWrapper implements StreamWrapperInterface {
 		// We do not really have a way to signal a failure as rewinddir() does not
 		// have a return value and there is no way to read a directory handler
 		// without advancing to the next file.
-		return TRUE;
+		return true;
 	}
 
 	/**
 	* Support for closedir().
 	*
 	* @return bool
-	*	 TRUE on success.
+	*	 true on success.
 	*
 	* @see http://php.net/manual/streamwrapper.dir-closedir.php
 	*/
@@ -469,6 +460,6 @@ class CogStreamWrapper implements StreamWrapperInterface {
 		closedir($this->handle);
 		// We do not really have a way to signal a failure as closedir() does not
 		// have a return value.
-		return TRUE;
+		return true;
 	}
 }
