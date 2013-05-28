@@ -29,7 +29,7 @@ class StreamWrapperManager
 	 */
 	public function register($prefix, \Closure $func)
 	{
-		if(isset($this->_handlers[$prefix])) {
+		if(isset(static::$handlers[$prefix])) {
 			throw new \Exception(sprintf('Stream wrapper `%s://` already registered', $prefix));
 		}
 

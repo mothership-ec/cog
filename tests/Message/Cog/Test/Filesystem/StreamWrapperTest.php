@@ -48,11 +48,12 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 	public function tearDown()
 	{
 		$this->manager->clear();
+		@unlink(__DIR__.'/fs/tmp/poem.txt');
 	}
 
 	public function testMapping()
 	{
-		$this->manager->register('test', function(){
+		$this->manager->register('bob', function(){
 			$wrapper = new StreamWrapper;
 			$wrapper->setMapping(array(
 				"/^\/tmp\/(.*)/us" => __DIR__.'/fs/tmp/$1',
@@ -60,10 +61,15 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 
 			return $wrapper;
 		});
-		
-		$contents = file_get_contents('test://tmp/hello.txt');
 
+		$contents = file_get_contents('bob://tmp/hello.txt');
 		$this->assertSame('world', $contents);
+
+		$path = 'bob://tmp/poem.txt';
+		file_put_contents($path, 'A short poem');
+		$this->assertSame('A short poem', file_get_contents($path));
+	
+		$this->assertSame(unlink($path), true);
 	}
 
 	public function testReferenceParser()

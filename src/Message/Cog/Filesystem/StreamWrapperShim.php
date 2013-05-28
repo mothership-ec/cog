@@ -33,6 +33,13 @@ abstract class StreamWrapperShim
 	 */
 	public function __call($method, $args)
 	{
+		// Sometimes php creates an instead of our StreamWrapper class without calling the constructor!
+		// This happens with the unlink() function, so we have to check that our handler is setup before
+		// we test to see if the $method exists.
+		if(!($this->_handler instanceof StreamWrapperInterface)) {
+			$this->__construct();
+		}
+
 		if(!method_exists($this->_handler, $method)) {
 			throw new \Exception(sprintf('Unknown method `%s`', $method));
 		}
@@ -67,4 +74,5 @@ abstract class StreamWrapperShim
 	{
 		return isset($this->_handler->{$name});
 	}
+
 }

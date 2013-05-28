@@ -46,5 +46,12 @@ class StreamWrapperManagerTest extends \PHPUnit_Framework_TestCase
 		$this->manager->register('test', function(){});
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testGettingNonexistantPrefix()
+	{
+		StreamWrapperManager::getHandler('thisdoesntexist');
+	}
 
 }

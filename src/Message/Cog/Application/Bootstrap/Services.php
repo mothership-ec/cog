@@ -13,6 +13,7 @@ use Message\Cog\DB;
  * Registers Cog service definitions when the application is loaded.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author James Moss <james@message.co.uk>
  */
 class Services implements ServicesInterface
 {
@@ -23,10 +24,6 @@ class Services implements ServicesInterface
 	 */
 	public function registerServices($serviceContainer)
 	{
-		$serviceContainer['profiler'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Debug\Profiler(null, null, false);
-		});
-
 		$serviceContainer['profiler'] = $serviceContainer->share(function() {
 			return new \Message\Cog\Debug\Profiler(null, null, false);
 		});
@@ -64,7 +61,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
 			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
+			$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
 			$cache        = new \Message\Cog\Cache\Instance(
 				new $adapterClass
 			);

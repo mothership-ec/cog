@@ -300,7 +300,8 @@ class StreamWrapper implements StreamWrapperInterface
 	public function unlink($uri)
 	{
 		$this->uri = $uri;
-		return unlink($this->getLocalPath());
+		
+		return unlink($this->getLocalPath($uri));
 	}
 
 	/**
