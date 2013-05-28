@@ -36,9 +36,9 @@ class DateRange
 	 * Check whether a given date & time falls within the date range.
 	 *
 	 * @param DateTime|null  $datetime The date & time to check, null for
-	 *                                  current date & time
+	 *                                 current date & time
 	 *
-	 * @return boolean                  True if the date & time is in the range
+	 * @return boolean                 True if the date & time is in the range
 	 */
 	public function isInRange(DateTime $datetime = null)
 	{
@@ -66,10 +66,10 @@ class DateRange
 	 * range, represented as an instance of `DateInterval`.
 	 *
 	 * @param DateTime|null  $datetime The date & time to use, null for
-	 *                                  current date & time
+	 *                                 current date & time
 	 *
-	 * @return DateInterval             The interval between the supplied date &
-	 *                                  time and the start of this date range
+	 * @return DateInterval            The interval between the supplied date &
+	 *                                 time and the start of this date range
 	 */
 	public function getIntervalToStart(DateTime $datetime = null)
 	{
@@ -89,10 +89,10 @@ class DateRange
 	 * range, represented as an instance of `DateInterval`.
 	 *
 	 * @param DateTime|null  $datetime The date & time to use, null for
-	 *                                  current date & time
+	 *                                 current date & time
 	 *
-	 * @return DateInterval             The interval between the supplied date &
-	 *                                  time and the end of this date range
+	 * @return DateInterval            The interval between the supplied date &
+	 *                                 time and the end of this date range
 	 */
 	public function getIntervalToEnd(DateTime $datetime = null)
 	{

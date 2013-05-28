@@ -48,7 +48,7 @@ class Connection implements ConnectionInterface
 		$this->_connect();
 
 		if($res = $this->_handle->query($sql)) {
-			return new Result($this->_handle->query($sql), $this);
+			return new Result($res, $this);
 		}
 
 		return false;
