@@ -73,6 +73,9 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 
 		// $this->_mockSalt->generate()->randomFilePath = '';
 		// $this->_mockSalt->generate();
+		
+		$this->markTestSkipped('Cannot run test: Cannot mock function call hierarchy.');
+
 	}
 
 	public function testGenerateReturnValuesFormat()
