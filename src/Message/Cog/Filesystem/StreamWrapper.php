@@ -270,6 +270,8 @@ class StreamWrapper implements StreamWrapperInterface
 	*/
 	public function stream_cast($cast_as)
 	{
+		// This currently always returns false (as do related functions) as
+		// local filesystem streams cannot be used with select_select()
 		return false;
 	}
 
