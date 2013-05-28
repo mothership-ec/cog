@@ -65,10 +65,6 @@ abstract class StreamWrapperShim
 	{
 		$this->_checkHandlerIsInitialised();
 
-		if(!($this->_handler instanceof StreamWrapperInterface)) {
-			$this->__construct();
-		}
-
 		$this->_handler->{$name} = $value;
 	}
 
