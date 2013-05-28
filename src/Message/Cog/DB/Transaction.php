@@ -18,12 +18,12 @@ class Transaction extends Query
 
 	public function rollback()
 	{
-		return $this->run($this->_result->getTransactionRollback());
+		return $this->run($this->_connection->getTransactionRollback());
 	}
 
 	public function commit()
 	{
-		$this->run($this->_result->getTransactionStart());
+		$this->run($this->_connection->getTransactionStart());
 		try {
 			foreach($this->_queries as $query) {
 				$this->run($query[0], $query[1]);
@@ -33,7 +33,7 @@ class Transaction extends Query
 			throw $e;
 		}
 
-		return $this->run($this->_result->getTransactionEnd());
+		return $this->run($this->_connection->getTransactionEnd());
 	}
 
 	public function setID($name)
