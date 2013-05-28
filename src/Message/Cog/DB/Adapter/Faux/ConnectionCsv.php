@@ -29,26 +29,29 @@ class ConnectionCsv extends Connection
 	protected function _loadDataFromCsv($path)
 	{
 		if (file_exists($path) === false) {
-			throw \Exception(sprintf('`%s` does not exist.', $path));
+			throw new \Exception(sprintf('`%s` does not exist.', $path));
 		}
 
 		if (($handle = fopen($path, 'r')) === false) {
-			throw \Exception(sprintf('Cannot open `%s` for reading.', $path));
+			throw new \Exception(sprintf('Cannot open `%s` for reading.', $path));
 		}
 
 		$keys = array();
 		$data = array();
+		$i = 0;
 		while (($row = fgetcsv($handle, 4096)) !== FALSE) {
-			if(!count($data)) { // first row must always be keys
+			if ($i == 0) { // first row must always be keys
 				$keys = $row;
+				$i++;
 				continue;
 			}
 
 			$data[] = array_combine($keys, $row);
+			
+			$i++;
 		}
 
 		fclose($handle);
-
 		return $data;
 	}
 }

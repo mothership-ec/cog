@@ -23,7 +23,7 @@ class Connection implements ConnectionInterface
 
 	protected function _connect()
 	{
-		// If we've already got a connection handle we don't 
+		// If we've already got a connection handle we don't
 		// need to connect again
 		if($this->_handle !== null) {
 			return;
@@ -31,15 +31,15 @@ class Connection implements ConnectionInterface
 
 		// Make the connection
 		$this->_handle = new \MySQLi(
-			$this->_params['host'], 
-			$this->_params['user'], 
-			$this->_params['password'], 
+			$this->_params['host'],
+			$this->_params['user'],
+			$this->_params['password'],
 			$this->_params['db']
 		);
 
 		// Set the charset
 		if(isset($this->_params['charset'])) {
-			$mysqli->set_charset($this->_params['charset']);	
+			$this->_handle->set_charset($this->_params['charset']);
 		}
 	}
 
@@ -48,7 +48,7 @@ class Connection implements ConnectionInterface
 		$this->_connect();
 
 		if($res = $this->_handle->query($sql)) {
-			return new Result($this->_handle->query($sql), $this);
+			return new Result($res, $this);
 		}
 
 		return false;
@@ -58,7 +58,7 @@ class Connection implements ConnectionInterface
 	{
 		$this->_connect();
 
-		return $this->real_escape_string($text);
+		return $this->_handle->real_escape_string($text);
 	}
 
 	public function getLastError()
@@ -73,4 +73,23 @@ class Connection implements ConnectionInterface
 		return $this->_handle;
 	}
 
+	public function getTransactionStart()
+	{
+		return 'START TRANSACTION';
+	}
+
+	public function getTransactionEnd()
+	{
+		return 'COMMIT';
+	}
+
+	public function getTransactionRollback()
+	{
+		return 'ROLLBACK';
+	}
+
+	public function getLastInsertIdFunc()
+	{
+		return 'LAST_INSERT_ID()';
+	}
 }

@@ -40,31 +40,11 @@ class Result implements ResultInterface
 
 	public function getAffectedRows()
 	{
-		return $this->_connection->affected_rows;
+		return $this->_connection->getHandle()->affected_rows;
 	}
 
 	public function getLastInsertId()
 	{
-		return $this->_connection->insert_id;
-	}
-
-	public function getTransactionStart()
-	{
-		return 'START TRANSACTION';
-	}
-
-	public function getTransactionEnd()
-	{
-		return 'COMMIT';
-	}
-
-	public function getTransactionRollback()
-	{
-		return 'ROLLBACK';
-	}
-
-	public function getLastInsertIdFunc()
-	{
-		return 'LAST_INSERT_ID()';
+		return $this->_connection->getHandle()->insert_id;
 	}
 }
