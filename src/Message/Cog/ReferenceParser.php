@@ -81,7 +81,7 @@ class ReferenceParser implements ReferenceParserInterface
 
 		// Build and return the full path
 		return implode(DIRECTORY_SEPARATOR, array_filter(array(
-			$this->_moduleLocator->getPath($this->getModuleName()),
+			rtrim($this->_moduleLocator->getPath($this->getModuleName()), '/'),
 			$this->getPath($pathNamespace, DIRECTORY_SEPARATOR)
 		)));
 	}

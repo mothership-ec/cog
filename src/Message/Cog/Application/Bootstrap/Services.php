@@ -197,5 +197,24 @@ class Services implements ServicesInterface
 		$serviceContainer['app.context.console'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Application\Context\Console($c);
 		});
+
+		// Validator
+		$serviceContainer['validator'] = function($c) {
+			return new \Message\Cog\Validation\Validator(
+				new \Message\Cog\Validation\Loader(
+					new \Message\Cog\Validation\Messages,
+					array(
+						new \Message\Cog\Validation\Rule\Date,
+						new \Message\Cog\Validation\Rule\Number,
+//						new \Message\Cog\Validation\Rule\Iterable, - not working yet
+						new \Message\Cog\Validation\Rule\Text,
+						new \Message\Cog\Validation\Rule\Other,
+						new \Message\Cog\Validation\Filter\Text,
+						new \Message\Cog\Validation\Filter\Type,
+						new \Message\Cog\Validation\Filter\Other,
+					)
+				)
+			);
+		};
 	}
 }
