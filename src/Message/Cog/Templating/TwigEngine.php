@@ -87,7 +87,7 @@ class TwigEngine implements EngineInterface, StreamingEngineInterface
 	 */
 	public function supports($name)
 	{
-		if ($name instanceof \Twig_Template) {
+		if ($name instanceof Twig_Template) {
 			return true;
 		}
 
