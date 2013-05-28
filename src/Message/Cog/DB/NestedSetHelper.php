@@ -414,7 +414,8 @@ class NestedSetHelper
 				`' . $this->_table . '`
 			SET
 				`' . $this->_left . '`  = NULL,
-				`' . $this->_right . '` = NULL
+				`' . $this->_right . '` = NULL,
+				`' . $this->_depth . '` = NULL
 			WHERE
 				`' . $this->_pk . '` = ?i
 		', $nodeID);
