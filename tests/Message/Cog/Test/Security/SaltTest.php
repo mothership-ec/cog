@@ -13,15 +13,14 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_salt;
 	protected $_badHash;
+	protected $_mockSalt;
+	protected $_dlength;
 
 	public function setUp()
 	{
-		$this->_salt = new Salt;
-		
-		$this->_salt
-			 ->expects($this->once())
-			 ->method('generateFromUnixRandom', 'generateFromOpenSSL', 'generateNatively')
-			 ->will($this->returnFalse());
+		$this->_mockSalt 	= $this->getMock('Message\Cog\Security\Salt');
+		$this->_salt 		= new Salt($this->_mockSalt);
+		$this->_dlength 	= Salt::DEFAULT_LENGTH;
 	}
 
 	public function testAllGenerateMethodsRespectLength()
@@ -34,12 +33,10 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 
 	public function testDefaultLengthUsed()
 	{
-		$dlength = Salt::DEFAULT_LENGTH;
-
-		$this->assertSame($dlength, strlen($this->_salt->generateFromUnixRandom($dlength)));
-		$this->assertSame($dlength, strlen($this->_salt->generateFromOpenSSL($dlength)));
-		$this->assertSame($dlength, strlen($this->_salt->generateNatively($dlength)));
-		$this->assertSame($dlength, strlen($this->_salt->generate($dlength)));
+		$this->assertSame($this->_dlength, strlen($this->_salt->generateFromUnixRandom($this->_dlength)));
+		$this->assertSame($this->_dlength, strlen($this->_salt->generateFromOpenSSL($this->_dlength)));
+		$this->assertSame($this->_dlength, strlen($this->_salt->generateNatively($this->_dlength)));
+		$this->assertSame($this->_dlength, strlen($this->_salt->generate($this->_dlength)));
 	}
 
 	/**
@@ -52,26 +49,39 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 
 		// this is just to make the test pass: remove it once the test is built
 
-		throw new \UnexpectedValueException('could not be generated');
+		$this->_mockSalt
+			 ->expects($this->once())
+			 ->method('generate')
+			 ->will($this->throwException(new \UnexpectedValueException('String could not be generated.')));
+
+		$this->_mockSalt->generate();
+
 	}
 
 	public function testGenerateOrderOfPreference()
 	{
 		// bit of a tricky one. we need to use mocking most likely. we need to
+
+		// $generate = $this->_mockSalt->generate(Salt::DEFAULT_LENGTH);
+
+		// var_dump($generate);
+
+		// $this->_mockSalt
+		// 	 ->expects($this->once())
+		// 	 ->method('generate')
+		// 	 ->will($this->assertTrue($calls));
+
+		// $this->_mockSalt->generate()->randomFilePath = '';
+		// $this->_mockSalt->generate();
 	}
 
 	public function testGenerateReturnValuesFormat()
 	{
 		// for each, check the results are strings and match the regex [./0-9A-Za-z]
-
-
-		// Mock class so three methods return false
-
-		// param 2 = 3 methods
-
-		// called once 
-
-		// return false
+		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generate($this->_dlength));
+		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generateFromUnixRandom($this->_dlength));
+		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generateFromOpenSSL($this->_dlength));
+		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generateNatively($this->_dlength));
 	}
 
 	/**
@@ -119,8 +129,15 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 
 	public function testGenerateOpenSSLThrowsExceptionWhenFunctionDoesNotExist()
 	{
-		// if the function rename_function does not exist, we will have to mark this test as skipped
-		// if it is available, we can rename the openssl_random_pseudo_bytes and check the exception gets thrown
+		// if openssl_random_pseudo_bytes function DOES exist, mark the test as skipped
+
+		if (function_exists('openssl_random_pseudo_bytes')) {
+			$this->markTestSkipped('Cannot run test: openssl_random_pseudo_bytes function exists.');
+		}
+
+ 		// if the function rename_function does not exist, we will have to mark this test as skipped
+		// if it is available, we can rename the openssl_random_pseudo_bytes and check the exception gets throw
+
 	}
 
 	public function getValidLengths()
