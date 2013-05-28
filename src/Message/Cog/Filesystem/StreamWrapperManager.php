@@ -118,7 +118,7 @@ class StreamWrapperManager
 	 */
 	protected function _createTempClass($prefix)
 	{
-		$className.= 'Tmp_'.substr(md5($prefix), 0, 12).mt_rand(100000, 999999);
+		$className = 'Tmp_'.substr(md5($prefix), 0, 12).mt_rand(100000, 999999);
 		$php = '
 			namespace '.__NAMESPACE__.';
 			class '.$className.' extends '.self::SHIM_CLASS_NAME.' {

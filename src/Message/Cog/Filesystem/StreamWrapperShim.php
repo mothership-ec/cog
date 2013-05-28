@@ -35,13 +35,8 @@ abstract class StreamWrapperShim
 	 */
 	public function __call($method, $args)
 	{
-		// Sometimes php creates an instance of our StreamWrapper class without calling the constructor!
-		// This happens with the unlink() function and a few others, so we have to check that our handler
-		// is setup before we test to see if the $method exists.
-		if(!($this->_handler instanceof StreamWrapperInterface)) {
-			$this->__construct();
-		}
-
+		$this->_checkHandlerIsInitialised();
+		
 		if(!method_exists($this->_handler, $method)) {
 			throw new \BadMethod(sprintf('Unknown method `%s`', $method));
 		}
@@ -54,6 +49,8 @@ abstract class StreamWrapperShim
 	 */
 	public function __get($name)
 	{
+		$this->_checkHandlerIsInitialised();
+
 		if(!isset($this->_handler->{$name})) {
 			throw new \Exception('Unknown property ' . $name);
 		}
@@ -66,6 +63,12 @@ abstract class StreamWrapperShim
 	 */
 	public function __set($name, $value)
 	{
+		$this->_checkHandlerIsInitialised();
+
+		if(!($this->_handler instanceof StreamWrapperInterface)) {
+			$this->__construct();
+		}
+
 		$this->_handler->{$name} = $value;
 	}
 
@@ -74,7 +77,21 @@ abstract class StreamWrapperShim
 	 */
 	public function __isset($property)
 	{
+		$this->_checkHandlerIsInitialised();
+		
 		return isset($this->_handler->{$name});
+	}
+
+	/**
+	 * Sometimes php creates an instance of our StreamWrapper class without calling the constructor!
+	 * This happens with the unlink() function and a few others, so we have to check that our handler
+	 * is setup before we act on the _handler object.
+	 */
+	protected function _checkHandlerIsInitialised()
+	{
+		if(!($this->_handler instanceof StreamWrapperInterface)) {
+			$this->__construct();
+		}
 	}
 
 }
