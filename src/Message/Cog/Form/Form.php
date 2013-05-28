@@ -143,6 +143,9 @@ class Form extends SymfonyForm
 		return $this;
 	}
 
+	/**
+	 * @return FormHelper
+	 */
 	public function getHelper()
 	{
 		return $this->_helper;
