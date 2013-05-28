@@ -7,6 +7,8 @@ use Symfony\Component\Finder\Finder as SymfonyFinder;
 /**
 * A wrapper for Cog around Symfony's Finder component
 * http://symfony.com/doc/master/components/finder.html
+*
+* @author  James Moss <james@message.co.uk>
 */
 class Finder extends SymfonyFinder
 {

@@ -7,6 +7,8 @@ namespace Message\Cog\Filesystem;
  *
  * Registers and unregisters stream wrappers. Provides a way of injecting
  * dependencies into a StreamWrapper class (which is normally quite difficult).
+ *
+ * @author  James Moss <james@message.co.uk>
  */
 class StreamWrapperManager
 {
@@ -30,7 +32,7 @@ class StreamWrapperManager
 	public function register($prefix, \Closure $func)
 	{
 		if(isset(static::$handlers[$prefix])) {
-			throw new \Exception(sprintf('Stream wrapper `%s://` already registered', $prefix));
+			throw new \InvalidArgumentException(sprintf('Stream wrapper `%s://` already registered', $prefix));
 		}
 
 		$className = $this->_createTempClass($prefix);
@@ -99,8 +101,8 @@ class StreamWrapperManager
 
 		$handler = call_user_func(static::$handlers[$prefix]);
 		
-		if(!in_array('Message\\Cog\\Filesystem\\StreamWrapperInterface', class_implements($handler))) {
-			throw new \Exception(sprintf('StreamWrapper for `%s` must implement StreamWrapperInterface', $prefix));
+		if(!($handler instanceof StreamWrapperInterface)) {
+			throw new \LogicException(sprintf('StreamWrapper for `%s` must implement StreamWrapperInterface', $prefix));
 		}
 
 		return $handler;
@@ -131,7 +133,7 @@ class StreamWrapperManager
 		$fullClassName = '\\'.__NAMESPACE__.'\\'.$className;
 
 		if(!class_exists($fullClassName)) {
-			throw new \Exception(sprintf(
+			throw new \RuntimeException(sprintf(
 				'Could not create temporary class for stream wrapper `%s`. eval() is possibly disabled.', 
 				$prefix
 			));

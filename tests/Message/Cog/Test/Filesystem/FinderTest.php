@@ -8,7 +8,7 @@ class FinderTest extends \PHPUnit_Framework_TestCase
 {
 	public function testFinderReturnsFileObject()
 	{
-		$path = __DIR__.'/fs/tmp';
+		$path = __DIR__.'/fixtures/tmp';
 		$finder = new Finder;
 
 		foreach($finder->in($path) as $file) {

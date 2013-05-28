@@ -25,7 +25,7 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_modulePaths['UniformWares\\CustomModuleName'] = __DIR__.'/fs/module/example';
+		$this->_modulePaths['UniformWares\\CustomModuleName'] = __DIR__.'/fixtures/module/example';
 
 		$fnsUtility = $this->getMockBuilder('Message\\Cog\\Functions\\Utility')
 			->disableOriginalConstructor()
@@ -48,7 +48,7 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 	public function tearDown()
 	{
 		$this->manager->clear();
-		@unlink(__DIR__.'/fs/tmp/poem.txt');
+		@unlink(__DIR__.'/fixtures/tmp/poem.txt');
 	}
 
 	public function testMapping()
@@ -56,7 +56,7 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 		$this->manager->register('bob', function(){
 			$wrapper = new StreamWrapper;
 			$wrapper->setMapping(array(
-				"/^\/tmp\/(.*)/us" => __DIR__.'/fs/tmp/$1',
+				"/^\/tmp\/(.*)/us" => __DIR__.'/fixtures/tmp/$1',
 			));
 
 			return $wrapper;

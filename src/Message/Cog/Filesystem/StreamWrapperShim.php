@@ -8,6 +8,8 @@ namespace Message\Cog\Filesystem;
  * An instance of this class is always passed to stream_wrapper_register via StreamWrapperManager.
  * It acts as a proxy between php internals and the class that implements the StreamWrapperInterface and allows
  * dependencies to be injected rather than hard coded.
+ *
+ * @author  James Moss <james@message.co.uk>
  */
 abstract class StreamWrapperShim
 {
@@ -33,15 +35,15 @@ abstract class StreamWrapperShim
 	 */
 	public function __call($method, $args)
 	{
-		// Sometimes php creates an instead of our StreamWrapper class without calling the constructor!
-		// This happens with the unlink() function, so we have to check that our handler is setup before
-		// we test to see if the $method exists.
+		// Sometimes php creates an instance of our StreamWrapper class without calling the constructor!
+		// This happens with the unlink() function and a few others, so we have to check that our handler
+		// is setup before we test to see if the $method exists.
 		if(!($this->_handler instanceof StreamWrapperInterface)) {
 			$this->__construct();
 		}
 
 		if(!method_exists($this->_handler, $method)) {
-			throw new \Exception(sprintf('Unknown method `%s`', $method));
+			throw new \BadMethod(sprintf('Unknown method `%s`', $method));
 		}
 
 		return call_user_func_array(array($this->_handler, $method), $args);

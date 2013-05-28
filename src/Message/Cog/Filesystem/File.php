@@ -3,7 +3,9 @@
 namespace Message\Cog\Filesystem;
 
 /**
-* An iterator that injects Message\Cog\Filesystem\File into Symfony's finder component
+* An extension of SplFileInfo that enables us to add our own customisations.
+*
+* @author  James Moss <james@message.co.uk>
 */
 class File extends \SplFileInfo
 {

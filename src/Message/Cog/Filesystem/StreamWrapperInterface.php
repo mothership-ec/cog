@@ -6,6 +6,8 @@ namespace Message\Cog\Filesystem;
  * Defines a generic PHP stream wrapper interface.
  *
  * @see http://www.php.net/manual/class.streamwrapper.php
+ *
+ * @author  James Moss <james@message.co.uk>
  */
 interface StreamWrapperInterface
 {
