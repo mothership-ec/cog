@@ -18,14 +18,14 @@ class FormTest extends \PHPUnit_Framework_TestCase
 
 		$this->_configBuilder = $this->getMock(
 			'\Message\Cog\Form\ConfigBuilder',
-			array(),
+			array('getCompound'),
 			array('test', '\Message\Cog\Form\Data', $this->_eventDispatcher));
 
 		$this->_form = new Form($this->_configBuilder);
 	}
 
-	public function test()
+	public function testAdd()
 	{
-
+		$this->_form->add('test');
 	}
 }

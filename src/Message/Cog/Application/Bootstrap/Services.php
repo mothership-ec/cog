@@ -234,10 +234,8 @@ class Services implements ServicesInterface
 
 			$formHelper = new \Symfony\Bundle\FrameworkBundle\Templating\Helper\FormHelper(
 				new \Symfony\Component\Form\FormRenderer(
-//				new \Message\Cog\Form\Renderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine($engine)
-				),
-				array()
+				)
 			);
 
 			$engine->setHelpers(array(

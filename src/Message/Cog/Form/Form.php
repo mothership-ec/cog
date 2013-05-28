@@ -39,6 +39,11 @@ class Form extends SymfonyForm
 	protected $_provider;
 
 	/**
+	 * @var bool
+	 */
+	protected $_compound = true;
+
+	/**
 	 * Default options to assign to form config.
 	 * @todo set some default options!
 	 *
@@ -56,7 +61,7 @@ class Form extends SymfonyForm
 		'pattern' => '',
 		'label' => '',
 		'attr' => '',
-		'label_attr' => ''
+		'label_attr' => '',
 	);
 
 	/**
@@ -66,6 +71,7 @@ class Form extends SymfonyForm
 	{
 		$this->_container = $serviceContainer;
 		$this->_provider = $this->_container['form.provider'];
+		$this->_compound = true;
 	}
 
 	/**
@@ -86,10 +92,10 @@ class Form extends SymfonyForm
 			$options
 		);
 
-//		$this->setHelper($this->_container['form.helper.' . $helperType]);
+		$this->setHelper($this->_container['form.helper.' . $helperType]);
 
-		$config->setCompound(true); // allow addition of subforms
-		$config->setDataMapper($this->_container['form.data']);
+		$config->setCompound($this->_compound); // allow addition of subforms
+		$config->setDataMapper($this->_container['form.data']); // set class to store data
 		$config->setFormFactory($this->_container['form.factory']);
 		$config->setType(new \Symfony\Component\Form\ResolvedFormType(
 			new \Symfony\Component\Form\Extension\Core\Type\FormType()
@@ -99,36 +105,6 @@ class Form extends SymfonyForm
 
 		return $this;
 	}
-
-	/**
-	 * @throws \Exception
-	 *
-	 * @return string
-	 */
-//	public function __toString()
-//	{
-//		try {
-//			if (!$this->_helper) {
-//				throw new \Exception('Helper not set');
-//			}
-//
-//			if (!$this->getConfig()) {
-//				throw new \Exception('Config not set, run setup() method');
-//			}
-//
-//			$view = $this->createView();
-//			$return = '';
-//
-//			$return .= $this->_formString($view);
-//
-//			var_dump($return); die();
-//
-//		}
-//		catch (\Exception $e) {
-//			return "<table>" . $e->xdebug_message . "</table>";
-//
-//		}
-//	}
 
 	protected function _formString(FormView $view)
 	{
@@ -167,6 +143,11 @@ class Form extends SymfonyForm
 		return $this;
 	}
 
+	public function getHelper()
+	{
+		return $this->_helper;
+	}
+
 	/**
 	 * @return ContainerInterface
 	 */
@@ -197,6 +178,18 @@ class Form extends SymfonyForm
 	public function setProvider(ServiceProvider $provider)
 	{
 		$this->_provider = $provider;
+	}
+
+	/**
+	 * @param bool $compound
+	 */
+	public function setCompound($compound = true)
+	{
+		$this->_compound = $compound;
+
+		if ($this->getConfig()) {
+			$this->getConfig()->setCompound($compound);
+		}
 	}
 
 }
