@@ -78,7 +78,7 @@ class Validator
 	 */
 	public function field($name, $readableName = false)
 	{
-		if(!isset($this->_fields[$name])) {
+		if (!isset($this->_fields[$name])) {
 			$this->_createField($name, $readableName);
 		}
 		$this->_fieldPointer = &$this->_fields[$name];
@@ -222,7 +222,7 @@ class Validator
 	}
 
 	/**
-	 * Removes any data that is not validated/necessary
+	 * Removes any data that is not validated/necessary for security purposes
 	 *
 	 * @return Validator        Returns $this for chainability
 	 */
@@ -251,8 +251,9 @@ class Validator
 	 */
 	protected function _applyFilters($type)
 	{
-		if (($type !== 'pre') && ($type !== 'post'))
+		if (($type !== 'pre') && ($type !== 'post')) {
 			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $type must be either \'pre\' or \'post\', \'' . $type . '\' given');
+		}
 
 		foreach($this->_fields as $name => $field) {
 
@@ -309,7 +310,7 @@ class Validator
 		// Check if data has been submitted
 		$notSet = (!isset($this->_data[$name]) || $this->_data[$name] === '');
 
-		if($notSet && !$field['optional']) {
+		if ($notSet && !$field['optional']) {
 			$this->_messages->addError($name, $field['readableName'].' is a required field.');
 		}
 
@@ -332,11 +333,11 @@ class Validator
 			array_unshift($args, $this->_data[$name]);
 			$result = call_user_func_array($func, $args);
 
-			if($invertResult) {
+			if ($invertResult) {
 				$result = !$result;
 			}
 
-			if(!$result) {
+			if (!$result) {
 				$this->_messages->addFromRule($field, $rule);
 			}
 		}
@@ -355,7 +356,7 @@ class Validator
 	 */
 	protected function _createField($name, $readableName = false)
 	{
-		if($readableName === false) {
+		if ($readableName === false) {
 			$readableName = str_replace('_', ' ', $name);
 			$readableName = preg_replace(array('/(?<=[^A-Z])([A-Z])/', '/(?<=[^0-9])([0-9])/'), ' $0', $readableName);
 			$readableName = ucwords($readableName);

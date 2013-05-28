@@ -237,6 +237,35 @@ Now all that is left is to assign it to the loader itself. Edit the Message\Cog\
 		);
 	};
 
+### Adding one-off rules/filters
+
+	It is also possible to add custom rules and filters for use only in one instance, calling the `getLoader()` method, and then the `registerRule()` or `registerFilter()` method like so:
+
+	// Register new rule
+	$validator
+		->getLoader()               // Call loader
+		->registerRule(
+			'ruleName',             // How rule will be called by validator
+			array(                  // Callable array
+				new RuleClass,      // Rule class instance
+				'ruleMethod'        // Rule method
+			),
+			'error message'         // Error message to display (using spring syntax)
+		)
+	;
+
+	// Register new filter
+	$validator
+		->getLoader()               // Call loader
+		->registerFilter(
+			'filterName'            // How filter will be called by validator
+			array(
+				new RuleFilter,     // Filter class instance
+				'ruleFilter'        // Filter method
+			)
+		)
+	;
+
 ## Limitations
 
 When creating filters and rules, due to the fluent interface, it is worth bearing in mind that you cannot register

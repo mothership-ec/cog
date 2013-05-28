@@ -4,6 +4,7 @@ namespace Message\Cog\Test\Validation\Filter;
 
 use Message\Cog\Validation\Filter\Other;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Test\Validation\DummyCollection;
 
 class OtherTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,12 +33,18 @@ class OtherTest extends \PHPUnit_Framework_TestCase
 
 	public function testFilterWithMethod()
 	{
-		try {
-			$this->assertTrue($this->_filter->filter('var', array()));
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$callable = array(
+			new DummyCollection,
+			'testFilter'
+		);
+		$this->assertSame('test', $this->_filter->filter('hello', $callable));
+	}
+
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testFilterNotCallable()
+	{
+		$this->assertTrue($this->_filter->filter('var', array()));
 	}
 }

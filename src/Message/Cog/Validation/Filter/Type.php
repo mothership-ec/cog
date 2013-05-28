@@ -240,8 +240,9 @@ class Type implements CollectionInterface
 		);
 
 		foreach ($date as $key => $value) {
-			if (!array_key_exists($key, $parts))
+			if (!array_key_exists($key, $parts)) {
 				throw new \Exception(__CLASS__ . '::' . __METHOD__ . " - '" . $key . " is not a valid date part");
+			}
 		}
 
 		$parts = array_merge($parts, $date);

@@ -99,7 +99,7 @@ class Messages
 	 */
 	public function addError($fieldName, $error)
 	{
-		if(!isset($this->_fields[$fieldName])) {
+		if (!isset($this->_fields[$fieldName])) {
 			$this->_fields[$fieldName] = array();
 		}
 

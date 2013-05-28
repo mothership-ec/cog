@@ -87,7 +87,8 @@ class Text implements CollectionInterface
 		// Overloaded option if one param is specified, checks exact length
 		if ($max === null) {
 			return $len === $min;
-		} elseif ($min >= $max) {
+		}
+		elseif ($min >= $max) {
 			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be greater than $min');
 		}
 

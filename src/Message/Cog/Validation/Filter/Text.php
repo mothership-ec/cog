@@ -252,7 +252,8 @@ class Text implements CollectionInterface
 
 		if (!preg_match($pattern, $url)) {
 			$url = $protocol . '://' . $url;
-		} elseif ($replaceExisting) {
+		}
+		elseif ($replaceExisting) {
 			$url = preg_replace($pattern, $protocol . '://', $url);
 		}
 

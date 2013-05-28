@@ -60,6 +60,7 @@ class Date implements CollectionInterface
 		if ($orEqualTo) {
 			return $var >= $target;
 		}
+
 		return $var > $target;
 	}
 }
