@@ -47,24 +47,4 @@ class Result implements ResultInterface
 	{
 		return $this->_connection->getHandle()->insert_id;
 	}
-
-	public function getTransactionStart()
-	{
-		return 'START TRANSACTION';
-	}
-
-	public function getTransactionEnd()
-	{
-		return 'COMMIT';
-	}
-
-	public function getTransactionRollback()
-	{
-		return 'ROLLBACK';
-	}
-
-	public function getLastInsertIdFunc()
-	{
-		return 'LAST_INSERT_ID()';
-	}
 }

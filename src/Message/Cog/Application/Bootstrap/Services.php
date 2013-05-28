@@ -58,6 +58,10 @@ class Services implements ServicesInterface
 			return new \Message\Cog\DB\Transaction($s['db.connection']);
 		};
 
+		$serviceContainer['db.nested_set_helper'] = function($s) {
+			return new \Message\Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
+		};
+
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
 			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
 			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;

@@ -16,7 +16,7 @@ class Result implements ResultInterface
 	{
 		// Ensure that the pointer is at the start of the array
 		reset($data);
-		
+
 		$this->_data       = $data;
 		$this->_connection = $connection;
 	}
@@ -43,7 +43,7 @@ class Result implements ResultInterface
 	{
 		// Move the pointer back to the start
 		reset($this->_data);
-		
+
 		// Move it forward $position number of places
 		for($i = 0; $i < $position; $i++) {
 			next($this->_data);
@@ -65,25 +65,5 @@ class Result implements ResultInterface
 	public function getLastInsertId()
 	{
 		return $this->_connection->getInsertId();
-	}
-
-	public function getTransactionStart()
-	{
-		return '';
-	}
-
-	public function getTransactionEnd()
-	{
-		return '';
-	}
-
-	public function getTransactionRollback()
-	{
-		return '';
-	}
-
-	public function getLastInsertIdFunc()
-	{
-		return '';
 	}
 }
