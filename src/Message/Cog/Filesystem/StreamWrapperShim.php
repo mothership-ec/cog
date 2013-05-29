@@ -38,7 +38,7 @@ abstract class StreamWrapperShim
 		$this->_checkHandlerIsInitialised();
 		
 		if(!method_exists($this->_handler, $method)) {
-			throw new \BadMethod(sprintf('Unknown method `%s`', $method));
+			throw new \BadMethodCallException(sprintf('Unknown method `%s`', $method));
 		}
 
 		return call_user_func_array(array($this->_handler, $method), $args);
