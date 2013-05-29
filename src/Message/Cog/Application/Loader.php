@@ -39,7 +39,6 @@ abstract class Loader
 	public function __construct($baseDir)
 	{
 		$this->_baseDir = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$this->_setGlobalErrorHandler();
 	}
 
 	/**
@@ -272,15 +271,6 @@ abstract class Loader
 		}
 
 		require_once $this->_baseDir . 'vendor/autoload.php';
-	}
-
-	/**
-	 * Converts all errors into ErrorExceptions
-	 */
-	protected function _setGlobalErrorHandler()
-	{
-		$handler = new ErrorHandler;
-		$handler->register();
 	}
 
 	/**
