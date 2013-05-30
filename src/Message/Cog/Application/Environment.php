@@ -3,25 +3,6 @@
 namespace Message\Cog\Application;
 
 /**
-<<<<<<< HEAD
-* Determines what environment Cog is running in.
-*
-* An environment is made up of two things
-*  - A name
-*  - A context
-*
-* Environments define the 'place' where a Cog app is running. The environment
-* names are predefined and can't be changed. The allowed options are
-* currently: live, local, dev, staging and test.
-*
-* This class also determines what context the request is running in: 'web' if
-* the app is being access via HTTP or 'console' if it's being run via the
-* command line.
-*
-* @TODO: security protocol for live
-*/
-class Environment
-=======
  * Determines the environment the application is running in.
  *
  * An environment is made up of two things:
@@ -48,7 +29,6 @@ class Environment
  * @todo security protocol for live
  */
 class Environment implements EnvironmentInterface
->>>>>>> refs/heads/master
 {
 	const ENV_SEPARATOR = '-';
 
@@ -88,11 +68,7 @@ class Environment implements EnvironmentInterface
 	/**
 	 * Gets the current environment name.
 	 *
-<<<<<<< HEAD
-	 * @return string The current environment name.
-=======
 	 * @return string The current environment name
->>>>>>> refs/heads/master
 	 */
 	public function get()
 	{
@@ -100,15 +76,9 @@ class Environment implements EnvironmentInterface
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Sets the current environment.
-	 *
-	 * @param string $name A valid environment name to change to.
-=======
 	 * Sets the current environment, overriding the detected environment.
 	 *
 	 * @param string $name A valid environment name to change to
->>>>>>> refs/heads/master
 	 */
 	public function set($name)
 	{
@@ -119,11 +89,7 @@ class Environment implements EnvironmentInterface
 	/**
 	 * Useful accessor to check if we're running on a developers machine.
 	 *
-<<<<<<< HEAD
-	 * @return boolean true if on local development machine.
-=======
 	 * @return boolean True if on local development machine
->>>>>>> refs/heads/master
 	 */
 	public function isLocal()
 	{
@@ -133,11 +99,7 @@ class Environment implements EnvironmentInterface
 	/**
 	 * Gets the name of the current context.
 	 *
-<<<<<<< HEAD
-	 * @return string Returns the current context.
-=======
 	 * @return string The current context name
->>>>>>> refs/heads/master
 	 */
 	public function context()
 	{
@@ -158,15 +120,10 @@ class Environment implements EnvironmentInterface
 	 * Manually set the context of the environment. This method should very
 	 * rarely need to be used, most likely only for testing purposes.
 	 *
-<<<<<<< HEAD
-	 * @param string $context A valid context name.
-	 * @return null
-=======
 	 * @todo Remove this. It seems to only be used by unit tests which is bad.
 	 *       We should mock or extend the class instead for testing purposes.
 	 *
 	 * @param string $context A valid context name
->>>>>>> refs/heads/master
 	 */
 	public function setContext($context)
 	{
@@ -175,26 +132,16 @@ class Environment implements EnvironmentInterface
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Searches the global environment and then the $_SERVER superglobals for a variable.
-	 * Normally these have been set in a vhost config file or .profile file. It
-	 * falls back to the $_SERVER superglobal as $_ENV cant be populated when php
-=======
 	 * Searches the global environment and then the $_SERVER superglobal for a
 	 * variable.
 	 *
 	 * Normally these have been set in a vhost config or .profile file. It falls
 	 * back to the $_SERVER superglobal as $_ENV can't be populated when PHP
->>>>>>> refs/heads/master
 	 * is running via PHP-FPM.
 	 *
 	 * @param  string $varName Name of the variable to search for
 	 *
-<<<<<<< HEAD
-	 * @return mixed           Value of the found variable (as a string) or
-=======
 	 * @return string|false    Value of the found variable (as a string) or
->>>>>>> refs/heads/master
 	 *                         false if it doesnt exist
 	 */
 	public function getEnvironmentVar($varName)
@@ -208,22 +155,15 @@ class Environment implements EnvironmentInterface
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Used to validate that an environment name or context name is valid.
-=======
 	 * Validates an environment or context name.
->>>>>>> refs/heads/master
 	 *
 	 * @param  string $type    The type of variable to validate
 	 * @param  string $value   The value that will be changed to
 	 * @param  array  $allowed An array of allowed values
 	 *
 	 * @return boolean         Returns true if $value is in the allowed list
-<<<<<<< HEAD
-=======
 	 *
 	 * @throws \InvalidArgumentException If the value is not valid
->>>>>>> refs/heads/master
 	 */
 	protected function _validate($type, $value, array $allowed)
 	{
@@ -240,12 +180,8 @@ class Environment implements EnvironmentInterface
 	/**
 	 * Tries to detect the current environment name automatically.
 	 *
-<<<<<<< HEAD
-	 * @return null
-=======
 	 * If the environment includes the character defined as `self::ENV_SEPARATOR`
 	 * then the string after the separator is set as the installation name.
->>>>>>> refs/heads/master
 	 */
 	protected function _detectEnvironment()
 	{
@@ -263,11 +199,6 @@ class Environment implements EnvironmentInterface
 
 	/**
 	 * Tries to detect the current context name automatically.
-<<<<<<< HEAD
-	 *
-	 * @return null
-=======
->>>>>>> refs/heads/master
 	 */
 	protected function _detectContext()
 	{
