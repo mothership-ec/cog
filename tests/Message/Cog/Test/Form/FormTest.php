@@ -23,46 +23,38 @@ class FormTest extends \PHPUnit_Framework_TestCase
 	protected $_configBuilder;
 	protected $_form;
 
-	public function setUp()
-	{
-//		$this->_eventDispatcher = new FauxDispatcher;
-//
-//		$this->_configBuilder = $this->getMock(
-//			'\\Message\\Cog\\Form\\ConfigBuilder',
-//			array('getCompound'),
-//			array('test', '\\Message\\Cog\\Form\\Data', $this->_eventDispatcher));
-//
-//		$this->_form = new Form($this->_configBuilder);
-	}
-
 	public function testCreateForm()
 	{
-		$config = new \Message\Cog\Form\ConfigBuilder(
-			'test',
-			null,
-			new FauxDispatcher()
-		);
+		// Set up the CSRF provider
+		$csrfProvider = new DefaultCsrfProvider('RANDOMNOISE');
 
-		$csrfSecret = 'bob';
+		// Set up the Validator component
+		$validator = Validation::createValidator();
 
-		$engine = new PhpEngine(new SimpleTemplateNameParser(realpath(__DIR__ . '/../views')), new FilesystemLoader(array()));
+		// Set up the Translation component
+		/*
+		$translator = new Translator('en');
+		$translator->addLoader('xlf', new XliffFileLoader());
+		$translator->addResource('xlf', __DIR__. '/../../../../src/Message/cog/Resources/translations/validators.en.xlf', 'en', 'validators');
+		$translator->addResource('xlf', VENDOR_VALIDATOR_DIR . '/Resources/translations/validators.en.xlf', 'en', 'validators');
+		*/
 
+		// Set up Twig
+		$twig = new Twig_Environment(new Twig_Loader_Filesystem(array(
+		    VIEWS_DIR,
+		    VENDOR_TWIG_BRIDGE_DIR . '/Resources/views/Form',
+		)));
+		$formEngine = new TwigRendererEngine(array(DEFAULT_FORM_THEME));
+		$formEngine->setEnvironment($twig);
+	//	$twig->addExtension(new TranslationExtension($translator));
+		$twig->addExtension(new FormExtension(new TwigRenderer($formEngine, $csrfProvider)));
+
+		// Set up the Form component
 		$formFactory = Forms::createFormFactoryBuilder()
-			->addExtension(new CsrfExtension(new DefaultCsrfProvider($csrfSecret)))
-			->addExtension(new TemplatingExtension($engine, null, array(
-// Will hopefully not be necessary anymore in 2.2
-				realpath(__DIR__ . '/../vendor/symfony/framework-bundle/Symfony/Bundle/FrameworkBundle/Resources/views/Form'),
-			)))
-			->getFormFactory();
+		    ->addExtension(new CsrfExtension($csrfProvider))
+		    ->addExtension(new ValidatorExtension($validator))
+		    ->getFormFactory();
 
-		$config->setCompound(true);
-
-		$form = new Form($config);
-
-		$form->add('email', 'email')
-			->add('siteUrl', 'url');
-
-		var_dump($form->getForm());
 	}
 
 	public function testAdd()
