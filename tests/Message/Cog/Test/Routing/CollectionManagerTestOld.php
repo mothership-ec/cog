@@ -2,37 +2,52 @@
 
 namespace Message\Cog\Test\Routing;
 
+use Message\Cog\ReferenceParser;
+use Message\Cog\Test\Module;
+
 use Message\Cog\Routing\Router;
+use Message\Cog\Routing\Route;
+use Message\Cog\Routing\RouteCollection;
 use Message\Cog\Routing\RequestContext;
 
-class RouterTest extends \PHPUnit_Framework_TestCase
+
+class CollectionManagerTest extends \PHPUnit_Framework_TestCase
 {
 	const ROUTE_CONTROLLER_REFERENCE = 'Message:CMS:ClassName#viewMethod';
 
 	protected $_referenceParser;
 
+	const DEFAULT_VENDOR = 'Message';
+	const DEFAULT_MODULE = 'Cog';
+
 	public function setUp()
 	{
-		$this->_referenceParser = $this->getMockBuilder('Message\Cog\ReferenceParserInterface')
+		$this->_modulePaths['UniformWares\\CustomModuleName'] = __DIR__.'/fixtures/module/example';
+
+		$fnsUtility = $this->getMockBuilder('Message\\Cog\\Functions\\Utility')
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->_referenceParser
+		// Set the default/traced vendor and module
+		$fnsUtility
 			->expects($this->any())
-			->method('parse')
-			->will($this->returnValue($this->_referenceParser));
+			->method('traceCallingModuleName')
+			->will($this->returnValue(self::DEFAULT_VENDOR . '\\' . self::DEFAULT_MODULE));
 
-		$this->_referenceParser
-			->expects($this->any())
-			->method('getSymfonyLogicalControllerName')
-			->will($this->returnValue('Message\CMS\Controller\ClassName::viewMethod'));
+		$this->_referenceParser = new ReferenceParser(
+			new Module\FauxLocator($this->_modulePaths),
+			$fnsUtility
+		);
 
-		$this->_router = new Router($this->_referenceParser);
+		$this->_collection = new RouteCollection($this->_referenceParser);
+
+		$this->_router = new Router;
+		$this->_router->setCollection($this->_collection);
 	}
 
 	public function testBasicRouting()
 	{
-		$this->_router->add('user.view', '/view/user/{userID}', self::ROUTE_CONTROLLER_REFERENCE)
+		$this->_collection->add('user.view', '/view/user/{userID}', self::ROUTE_CONTROLLER_REFERENCE)
 			->setRequirement('userID', '\d+');
 
 		$match = $this->_router->match('/view/user/1234');
@@ -102,7 +117,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 	public function testMatcherWithDifferentMethod()
 	{
 		$context = new RequestContext('', 'POST');
-		$router  = new Router($this->_referenceParser, array(), $context);
+		$router  = new Router(array(), $context);
 
 		$router->add('order.view', '/order/view/{orderID}', 'Order#view')
 			->setMethod('GET');

@@ -94,6 +94,10 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$serviceContainer['routes'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
+		});
+
 		$serviceContainer['controller.resolver'] = $serviceContainer->share(function() {
 			return new \Message\Cog\Controller\ControllerResolver;
 		});

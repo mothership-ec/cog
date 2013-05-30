@@ -2,7 +2,8 @@
 
 namespace Message\Cog\Routing;
 
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Cache;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
 * A wrapper around Symfony's Routing component making it easier to use.
@@ -14,7 +15,6 @@ use Message\Cog\ReferenceParserInterface;
 */
 class Router implements RouterInterface
 {
-	protected $_referenceParser;
 	protected $_matcher;
 	protected $_generator;
 	protected $_context;
@@ -24,28 +24,24 @@ class Router implements RouterInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param ReferenceParserInterface $referenceParser Engine to parse references
 	 * @param array		               $options         An array of options
 	 * @param RequestContext           $context         The context
 	 */
-	public function __construct(ReferenceParserInterface $referenceParser, array $options = array(), RequestContext $context = null)
+	public function __construct(array $options = array(), RequestContext $context = null)
 	{
-		$this->_referenceParser = $referenceParser;
-		$this->_collection = new RouteCollection;
 		$this->_context = null === $context ? new RequestContext() : $context;
 		$this->setOptions($options);
 	}
 
-	public function add($name, $url, $controller)
+	/**
+	 * Sets the cache class to use to store compiled routes to improve
+	 * performance. If no cache is specified then routes are never cached.
+	 *
+	 * @param \TreasureChest\CacheInterface  A cache object to store routes in.
+	 */
+	public function setCache(\TreasureChest\CacheInterface $cache)
 	{
-		$reference = $this->_referenceParser->parse($controller);
-		$defaults  = array(
-			'_controller' => $reference->getSymfonyLogicalControllerName()
-		);
-		$route     = new Route($url, $defaults);
-		$this->getRouteCollection()->add($name, $route);
-
-		return $route;
+		$this->_cache = $cache;
 	}
 
 	/**
