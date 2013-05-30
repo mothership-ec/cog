@@ -33,9 +33,7 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	}
 
 	/**
-	 * Mount the routes on the router, ready to be matched.
-	 *
-	 * @param Event $event The event instance
+	 * Mount the default routes on the router, ready to be matched.
 	 */
 	public function mountRoutes()
 	{
