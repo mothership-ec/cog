@@ -180,6 +180,11 @@ abstract class Loader
 			'Message\Cog\Application\Bootstrap'
 		)->load();
 
+		$this->_services['event.dispatcher']->dispatch(
+			'cog.load.success',
+			$this->_services['event']
+		);
+
 		return $this;
 	}
 

@@ -57,6 +57,13 @@ class Events implements EventsInterface, ContainerAwareInterface
 			)
 		);
 
+		// Filesystem
+		$eventDispatcher->addSubscriber(
+			new \Message\Cog\Filesystem\EventListener(
+				$this->_services
+			)
+		);
+
 		// TODO: add a caching layer that just also subscribes to the request/response events
 	}
 }

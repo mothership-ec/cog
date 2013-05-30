@@ -188,6 +188,24 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Filesystem\StreamWrapperManager;
 		});
 
+		$serviceContainer['filesystem.stream_wrapper'] = function($c) {
+			$wrapper = new \Message\Cog\Filesystem\StreamWrapper;
+			$wrapper->setReferenceParser($c['reference_parser']);
+			$wrapper->setMapping($c['filesystem.stream_wrapper_mapping']);
+
+			return $wrapper;
+		};
+
+		$serviceContainer['filesystem.stream_wrapper_mapping'] = function($c) {
+			$baseDir = $c['app.loader']->getBaseDir();
+			$mapping = array(
+				// Maps cog://tmp/* to /tmp/* (in the installation)
+				"/^\/tmp\/(.*)/us" => $baseDir.'tmp/$1',
+			);
+
+			return $mapping;
+		};
+
 		$serviceContainer['filesystem'] = function($c) {
 			return new \Message\Cog\Filesystem\Filesystem;
 		};
