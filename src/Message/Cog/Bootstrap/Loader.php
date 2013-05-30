@@ -4,6 +4,7 @@ namespace Message\Cog\Bootstrap;
 
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
+use Message\Cog\HTTP\RequestAwareInterface;
 
 /**
  * Bootstrap loader, responsible for loading bootstraps from modules or Cog
@@ -54,8 +55,19 @@ class Loader implements LoaderInterface
 				}
 				// Determine class name
 				$className = $namespace . '\\' . $file->getBasename('.php');
+				// Check class can be loaded, skip if not
+				if (!class_exists($className)) {
+					continue;
+				}
 				// Load the bootstrap
-				$class = new $className($this->_services);
+				$class = new $className;
+				if ($class instanceof ContainerAwareInterface) {
+					$class->setContainer($this->_services);
+				}
+				if ($class instanceof RequestAwareInterface) {
+					$class->setRequest($this->_services['request']);
+				}
+				// Add to the internal list if it implements `BootstrapInterface`
 				if ($class instanceof BootstrapInterface) {
 					$this->add($class);
 				}
@@ -74,7 +86,6 @@ class Loader implements LoaderInterface
 	 */
 	public function add(BootstrapInterface $bootstrap)
 	{
-		// Add to list
 		$this->_bootstraps[] = $bootstrap;
 
 		return $this;
@@ -113,7 +124,7 @@ class Loader implements LoaderInterface
 			if ($bootstrap instanceof EventsInterface) {
 				$bootstrap->registerEvents($this->_services['event.dispatcher']);
 			}
-			if ($this->_services['environment']->context() == 'console'
+			if ('console' === $this->_services['environment']->context()
 			 && $bootstrap instanceof TasksInterface) {
 				$bootstrap->registerTasks($this->_services['task.collection']);
 			}
@@ -121,6 +132,16 @@ class Loader implements LoaderInterface
 
 		// Clear the bootstrap list
 		$this->clear();
+	}
+
+	/**
+	 * Get all bootstraps registered on this loader.
+	 *
+	 * @return array Array of bootstraps set on this loader
+	 */
+	public function getBootstraps()
+	{
+		return $this->_bootstraps;
 	}
 
 	/**

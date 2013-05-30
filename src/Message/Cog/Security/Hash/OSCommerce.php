@@ -4,17 +4,16 @@ namespace Message\Cog\Security\Hash;
 
 use Message\Cog\Security\Salt;
 
+use \InvalidArgumentException;
+
 /**
- * An implementation of the hashing component for OSCommerce's custom hashing
- * algorithm using md5 and randomised salts.
+ * Hash class for OSCommerce's default encryption algorithm.
  *
- * This hashing functionality should only be used when working with ported
- * hashes (e.g. user passwords) from an OSCommerce database.
- *
- * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Joe Holdcroft <joe@message.uk.com>
  */
-class OSCommerce implements HashInterface
+class OSCommerce extends Hash
 {
+<<<<<<< HEAD:src/Message/Cog/Security/Hash/OSCommerce.php
 	const SALT_SEPARATOR = ':';
 
 	protected $saltGenerator;
@@ -35,49 +34,68 @@ class OSCommerce implements HashInterface
 	 * If `$salt` is passed as null, the salt is automatically generated using
 	 * the same functionality found in OSCommerce's hashing functionality rather
 	 * than `generateSalt()` available in the base class.
+=======
+	/**
+	 * Encrypts a string using the default OSCommerce encryption algorithm.
+>>>>>>> refs/heads/master:src/Message/Cog/Hash/OSCommerce.php
 	 *
-	 * @param string      $string The string to be encrypted
-	 * @param string|null $salt   Salt to be used when encrypting. If left null,
-	 *                            this is automatically generated
+	 * @param 	string $string 	The string to be encrypted
+	 * @param 	string $salt 	Optional salt to be used when encrypting
 	 *
-	 * @return string             The hashed value
+	 * @return 	string 			Encrypted hash
 	 */
-	public function encrypt($string, $salt = null)
+	final public function encrypt($string, $salt = null)
 	{
+<<<<<<< HEAD:src/Message/Cog/Security/Hash/OSCommerce.php
 		// Generate a salt a-la OSCommerce
+=======
+>>>>>>> refs/heads/master:src/Message/Cog/Hash/OSCommerce.php
 		if (is_null($salt)) {
+			// GENERATE A RANDOM SALT
 			for ($i = 0; $i < 10; $i++) {
 				$salt .= $this->_tepRand();
 			}
+			// MD5 IT AND GET GET THE FIRST 2 CHARACTERS
 			$salt = substr(md5($salt), 0, 2);
 		}
-
-		// Generate the hash
-		$hash = md5($salt . $string) . self::SALT_SEPARATOR . $salt;
+		// CREATE HASH USING PASSWORD AND SALT
+		$hash = md5($salt . $string) . ':' . $salt;
 
 		return $hash;
 	}
 
 
 	/**
-	 * Check if a string matches an OSCommerce hashed string.
+	 * Checks if a plaintext string matches an encrypted string using the
+	 * default OSCommerce algorithm.
 	 *
-	 * @param  string $string String to check
-	 * @param  string $hash   Full OSCommerce hashed string
+	 * @param 	string $string 	Plain text string
+	 * @param 	string $hash 	Encrypted string
 	 *
-	 * @return boolean        Result of match check
-	 *
-	 * @throws \InvalidArgumentException If the hash does not contain a salt
+	 * @return 	boolean 		Result of the check
 	 */
-	public function check($string, $hash)
+	final public function check($string, $hash)
 	{
+<<<<<<< HEAD:src/Message/Cog/Security/Hash/OSCommerce.php
 		if (false === strpos($hash, self::SALT_SEPARATOR)) {
 			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
+=======
+		// CHECK HASH CONTAINS SALT AND SEPARATOR
+		if (strpos($hash, ':') === false) {
+			throw new InvalidArgumentException('Invalid hash passed to ' . __METHOD__);
+>>>>>>> refs/heads/master:src/Message/Cog/Hash/OSCommerce.php
 		}
+		// GET SALT FROM HASH
+		list($rawHash, $salt) = explode(':', $hash);
 
+<<<<<<< HEAD:src/Message/Cog/Security/Hash/OSCommerce.php
 		list($plainHash, $salt) = explode(self::SALT_SEPARATOR, $hash, 2);
 
 		return $hash === $this->encrypt($string, $salt);
+=======
+		// RE-HASH THE PASSWORD AND CHECK AGAINST INPUT HASH
+		return ($hash === $this->encrypt($string, $salt));
+>>>>>>> refs/heads/master:src/Message/Cog/Hash/OSCommerce.php
 	}
 
 	/**
@@ -85,11 +103,11 @@ class OSCommerce implements HashInterface
 	 *
 	 * This is copied from OSCommerce's tep_rand() function. The function
 	 * definition is found in OSCommerce's filesystem here:
-	 * `/catalog/admin/includes/functions/general.php`
+	 * /catalog/admin/includes/functions/general.php
 	 *
-	 * @return int The randomly generated integer
+	 * @return 	int 		The randomly generated integer
 	 */
-	protected function _tepRand()
+	final protected function _tepRand()
 	{
 		static $seeded;
 

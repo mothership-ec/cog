@@ -26,6 +26,9 @@ class Text
 			' is ',
 			' the ',
 			' are ',
+			' on ',
+			' in ',
+			' of ',
 		);
 
 		$string = str_replace(array_map('ucwords', $ignores), $ignores, $string);
@@ -47,7 +50,7 @@ class Text
 
 	public static function pluralise($string, $amount)
 	{
-		return $string . $this->plural($amount);
+		return $string . self::plural($amount);
 	}
 
 	public static function parsePossessive($string)
@@ -64,11 +67,11 @@ class Text
 	public static function obfuscate($string)
 	{
 		$output = '';
-		$length = strlen($str);
+		$length = strlen($string);
 
 		for($i = 0; $i < $length; $i++) {
 			// GET CHARACTER ASCII CODE AND USE AS HTML ENTITY
-			$output .= '&#' . ord($str[$i]) . ';';
+			$output .= '&#' . ord($string[$i]) . ';';
 		}
 
 		return $output;
@@ -102,7 +105,7 @@ class Text
 
 		if($checkExists) {
 			$i = 1;
-			while($this->slugExists($return)) {
+			while(self::slugExists($return)) {
 				$newReturn = $return.'-'.$i;
 				$i++;
 			}

@@ -4,16 +4,9 @@ namespace Message\Cog\Security\Hash;
 
 use Message\Cog\Security\Salt;
 
-/**
- * A SHA1 implementation for the hashing component. Uses an optional appended
- * salt.
- *
- * @author Joe Holdcroft <joe@message.co.uk>
- */
-class SHA1 implements HashInterface
-{
-	const SALT_SEPARATOR = ':';
+use \InvalidArgumentException;
 
+<<<<<<< HEAD:src/Message/Cog/Security/Hash/SHA1.php
 	protected $_saltGenerator;
 
 	/**
@@ -73,5 +66,17 @@ class SHA1 implements HashInterface
 		list($plainHash, $salt) = explode(self::SALT_SEPARATOR, $hash, 2);
 
 		return ($hash === $this->encrypt($string, $salt));
+=======
+class SHA1 extends Hash
+{
+	final public function encrypt($string, $salt = null)
+	{
+		return sha1($string);
+	}
+
+	final public function check($string, $hash)
+	{
+		return ($hash === $this->encrypt($string));
+>>>>>>> refs/heads/master:src/Message/Cog/Hash/SHA1.php
 	}
 }

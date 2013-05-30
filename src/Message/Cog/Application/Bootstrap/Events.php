@@ -3,6 +3,7 @@
 namespace Message\Cog\Application\Bootstrap;
 
 use Message\Cog\Service\ContainerInterface;
+use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Bootstrap\EventsInterface;
 use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
@@ -10,16 +11,28 @@ use Message\Cog\HTTP\Event\Event as HTTPEvent;
  * Cog event listener bootstrap.
  *
  * Registers Cog event listeners when the application is loaded.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Events implements EventsInterface
+class Events implements EventsInterface, ContainerAwareInterface
 {
 	protected $_services;
 
-	public function __construct(ContainerInterface $serviceContainer)
+	/**
+	 * Inject the service container.
+	 *
+	 * @param ContainerInterface $serviceContainer The service container
+	 */
+	public function setContainer(ContainerInterface $serviceContainer)
 	{
 		$this->_services = $serviceContainer;
 	}
 
+	/**
+	 * Register the event listeners & subscribers to the given event dispatcher.
+	 *
+	 * @param object $eventDispatcher The event dispatcher
+	 */
 	public function registerEvents($eventDispatcher)
 	{
 		// HTTP Component Events
@@ -30,7 +43,7 @@ class Events implements EventsInterface
 			)
 		);
 		$eventDispatcher->addSubscriber(
-			new \Message\Cog\HTTP\EventListener\Response
+			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
 		);
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Exception
@@ -45,6 +58,5 @@ class Events implements EventsInterface
 		);
 
 		// TODO: add a caching layer that just also subscribes to the request/response events
-		// TODO: bags of stuff could be moved to these events to clean up code, for example, the Profiler
 	}
 }

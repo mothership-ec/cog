@@ -8,14 +8,12 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 {
 	public function testDetectingDefaultEnvironmentName()
 	{
-		putenv('COG_ENV=staging');
+		putenv('COG_ENV');
 
 		$env = new Environment;
 
-		$this->assertEquals('staging', $env->get());
+		$this->assertEquals('local', $env->get());
 		$this->assertNotEquals('bob', $env->get());
-
-		putenv('COG_ENV');
 	}
 
 	public function testDetectingEnvironmentName()
@@ -27,17 +25,33 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('staging', $env->get());
 		$this->assertNotEquals('bob', $env->get());
 
+		putenv('TEST_ENV=live-server6');
+
+		$env = new Environment('TEST_ENV');
+
+		$this->assertEquals('live', $env->get());
+		$this->assertEquals('server6', $env->installation());
+		$this->assertNotEquals('staging', $env->get());
+
 		putenv('TEST_ENV');
 	}
 
 	public function testDetectingEnvironmentNameUsingServerVars()
 	{
-		$_SERVER['TEST_ENV'] = 'dev';
+		$_SERVER['MY_ENV'] = 'dev';
 
-		$env = new Environment('TEST_ENV');
+		$env = new Environment('MY_ENV');
 		$this->assertEquals('dev', $env->get());
 
-		unset($_SERVER['TEST_ENV']);
+		$_SERVER['MY_ENV'] = 'local-joe';
+
+		$env = new Environment('MY_ENV');
+
+		$this->assertEquals('local', $env->get());
+		$this->assertEquals('joe', $env->installation());
+		$this->assertNotEquals('dev', $env->get());
+
+		unset($_SERVER['MY_ENV']);
 	}
 
 	public function testDetectingContext()

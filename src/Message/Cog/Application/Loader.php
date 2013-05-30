@@ -31,18 +31,14 @@ abstract class Loader
 	/**
 	 * Constructor.
 	 *
-	 * Sets the application base directory.
+	 * Sets the application base directory, ensuring it ends with a trailing
+	 * slash.
 	 *
 	 * @param string $baseDir Absolute path to the installation base directory
 	 */
 	public function __construct($baseDir)
 	{
-		// Ensure base directory ends with directory separator
-		if (DIRECTORY_SEPARATOR !== substr($baseDir, -1)) {
-			$baseDir .= DIRECTORY_SEPARATOR;
-		}
-
-		$this->_baseDir = $baseDir;
+		$this->_baseDir = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -56,15 +52,30 @@ abstract class Loader
 	}
 
 	/**
+	 * Get the application name.
+	 *
+	 * This gets the first namespace for the application's loader (the subclass
+	 * that extends this abstract class).
+	 *
+	 * E.g. a loader named TestApp\MySetupModule\AppLoader would return `TestApp`
+	 *
+	 * @return string The application name
+	 */
+	public function getAppName()
+	{
+		return strstr(get_class($this), '\\', true);
+	}
+
+	/**
 	 * Get the context instance for this request.
 	 *
 	 * @return Context\ContextInterface The context instance
-	 * @throws \Exception               If the context has not been set yet
+	 * @throws LogicException           If the context has not been set yet
 	 */
 	public function getContext()
 	{
 		if (!$this->_context) {
-			throw new \Exception('Cannot get context: it has not yet been set. Please run `loadCog()` first.');
+			throw new LogicException('Cannot get context: it has not yet been set. Please run `loadCog()` first.');
 		}
 
 		return $this->_context;
@@ -79,7 +90,7 @@ abstract class Loader
 	 * @see loadModules
 	 * @see execute
 	 *
-	 * @return mixed Whatever is returned by `$this->execute()`
+	 * @return mixed The result of running `$this->execute()`
 	 */
 	public function run()
 	{
@@ -97,8 +108,8 @@ abstract class Loader
 	 * This gets set automatically, so this method is only for overriding the
 	 * container. Handy for unit testing.
 	 *
-	 * @param ContainerInterface $container The service container to use
-	 * @return Loader                       Returns $this for chainability
+	 * @param  ContainerInterface $container The service container to use
+	 * @return Loader                        Returns $this for chainability
 	 */
 	public function setServiceContainer(ContainerInterface $container)
 	{
@@ -179,6 +190,7 @@ abstract class Loader
 	 * a definition on the service container named `app.context.[$contextName]`.
 	 *
 	 * @return Loader            Returns $this for chainability
+	 *
 	 * @throws \RuntimeException If the apropriate context class could not be
 	 *                           found on the service container.
 	 * @throws \LogicException   If the context class was found, but it does not
@@ -227,7 +239,14 @@ abstract class Loader
 	 */
 	public function execute()
 	{
-		return $this->_context->run();
+		$return = $this->getContext()->run();
+
+		$this->_services['event.dispatcher']->dispatch(
+			'terminate',
+			$this->_services['event']
+		);
+
+		return $return;
 	}
 
 	/**
@@ -236,8 +255,8 @@ abstract class Loader
 	 * This is determined by looking for the `vendor` directory within the
 	 * defined base directory, and the file `autoload.php` within that.
 	 *
-	 * @throws \Exception If the autoloader file can't be found
-	 * @throws \Exception If the autoloader file is not readable
+	 * @throws RuntimeException If the autoloader file can't be found
+	 * @throws RuntimeException If the autoloader file is not readable
 	 */
 	protected function _includeAutoloader()
 	{

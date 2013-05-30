@@ -1,10 +1,10 @@
 name: Message
 short-name: message
-domain: message.uk.com
-url: www.message.uk.com
-email: debug@message.uk.com
+domain: message.co.uk
+url: www.message.co.uk
+email: debug@message.co.uk
 telephone: +44 12345 6789
-fax: 
+fax:
 vat-registration-number: '0123456789'
 company-number: '1234567'
 address:
@@ -24,7 +24,7 @@ gateway:
       encryption-key: 1234567
       payment-url: https://test.sagepay.com/gateway/service/vspserver-register.vsp
       refund-url: https://test.sagepay.com/gateway/service/refund.vsp
-      redirect-url-base: http://beta.message.uk.com
+      redirect-url-base: http://beta.message.co.uk
 ga-code:
 updates:
    email: true
