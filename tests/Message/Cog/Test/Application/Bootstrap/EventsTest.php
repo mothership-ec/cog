@@ -5,6 +5,7 @@ namespace Message\Cog\Test\Application\Bootstrap;
 use Message\Cog\Application\Bootstrap\Events as EventsBootstrap;
 use Message\Cog\Debug\Profiler;
 use Message\Cog\Application\Environment;
+use Message\Cog\HTTP\CookieCollection;
 
 use Message\Cog\Test\Event\FauxDispatcher;
 use Message\Cog\Test\Service\FauxContainer;
@@ -32,6 +33,10 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 
 		$this->_container['environment'] = $this->_container->share(function() {
 			return new Environment;
+		});
+
+		$this->_container['http.cookies'] = $this->_container->share(function() {
+			return new CookieCollection;
 		});
 
 		$this->_bootstrap->setContainer($this->_container);
