@@ -88,7 +88,6 @@ class Services implements ServicesInterface
 
 		$serviceContainer['router'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Routing\Router(
-				$c['reference_parser'],
 				array(
 					'cache_key' => 'router',
 				)

@@ -41,6 +41,13 @@ namespace Message\Cog\Test\Application {
 			$_SERVER['argv'] = array('/usr/bin/php', 'foo:bar1');
 		}
 
+		public function tearDown()
+		{
+			// The loader causes streams to be registered, we unregister them here
+			$manager = new \Message\Cog\Filesystem\StreamWrapperManager;
+			$manager->clear();
+		}
+
 		/**
 		 * Get a mocked instance of `Application\Loader` with `_registerModules` set
 		 * to return a list of faux module names.
