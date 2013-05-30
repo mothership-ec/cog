@@ -207,31 +207,45 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Form\ServiceProvider;
 		};
 
-		// @todo add form.twig
-
 		$serviceContainer['form.data'] = function($c) {
 			return new \Message\Cog\Form\Data;
 		};
 
-		$serviceContainer['form.builder'] = function($c) {
-			return new \Message\Cog\Form\Builder(
-				'formName',
-				'\Message\Cog\Form\Data',
-				$c['event.dispatcher'],
-				$c['form.factory']
-			);
+		$serviceContainer['form.builder.php'] = function($c) {
+			return $c['form.factory.php']->createBuilder();
 		};
 
-		$serviceContainer['form.factory'] = function($c) {
-			return new \Symfony\Component\Form\FormFactory(
-				new \Symfony\Component\Form\FormRegistry(
-					array(
-						new \Symfony\Component\Form\Extension\Core\CoreExtension()
-					),
-					new \Symfony\Component\Form\ResolvedFormTypeFactory()
-				),
-				new \Symfony\Component\Form\ResolvedFormTypeFactory()
-			);
+		$serviceContainer['form.builder.twig'] = function($c) {
+			return $c['form.factory.twig']->createBuilder();
+		};
+
+		$serviceContainer['form.factory.php'] = function($c) {
+			$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr'; // this should probably be dynamic
+			$engine = $c['form.engine.php'];
+			$builder = new \Message\Cog\Form\Factory\Builder;
+			return $builder->addExtension(new \Message\Cog\Form\Csrf\Csrf(
+					new \Message\Cog\Form\Csrf\Provider($csrfSecret))
+				)
+				->addExtension(new \Message\Cog\Form\Template\Templating($engine, null, array(
+					// require form templates
+					realpath(__DIR__ . '/../../src/Message/Cog/Form/Views/Php'),
+				)))
+				->getFormFactory();
+		};
+
+		$serviceContainer['form.factory.twig'] = function($c) {
+			$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr'; // this should probably be dynamic
+			$engine = $c['form.engine.twig'];
+			return \Symfony\Component\Form\Forms::createFormFactoryBuilder()
+				->addExtension(new \Message\Cog\Form\Csrf\Csrf(
+						new \Message\Cog\Form\Csrf\Provider($csrfSecret))
+				)
+				->addExtension(new \Message\Cog\Form\Template\Templating($engine, null, array(
+					// Required form teplates
+					// @todo create twig templates
+					realpath(__DIR__ . '/../../src/Message/Cog/Form/Views/Twig'),
+				)))
+				->getFormFactory();
 		};
 
 		$serviceContainer['form.helper.php'] = function($c) {
@@ -251,8 +265,6 @@ class Services implements ServicesInterface
 			return $formHelper;
 
 		};
-
-		// @todo add form.helper.twig
 
 		$serviceContainer['form.engine.php'] = function($c) {
 			return new \Symfony\Component\Templating\PhpEngine(
