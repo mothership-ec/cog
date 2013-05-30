@@ -58,6 +58,10 @@ class Services implements ServicesInterface
 			return new \Message\Cog\DB\Transaction($s['db.connection']);
 		};
 
+		$serviceContainer['db.nested_set_helper'] = function($s) {
+			return new \Message\Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
+		};
+
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
 			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
 			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
@@ -187,6 +191,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Application\Context\Console($c);
 		});
 
+
 		// Forms
 		$serviceContainer['form'] = function($c) {
 			return new \Message\Cog\Form\Form($c);
@@ -257,5 +262,25 @@ class Services implements ServicesInterface
 		};
 
 		// @todo add form.helper.twig
+
+		// Validator
+		$serviceContainer['validator'] = function($c) {
+			return new \Message\Cog\Validation\Validator(
+				new \Message\Cog\Validation\Loader(
+					new \Message\Cog\Validation\Messages,
+					array(
+						new \Message\Cog\Validation\Rule\Date,
+						new \Message\Cog\Validation\Rule\Number,
+//						new \Message\Cog\Validation\Rule\Iterable, - not working yet
+						new \Message\Cog\Validation\Rule\Text,
+						new \Message\Cog\Validation\Rule\Other,
+						new \Message\Cog\Validation\Filter\Text,
+						new \Message\Cog\Validation\Filter\Type,
+						new \Message\Cog\Validation\Filter\Other,
+					)
+				)
+			);
+		};
+
 	}
 }

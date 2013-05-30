@@ -48,7 +48,7 @@ class Connection implements ConnectionInterface
 		$this->_connect();
 
 		if($res = $this->_handle->query($sql)) {
-			return new Result($this->_handle->query($sql), $this);
+			return new Result($res, $this);
 		}
 
 		return false;
@@ -73,4 +73,23 @@ class Connection implements ConnectionInterface
 		return $this->_handle;
 	}
 
+	public function getTransactionStart()
+	{
+		return 'START TRANSACTION';
+	}
+
+	public function getTransactionEnd()
+	{
+		return 'COMMIT';
+	}
+
+	public function getTransactionRollback()
+	{
+		return 'ROLLBACK';
+	}
+
+	public function getLastInsertIdFunc()
+	{
+		return 'LAST_INSERT_ID()';
+	}
 }
