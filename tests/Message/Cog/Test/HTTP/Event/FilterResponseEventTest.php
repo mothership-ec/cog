@@ -13,13 +13,13 @@ class FilterResponseEventTest extends \PHPUnit_Framework_TestCase
 		$response   = $this->getMock('Message\Cog\HTTP\Response');
 		$event      = new FilterResponseEvent($dispatcher, $request, $response);
 
-		$this->assertEquals($response, $event->getResponse());
+		$this->assertSame($response, $event->getResponse());
 
 		$newResponse = $this->getMock('Message\Cog\HTTP\Response', array(), array('hello!', 200));
 
 		$event->setResponse($newResponse);
 
-		$this->assertNotEquals($response, $event->getResponse());
-		$this->assertEquals($newResponse, $event->getResponse());
+		$this->assertNotSame($response, $event->getResponse());
+		$this->assertSame($newResponse, $event->getResponse());
 	}
 }

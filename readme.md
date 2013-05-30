@@ -27,6 +27,7 @@ Cog defines the following services on the service container. Don't overwrite any
 ## What global events does Cog fire?
 
 * `terminate` This is the very last thing that happens for any Cog request. Use this event for stopping debug timers; garbage collection; data logging; etc.
+* `cog.load.success` Fired once Cog is ready to use (but before modules have been loaded). All of Cog's event handlers and services will be setup and registered by this point.
 
 ## Running tests
 

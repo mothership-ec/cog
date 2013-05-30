@@ -13,6 +13,7 @@ use Message\Cog\DB;
  * Registers Cog service definitions when the application is loaded.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author James Moss <james@message.co.uk>
  */
 class Services implements ServicesInterface
 {
@@ -58,9 +59,13 @@ class Services implements ServicesInterface
 			return new \Message\Cog\DB\Transaction($s['db.connection']);
 		};
 
+		$serviceContainer['db.nested_set_helper'] = function($s) {
+			return new \Message\Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
+		};
+
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
 			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
+			$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
 			$cache        = new \Message\Cog\Cache\Instance(
 				new $adapterClass
 			);
@@ -188,6 +193,37 @@ class Services implements ServicesInterface
 		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
 		});
+
+		// Filesystem
+		$serviceContainer['filesystem.stream_wrapper_manager'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Filesystem\StreamWrapperManager;
+		});
+
+		$serviceContainer['filesystem.stream_wrapper'] = function($c) {
+			$wrapper = new \Message\Cog\Filesystem\StreamWrapper;
+			$wrapper->setReferenceParser($c['reference_parser']);
+			$wrapper->setMapping($c['filesystem.stream_wrapper_mapping']);
+
+			return $wrapper;
+		};
+
+		$serviceContainer['filesystem.stream_wrapper_mapping'] = function($c) {
+			$baseDir = $c['app.loader']->getBaseDir();
+			$mapping = array(
+				// Maps cog://tmp/* to /tmp/* (in the installation)
+				"/^\/tmp\/(.*)/us" => $baseDir.'tmp/$1',
+			);
+
+			return $mapping;
+		};
+
+		$serviceContainer['filesystem'] = function($c) {
+			return new \Message\Cog\Filesystem\Filesystem;
+		};
+
+		$serviceContainer['filesystem.finder'] = function($c) {
+			return new \Message\Cog\Filesystem\Finder;
+		};
 
 		// Application Contexts
 		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {

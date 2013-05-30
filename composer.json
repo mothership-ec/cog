@@ -36,6 +36,8 @@
 		"symfony/templating"       : "2.1.*",
 		"symfony/yaml"             : "2.1.*",
 		"twig/twig"                : "1.13.*",
+		"symfony/filesystem"       : "2.2.*",
+		"symfony/finder"           : "2.2.*",
 		"pimple/pimple"            : "1.0.1",
 		"mtdowling/cron-expression": "1.0.*",
 		"treasure-chest/treasure-chest": "0.1.*"
