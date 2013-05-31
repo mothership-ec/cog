@@ -5,7 +5,7 @@ namespace Message\Cog\Security\Hash;
 use Message\Cog\Security\Salt;
 
 /**
- * MD5 implementation of the hash interface. Uses an optional salt.
+ * MD5 implementation of the hash interface with an appended salt.
  *
  * @author Ewan Valentine <ewan@message.co.uk>
  */
