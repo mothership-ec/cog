@@ -13,14 +13,12 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_salt;
 	protected $_badHash;
-	protected $_mockSalt;
 	protected $_dlength;
 
 	public function setUp()
 	{
-		$this->_mockSalt 	= $this->getMock('Message\Cog\Security\Salt');
-		$this->_salt 		= new Salt($this->_mockSalt);
-		$this->_dlength 	= Salt::DEFAULT_LENGTH;
+		$this->_salt    = new Salt;
+		$this->_dlength = Salt::DEFAULT_LENGTH;
 	}
 
 	public function testAllGenerateMethodsRespectLength()
@@ -101,17 +99,17 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 		$this->_salt->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
 	}
 
+	/**
+	 * @expectedException        \RuntimeException
+	 * @expectedExceptionMessage Function `openssl_random_pseudo_bytes` does not exist.
+	 */
 	public function testGenerateOpenSSLThrowsExceptionWhenFunctionDoesNotExist()
 	{
-		// if openssl_random_pseudo_bytes function DOES exist, mark the test as skipped
-
 		if (function_exists('openssl_random_pseudo_bytes')) {
 			$this->markTestSkipped('Cannot run test: openssl_random_pseudo_bytes function exists.');
 		}
 
- 		// if the function rename_function does not exist, we will have to mark this test as skipped
-		// if it is available, we can rename the openssl_random_pseudo_bytes and check the exception gets throw
-
+		$this->_salt->generateFromOpenSSL();
 	}
 
 	public function getValidLengths()
