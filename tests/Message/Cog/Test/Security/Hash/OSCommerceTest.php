@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Message\Cog\Test\Security\Hash;
 
@@ -28,7 +28,6 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testEncryptFalse($string)
 	{
-
 		$hashed = $this->_hash->encrypt($string, 'ThisIsASaltThisIsASalt');
 
 		$correctHash = 'c85e0631a75447bee5fe420b2dcd6cbe:ThisIsASaltThisIsASalt';
@@ -59,7 +58,6 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_hash->check('test string', 'invalid hash'));
 	}
 
-
 	/**
 	 * @dataProvider Message\Cog\Test\Security\Hash\DataProvider::getStrings
 	 */
@@ -69,9 +67,9 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 
 		$hashed = $this->_hash->encrypt($string, $salt);
 
-		$output_array = explode(OSCommerce::SALT_SEPARATOR, $hashed);
+		list($hash, $hashSalt) = explode(OSCommerce::SALT_SEPARATOR, $hashed, 2);
 
-		$this->assertEquals($salt, $output_array[1]);
+		$this->assertEquals($salt, $hashSalt);
 	}
 
 	/**
@@ -81,11 +79,8 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 	{
 		$hashed = $this->_hash->encrypt($string);
 
-		$output_array = explode(OSCommerce::SALT_SEPARATOR, $hashed);
+		list($hash, $hashSalt) = explode(OSCommerce::SALT_SEPARATOR, $hashed, 2);
 
-		$salt = $output_array[1];
-
-		$this->assertNotEquals($salt, '');
+		$this->assertNotEmpty($hashSalt);
 	}
-
 }

@@ -1,17 +1,19 @@
-<?php 
+<?php
 
 namespace Message\Cog\Test\Security\Hash;
 
 /**
- * A static method to getStrings 
+ * A static container for data providers for the Security\Hash classes.
  *
- *
- * @author 		Ewan Valentine <ewan@message.co.uk>
- * @copyright 	Message Digital 2013
+ * @author Ewan Valentine <ewan@message.co.uk>
  */
-
 class DataProvider
 {
+	/**
+	 * Get strings that should be successfully hashed.
+	 *
+	 * @return array Array of data provider values
+	 */
 	public static function getStrings()
 	{
 		return array(

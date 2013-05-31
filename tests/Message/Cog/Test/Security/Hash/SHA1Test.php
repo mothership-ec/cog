@@ -49,9 +49,9 @@ class SHA1Test extends \PHPUnit_Framework_TestCase
 
 		$hashed = $this->_hash->encrypt($string, $salt);
 
-		$output_array = explode(SHA1::SALT_SEPARATOR, $hashed);
+		list($hash, $hashSalt) = explode(SHA1::SALT_SEPARATOR, $hashed, 2);
 
-		$this->assertEquals($salt, $output_array[1]);
+		$this->assertEquals($salt, $hashSalt);
 	}
 
 	/**
@@ -61,11 +61,9 @@ class SHA1Test extends \PHPUnit_Framework_TestCase
 	{
 		$hashed = $this->_hash->encrypt($string);
 
-		$output_array = explode(SHA1::SALT_SEPARATOR, $hashed);
+		list($hash, $hashSalt) = explode(SHA1::SALT_SEPARATOR, $hashed, 2);
 
-		$salt = $output_array[1];
-
-		$this->assertNotEquals($salt, '');
+		$this->assertNotEmpty($hashSalt);
 	}
 
 	public function testCheckTrue()

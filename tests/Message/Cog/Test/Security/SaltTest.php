@@ -45,37 +45,8 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGenerateThrowsExceptionWhenNoStringGenerated()
 	{
+		$this->markTestIncomplete('Needs writing. Will likely require mocking of `Salt`');
 		// mock the 3 generating methods so they all return false, then run ->generate()
-
-		// this is just to make the test pass: remove it once the test is built
-
-		$this->_mockSalt
-			 ->expects($this->once())
-			 ->method('generate')
-			 ->will($this->throwException(new \UnexpectedValueException('String could not be generated.')));
-
-		$this->_mockSalt->generate();
-
-	}
-
-	public function testGenerateOrderOfPreference()
-	{
-		// bit of a tricky one. we need to use mocking most likely. we need to
-
-		// $generate = $this->_mockSalt->generate(Salt::DEFAULT_LENGTH);
-
-		// var_dump($generate);
-
-		// $this->_mockSalt
-		// 	 ->expects($this->once())
-		// 	 ->method('generate')
-		// 	 ->will($this->assertTrue($calls));
-
-		// $this->_mockSalt->generate()->randomFilePath = '';
-		// $this->_mockSalt->generate();
-		
-		$this->markTestSkipped('Cannot run test: Cannot mock function call hierarchy.');
-
 	}
 
 	public function testGenerateReturnValuesFormat()

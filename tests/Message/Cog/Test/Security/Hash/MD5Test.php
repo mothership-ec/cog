@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Message\Cog\Test\Security\Hash;
 
@@ -15,11 +15,11 @@ class MD5Test extends \PHPUnit_Framework_TestCase
 	{
 		$this->_saltGenerator = $this->getMock('Message\Cog\Security\Salt');
 		$this->_hash 		  = new MD5($this->_saltGenerator);
+
 		$this->_saltGenerator
 			 ->expects($this->any())
 			 ->method('generate')
 			 ->will($this->returnValue($this->_generatedSalt));
-
 	}
 
 	public function testEncryptTrue()
@@ -50,9 +50,9 @@ class MD5Test extends \PHPUnit_Framework_TestCase
 
 		$hashed = $this->_hash->encrypt($string, $salt);
 
-		$output_array = explode(MD5::SALT_SEPARATOR, $hashed);
+		list($hash, $hashSalt) = explode(MD5::SALT_SEPARATOR, $hashed, 2);
 
-		$this->assertEquals($salt, $output_array[1]);
+		$this->assertEquals($salt, $hashSalt);
 	}
 
 	/**
@@ -62,12 +62,9 @@ class MD5Test extends \PHPUnit_Framework_TestCase
 	{
 		$hashed = $this->_hash->encrypt($string);
 
-		$output_array = explode(MD5::SALT_SEPARATOR, $hashed);
+		list($hash, $hashSalt) = explode(MD5::SALT_SEPARATOR, $hashed, 2);
 
-		$salt = $output_array[1];
-
-		$this->assertNotEquals($salt, '');
-
+		$this->assertNotEmpty($hashSalt);
 	}
 
 	public function testCheckTrue()
