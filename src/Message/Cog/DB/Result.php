@@ -154,7 +154,7 @@ class Result extends ResultArrayAccess
 	 * are binded unless the `$force` parameter is passed as true.
 	 *
 	 * @param  object|array $subject The object(s) you wish to bind data to.
-	 * @param  boolean      $force   True to bind properties even if they don't exist
+	 * @param  bool         $force   True to bind properties even if they don't exist
 	 *
 	 * @return object|array          The updated object(s) with data bound to them.
 	 */
@@ -191,10 +191,15 @@ class Result extends ResultArrayAccess
 	 * properties of it based on the keys/values returned from the first row
 	 * of the result set.
 	 *
+	 * @see bind
+	 *
 	 * @param  string $subject The fully qualified name of a class you wish to
 	 *                         instantiate and bind data to.
+	 * @param  bool   $force   True to bind properties even if they don't exist
+	 *
+	 * @return object          The updated object(s) with data bound to them.
 	 */
-	public function bindTo($subject)
+	public function bindTo($subject, $force = false)
 	{
 		// Only strings can be passed in
 		if(!is_string($subject)) {
@@ -208,7 +213,7 @@ class Result extends ResultArrayAccess
 
 		$class = new $subject;
 
-		return $this->bind($class);
+		return $this->bind($class, $force);
 	}
 
 	/**
