@@ -218,7 +218,7 @@ class Services implements ServicesInterface
 		$serviceContainer['form.factory.twig'] = function($c) {
 			$builder = new \Message\Cog\Form\Factory\Builder($c, 'twig');
 			return $builder->getFormFactory();
-		}
+		};
 
 		$serviceContainer['form.factory.twig'] = function($c) {
 			$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr'; // this should probably be dynamic
