@@ -67,14 +67,14 @@ class Bcrypt implements HashInterface
 
 		$crypto = crypt($password, $bcryptSalt);
 
-		if($crypto == '*0'){
+		if ('*0' === $crypto) {
 			throw new \InvalidArgumentException(sprintf(
 				'Salt `%s` contains invalid characters.',
 				$salt
 			));
-		} else {
-			return $crypto;
 		}
+
+		return $crypto;
 	}
 
 	/**

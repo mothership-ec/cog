@@ -20,7 +20,7 @@ class OSCommerce implements HashInterface
 	protected $saltGenerator;
 
 	/**
-	 * __construct()
+	 * Constructor.
 	 *
 	 * @param Salt $saltGenerator The pseudorandom string generator class
 	 */

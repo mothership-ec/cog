@@ -57,8 +57,6 @@ class MD5 implements HashInterface
 	 */
 	public function check($string, $hash)
 	{
-		$salt = null;
-
 		if (false === strpos($hash, self::SALT_SEPARATOR)) {
 			throw new \InvalidArgumentException(sprintf('Hash `%s` is invalid: it does not contain a salt.', $hash));
 		}
