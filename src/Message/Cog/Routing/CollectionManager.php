@@ -4,6 +4,14 @@ namespace Message\Cog\Routing;
 
 use Message\Cog\ReferenceParserInterface;
 
+/**
+ * Manages groups of routes for use in the router. Groups are represented as
+ * RouteCollections, this in turn is a decorator for Symfony's RouteCollection
+ * class.
+ *
+ * This class is also capabale of compiling all the seperate RouteCollections
+ * into a single one which can be passed to the Router.
+ */
 class CollectionManager implements \ArrayAccess, \IteratorAggregate
 {
 	protected $_collections = array();
@@ -11,9 +19,11 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	protected $_defaultCollection;
 
 	/**
-	 * Constructor.
+	 * Constructor
 	 *
-	 * @api
+	 * @param ReferenceParserInterface $referenceParser   A instance of Cog's reference parser
+	 * @param string                   $defaultCollection The name to use for the default collection
+	 *                                                    when add() is called directly on this class.
 	 */
 	public function __construct(ReferenceParserInterface $referenceParser, $defaultCollection = 'default')
 	{
@@ -21,6 +31,16 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		$this->_defaultCollection = $defaultCollection;
 	}
 
+	/**
+	 * Adds a Route to the default collection. This signature shoudl match that
+	 * of add() in Message\Cog\Routing\RouteCollection.
+	 *
+	 * @param string $name       The name of the route. Must be unique.
+	 * @param string $url        The URL pattern to match against.
+	 * @param string $controller The controller/method to use when matched.
+	 *
+	 * @return Route The new route that has just been added.
+	 */
 	public function add($name, $url, $controller)
 	{
 		$this->_checkCollection($this->_defaultCollection, true);
@@ -28,16 +48,35 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		return $this->_collections[$this->_defaultCollection]->add($name, $url, $controller);
 	}
 
+	/**
+	 * Gets the default collection.
+	 *
+	 * @return RouteCollection
+	 */
 	public function getDefault()
 	{
 		return $this->_collections[$this->_defaultCollection];
 	}
 
+	/**
+	 * Check if a collection exists.
+	 *
+	 * @param  string $offset The collection to check
+	 *
+	 * @return boolean        Returns true if it exists, else false.
+	 */
 	public function offsetExists($offset)
 	{
 		return $this->_checkCollection($offset);
 	}
 
+	/**
+	 * Get a collection by name. If it doesn't exist it will be created.
+	 *
+	 * @param  string $offset The collection to return.
+	 *
+	 * @return RouteCollection  The requested collection.
+	 */
 	public function offsetGet($offset)
 	{
 		$this->_checkCollection($offset, true);
@@ -45,6 +84,14 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		return $this->_collections[$offset];
 	}
 
+	/**
+	 * Attempt to set a collection.
+	 *
+	 * @param  string $offset The name of the collection to set
+	 * @param  mixed $value  The value to set it to.
+	 *
+	 * @return void
+	 */
 	public function offsetSet($offset, $value)
 	{
 		throw new \Exception(sprintf(
@@ -53,6 +100,13 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		));
 	}
 
+	/**
+	 * Remove a collection
+	 *
+	 * @param  string $offset The name of the collection to remove
+	 *
+	 * @return void
+	 */
 	public function offsetUnset($offset)
 	{
 		throw new \Exception(sprintf(
@@ -61,22 +115,22 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		));
 	}
 
+	/**
+	 * Iterator to allow looping over this class as if it was an array.
+	 *
+	 * @return ArrayIterator
+	 */
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->_collections);
 	}
 
-	public function _checkCollection($name, $create = false)
-	{
-		$exists = isset($this->_collections[$name]);
-
-		if(!$exists && $create) {
-			$this->_collections[$name] = new RouteCollection($this->_referenceParser);
-		}
-
-		return $exists;
-	}
-
+	/**
+	 * Combines all the collections into a single collection as well as mounting
+	 * collections to their parents (if they have them set).
+	 *
+	 * @return RouteCollection The collection that contains all others.
+	 */
 	public function compileRoutes()
 	{
 		// mount collections that have parents set first
@@ -118,5 +172,24 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		}
 
 		return $base;
+	}
+
+	/**
+	 * Checks to see if a collection exists. Optionally it can create it if it doesn't already exist.
+	 *
+	 * @param  string  $name   The name of the collection to check.
+	 * @param  boolean $create If set to true the collection will be created (if it doesnt already exist)
+	 *
+	 * @return boolean         Returns true if the collection exists, false otherwise.
+	 */
+	protected function _checkCollection($name, $create = false)
+	{
+		$exists = isset($this->_collections[$name]);
+
+		if(!$exists && $create) {
+			$this->_collections[$name] = new RouteCollection($this->_referenceParser);
+		}
+
+		return $exists;
 	}
 }
