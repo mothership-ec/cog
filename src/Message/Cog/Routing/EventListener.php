@@ -37,6 +37,6 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	 */
 	public function mountRoutes()
 	{
-		$this->_services['router']->setRouteCollection($this->_services['routes']->getDefault()->getRouteCollection());
+		$this->_services['router']->setRouteCollection($this->_services['routes']->compileRoutes()->getRouteCollection());
 	}
 }

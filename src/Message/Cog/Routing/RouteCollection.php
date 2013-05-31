@@ -12,6 +12,8 @@ use Symfony\Component\Routing\RouteCollection as SFRouteCollection;
 class RouteCollection 
 {
 	protected $_collection;
+	protected $_prefix = '';
+	protected $_parent;
 
 	/**
 	 * Constructor.
@@ -49,5 +51,29 @@ class RouteCollection
 	public function getRouteCollection()
 	{
 		return $this->_collection;
+	}
+
+	public function setPrefix($prefix)
+	{
+		$this->_prefix = $prefix;
+
+		return $this;
+	}
+
+	public function getPrefix()
+	{
+		return $this->_prefix;
+	}
+
+	public function setParent($collectionName)
+	{
+		$this->_parent = $collectionName;
+
+		return $this;
+	}
+
+	public function getParent()
+	{
+		return $this->_parent;
 	}
 }
