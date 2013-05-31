@@ -99,18 +99,32 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Controller\ControllerResolver;
 		});
 
+		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
+			$viewNameParser = new \Message\Cog\Templating\ViewNameParser(
+				$c,
+				$c['reference_parser'],
+				array(
+					'twig',
+					'php',
+				)
+			);
+
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
-					new \Message\Cog\Templating\PhpEngine(
-						new \Message\Cog\Templating\ViewNameParser(
-							$c,
-							$c['reference_parser'],
+					// Twig templating engine
+					new \Message\Cog\Templating\TwigEngine(
+						new \Twig_Environment(
+							new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
 							array(
-								'twig',
-								'php',
+								'cache' => 'cog://tmp',
 							)
 						),
+						$viewNameParser
+					),
+					// Plain PHP templating engine
+					new \Message\Cog\Templating\PhpEngine(
+						$viewNameParser,
 						new \Symfony\Component\Templating\Loader\FilesystemLoader(
 							$c['app.loader']->getBaseDir()
 						),
