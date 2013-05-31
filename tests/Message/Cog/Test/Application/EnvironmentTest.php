@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Test;
+namespace Message\Cog\Test\Application;
 
 use Message\Cog\Application\Environment;
 
