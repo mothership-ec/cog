@@ -4,6 +4,7 @@ namespace Message\Cog\Form;
 
 use Symfony\Component\Form\Form;
 use Message\Cog\Validation\Validator;
+use Message\Cog\Service\Container;
 
 /**
  * Class DataHandler
@@ -13,8 +14,13 @@ use Message\Cog\Validation\Validator;
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class DataHandler
+class Handler
 {
+	/**
+	 * @var \Message\Cog\Service\Container
+	 */
+	protected $_container;
+
 	/**
 	 * @var Form
 	 */
@@ -26,10 +32,18 @@ class DataHandler
 	protected $_validator;
 
 	/**
+	 * @param $container
+	 */
+	public function __construct(Container $container)
+	{
+		$this->_container = $container;
+	}
+
+	/**
 	 * @param Form $form                Form to assign to data handler
 	 * @param Validator $validator      Validator instance to provide validation rules
 	 */
-	public function __construct(Form $form, Validator $validator = null)
+	public function setup(Form $form, Validator $validator = null)
 	{
 		$this->setForm($form);
 
@@ -39,9 +53,20 @@ class DataHandler
 	}
 
 	/**
+	 * @return Handler
+	 */
+	public function clear()
+	{
+		$this->_form = null;
+		$this->_validator = null;
+
+		return $this;
+	}
+
+	/**
 	 * @param Form $form        Form to provide data
 	 *
-	 * @return DataHandler      Returns $this for chainability
+	 * @return Handler      Returns $this for chainability
 	 */
 	public function setForm(Form $form)
 	{
@@ -53,7 +78,7 @@ class DataHandler
 	/**
 	 * @param Validator $validator      Validator instance to provide validation rules
 	 *
-	 * @return DataHandler              Returns $this for chainability
+	 * @return Handler              Returns $this for chainability
 	 */
 	public function setValidator(Validator $validator)
 	{
@@ -160,4 +185,5 @@ class DataHandler
 	{
 		return ($this->_validator) ? $this->_validator->getMessages() : array();
 	}
+
 }

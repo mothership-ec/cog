@@ -114,7 +114,8 @@ class Services implements ServicesInterface
 							$c['app.loader']->getBaseDir()
 						),
 						array(
-							new \Symfony\Component\Templating\Helper\SlotsHelper
+							new \Symfony\Component\Templating\Helper\SlotsHelper,
+							$c['form.helper.php']
 						)
 					),
 				)
@@ -193,16 +194,6 @@ class Services implements ServicesInterface
 
 
 		// Forms
-		$serviceContainer['form'] = function($c) {
-			return new \Message\Cog\Form\Form($c);
-		};
-
-		$serviceContainer['form.php'] = function($c) {
-			$form = $c['form'];
-			$form->setHelper($c['form.helper.php']);
-			return $form;
-		};
-
 		$serviceContainer['form.provider'] = function($c) {
 			return new \Message\Cog\Form\ServiceProvider;
 		};
@@ -220,18 +211,14 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.factory.php'] = function($c) {
-			$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr'; // this should probably be dynamic
-			$engine = $c['form.engine.php'];
-			$builder = new \Message\Cog\Form\Factory\Builder;
-			return $builder->addExtension(new \Message\Cog\Form\Csrf\Csrf(
-					new \Message\Cog\Form\Csrf\Provider($csrfSecret))
-				)
-				->addExtension(new \Message\Cog\Form\Template\Templating($engine, null, array(
-					// require form templates
-					realpath(__DIR__ . '/../../src/Message/Cog/Form/Views/Php'),
-				)))
-				->getFormFactory();
+			$builder = new \Message\Cog\Form\Factory\Builder($c, 'php');
+			return $builder->getFormFactory();
 		};
+
+		$serviceContainer['form.factory.twig'] = function($c) {
+			$builder = new \Message\Cog\Form\Factory\Builder($c, 'twig');
+			return $builder->getFormFactory();
+		}
 
 		$serviceContainer['form.factory.twig'] = function($c) {
 			$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr'; // this should probably be dynamic
@@ -248,6 +235,10 @@ class Services implements ServicesInterface
 				->getFormFactory();
 		};
 
+		$serviceContainer['form.handler'] = function($c) {
+			return new \Message\Cog\Form\Handler($c);
+		};
+
 		$serviceContainer['form.helper.php'] = function($c) {
 			$engine = $c['form.engine.php'];
 
@@ -256,11 +247,11 @@ class Services implements ServicesInterface
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine($engine)
 				)
 			);
-
-			$engine->setHelpers(array(
-				$formHelper,
-				// @todo add translation helpers
-			));
+//
+//			$engine->setHelpers(array(
+//				$formHelper,
+//				// @todo add translation helpers
+//			));
 
 			return $formHelper;
 
