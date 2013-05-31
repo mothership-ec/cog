@@ -16,6 +16,13 @@ class Query
 	protected $_query;
 	protected $_parsedQuery;
 
+	protected $_typeTokens = array(
+		's'	=> 'string',
+		'i'	=> 'integer',
+		'f' => 'float',
+		'd'	=> 'datetime',
+	);
+
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)\??([a-z]*)?)|(\?([a-z]*))/us';
 
 	public function __construct(ConnectionInterface $connection)
@@ -76,20 +83,16 @@ class Query
 		}
 
 		$counter = 0;
-		$types = array(
-			's'	=> 'string',
-			'i'	=> 'integer',
-			'f' => 'float',
-			'd'	=> 'datetime',
-		);
 
 		// PHP 5.3 hack
 		$connection = $this->_connection;
-		$fields = $this->_params;
+		$fields     = $this->_params;
+		$types      = $this->_typeTokens;
+		$self       = $this;
 
 		$this->_parsedQuery = preg_replace_callback(
 			self::TOKEN_REGEX,
-			function($matches) use($fields, $types, &$counter, $connection) {
+			function($matches) use($self, $fields, $types, &$counter, $connection) {
 
 				// parse and validate the token
 				$full  = $matches[0];
@@ -97,9 +100,10 @@ class Query
 				$flagIndex = $param === false ? 5 : 3;
 				$flags = $matches[$flagIndex] ?: 'sn'; // data casting flags
 				$type  = str_replace('n', '', $flags, $useNull);
+				$type  = str_replace('j', '', $type, $useJoin);
 
 				if(!isset($types[$type])) {
-					throw new Exception(sprintf('Unknown type `%s` in token `%s`', $type, $full));
+					throw new Exception(sprintf('Unknown type `%s` in token `%s`', $type, $full), $this->_parsedQuery);
 				}
 
 				// decide what data to use
@@ -112,32 +116,47 @@ class Query
 				}
 				$counter++;
 
-				// check for nullness
-				if(is_null($data) && $useNull) {
-					return 'NULL';
-				}
-
-				// santize
-				settype($data, $types[$type]);
-				$safe = $connection->escape($data);
-
-				// format it ready for the query
-				if($type == 'd') {
-					if(ctype_digit($safe)) {
-						$safe = 'FROM_UNIXTIME('.$safe.')';
-					} else {
-						$safe = "'".$safe."'";
+				if ($useJoin) {
+					if (!is_array($data)) {
+						throw new Exception(sprintf('Cannot use join in token `%s` as it is not an array.', $full), $this->_parsedQuery);
 					}
-				} elseif($type == 's' || $type == 'f') {
-					$safe = "'".$safe."'";
+
+					foreach ($data as $key => $value) {
+						$data[$key] = $self->castValue($value, $type, $useNull);
+					}
+
+					return implode(', ', $data);
 				}
 
-				return $safe;
+				return $self->castValue($data, $type, $useNull);
 			},
 		$this->_query);
 
 		return true;
 	}
 
+	public function castValue($value, $type, $useNull)
+	{
+		// check for nullness
+		if (is_null($value) && $useNull) {
+			return 'NULL';
+		}
 
+		// sanitize
+		settype($value, $this->_typeTokens[$type]);
+		$safe = $this->_connection->escape($value);
+
+		// format it ready for the query
+		if ($type == 'd') {
+			if (ctype_digit($safe)) {
+				$safe = 'FROM_UNIXTIME('.$safe.')';
+			} else {
+				$safe = "'".$safe."'";
+			}
+		} elseif($type == 's' || $type == 'f') {
+			$safe = "'".$safe."'";
+		}
+
+		return $safe;
+	}
 }
