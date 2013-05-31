@@ -29,6 +29,9 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	{
 		$this->_referenceParser   = $referenceParser;
 		$this->_defaultCollection = $defaultCollection;
+
+		// create the default collection
+		$this->_checkCollection($this->_defaultCollection, true);
 	}
 
 	/**
@@ -43,8 +46,6 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	 */
 	public function add($name, $url, $controller)
 	{
-		$this->_checkCollection($this->_defaultCollection, true);
-
 		return $this->_collections[$this->_defaultCollection]->add($name, $url, $controller);
 	}
 
@@ -133,17 +134,22 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	 */
 	public function compileRoutes()
 	{
-		// mount collections that have parents set first
+		// Firstly, find collections that have a parent set and add them to that
+		// parent.
 		$baseCollections = array();
 		foreach($this as $name => $collection) {
 
+			// Save collections without parents as we have to loop over them
+			// later.
 			if(!$collection->getParent()) {
 				$baseCollections[$name] = $collection;
 				continue;
 			}
 
+			// Get the name of the parent
 			$parent = $collection->getParent();
 
+			// A collection can't be it's own parent
 			if($parent === $name) {
 				throw new \RuntimeException(sprintf(
 					'RouteCollection `%s` cannot be set as a parent of itself.',
@@ -151,6 +157,7 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 				));
 			}
 
+			// Ensure that the parent exists
 			if(!isset($this->_collections[$parent])) {
 				throw new \RuntimeException(sprintf(
 					'Cannot add RouteCollection `%s` to `%s` as it does not exist.', 
@@ -159,19 +166,23 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 				));
 			}
 
-			$prefix = $collection->getPrefix();
-			$this->_collections[$parent]->getRouteCollection()->addCollection($collection->getRouteCollection(), $prefix);
+			// Get prefix we want to use and the collection we need to add to
+			$prefix           = $collection->getPrefix();
+			$parentCollection = $this->_collections[$parent]->getRouteCollection();
+
+			// Add it to Symfony's underlying RouteCollection
+			$parentCollection->addCollection($collection->getRouteCollection(), $prefix);
 		}
 
-		// create an empty route collection, all the others get added to this.
-		$base = new RouteCollection($this->_referenceParser);
-		$baseCollection = $base->getRouteCollection();
+		// Create an empty route collection, all the others get added to this.
+		$root           = new RouteCollection($this->_referenceParser);
+		$rootCollection = $root->getRouteCollection();
 		
 		foreach($baseCollections as $name => $collection) {
-			$baseCollection->addCollection($collection->getRouteCollection(), $collection->getPrefix());
+			$rootCollection->addCollection($collection->getRouteCollection(), $collection->getPrefix());
 		}
 
-		return $base;
+		return $root;
 	}
 
 	/**

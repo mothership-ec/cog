@@ -23,8 +23,6 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	}
 
 	/**
-	 * setContainer
-	 *
 	 * @inherit
 	 */
 	public function setContainer(ContainerInterface $services)
@@ -33,10 +31,12 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	}
 
 	/**
-	 * Mount the default routes on the router, ready to be matched.
+	 * Compile the routes from the CollectionManager and add them to the
+	 * router, ready to be matched against a request.
 	 */
 	public function mountRoutes()
 	{
-		$this->_services['router']->setRouteCollection($this->_services['routes']->compileRoutes()->getRouteCollection());
+		$compiledRoutes = $this->_services['routes']->compileRoutes()->getRouteCollection();
+		$this->_services['router']->setRouteCollection($compiledRoutes);
 	}
 }
