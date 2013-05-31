@@ -255,5 +255,9 @@ class Services implements ServicesInterface
 				)
 			);
 		};
+
+		$serviceContainer['security.salt'] = $serviceContainer->share(function() {
+			return new \Message\Cog\Security\Salt;
+		});
 	}
 }
