@@ -5,10 +5,9 @@ namespace Message\Cog\Security\Hash;
 use Message\Cog\Security\Salt;
 
 /**
- * MD5 implementation of the hash interface.
+ * MD5 implementation of the hash interface. Uses an optional salt.
  *
- * @author 		Ewan Valentine <ewan@message.co.uk>
- * @copyright 	Message Digital 2013
+ * @author Ewan Valentine <ewan@message.co.uk>
  */
 class MD5 implements HashInterface
 {
@@ -27,9 +26,9 @@ class MD5 implements HashInterface
 	}
 
 	/**
-	 * Hash a string implementing md5, with optional encryption salt
+	 * Hash a string using MD5, with an optional encryption salt.
 	 *
-	 * @param  string      $string String to be exposed to the md5 hashing process
+	 * @param  string      $string String to be exposed to the MD5 hashing process
 	 * @param  string|null $salt
 	 *
 	 * @return string      Hashed value
@@ -44,7 +43,7 @@ class MD5 implements HashInterface
 	}
 
 	/**
-	 * Check if encrypted string matches md5 value
+	 * Check if encrypted string matches MD5 hash
 	 *
 	 * Detects a separator value (`self::SALT_SEPARATOR`) and extracts the salt
 	 * if set. The salt is then used to compare against the string.

@@ -9,14 +9,16 @@ use Message\Cog\Security\Salt;
  *
  * One of the most secure hash algorithms around at the moment. Much slower than
  * md5 and sha1, it makes brute force attacks difficult. Additionally, as CPUs
- * get faster you can increase the WORK_FACTOR constant to keep bcrypt
+ * get faster you can increase the `self::WORK_FACTOR` constant to keep bcrypt
  * hashing at the same speed.
+ *
+ * @author James Moss <james@message.co.uk>
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Bcrypt extends Hash
+class Bcrypt implements HashInterface
 {
 	const WORK_FACTOR = 8; // Value between 4 and 31
 
-<<<<<<< HEAD:src/Message/Cog/Security/Hash/Bcrypt.php
 	protected $_saltGenerator;
 
 	/**
@@ -62,19 +64,6 @@ class Bcrypt extends Hash
 		// Using a salt formatted in this way tells crypt() to use bcrypt
 		$bcryptSalt = '$2a$' . str_pad(self::WORK_FACTOR, 2, '0', STR_PAD_LEFT) . '$'
 					 . substr($salt, 0, 22);
-=======
-	public function encrypt($password, $salt = null)
-	{
-		if(strlen($salt) < 22) {
-			throw new \InvalidArgumentException('Salt for bcrypt must be at least 22 bytes.');
-		}
-
-		// Using a salt formatted in this way tells crypt() to use bcrypt.
-		$bcrypt_salt =
-			'$2a$' . str_pad(self::WORK_FACTOR, 2, '0', STR_PAD_LEFT) . '$' .
-			substr($salt, 0, 22)
-		;
->>>>>>> refs/heads/master:src/Message/Cog/Hash/Bcrypt.php
 
 		$crypto = crypt($password, $bcryptSalt);
 
@@ -88,7 +77,6 @@ class Bcrypt extends Hash
 		}
 	}
 
-<<<<<<< HEAD:src/Message/Cog/Security/Hash/Bcrypt.php
 	/**
 	 * Check if a string matches a bcrypt hash.
 	 *
@@ -97,10 +85,8 @@ class Bcrypt extends Hash
 	 *
 	 * @return boolean        Result of match check
 	 */
-=======
->>>>>>> refs/heads/master:src/Message/Cog/Hash/Bcrypt.php
 	public function check($password, $hash)
 	{
-		return crypt($password, $hash) === $hash;
+		return $hash === crypt($password, $hash);
 	}
 }
