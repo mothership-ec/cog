@@ -40,7 +40,7 @@ class Slug implements \IteratorAggregate, \Countable
 	/**
 	 * Return the array of segments that make the url
 	 *
-	 * @return array $this->_segments
+	 * @return array segments that make up the url
 	 */
 	public function getSegments()
 	{
