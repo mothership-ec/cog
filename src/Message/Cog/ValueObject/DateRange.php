@@ -108,6 +108,26 @@ class DateRange
 	}
 
 	/**
+	 * return the $_start DateTime object
+	 *
+	 * @return DateTime|false start time
+	 */
+	public function getStart()
+	{
+		return $this->_start;
+	}
+
+	/**
+	 * return the $_end DateTime object
+	 *
+	 * @return DateTime|false end time
+	 */
+	public function getEnd()
+	{
+		return $this->_end;
+	}
+
+	/**
 	 * Output the date range as a string.
 	 *
 	 * @return string The date range represented as a string
