@@ -34,7 +34,7 @@ For more details see http://symfony.com/doc/master/components/filesystem.html
 
 ## StreamWrapper manager
 
-StreamWrappers map custom URIs (like `cog://images/bob.jpg`) into real paths (like `/var/www/example.org/public/images/bob.jpg`). The benefit of this is that the location of the file is abtracted from it's true location on disk. In the future if you needed to move the image files to a different directory you can just change where `cog://images/` maps to rather than having to update paths in strings all over your app. The mapping is extremely flexible as it uses regular expressions; for example (if you're crazy) ou might want to serve files ending in .jpg from a different server.
+StreamWrappers map custom URIs (like `cog://images/bob.jpg`) into real paths (like `/var/www/example.org/public/images/bob.jpg`). The benefit of this is that the location of the file is abtracted from it's true location on disk. In the future if you needed to move the image files to a different directory you can just change where `cog://images/` maps to rather than having to update paths in strings all over your app. The mapping is extremely flexible as it uses regular expressions; for example (if you're crazy) you might want to serve files ending in .jpg from a different server.
 
 StreamWrappers also support using Cog's `ReferenceParser` class so modules can easily work with files inside their respective folders without having to worry where they are on the underlying filesystem.
 
