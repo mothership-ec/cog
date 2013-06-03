@@ -37,7 +37,7 @@ When the application is running in the `dev` environment, all of the configurati
 
 These environment overwrites work at an individual configuration line level, so `/config/dev/raven.yml` was changed to:
 
-	error-handler: 
+	error-handler:
 	   call-existing-handler: false
 
 Then only the `error-handler/call-existing-handler` configuration variable will be overwritten, and all other configuration variables, including those within `error-handler` will be pulled from the base `/config/raven.yml` file.
@@ -88,7 +88,7 @@ The compiled configuration for this installation (environment name `local` and i
 
 Configuration variables are accessed via the `Registry`, which is stored as a shared service with the identifier `cfg`. The `Registry` allows configuration group access via both array and object notation:
 
-	$services['cfg']->raven->enabled;	
+	$services['cfg']->raven->enabled;
 	$services['cfg']['merchant']->address->postcode;
 
 ## Loading Configurations
@@ -109,19 +109,20 @@ Unfortunately there is no way for the cache to automatically invalidate itself w
 
 ## Module Configurations
 
-If a Cog module requires configuration sets, example configuration file(s) should be included under `Fixtures` within the module.
+If a Cog module requires configuration sets, example configuration file(s) should be included under `fixtures` within the module.
 
 Consider the `cog-raven` module:
 
-	Message
-		Raven
-			Fixtures
-				Config
-					raven.yml
-			Bootstrap
-				Bootstrap.php
+	fixtures
+		config
+			raven.yml
+	src
+		Message
+			Raven
+				Bootstrap
+					Bootstrap.php
 
-The file `Message/Raven/Fixtures/Config/raven.yml` should be an example for the configuration file, used as a default when the module is first installed. For example:
+The file `fixtures/config/raven.yml` should be an example for the configuration file, used as a default when the module is first installed. For example:
 
 	enabled: false
 	dsn: udp://auth:details@server.local:3031/projectID
@@ -159,7 +160,7 @@ Composer automatically calls these at the appropriate times when running `compos
 
 The package installation script first checks that the installed package is a Cog module, by checking the package name begins with `cog-`. Such as `message/cog-cms`, `message/cog-raven` and so on.
 
-If it is a Cog module, it checks for any `.yml` files in `/Fixtures/Config/` in the package's target directory. If it finds any, it moves them to the application's `/config` directory and feeds back to the developer on the CLI.
+If it is a Cog module, it checks for any `.yml` files in `/fixtures/config/` in the package's target directory. If it finds any, it moves them to the application's `/config` directory and feeds back to the developer on the CLI.
 
 #### Updating
 
@@ -177,7 +178,7 @@ Here's an example showing how you might access some configuration variables on t
 			return $serviceContainer['cfg']->analytics->trackingCode;
 		}
 	}
-	
+
 	public function isPageIgnored($page)
 	{
 		foreach ($serviceContainer['cfg']->analytics->ignoredPages as $ignoredPage) {
@@ -185,6 +186,6 @@ Here's an example showing how you might access some configuration variables on t
 				return true;
 			}
 		}
-		
+
 		return false;
 	}

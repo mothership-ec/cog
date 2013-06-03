@@ -12,8 +12,8 @@ use Message\Cog\DB\Adapter\ResultInterface;
 * like an array using indices and iterated over in a loop. There's also helper
 * methods to make working with data easier.
 *
-* A word of warning: Because of the way the internal pointer works, using 
-* a method on a Result object whilst iterating over it could lead to infinite 
+* A word of warning: Because of the way the internal pointer works, using
+* a method on a Result object whilst iterating over it could lead to infinite
 * loops or unknown behavior.
 */
 class Result extends ResultArrayAccess
@@ -36,7 +36,7 @@ class Result extends ResultArrayAccess
 
 	/**
 	 * Returns the first field of the first row.
-	 * 
+	 *
 	 * @return mixed The very first value in the dataset.
 	 */
 	public function value()
@@ -52,10 +52,10 @@ class Result extends ResultArrayAccess
 
 	/**
 	 * Return the first row in the dataset.
-	 * 
+	 *
 	 * @return stdClass The first row.
 	 */
-	public function first() 
+	public function first()
 	{
 		$this->reset();
 		$first = $this->_result->fetchObject();
@@ -64,9 +64,9 @@ class Result extends ResultArrayAccess
 	}
 
 	/**
-	 * Returns a copy of the dataset as a hash where one field is used as the 
+	 * Returns a copy of the dataset as a hash where one field is used as the
 	 * key and another as the value.
-	 * 
+	 *
 	 * @param  string $key   The column to use as the key. If omitted the first column is used.
 	 * @param  string $value The column to use as the value. If omitted the second column is used.
 	 * @return array         The generated hash.
@@ -85,8 +85,8 @@ class Result extends ResultArrayAccess
 
 	/**
 	 * Get a copy of the dataset as an array with a chosen column as the key for each row.
-	 * 
-	 * @param  string $key The column name to use as the key for the array. If 
+	 *
+	 * @param  string $key The column name to use as the key for the array. If
 	 *                     omitted the first column is used.
 	 * @return array       The dataset copy.
 	 */
@@ -95,7 +95,7 @@ class Result extends ResultArrayAccess
 		$this->_setDefaultKeys($key);
 		$rows = array();
 		$this->reset();
-		
+
 		while($row = $this->_result->fetchObject()) {
 			$rows[$row->{$key}] = $row;
 		}
@@ -105,7 +105,7 @@ class Result extends ResultArrayAccess
 
 	/**
 	 * Get a copy of the dataset as an array of arrays, where rows are combined using the specified key,
-	 * 
+	 *
 	 * @param  string $key The column name to use as the key for each array. If omitted
 	 *                     then the first column is used.
 	 * @return array      An array of arrays.
@@ -129,8 +129,8 @@ class Result extends ResultArrayAccess
 
 	/**
 	 * Reduce the columns in a resultset to a single value.
-	 * 
-	 * @param  string $key The column name to reduce to. If 
+	 *
+	 * @param  string $key The column name to reduce to. If
 	 *                     omitted the first column is used.
 	 * @return array       The flattened dataset.
 	 */
@@ -150,17 +150,25 @@ class Result extends ResultArrayAccess
 	 * Sets the properties of an object (or array of objects) based on the rows
 	 * in the resultset.
 	 *
+	 * If the subject is an object, only properties that exist on the object
+	 * are binded unless the `$force` parameter is passed as true.
+	 *
 	 * @param  object|array $subject The object(s) you wish to bind data to.
+	 * @param  bool         $force   True to bind properties even if they don't exist
 	 *
 	 * @return object|array          The updated object(s) with data bound to them.
 	 */
-	public function bind($subject)
+	public function bind($subject, $force = false)
 	{
+		$this->reset();
+
 		if(is_object($subject)) {
 			// get the next row and bind it as the properties of the object
 			$data = $this->_result->fetchObject();
 			foreach($data as $key => $value) {
-				$subject->{$key} = $value;
+				if (property_exists($subject, $key) || $force) {
+					$subject->{$key} = $value;
+				}
 			}
 
 			return $subject;
@@ -180,13 +188,18 @@ class Result extends ResultArrayAccess
 
 	/**
 	 * Instatiates an object based (using its name as a string) and sets the
-	 * properties of it based on the keys/values returned from the first row 
+	 * properties of it based on the keys/values returned from the first row
 	 * of the result set.
+	 *
+	 * @see bind
 	 *
 	 * @param  string $subject The fully qualified name of a class you wish to
 	 *                         instantiate and bind data to.
+	 * @param  bool   $force   True to bind properties even if they don't exist
+	 *
+	 * @return object          The updated object(s) with data bound to them.
 	 */
-	public function bindTo($subject)
+	public function bindTo($subject, $force = false)
 	{
 		// Only strings can be passed in
 		if(!is_string($subject)) {
@@ -200,12 +213,12 @@ class Result extends ResultArrayAccess
 
 		$class = new $subject;
 
-		return $this->bind($class);
+		return $this->bind($class, $force);
 	}
 
 	/**
 	 * Get the number of rows affected by the query which generated this result.
-	 * 
+	 *
 	 * @return integer The number of affected rows.
 	 */
 	public function affected()
@@ -215,7 +228,7 @@ class Result extends ResultArrayAccess
 
 	/**
 	 * Get the value last generated from an autoincrement column.
-	 * 
+	 *
 	 * @return integer The last autoincrement value.
 	 */
 	public function id()
@@ -227,7 +240,7 @@ class Result extends ResultArrayAccess
 	 * Get the names of the columns in the result as an array. If a parameter
 	 * is passed then this is treated as an offset and the column name at that
 	 * offset is returned. If the offset doesnt exist, false is returned.
-	 * 	
+	 *
 	 * @param  integer $position The index offset of a single column name
 	 * @return mixed      	     The array of column names or a single name.
 	 */
@@ -250,13 +263,13 @@ class Result extends ResultArrayAccess
 	 */
 	public function isFromTransaction()
 	{
-		return $this->_query instanceof Transaction; 
+		return $this->_query instanceof Transaction;
 	}
 
 	/**
 	 * Helper used to choose default key names for the transpose,
 	 * flatten and hash methods if none are specified.
-	 * 
+	 *
 	 * @param string $key   If null then the first column name in the dataset is used.
 	 * @param string $value If null then the second column name in the dataset is used.
 	 */
