@@ -259,5 +259,9 @@ class Services implements ServicesInterface
 		$serviceContainer['security.salt'] = $serviceContainer->share(function() {
 			return new \Message\Cog\Security\Salt;
 		});
+
+		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
+		});
 	}
 }
