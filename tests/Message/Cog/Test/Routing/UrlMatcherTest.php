@@ -79,4 +79,18 @@ class RedirectableUrlMatcherTest extends \PHPUnit_Framework_TestCase
 		$this->assertArrayHasKey('url', $result);
 		$this->assertSame($result['url'], 'https://localhost:9000/foo');
 	}
+
+	/**
+	 * @expectedException \Symfony\Component\Routing\Exception\MethodNotAllowedException
+	 */
+	public function testPostOnlyRequest($value='')
+	{
+		$coll = new RouteCollection();
+		$coll->add('foo', new Route('/foo', array(), array('_method' => 'POST|HEAD')));
+
+		$context = new RequestContext('/foo', 'GET');
+
+		$matcher = new UrlMatcher($coll, $context);
+		$result = $matcher->match('/foo');
+	}
 }
