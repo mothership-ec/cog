@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Routing;
 
-use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Routing\RouteCollection as SymfonyRouteCollection;
 
 /**
 * A wrapper around Symfony's Routing component making it easier to use.
@@ -127,7 +127,7 @@ class Router implements RouterInterface
 	 *
 	 * @param RouteCollection $collection The RouteCollection to use.
 	 */
-	public function setRouteCollection(RouteCollection $collection)
+	public function setRouteCollection(SymfonyRouteCollection $collection)
 	{
 		$this->_collection = $collection;
 	}
@@ -186,8 +186,9 @@ class Router implements RouterInterface
 			return $this->_matcher;
 		}
 
-		// TODO: Remove this line and re-instate cached matchers that dont rely on ConfigCache
+		// TODO: Remove this line and re-instate cached matchers that dont rely on Symfony's ConfigCache
 		$matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
+
 		return $this->_matcher = $matcher;
 	}
 
@@ -202,7 +203,7 @@ class Router implements RouterInterface
 			return $this->_generator;
 		}
 
-		// TODO: Remove this line and re-instate cached generators that dont rely on ConfigCache
+		// TODO: Remove this line and re-instate cached generators that dont rely on Symfony's ConfigCache
 		return $this->_generator = new $this->_options['generator_class']($this->getRouteCollection(), $this->_context);
 	}
 }

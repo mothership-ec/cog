@@ -17,9 +17,11 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 
 	static public function getSubscribedEvents()
 	{
-		return array('modules.load.success' => array(
-			array('mountRoutes'),
-		));
+		return array(
+			'modules.load.success' => array(
+				array('mountRoutes'),
+			)
+		);
 	}
 
 	/**
