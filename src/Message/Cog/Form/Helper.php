@@ -20,6 +20,8 @@ use Symfony\Component\Form\FormView;
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Bernhard Schussek <bschussek@gmail.com>
+ *
+ * Pulled over from FrameworkBundle
  */
 class Helper extends SymfonyHelper
 {

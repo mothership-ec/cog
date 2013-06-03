@@ -20,7 +20,8 @@ use Message\Cog\Form\Registry;
  * @package Message\Cog\Form
  *
  * Extends Symfony\Component\Form\FormFactoryBuilder
- * Adds CoreExtension by default so the Symfony\Component\Form\Forms class is no longer necessary.
+ * Adds CoreExtension by default so the Symfony\Component\Form\Forms class is no longer necessary,
+ * also sets up Csrf and Templating extensions
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */

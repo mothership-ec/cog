@@ -9,13 +9,14 @@ class SimpleTemplateNameParser implements TemplateNameParserInterface
 {
 	private $root;
 
-	public function __construct($root)
+	public function __construct($type)
 	{
-		$this->root = $root;
+		$this->root = realpath(__DIR__ . '/../Views/' . ucfirst($type));
 	}
 
 	public function parse($name)
 	{
+		die('here');
 		if (false !== strpos($name, ':')) {
 			$path = str_replace(':', '/', $name);
 		} else {
