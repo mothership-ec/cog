@@ -73,4 +73,25 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals(1, count(array_unique($slugs, SORT_REGULAR)));
 	}
+
+	public function testGetSegments()
+	{
+		$fullSlug = '/secret/place/in/the/website';
+		$slug     = new Slug($fullSlug);
+		$segments = array(
+			'secret',
+			'place',
+			'in',
+			'the',
+			'website',
+		);
+		$this->assertSame($slug->getSegments(), $segments);
+	}
+
+	public function testGetLastSegment()
+	{
+		$fullSlug = '/secret/place/in/the/website';
+		$slug     = new Slug($fullSlug);
+		$this->assertSame($slug->getLastSegment(), 'website');
+	}
 }
