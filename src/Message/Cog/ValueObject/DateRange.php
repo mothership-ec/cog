@@ -61,6 +61,16 @@ class DateRange
 		return $datetime->getTimestamp() >= $this->_start->getTimestamp() && $datetime->getTimestamp() <= $this->_end->getTimestamp();
 	}
 
+	public function getStart()
+	{
+		return $this->_start;
+	}
+
+	public function getEnd()
+	{
+		return $this->_end;
+	}
+
 	/**
 	 * Get the period between a given date & time and the start of the date
 	 * range, represented as an instance of `DateInterval`.
