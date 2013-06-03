@@ -38,6 +38,26 @@ class Slug implements \IteratorAggregate, \Countable
 	}
 
 	/**
+	 * Return the array of segments that make the url
+	 *
+	 * @return array $this->_segments
+	 */
+	public function getSegments()
+	{
+		return $this->_segments;
+	}
+
+	/**
+	 * Return the last segment of the url
+	 *
+	 * @return string
+	 */
+	public function getLastSegment()
+	{
+		return end($this->_segments);
+	}
+
+	/**
 	 * Get an external iterator to use for this class.
 	 *
 	 * @return \ArrayIterator Iterator for the slug segments
