@@ -16,7 +16,7 @@ class SimpleTemplateNameParser implements TemplateNameParserInterface
 
 	public function parse($name)
 	{
-		die('here');
+		die(__CLASS__ . '::' . __METHOD__ . ' - got here!');
 		if (false !== strpos($name, ':')) {
 			$path = str_replace(':', '/', $name);
 		} else {

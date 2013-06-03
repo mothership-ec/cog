@@ -29,8 +29,18 @@ class Builder extends SymfonyBuilder
 {
 	public function __construct($container, $type)
 	{
-		$engine = $container['form.engine.' . $type];
-		$dir = __DIR__ . '/../Views/' . ucfirst($type);
+		$dir = realpath(__DIR__ . '/../Views/' . ucfirst($type));
+
+		if (!is_dir($dir)) {
+			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - \'' . $dir . '\' is not a valid directory');
+		}
+
+		$engine = new \Message\Cog\Templating\PhpEngine(
+			new \Message\Cog\Form\Template\SimpleTemplateNameParser('php'),
+			new \Symfony\Component\Templating\Loader\FilesystemLoader(array(
+				$dir
+			))
+		);
 
 		$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr';
 		$this->addExtension(new CoreExtension)
@@ -39,7 +49,8 @@ class Builder extends SymfonyBuilder
 			)
 			->addExtension(new \Message\Cog\Form\Template\Templating($engine, null, array(
 				realpath($dir),
-			)));
+			)))
+		;
 	}
 
 }

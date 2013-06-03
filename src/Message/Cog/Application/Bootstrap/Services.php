@@ -194,13 +194,13 @@ class Services implements ServicesInterface
 
 
 		// Forms
-		$serviceContainer['form.provider'] = function($c) {
-			return new \Message\Cog\Form\ServiceProvider;
-		};
+//		$serviceContainer['form.provider'] = function($c) {
+//			return new \Message\Cog\Form\ServiceProvider;
+//		};
 
-		$serviceContainer['form.data'] = function($c) {
-			return new \Message\Cog\Form\Data;
-		};
+//		$serviceContainer['form.data'] = function($c) {
+//			return new \Message\Cog\Form\Data;
+//		};
 
 		$serviceContainer['form.builder.php'] = function($c) {
 			return $c['form.factory.php']->createBuilder();
@@ -233,23 +233,20 @@ class Services implements ServicesInterface
 				)
 			);
 
-//			$engine->setHelpers(array(
-//				$formHelper,
-//				// @todo add translation helpers
-//			));
-
 			return $formHelper;
 
 		};
 
-		$serviceContainer['form.engine.php'] = function($c) {
+		// @todo add form.helper.twig
+
+		$serviceContainer['form.engine.php'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\PhpEngine(
 				new \Message\Cog\Form\Template\SimpleTemplateNameParser('php'),
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(array())
 			);
-		};
+		});
 
-		// @todo add form.helper.twig
+		// @todo add form.engine.twig
 
 		// Validator
 		$serviceContainer['validator'] = function($c) {

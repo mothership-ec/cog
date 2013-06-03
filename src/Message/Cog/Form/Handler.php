@@ -12,6 +12,8 @@ use Message\Cog\Service\Container;
  *
  * Class to handle data upon form submission, specifically to check that it is valid
  *
+ * //@todo create blank instance of symfony form and access via this class, maybe rename to form
+ *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Handler
@@ -37,19 +39,14 @@ class Handler
 	public function __construct(Container $container)
 	{
 		$this->_container = $container;
+		$this->_form = $container['form.builder.php']->getForm();
 	}
 
-	/**
-	 * @param Form $form                Form to assign to data handler
-	 * @param Validator $validator      Validator instance to provide validation rules
-	 */
-	public function setup(Form $form, Validator $validator = null)
+	public function add($child, $type = null, array $options = array())
 	{
-		$this->setForm($form);
+		$this->_form->add($child, $type, $options);
 
-		if ($validator) {
-			$this->_validator = $validator;
-		}
+		return $this;
 	}
 
 	/**
