@@ -48,7 +48,7 @@ class Bcrypt implements HashInterface
 	 * @throws \InvalidArgumentException If the salt is less than 22 bytes long
 	 * @throws \InvalidArgumentException If the sale contains invalid characters
 	 */
-	public function encrypt($password, $salt = null)
+	public function encrypt($string, $salt = null)
 	{
 		if (is_null($salt)) {
 			$salt = $this->_saltGenerator->generate(22);
@@ -65,7 +65,7 @@ class Bcrypt implements HashInterface
 		$bcryptSalt = '$2a$' . str_pad(self::WORK_FACTOR, 2, '0', STR_PAD_LEFT) . '$'
 					 . substr($salt, 0, 22);
 
-		$crypto = crypt($password, $bcryptSalt);
+		$crypto = crypt($string, $bcryptSalt);
 
 		if ('*0' === $crypto) {
 			throw new \InvalidArgumentException(sprintf(
@@ -85,8 +85,8 @@ class Bcrypt implements HashInterface
 	 *
 	 * @return boolean        Result of match check
 	 */
-	public function check($password, $hash)
+	public function check($string, $hash)
 	{
-		return $hash === crypt($password, $hash);
+		return $hash === crypt($string, $hash);
 	}
 }
