@@ -9,7 +9,7 @@ use Message\Cog\ReferenceParserInterface;
  * RouteCollections, this in turn is a decorator for Symfony's RouteCollection
  * class.
  *
- * This class is also capabale of compiling all the seperate RouteCollections
+ * This class is also capabale of compiling all the separate RouteCollections
  * into a single one which can be passed to the Router.
  */
 class CollectionManager implements \ArrayAccess, \IteratorAggregate
