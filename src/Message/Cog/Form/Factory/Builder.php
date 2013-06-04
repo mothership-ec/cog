@@ -37,9 +37,7 @@ class Builder extends SymfonyBuilder
 
 		$engine = new \Message\Cog\Templating\PhpEngine(
 			new \Message\Cog\Form\Template\SimpleTemplateNameParser('php'),
-			new \Symfony\Component\Templating\Loader\FilesystemLoader(array(
-				$dir
-			))
+			new \Symfony\Component\Templating\Loader\FilesystemLoader(array())
 		);
 
 		$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr';
