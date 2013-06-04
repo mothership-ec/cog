@@ -9,8 +9,6 @@ use Message\Cog\Service\ContainerInterface;
 /**
  * Event listener for the Filesystem component.
  *
- * Registers event listener(s) to render the Profiler.
- *
  * @author James Moss <james@message.co.uk>
  */
 class EventListener implements SubscriberInterface

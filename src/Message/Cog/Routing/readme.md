@@ -77,10 +77,23 @@ Some defaults have special meaning, this are prefixed with an underscore.
 
 ## Registering routes
 
-The `Router` class is responsible for taking a request and returning a route that matches it. Before this happens `Route`s are added to the `Router`.
+The `Router` class is responsible for taking a request and returning a route that matches it. Before this happens Route`s are added to the `CollectionManager` class.
 
-$router = new Router();
+`CollectionManager` allows you to create different groups of routes. Each group is represented using the `RouteCollection` class. `RouteCollection` is a decorator for Symfony's `RouteCollection` class.
 
+`CollectionManager` uses an array access based method of setting up groups. If you 
 
+	$manager = new CollectionManager(new ReferenceParser);
 
+	// Add a route to the default collection
+	$manager->add('user.view', '/view/user/{userID}', 'Message:Cog:ClassName#view');
 
+	// Add a route to the cp collection.
+	$manager['cp']->add('cp.stream', '/events/stream', 'Message:Cog:ClassName#view');
+
+By default collections are mounted at '/', but you can choose to mount them with a different prefix using the `setPrefix()` method.
+
+	$manager['blog']->add('blog.comments.view', '/comments', 'Message:Blog::Comments#view');
+	$manager['blog']->setPrefix('/blog');
+
+This will prefix all routes URLs in the `blog` collection with `/blog`. In the example above to access the `Message:Blog::Comments#view` controller you'd visit /blog/comments in your browser.

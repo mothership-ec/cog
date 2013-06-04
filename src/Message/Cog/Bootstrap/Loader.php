@@ -115,7 +115,7 @@ class Loader implements LoaderInterface
 		// Register routes second
 		foreach ($this->_bootstraps as $bootstrap) {
 			if ($bootstrap instanceof RoutesInterface) {
-				$bootstrap->registerRoutes($this->_services['router']);
+				$bootstrap->registerRoutes($this->_services['routes']);
 			}
 		}
 

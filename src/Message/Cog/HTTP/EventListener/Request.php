@@ -19,7 +19,6 @@ use Symfony\Component\Routing\Exception\ExceptionInterface as RouterException;
 class Request implements SubscriberInterface
 {
 	protected $_services;
-	protected $_router;
 
 	static public function getSubscribedEvents()
 	{
@@ -35,12 +34,10 @@ class Request implements SubscriberInterface
 	 * Constructor.
 	 *
 	 * @param Services        $services The service container
-	 * @param RouterInterface $router   The router
 	 */
-	public function __construct(ContainerInterface $services, RouterInterface $router)
+	public function __construct(ContainerInterface $services)
 	{
 		$this->_services = $services;
-		$this->_router   = $router;
 	}
 
 	/**
@@ -64,7 +61,8 @@ class Request implements SubscriberInterface
 	public function routeRequest(Event $event)
 	{
 		try {
-			$uri = $event->getRequest()->getRequestUri();
+			$uri    = $event->getRequest()->getRequestUri();
+			$router = $this->_services['router'];
 
 			// If this is an internal request, overwrite the URI with the evaluated route
 			if ($event->getRequest()->isInternal()) {
@@ -74,11 +72,11 @@ class Request implements SubscriberInterface
 				// Remove the _route attribute so it doesn't confuse the route matcher later
 				$attributes->remove('_route');
 				// Generate the URI for the named route
-				$uri = $this->_router->generate($routeName, $attributes->all());
+				$uri = $router->generate($routeName, $attributes->all());
 			}
 
 			// Ask the router for a match for this request
-			$match = $this->_router->match($uri);
+			$match = $router->match($uri);
 
 			// Set all route attributes as attributes on the request
 			foreach ($match as $attr => $val) {
