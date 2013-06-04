@@ -4,11 +4,22 @@ namespace Message\Cog\Routing;
 
 class Route extends \Symfony\Component\Routing\Route
 {
+	protected $_defaultFormat = 'html';
+	protected $_defaultAccess = 'external';
+
 	public function __construct($pattern, array $defaults = array(), array $requirements = array(), array $options = array())
 	{
 		parent::__construct($pattern, $defaults, $requirements, $options);
+		
 		// Set default format to HTML if none is explicitly set
-		$this->setDefault('_format', 'html');
+		if(!isset($defaults['_format'])) {
+			$this->setFormat($this->_defaultFormat);
+		}
+
+		// Set default access to external if none is explicitly set
+		if(!isset($defaults['_access'])) {
+			$this->setAccess($this->_defaultAccess);
+		}
 	}
 
 	public function setScheme($scheme)
@@ -35,6 +46,10 @@ class Route extends \Symfony\Component\Routing\Route
 	 */
 	public function setAccess($access)
 	{
+		if(!in_array($access, array('internal', 'external'))) {
+			throw new \Exception(sprintf('Invalid route access level `%s`', $access));
+		}
+
 		return $this->setDefault('_access', $access);
 	}
 
@@ -46,9 +61,8 @@ class Route extends \Symfony\Component\Routing\Route
 	 */
 	public function setOptional($params)
 	{
-		if (!is_array($params)) {
-			$params = array($params);
-		}
+		$params = (array)$params;
+
 		foreach ($params as $param) {
 			$this->setRequirement($param, '.*');
 		}

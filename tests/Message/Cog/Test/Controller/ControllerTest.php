@@ -16,8 +16,8 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
 	public function testContainerAndRequestAware()
 	{
-		$this->assertInstanceOf('Message\Cog\Service\ContainerAwareInterface', $this->_controller);
-		$this->assertInstanceOf('Message\Cog\HTTP\RequestAwareInterface', $this->_controller);
+		$this->assertInstanceOf('Message\\Cog\\Service\\ContainerAwareInterface', $this->_controller);
+		$this->assertInstanceOf('Message\\Cog\\HTTP\\RequestAwareInterface', $this->_controller);
 	}
 
 	public function testGenerateUrl()
@@ -25,7 +25,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 		$routeName = 'frontend.testroute.view';
 		$params    = array('var' => 'yeah');
 		$returnVal = 'http://www.website.com/path/to/file';
-		$router    = $this->getMock('Message\Cog\Test\Routing\FauxRouter');
+		$router    = $this->getMock('Message\\Cog\\Test\\Routing\\FauxRouter');
 		$container = new FauxContainer;
 
 		// Set up expectations
@@ -47,12 +47,12 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 	{
 		$response = $this->_controller->redirect('google.com', 302);
 
-		$this->assertInstanceOf('Message\Cog\HTTP\RedirectResponse', $response);
+		$this->assertInstanceOf('Message\\Cog\\HTTP\\RedirectResponse', $response);
 		$this->assertEquals(302, $response->getStatusCode());
 
 		$response = $this->_controller->redirect('message.co.uk', 301);
 
-		$this->assertInstanceOf('Message\Cog\HTTP\RedirectResponse', $response);
+		$this->assertInstanceOf('Message\\Cog\\HTTP\\RedirectResponse', $response);
 		$this->assertEquals(301, $response->getStatusCode());
 	}
 
@@ -61,8 +61,8 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 		$routeName  = 'my.special.route';
 		$attribs    = array('id' => 6, 'variable' => 'value');
 		$query      = array('page' => 4);
-		$returnVal  = $this->getMock('Message\Cog\HTTP\Response');
-		$dispatcher = $this->getMock('Message\Cog\HTTP\Dispatcher', array(), array(), '', false);
+		$returnVal  = $this->getMock('Message\\Cog\\HTTP\\Response');
+		$dispatcher = $this->getMock('Message\\Cog\\HTTP\\Dispatcher', array(), array(), '', false);
 		$container  = new FauxContainer;
 
 		// Set up expectations
@@ -84,10 +84,10 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 	{
 		$reference       = 'Message:ModuleName:ViewName:ViewFile';
 		$params          = array('orderID' => 5);
-		$request         = $this->getMock('Message\Cog\HTTP\Request');
+		$request         = $this->getMock('Message\\Cog\\HTTP\\Request');
 		$container       = new FauxContainer;
-		$responseBuilder = $this->getMock('Message\Cog\Controller\ResponseBuilder', array(), array(), '', false);
-		$returnVal       = $this->getMock('Message\Cog\HTTP\Response');
+		$responseBuilder = $this->getMock('Message\\Cog\\Controller\\ResponseBuilder', array(), array(), '', false);
+		$returnVal       = $this->getMock('Message\\Cog\\HTTP\\Response');
 
 		$responseBuilder
 			->expects($this->exactly(1))
