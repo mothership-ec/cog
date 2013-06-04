@@ -36,10 +36,10 @@ class Handler
 	/**
 	 * @param $container
 	 */
-	public function __construct(Container $container)
+	public function __construct($builder)
 	{
 		$this->_container = $container;
-		$this->_form = $container['form.builder.php']->getForm();
+		$this->_form = $builder->getForm();
 	}
 
 	public function add($child, $type = null, array $options = array())
