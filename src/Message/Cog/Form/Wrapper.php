@@ -14,6 +14,8 @@ use Message\Cog\Service\Container;
  * use of private properties and methods, as well as the labyrinthian structure of the component. This class is
  * designed to create an instance of the form and of the validator, and allow them to work together.
  *
+ * @todo when adding a select field, make sure validation removes any fields that aren't in the list
+ *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
 class Wrapper
@@ -58,40 +60,39 @@ class Wrapper
 	public function add($child, $type = null, array $options = array())
 	{
 		$this->_form->add($child, $type, $options);
+		$this->_validator->field($this->_getChildName($child));
 
 		return $this;
 	}
 
 	/**
-	 * Call to add field to validator, and return. References the most recently added field
-	 *
-	 * @throws \LogicException          Throws exception if no fields have been set yet
+	 * Gets instance of validator. Identical to getValidator() method, only this follows a naming convention for when
+	 * creating forms, rather than simply grabbing an instance of the validator
 	 *
 	 * @return Validator
 	 */
 	public function val()
 	{
-		$formChildren = $this->getForm()->all();
+		return $this->getValidator();
+	}
 
-		if (empty($formChildren)) {
-			throw new \LogicException('val() must be called after a child has been added to the form');
-		}
+	protected function _addToValidator()
+	{
 
-		$lastChild = end($formChildren);
-
-		return $this->_validator->field($this->_getChildName($lastChild));
 	}
 
 	/**
-	 * Get most recently added field
+	 * Get a field, defaults to the most recently added
 	 *
-	 * @return SymfonyForm      Returns most recently added field
+	 * @param string | null $name                               Name of field to retrieve
+	 *
+	 * @return \Symfony\Component\Form\FormInterface            Returns requested field or last field
 	 */
-	public function field()
+	public function field($name = null)
 	{
 		$formChildren = $this->getForm()->all();
 
-		return end($formChildren);
+		return $name ? $formChildren[$name] : end($formChildren);
 	}
 
 	/**
