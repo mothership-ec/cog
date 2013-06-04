@@ -112,7 +112,7 @@ class Dispatcher
 	 * @param  string $routeName  Name of the route to execute
 	 * @param  array  $attributes Request attributes
 	 * @param  array  $query      Optional query (GET) parameters
-	 * @param  boolean $catch     Whether exceptions should be caught within this method or not
+	 * @param  bool   $catch      Whether exceptions should be caught within this method or not
 	 *
 	 * @return Response           The filtered Response instance
 	 */

@@ -80,7 +80,10 @@ class Request implements SubscriberInterface
 
 			// Set all route attributes as attributes on the request
 			foreach ($match as $attr => $val) {
-				$event->getRequest()->attributes->set($attr, $val);
+				// Do not overwrite attributes (or sub-requests won't work)
+				if (!$event->getRequest()->attributes->has($attr)) {
+					$event->getRequest()->attributes->set($attr, $val);
+				}
 			}
 		}
 		// Turn any uncaught RouterExceptions into HTTP StatusExceptions
