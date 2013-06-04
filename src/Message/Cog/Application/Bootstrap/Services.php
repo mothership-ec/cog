@@ -82,17 +82,20 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Event\Event;
 		};
 
-		$serviceContainer['event.dispatcher'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Event\Dispatcher;
+		$serviceContainer['event.dispatcher'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Event\Dispatcher($c);
 		});
 
 		$serviceContainer['router'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Routing\Router(
-				$c['reference_parser'],
 				array(
 					'cache_key' => 'router',
 				)
 			);
+		});
+
+		$serviceContainer['routes'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
 		});
 
 		$serviceContainer['controller.resolver'] = $serviceContainer->share(function() {

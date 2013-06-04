@@ -101,6 +101,10 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 			'registerEvents',
 		);
 
+		$this->_services['routes'] = function() {
+			return new FauxRouter;
+		};
+
 		$this->_services['router'] = function() {
 			return new FauxRouter;
 		};
