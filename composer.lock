@@ -163,17 +163,17 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Config.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Config/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/Config/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -201,21 +201,21 @@
             ],
             "description": "Symfony Config Component",
             "homepage": "http://symfony.com",
-            "time": "2013-04-22 04:28:40"
+            "time": "2013-05-09 15:22:40"
         },
         {
             "name": "symfony/console",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -243,21 +243,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2013-05-06 06:31:43"
+            "time": "2013-05-26 18:42:07"
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/DependencyInjection",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/DependencyInjection.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/DependencyInjection/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -297,17 +297,17 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -346,17 +346,17 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Filesystem.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/Filesystem/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -507,17 +507,17 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -546,21 +546,21 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "http://symfony.com",
-            "time": "2013-04-30 17:01:33"
+            "time": "2013-05-26 18:42:07"
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/HttpKernel",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpKernel.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -608,42 +608,161 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "http://symfony.com",
-            "time": "2013-05-06 11:01:51"
+            "time": "2013-06-02 12:29:05"
         },
         {
-            "name": "symfony/locale",
-            "version": "v2.2.1",
-            "target-dir": "Symfony/Component/Locale",
+            "name": "symfony/icu",
+            "version": "v1.0.0",
+            "target-dir": "Symfony/Component/Icu",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Locale.git",
-                "reference": "v2.2.1"
+                "url": "https://github.com/symfony/Icu.git",
+                "reference": "v1.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Locale/zipball/v2.2.1",
-                "reference": "v2.2.1",
+                "url": "https://api.github.com/repos/symfony/Icu/zipball/v1.0.0",
+                "reference": "v1.0.0",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=5.3.3",
+                "symfony/intl": ">=2.3,<3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Icu\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                }
+            ],
+            "description": "Contains an excerpt of the ICU data and classes to load it.",
+            "homepage": "http://symfony.com",
+            "keywords": [
+                "icu",
+                "intl"
+            ],
+            "time": "2013-06-03 18:32:07"
+        },
+        {
+            "name": "symfony/intl",
+            "version": "v2.3.0",
+            "target-dir": "Symfony/Component/Intl",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Intl.git",
+                "reference": "v2.3.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Intl/zipball/v2.3.0",
+                "reference": "v2.3.0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/icu": ">=1.0-RC,<2.0"
+            },
+            "require-dev": {
+                "symfony/filesystem": ">=2.1"
             },
             "suggest": {
-                "ext-intl": "to use other locales than built-in `en`"
+                "ext-intl": "to use the component with locales other than \"en\""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.2-dev"
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Intl\\": ""
+                },
+                "classmap": [
+                    "Symfony/Component/Intl/Resources/stubs"
+                ],
+                "files": [
+                    "Symfony/Component/Intl/Resources/stubs/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Igor Wiedler",
+                    "email": "igor@wiedler.ch",
+                    "homepage": "http://wiedler.ch/igor/"
+                },
+                {
+                    "name": "Bernhard Schussek",
+                    "email": "bschussek@gmail.com"
+                },
+                {
+                    "name": "Eriksen Costa",
+                    "email": "eriksen.costa@infranology.com.br"
+                }
+            ],
+            "description": "A PHP replacement layer for the C intl extension that includes additional data from the ICU library.",
+            "homepage": "http://symfony.com",
+            "keywords": [
+                "i18n",
+                "icu",
+                "internationalization",
+                "intl",
+                "l10n",
+                "localization"
+            ],
+            "time": "2013-05-18 11:21:22"
+        },
+        {
+            "name": "symfony/locale",
+            "version": "v2.3.0",
+            "target-dir": "Symfony/Component/Locale",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Locale.git",
+                "reference": "v2.3.0-RC1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Locale/zipball/v2.3.0-RC1",
+                "reference": "v2.3.0-RC1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/intl": ">=2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
                 }
             },
             "autoload": {
                 "psr-0": {
                     "Symfony\\Component\\Locale\\": ""
-                },
-                "classmap": [
-                    "Symfony/Component/Locale/Resources/stubs"
-                ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -661,21 +780,21 @@
             ],
             "description": "Symfony Locale Component",
             "homepage": "http://symfony.com",
-            "time": "2013-02-01 09:33:53"
+            "time": "2013-04-11 09:29:25"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v2.2.1",
+            "version": "v2.2.2",
             "target-dir": "Symfony/Component/OptionsResolver",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/OptionsResolver.git",
-                "reference": "v2.2.1"
+                "reference": "v2.2.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/OptionsResolver/zipball/v2.2.1",
-                "reference": "v2.2.1",
+                "url": "https://api.github.com/repos/symfony/OptionsResolver/zipball/v2.2.2",
+                "reference": "v2.2.2",
                 "shasum": ""
             },
             "require": {
@@ -759,17 +878,17 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v2.2.1",
+            "version": "v2.2.2",
             "target-dir": "Symfony/Component/PropertyAccess",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/PropertyAccess.git",
-                "reference": "v2.2.1"
+                "reference": "v2.2.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/PropertyAccess/zipball/v2.2.1",
-                "reference": "v2.2.1",
+                "url": "https://api.github.com/repos/symfony/PropertyAccess/zipball/v2.2.2",
+                "reference": "v2.2.2",
                 "shasum": ""
             },
             "require": {
@@ -813,21 +932,21 @@
                 "property path",
                 "reflection"
             ],
-            "time": "2013-03-28 15:37:15"
+            "time": "2013-04-07 22:02:49"
         },
         {
             "name": "symfony/routing",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/Routing",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Routing.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Routing/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/Routing/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -870,17 +989,17 @@
         },
         {
             "name": "symfony/templating",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/Templating",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Templating.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Templating/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/Templating/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -912,17 +1031,17 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/Translation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Translation.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Translation/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/Translation/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -962,17 +1081,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.1.10",
+            "version": "v2.1.11",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "v2.1.10"
+                "reference": "v2.1.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.1.10",
-                "reference": "v2.1.10",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.1.11",
+                "reference": "v2.1.11",
                 "shasum": ""
             },
             "require": {
@@ -1000,7 +1119,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-04-12 10:27:36"
+            "time": "2013-05-10 00:09:46"
         },
         {
             "name": "treasure-chest/treasure-chest",

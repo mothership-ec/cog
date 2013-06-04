@@ -194,13 +194,14 @@ class Services implements ServicesInterface
 
 
 		// Forms
-//		$serviceContainer['form.provider'] = function($c) {
-//			return new \Message\Cog\Form\ServiceProvider;
-//		};
 
-//		$serviceContainer['form.data'] = function($c) {
-//			return new \Message\Cog\Form\Data;
-//		};
+		$serviceContainer['form.wrapper.php'] = function($c) {
+			return new \Message\Cog\Form\Wrapper($c, 'php');
+		};
+
+		$serviceContainer['form.wrapper.twig'] = function($c) {
+			return new \Message\Cog\Form\Wrapper($c, 'twig');
+		};
 
 		$serviceContainer['form.builder.php'] = function($c) {
 			return $c['form.factory.php']->createBuilder();
@@ -218,10 +219,6 @@ class Services implements ServicesInterface
 		$serviceContainer['form.factory.twig'] = function($c) {
 			$builder = new \Message\Cog\Form\Factory\Builder($c, 'twig');
 			return $builder->getFormFactory();
-		};
-
-		$serviceContainer['form.handler'] = function($c) {
-			return new \Message\Cog\Form\Handler($c);
 		};
 
 		$serviceContainer['form.helper.php'] = function($c) {
