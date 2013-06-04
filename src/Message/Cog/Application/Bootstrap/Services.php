@@ -162,11 +162,20 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['config.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Config\LoaderCache(
-				$c['app.loader']->getBaseDir() . 'config/',
-				$c['environment'],
-				$c['cache']
-			);
+			if ('local' === $c['env']) {
+				// When running locally, don't use the cache loader
+				return new \Message\Cog\Config\Loader(
+					$c['app.loader']->getBaseDir() . 'config/',
+					$c['environment']
+				);
+			}
+			else {
+				return new \Message\Cog\Config\LoaderCache(
+					$c['app.loader']->getBaseDir() . 'config/',
+					$c['environment'],
+					$c['cache']
+				);
+			}
 		});
 
 		$serviceContainer['cfg'] = $serviceContainer->share(function($c) {
