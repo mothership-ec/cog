@@ -38,8 +38,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// HTTP Component Events
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Request(
-				$this->_services,
-				$this->_services['router']
+				$this->_services
 			)
 		);
 		$eventDispatcher->addSubscriber(

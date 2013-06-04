@@ -87,10 +87,14 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['router'] = $serviceContainer->share(function($c) {
+			$context = new \Message\Cog\Routing\RequestContext;
+			$context->fromRequest($c['http.request.master']);
+
 			return new \Message\Cog\Routing\Router(
 				array(
 					'cache_key' => 'router',
-				)
+				),
+				$context
 			);
 		});
 
