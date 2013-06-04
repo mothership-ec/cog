@@ -76,11 +76,6 @@ class Wrapper
 		return $this->getValidator();
 	}
 
-	protected function _addToValidator()
-	{
-
-	}
-
 	/**
 	 * Get a field, defaults to the most recently added
 	 *
