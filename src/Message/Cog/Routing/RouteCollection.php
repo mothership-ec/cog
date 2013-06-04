@@ -18,7 +18,7 @@ class RouteCollection
 	/**
 	 * Constructor.
 	 *
-	 * @api
+	 * @param ReferenceParserInterface	$referenceParser	The reference to parser to resolve controller names
 	 */
 	public function __construct(ReferenceParserInterface $referenceParser)
 	{

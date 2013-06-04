@@ -12,7 +12,7 @@ use Message\Cog\Routing\RouteCollection;
 
 class CollectionManagerTest extends \PHPUnit_Framework_TestCase
 {
-	const ROUTE_CONTROLLER_REFERENCE = 'Message:CMS:ClassName#viewMethod';
+	const ROUTE_CONTROLLER_REFERENCE = 'Message:CMS::ClassName#viewMethod';
 
 	protected $_referenceParser;
 
@@ -83,7 +83,7 @@ class CollectionManagerTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @expectedException \Exception
 	 */
-	public function testOffsetUnet()
+	public function testOffsetUnset()
 	{
 		unset($this->_collection['ting']);
 	}

@@ -35,8 +35,10 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	}
 
 	/**
-	 * Adds a Route to the default collection. This signature shoudl match that
+	 * Adds a Route to the default collection. This signature should match that
 	 * of add() in Message\Cog\Routing\RouteCollection.
+	 *
+	 * @see Message\Cog\Routing\RouteCollection::add
 	 *
 	 * @param string $name       The name of the route. Must be unique.
 	 * @param string $url        The URL pattern to match against.
@@ -119,7 +121,7 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	/**
 	 * Iterator to allow looping over this class as if it was an array.
 	 *
-	 * @return ArrayIterator
+	 * @return \ArrayIterator
 	 */
 	public function getIterator()
 	{

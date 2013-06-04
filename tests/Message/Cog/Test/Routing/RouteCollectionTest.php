@@ -13,7 +13,7 @@ use Message\Cog\Routing\RequestContext;
 
 class RouteCollectionTest extends \PHPUnit_Framework_TestCase
 {
-	const ROUTE_CONTROLLER_REFERENCE = 'Message:CMS:ClassName#viewMethod';
+	const ROUTE_CONTROLLER_REFERENCE = 'Message:CMS::ClassName#viewMethod';
 
 	protected $_referenceParser;
 

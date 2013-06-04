@@ -25,7 +25,7 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	}
 
 	/**
-	 * @inherit
+	 * {@inheritDoc}
 	 */
 	public function setContainer(ContainerInterface $services)
 	{

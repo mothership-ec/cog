@@ -8,7 +8,7 @@ use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 
 /**
- * Event listener for the Routing component.
+ * Event listener helper for testing
  *
  * @author James Moss <james@message.co.uk>
  */

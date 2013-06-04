@@ -2,12 +2,11 @@
 
 namespace Message\Cog\Routing;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Message\Cog\HTTP\RedirectResponse;
 use Symfony\Component\Routing\Matcher\RedirectableUrlMatcher as BaseRedirectableUrlMatcher;
-use Symfony\Component\Routing\Matcher\RedirectableUrlMatcherInterface;
 
 /**
- * Implements the RedirectableUrlMatcherInterface for Silex.
+ * Implements the RedirectableUrlMatcherInterface for Cog.
  *
  * @author James Moss <james@message.co.uk>
  */
