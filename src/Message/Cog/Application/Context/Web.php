@@ -17,6 +17,9 @@ class Web implements ContextInterface
 	 * Constructor. This is run before any modules are loaded, so we can
 	 * initialise the web request as a service here.
 	 *
+	 * The master request is instantiated and set on the service container,
+	 * along with the current request context.
+	 *
 	 * @param ContainerInterface $container The service container
 	 */
 	public function __construct(ContainerInterface $container)

@@ -90,6 +90,14 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
 		});
 
+		$serviceContainer['routing.matcher'] = function($c) {
+			return new \Message\Cog\Routing\UrlMatcher($c['routes.compiled'], $c['http.request.context']);
+		};
+
+		$serviceContainer['routing.url_generator'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+		});
+
 		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
 			$viewNameParser = new \Message\Cog\Templating\ViewNameParser(
