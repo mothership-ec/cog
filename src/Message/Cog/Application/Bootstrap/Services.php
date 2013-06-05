@@ -130,7 +130,8 @@ class Services implements ServicesInterface
 						),
 						array(
 							new \Symfony\Component\Templating\Helper\SlotsHelper,
-							new \Message\Cog\Templating\Helper\Subrequest($c['http.dispatcher']),
+							new \Message\Cog\Templating\Helper\Actions($c['http.fragment_handler'], $c['reference_parser']),
+							new \Message\Cog\Templating\Helper\Routes($c['routing.generator']),
 						)
 					),
 				)
@@ -155,7 +156,7 @@ class Services implements ServicesInterface
 		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
 			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
 				new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel'])
-			), true);
+			), ('local' === $c['env']));
 		});
 
 		$serviceContainer['http.uri_signer'] = $serviceContainer->share(function() {
