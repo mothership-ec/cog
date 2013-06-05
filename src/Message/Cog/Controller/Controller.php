@@ -93,11 +93,15 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function forward($reference, array $attributes = array(), array $query = array(), $catch = true)
 	{
+		// Copy the route format from the current request
+		$attributes['_format']     = $this->_services['request']->attributes->get('_format');
+		// Set the Symfony controller reference
 		$attributes['_controller'] = $this->_services['reference_parser']->parse($reference)->getSymfonyLogicalControllerName();
 
 		$kernel  = $this->_services['http.kernel'];
 		$request = $this->_services['request']->duplicate($query, null, $attributes);
 
+		// Execute the sub-request
 		return $kernel->handle($request, $kernel::MASTER_REQUEST, $catch);
 	}
 

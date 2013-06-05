@@ -31,11 +31,12 @@ class Web implements ContextInterface
 	/**
 	 * Run a web request.
 	 *
-	 * This creates the master request, adds it to the service container and
-	 * dispatches it. Then the response is sent.
+	 * This dispatches the master request and sends it to the client, and then
+	 * terminates.
 	 */
 	public function run()
 	{
+		// @todo can we move this somewhere better? it needs to happen here though :(
 		$this->_services['event.dispatcher']->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\RouterListener($this->_services['routing.matcher'])
 		);

@@ -35,19 +35,26 @@ class Events implements EventsInterface, ContainerAwareInterface
 	 */
 	public function registerEvents($eventDispatcher)
 	{
-		// HTTP Component Events
-		 $eventDispatcher->addSubscriber(
-		 	new \Message\Cog\HTTP\EventListener\Request(
-		 		$this->_services
-		 	)
-		 );
-		 $eventDispatcher->addSubscriber($this->_services['http.fragment_handler']);
-		// $eventDispatcher->addSubscriber(
-		// 	new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
-		// );
-		// $eventDispatcher->addSubscriber(
-		// 	new \Message\Cog\HTTP\EventListener\Exception
-		// );
+		// Our HTTP Request listeners
+		$eventDispatcher->addSubscriber(
+			new \Message\Cog\HTTP\EventListener\Request
+		);
+		$eventDispatcher->addSubscriber(
+			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
+		);
+		// Symfony's HTTP Response Listener
+		$eventDispatcher->addSubscriber(
+			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
+		);
+		// Symfony's HTTP Fragment Listeners
+		$eventDispatcher->addSubscriber($this->_services['http.fragment_handler']);
+		$eventDispatcher->addSubscriber(
+			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
+				$this->_services['http.uri_signer']
+			)
+		);
+
+
 
 		// Profiler
 		$eventDispatcher->addSubscriber(

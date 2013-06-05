@@ -86,18 +86,6 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Event\Dispatcher($c);
 		});
 
-		$serviceContainer['router'] = $serviceContainer->share(function($c) {
-			$context = new \Message\Cog\Routing\RequestContext;
-			$context->fromRequest($c['http.request.master']);
-
-			return new \Message\Cog\Routing\Router(
-				array(
-					'cache_key' => 'router',
-				),
-				$context
-			);
-		});
-
 		$serviceContainer['routes'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
 		});
@@ -158,6 +146,10 @@ class Services implements ServicesInterface
 			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
 				new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel'])
 			), true);
+		});
+
+		$serviceContainer['http.uri_signer'] = $serviceContainer->share(function() {
+			return new \Symfony\Component\HttpKernel\UriSigner(time());
 		});
 
 		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {

@@ -3,7 +3,8 @@
 namespace Message\Cog\Test\Controller;
 
 use Message\Cog\Controller\ResponseBuilder;
-use Message\Cog\HTTP\StatusException;
+
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -74,8 +75,8 @@ class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
 		try {
 			$responseBuilder->render($reference, $params);
 		}
-		catch (StatusException $e) {
-			$this->assertEquals(StatusException::NOT_ACCEPTABLE, $e->getCode());
+		catch (NotAcceptableHttpException $e) {
+			$this->assertEquals(406, $e->getCode());
 			$this->assertEquals($renderException, $e->getPrevious());
 			return;
 		}

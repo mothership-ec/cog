@@ -3,9 +3,11 @@
 namespace Message\Cog\HTTP\EventListener;
 
 use Message\Cog\Event\SubscriberInterface;
-use Message\Cog\HTTP\Event\Event;
-use Message\Cog\HTTP\Event\FilterResponseEvent;
 use Message\Cog\HTTP\CookieCollection;
+
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
  * Event listener for core functionality for any last actions on a Response
@@ -24,27 +26,20 @@ class Response implements SubscriberInterface
 
 	static public function getSubscribedEvents()
 	{
-		return array(Event::RESPONSE => array(
+		return array(KernelEvents::RESPONSE => array(
 			array('setResponseCookies'),
-			array('prepareResponse'),
 		));
 	}
 
-	/**
-	 * Prepare the Response.
-	 *
-	 * @param  FilterResponseEvent $event The filter response event
-	 */
-	public function prepareResponse(FilterResponseEvent $event)
-	{
-		$event->getResponse()->prepare($event->getRequest());
-	}
-	
 	public function setResponseCookies(FilterResponseEvent $event)
 	{
+		// Skip if this isn't the master request
+		if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+			return false;
+		}
+
 		foreach ($this->_cookieCollection as $cookie) {
 			$event->getResponse()->headers->setCookie($cookie);
 		}
-
 	}
 }

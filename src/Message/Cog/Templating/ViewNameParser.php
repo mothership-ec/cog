@@ -4,10 +4,11 @@ namespace Message\Cog\Templating;
 
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\ReferenceParserInterface;
-use Message\Cog\HTTP\StatusException;
 
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParser;
+
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class ViewNameParser extends TemplateNameParser
 {
@@ -41,7 +42,7 @@ class ViewNameParser extends TemplateNameParser
 	 *
 	 * @return string            The view file path
 	 *
-	 * @throws StatusException   If the view format could not be determined
+	 * @throws NotAcceptableHttpException If the view format could not be determined
 	 *
 	 * @todo What if there's no request object?
 	 * @todo Notify the response of the chosen response type
@@ -67,12 +68,11 @@ class ViewNameParser extends TemplateNameParser
 			}
 		}
 
-		throw new StatusException(
+		throw new NotAcceptableHttpException(
 			sprintf(
 				'View format could not be determined for reference `%s`',
 				$reference
 			),
-			StatusException::NOT_ACCEPTABLE
 		);
 	}
 }

@@ -3,42 +3,12 @@
 namespace Message\Cog\HTTP;
 
 /**
- * Our HTTP Request class. Extends Symfony's.
+ * Our HTTP Request class, which extends Symfony's.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Request extends \Symfony\Component\HttpFoundation\Request
 {
-	protected $_internal = false;
-
-	/**
-	 * Sets this request as an internal request (sub-request)
-	 */
-	public function setInternal()
-	{
-		$this->_internal = true;
-	}
-
-	/**
-	 * Returns true if this request is an internal request (sub-request)
-	 *
-	 * @return boolean Result of the check
-	 */
-	public function isInternal()
-	{
-		return $this->_internal;
-	}
-
-	/**
-	 * Returns true if this request is an external request (master request)
-	 *
-	 * @return boolean Result of the check
-	 */
-	public function isExternal()
-	{
-		return !$this->_internal;
-	}
-
 	/**
 	 * Gets the allowed content types for this request.
 	 *
