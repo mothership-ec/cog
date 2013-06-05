@@ -109,7 +109,7 @@ class Services implements ServicesInterface
 					)
 				),
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
-					array($c['app.loader']->getBaseDir(), '/Users/james/Sites/cog/src/Message/Cog/Form/Views/Php')
+					array($c['app.loader']->getBaseDir(), '/Users/thomas/Sites/cog/src/Message/Cog/Form/Views/Php')
 				),
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper

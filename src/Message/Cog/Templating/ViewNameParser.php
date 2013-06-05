@@ -51,7 +51,7 @@ class ViewNameParser extends \Symfony\Component\Templating\TemplateNameParser
 		$request = $this->_services['request'];
 
 		if(preg_match("/^@form:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
-			$baseFileName = '/Users/james/Sites/cog/src/Message/Cog/Form/Views/Php/'.$matches[1];
+			$baseFileName = '/Users/thomas/Sites/cog/src/Message/Cog/Form/Views/Php/'.$matches[1];
 			return new TemplateReference($baseFileName.'.html.php', 'php');
 		} else {
 			// Get the base file name from the reference parser
