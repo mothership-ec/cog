@@ -81,20 +81,24 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Triggers a sub-request for the given route name and returns a filtered
-	 * Response instance.
+	 * Triggers a sub-request for the given controller reference and returns a
+	 * filtered Response instance.
 	 *
-	 * @see \Message\Cog\HTTP\Dispatcher::forward()
-	 *
-	 * @param  string $routeName  Name of the route to execute
+	 * @param  string $reference  The reference for the controller
 	 * @param  array  $attributes Request attributes
 	 * @param  array  $query      Optional query (GET) parameters
+	 * @param  bool   $catch      True to catch exceptions thrown in the sub-request
 	 *
 	 * @return Response           The filtered Response instance
 	 */
-	public function forward($routeName, array $attributes = array(), array $query = array())
+	public function forward($reference, array $attributes = array(), array $query = array(), $catch = true)
 	{
-		return $this->_services['http.dispatcher']->forward($routeName, $attributes, $query);
+		$attributes['_controller'] = $this->_services['reference_parser']->parse($reference)->getSymfonyLogicalControllerName();
+
+		$kernel  = $this->_services['http.kernel'];
+		$request = $this->_services['request']->duplicate($query, null, $attributes);
+
+		return $kernel->handle($request, $kernel::MASTER_REQUEST, $catch);
 	}
 
 	/**

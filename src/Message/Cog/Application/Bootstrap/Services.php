@@ -102,10 +102,6 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
 		});
 
-		$serviceContainer['controller.resolver'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Controller\ControllerResolver;
-		});
-
 		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
 			$viewNameParser = new \Message\Cog\Templating\ViewNameParser(
@@ -143,11 +139,10 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$serviceContainer['http.dispatcher'] = function($c) {
-			return new \Message\Cog\HTTP\Dispatcher(
+		$serviceContainer['http.kernel'] = function($c) {
+			return new \Symfony\Component\HttpKernel\HttpKernel(
 				$c['event.dispatcher'],
-				$c['controller.resolver'],
-				(isset($c['http.request.master']) ? $c['http.request.master'] : null)
+				new \Symfony\Component\HttpKernel\Controller\ControllerResolver
 			);
 		};
 
@@ -157,6 +152,12 @@ class Services implements ServicesInterface
 
 		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
 			return new \Message\Cog\HTTP\CookieCollection;
+		});
+
+		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
+			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
+				new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel'])
+			), true);
 		});
 
 		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {

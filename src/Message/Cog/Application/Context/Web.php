@@ -36,8 +36,14 @@ class Web implements ContextInterface
 	 */
 	public function run()
 	{
-		$this->_services['http.dispatcher']
-			->handle($this->_services['http.request.master'])
-			->send();
+		$this->_services['event.dispatcher']->addSubscriber(
+			new \Symfony\Component\HttpKernel\EventListener\RouterListener($this->_services['routing.matcher'])
+		);
+
+		$response = $this->_services['http.kernel']->handle($this->_services['http.request.master']);
+
+		$response->send();
+
+		$this->_services['http.kernel']->terminate($this->_services['http.request.master'], $response);
 	}
 }

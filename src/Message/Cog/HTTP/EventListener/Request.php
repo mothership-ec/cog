@@ -10,6 +10,8 @@ use Message\Cog\HTTP\Dispatcher;
 use Message\Cog\HTTP\StatusException;
 
 use Symfony\Component\Routing\Exception\ExceptionInterface as RouterException;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 /**
  * Event listener for core functionality for dealing with requests.
@@ -27,13 +29,16 @@ class Request implements SubscriberInterface
 			array('routeRequest'),
 			array('validateRequestScope'),
 			array('validateRequestedFormats'),
+		),
+		KernelEvents::REQUEST => array(
+			array('addRequestToServices', 9999),
 		));
 	}
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Services        $services The service container
+	 * @param Services $services The service container
 	 */
 	public function __construct(ContainerInterface $services)
 	{
@@ -45,7 +50,7 @@ class Request implements SubscriberInterface
 	 *
 	 * @param Event $event The Event::REQUEST event instance
 	 */
-	public function addRequestToServices(Event $event)
+	public function addRequestToServices(GetResponseEvent $event)
 	{
 		$this->_services['request'] = $this->_services->share(function() use ($event) {
 			return $event->getRequest();

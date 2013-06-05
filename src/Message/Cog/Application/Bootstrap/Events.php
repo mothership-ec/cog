@@ -36,17 +36,18 @@ class Events implements EventsInterface, ContainerAwareInterface
 	public function registerEvents($eventDispatcher)
 	{
 		// HTTP Component Events
-		$eventDispatcher->addSubscriber(
-			new \Message\Cog\HTTP\EventListener\Request(
-				$this->_services
-			)
-		);
-		$eventDispatcher->addSubscriber(
-			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
-		);
-		$eventDispatcher->addSubscriber(
-			new \Message\Cog\HTTP\EventListener\Exception
-		);
+		 $eventDispatcher->addSubscriber(
+		 	new \Message\Cog\HTTP\EventListener\Request(
+		 		$this->_services
+		 	)
+		 );
+		 $eventDispatcher->addSubscriber($this->_services['http.fragment_handler']);
+		// $eventDispatcher->addSubscriber(
+		// 	new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
+		// );
+		// $eventDispatcher->addSubscriber(
+		// 	new \Message\Cog\HTTP\EventListener\Exception
+		// );
 
 		// Profiler
 		$eventDispatcher->addSubscriber(
@@ -65,6 +66,9 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Routing
 		$eventDispatcher->addSubscriber(new \Message\Cog\Routing\EventListener);
+
+
+		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
 
 		// TODO: add a caching layer that just also subscribes to the request/response events
 	}

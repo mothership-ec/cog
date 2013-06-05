@@ -39,6 +39,13 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	public function mountRoutes()
 	{
 		$compiledRoutes = $this->_services['routes']->compileRoutes()->getRouteCollection();
-		$this->_services['router']->setRouteCollection($compiledRoutes);
+
+		// TODO: move the below somewhere more suitable - we shouldn't register listeners here!
+		$this->_services['routing.matcher'] = function($c) use ($compiledRoutes) {
+			$context = new RequestContext;
+			$context->fromRequest($c['http.request.master']); // current request
+
+			return new UrlMatcher($compiledRoutes, $context);
+		};
 	}
 }
