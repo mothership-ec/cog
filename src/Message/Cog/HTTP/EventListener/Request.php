@@ -45,6 +45,8 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 		$this->_services['request'] = $this->_services->share(function() use ($event) {
 			return $event->getRequest();
 		});
+
+		$this->_services['http.fragment_handler']->setRequest($this->_services['request']);
 	}
 
 	/**

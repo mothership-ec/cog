@@ -21,7 +21,7 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 		$this->_container  = new FauxContainer;
 		$this->_dispatcher = new FauxDispatcher;
 		$this->_bootstrap  = new EventsBootstrap;
-		$fragmentHandler   = $this->getMock('Symfony\Component\HttpKernel\Fragment\FragmentHandler');
+		$fragmentHandler   = $this->getMock('Symfony\\Component\\HttpKernel\\Fragment\\FragmentHandler');
 		$uriSigner         = $this->getMock('Symfony\Component\HttpKernel\UriSigner', array(), array('123'));
 
 		// Set up services used when registering these events

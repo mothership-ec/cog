@@ -46,8 +46,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
 		);
-		// Symfony's HTTP Fragment Listeners
-		$eventDispatcher->addSubscriber($this->_services['http.fragment_handler']);
+		// Symfony's HTTP Fragment Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
 				$this->_services['http.uri_signer']
@@ -76,7 +75,5 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
-
-		// TODO: add a caching layer that just also subscribes to the request/response events
 	}
 }
