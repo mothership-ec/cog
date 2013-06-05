@@ -27,7 +27,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
 		$this->manager->clear();
 	}
 
-
 	public function testChecksum()
 	{
 		$path = __DIR__.'/fixtures/tmp/hello.txt';
@@ -58,8 +57,10 @@ class FileTest extends \PHPUnit_Framework_TestCase
 		$file = new File('cog://tmp/hello.txt');
 		$this->assertFalse($file->isPublic());
 
-		$file = new File('cog://public/hello.txt');
+		$file = new File('cog://public/files/image.jpg');
 		$this->assertTrue($file->isPublic());
+
+
 	}
 
 }
