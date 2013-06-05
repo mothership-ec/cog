@@ -10,6 +10,7 @@ use Message\Cog\Routing\CollectionManager;
 use Message\Cog\Routing\EventListener;
 use Message\Cog\Routing\RouteCollection;
 
+use Message\Cog\Test\Event\FauxDispatcher;
 
 class EventListenerTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,8 +24,25 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 
 	public function testMountingRoutes()
 	{
-		$services = new FauxContainer;
-		$listener = new EventListener;
+		$services   = new FauxContainer;
+		$listener   = new EventListener;
+		$collection = $this->getMock(
+			'Message\\Cog\\Routing\\RouteCollection',
+			array('getRouteCollection'),
+			array(),
+			'',
+			false
+		);
+
+		$services['event.dispatcher'] = $services->share(function() {
+			return new FauxDispatcher;
+		});
+
+		$generator = $this->getMock('Message\\Cog\\Routing\\UrlMatcher', array(), array(), '', false);
+
+		$services['routing.matcher'] = $services->share(function() use ($generator) {
+			return $generator;
+		});
 
 		$this->_modulePaths['UniformWares\\CustomModuleName'] = __DIR__.'/fixtures/module/example';
 
@@ -43,13 +61,9 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 			$fnsUtility
 		);
 
-
-		$this->assertInstanceOf('\\Message\\Cog\\Service\\ContainerAwareInterface', $listener);
+		$this->assertInstanceOf('Message\\Cog\\Service\\ContainerAwareInterface', $listener);
 
 		$listener->setContainer($services);
-
-		// Set up expectations
-		$router = $this->getMock('\\Message\\Cog\\Routing\\Router');
 
 		// Set up expectations
 		$routes = $this->getMock(
@@ -61,18 +75,24 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 		$routes
 			->expects($this->exactly(1))
 			->method('compileRoutes')
-			->will($this->returnValue(new RouteCollection($this->_referenceParser)));
+			->will($this->returnValue($collection));
 
-		$services['router'] = $services->share(function() use ($router) {
-			return $router;
-		});
+		$collection
+			->expects($this->exactly(1))
+			->method('getRouteCollection')
+			->will($this->returnValue('my-route-collection'));
 
 		$services['routes'] = $services->share(function() use ($routes) {
 			return $routes;
 		});
 
 		$listener->mountRoutes();
+
+		$this->assertSame('my-route-collection', $services['routes.compiled']);
+		$this->assertTrue($services->isShared('routes.compiled'));
+
+		$this->assertTrue($services['event.dispatcher']->isSubscriberRegistered('Symfony\Component\HttpKernel\EventListener\RouterListener'));
 	}
 
-	
+
 }

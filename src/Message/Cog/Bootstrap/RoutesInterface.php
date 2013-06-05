@@ -17,9 +17,9 @@ interface RoutesInterface extends BootstrapInterface
 	 * unmanageable.
 	 *
 	 * We can assume that `$router` is an instance of
-	 * `\Message\Cog\Routing\RouterInterface`.
+	 * `\Message\Cog\Routing\CollectionManager`.
 	 *
-	 * @param object $router The router
+	 * @param object $router The route collection manager
 	 */
 	public function registerRoutes($router);
 }

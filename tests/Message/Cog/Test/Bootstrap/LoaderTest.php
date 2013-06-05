@@ -7,7 +7,6 @@ use Message\Cog\HTTP\Request;
 
 use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Service\FauxContainer;
-use Message\Cog\Test\Routing\FauxRouter;
 use Message\Cog\Test\Event\FauxDispatcher;
 
 class LoaderTest extends \PHPUnit_Framework_TestCase
@@ -93,6 +92,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testLoad($context)
 	{
+		$routesMock                 = $this->getMock('Message\Cog\Router\CollectionManager');
 		$methodCallLoggingBootstrap = new Mocks\MethodCallOrderTesterBootstrap;
 		$mockBootstrap              = $this->getMock('Message\Cog\Test\Bootstrap\Mocks\FauxFullBootstrap');
 		$registerMethodOrder        = array(
@@ -101,12 +101,8 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 			'registerEvents',
 		);
 
-		$this->_services['routes'] = function() {
-			return new FauxRouter;
-		};
-
-		$this->_services['router'] = function() {
-			return new FauxRouter;
+		$this->_services['routes'] = function() use ($routesMock) {
+			return $routesMock;
 		};
 
 		$this->_services['event.dispatcher'] = function() {
@@ -143,7 +139,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$mockBootstrap
 			->expects($this->exactly(1))
 			->method('registerRoutes')
-			->with($this->_services['router']);
+			->with($this->_services['routes']);
 
 		$mockBootstrap
 			->expects($this->exactly(1))
