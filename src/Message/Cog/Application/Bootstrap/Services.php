@@ -108,18 +108,26 @@ class Services implements ServicesInterface
 					'php',
 				)
 			);
+			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
+				$c['http.fragment_handler'],
+				$c['reference_parser']
+			);
+			$twigEnvironment = new \Twig_Environment(
+				new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
+				array(
+					#'cache' => 'cog://tmp',
+					'auto_reload' => true,
+				)
+			);
+
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
 					// Twig templating engine
 					new \Message\Cog\Templating\TwigEngine(
-						new \Twig_Environment(
-							new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
-							array(
-								'cache' => 'cog://tmp',
-								'auto_reload' => true,
-							)
-						),
+						$twigEnvironment,
 						$viewNameParser
 					),
 					// Plain PHP templating engine
@@ -130,8 +138,8 @@ class Services implements ServicesInterface
 						),
 						array(
 							new \Symfony\Component\Templating\Helper\SlotsHelper,
-							new \Message\Cog\Templating\Helper\Actions($c['http.fragment_handler'], $c['reference_parser']),
-							new \Message\Cog\Templating\Helper\Routes($c['routing.generator']),
+							$actionsHelper,
+							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 						)
 					),
 				)
