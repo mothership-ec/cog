@@ -279,5 +279,35 @@ class Services implements ServicesInterface
 		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
 		});
+
+		$serviceContainer['locale'] = new \Message\Cog\Localisation\Locale('en_GB');
+
+		$serviceContainer['translator'] = $serviceContainer->share(function ($app) {
+
+			$selector = $app['translator.message_selector'];
+			$id = $app['locale']->getId();
+
+			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
+			//$translator->setFallbackLocale($app['locale_fallback']);
+
+			$translator->addLoader('array', new ArrayLoader());
+			$translator->addLoader('xliff', new XliffFileLoader());
+
+			foreach ($app['translator.domains'] as $domain => $data) {
+			foreach ($data as $locale => $messages) {
+			$translator->addResource('array', $messages, $locale, $domain);
+			}
+			}
+
+			return $translator;
+		});
+
+		$app['translator.message_selector'] = $app->share(function () {
+			return new MessageSelector();
+		});
+
+		$app['translator.domains'] = array();
+
+		$app['locale_fallback'] = 'en';
 	}
 }
