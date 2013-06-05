@@ -49,8 +49,14 @@ class ViewNameParser extends \Symfony\Component\Templating\TemplateNameParser
 	{
 		// Get the current HTTP request
 		$request = $this->_services['request'];
-		// Get the base file name from the reference parser
-		$baseFileName = $this->_parser->parse($reference)->getFullPath('View');
+
+		if(preg_match("/^@form:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
+			$baseFileName = '/Users/james/Sites/cog/src/Message/Cog/Form/Views/Php/'.$matches[1];
+			return new TemplateReference($baseFileName.'.html.php', 'php');
+		} else {
+			// Get the base file name from the reference parser
+			$baseFileName = $this->_parser->parse($reference)->getFullPath('View');
+		}
 
 		// Loop through each content type
 		foreach ($request->getAllowedContentTypes() as $mimeType) {

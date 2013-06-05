@@ -10,6 +10,11 @@ use Symfony\Component\Templating\PhpEngine;
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\Loader\FilesystemLoader;
+
+use Symfony\Component\Form\FormRenderer;
+use Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine;
+
+
  
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -37,14 +42,17 @@ class SimpleTemplateNameParser implements TemplateNameParserInterface
 // Overwrite this with your own secret
 $csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr';
 $engine = new PhpEngine(new SimpleTemplateNameParser(realpath(__DIR__ )), new FilesystemLoader(array()));
+
+$engine->addHelpers(array(
+    new \Message\Cog\Form\Template\FormHelper(new FormRenderer(new TemplatingRendererEngine($engine, array(
+        // Will hopefully not be necessary anymore in 2.2
+        realpath(__DIR__ . '/../src/Message/Cog/Form/Views/Php'),
+    )), null))
+));
  
 // Set up the form factory with all desired extensions
 $formFactory = Forms::createFormFactoryBuilder()
     ->addExtension(new CsrfExtension(new DefaultCsrfProvider($csrfSecret)))
-    ->addExtension(new TemplatingExtension($engine, null, array(
-        // Will hopefully not be necessary anymore in 2.2
-        realpath(__DIR__ . '/../src/Message/Cog/Form/Views/Php'),
-    )))
     ->getFormFactory();
  
 // Create our first form!

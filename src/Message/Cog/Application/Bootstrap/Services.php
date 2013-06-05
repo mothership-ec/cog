@@ -98,26 +98,29 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Controller\ControllerResolver;
 		});
 
+		$serviceContainer['templating.engine'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\PhpEngine(
+				new \Message\Cog\Templating\ViewNameParser(
+					$c,
+					$c['reference_parser'],
+					array(
+						'twig',
+						'php',
+					)
+				),
+				new \Symfony\Component\Templating\Loader\FilesystemLoader(
+					array($c['app.loader']->getBaseDir(), '/Users/james/Sites/cog/src/Message/Cog/Form/Views/Php')
+				),
+				array(
+					new \Symfony\Component\Templating\Helper\SlotsHelper
+				)
+			);
+		});
+
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
-					new \Message\Cog\Templating\PhpEngine(
-						new \Message\Cog\Templating\ViewNameParser(
-							$c,
-							$c['reference_parser'],
-							array(
-								'twig',
-								'php',
-							)
-						),
-						new \Symfony\Component\Templating\Loader\FilesystemLoader(
-							$c['app.loader']->getBaseDir()
-						),
-						array(
-							new \Symfony\Component\Templating\Helper\SlotsHelper,
-							$c['form.helper.php']
-						)
-					),
+					$c['templating.engine']
 				)
 			);
 		});
