@@ -197,8 +197,22 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 
 		$obj2 = new BindClass;
 		$obj2->forename = 'James';
-		$obj2->surname = 'Moss';
-		$obj2->age = 24;
+		$obj2->surname  = 'Moss';
+
+		$this->assertEquals($obj2, $obj);
+	}
+
+	public function testBindWithForce()
+	{
+		$obj =  new BindClass;
+
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$obj = $result->bind($obj, true);
+
+		$obj2 = new BindClass;
+		$obj2->forename = 'James';
+		$obj2->surname  = 'Moss';
+		$obj2->age      = 24;
 
 		$this->assertEquals($obj2, $obj);
 	}
@@ -220,25 +234,21 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$obj = new BindClass;
 		$obj->forename = 'James';
 		$obj->surname = 'Moss';
-		$obj->age = 24;
 		$testClasses[] = $obj;
 
 		$obj = new BindClass;
 		$obj->forename = 'Joe';
 		$obj->surname = 'Holdcroft';
-		$obj->age = 20;
 		$testClasses[] = $obj;
 
 		$obj = new BindClass;
 		$obj->forename = 'Danny';
 		$obj->surname = 'Hannah';
-		$obj->age = 25;
 		$testClasses[] = $obj;
 
 		$obj = new BindClass;
 		$obj->forename = 'Joe';
 		$obj->surname = 'Bloggs';
-		$obj->age = 37;
 		$testClasses[] = $obj;
 
 		$this->assertEquals($testClasses, $classes);
