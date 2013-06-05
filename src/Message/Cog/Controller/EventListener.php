@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 /**
  * Event listener for the Controller component.
  *
- * @author James Moss <james@message.co.uk>
+ * @author Joe Holdcroft <joe@message.co.uk>
  */
 class EventListener implements SubscriberInterface, ContainerAwareInterface
 {
@@ -23,7 +23,7 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	{
 		return array(
 			KernelEvents::CONTROLLER => array(
-				array('setContainerOnController'),
+				array('dependencyInjectController'),
 			)
 		);
 	}
@@ -36,7 +36,14 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 		$this->_services = $services;
 	}
 
-	public function setContainerOnController(FilterControllerEvent $event)
+	/**
+	 * For a given request, before the controller is executed, inject the
+	 * service container and the current request if the class implements
+	 * `Service\ContainerAwareInterface` and/or `HTTP\RequestAwareInterface`.
+	 *
+	 * @param FilterControllerEvent $event The event instance
+	 */
+	public function dependencyInjectController(FilterControllerEvent $event)
 	{
 		$controller      = $event->getController();
 		$controllerClass = array_shift($controller);
