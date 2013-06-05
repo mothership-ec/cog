@@ -164,6 +164,11 @@ class ReferenceParser implements ReferenceParserInterface
 		return $this->_vendor . '\\' . $this->_module;
 	}
 
+	public function getMethod()
+	{
+		return $this->_method;
+	}
+
 	/**
 	 * Checks whether the reference parsed used a relative marker.
 	 *

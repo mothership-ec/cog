@@ -3,7 +3,9 @@
 namespace Message\Cog\HTTP;
 
 /**
- * Our HTTP Response class. Extends Symfony's.
+ * Our HTTP Response class, which extends Symfony's.
+ *
+ * @see \Symfony\Component\HttpFoundation\Response
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */

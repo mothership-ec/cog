@@ -6,19 +6,6 @@ use Message\Cog\HTTP\Request;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
-	public function testScope()
-	{
-		$request = new Request;
-
-		$this->assertTrue($request->isExternal());
-		$this->assertFalse($request->isInternal());
-
-		$request->setInternal();
-
-		$this->assertFalse($request->isExternal());
-		$this->assertTrue($request->isInternal());
-	}
-
 	public function testGetAllowedContentTypes()
 	{
 		$types   = array('application/json', 'text/html');
