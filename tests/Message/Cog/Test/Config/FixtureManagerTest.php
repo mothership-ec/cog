@@ -217,10 +217,10 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->at(vfsStreamWrapper::getRoot());
 		vfsStream::newDirectory('config')
 			->at(vfsStreamWrapper::getRoot()->getChild('application'));
-		vfsStream::newDirectory('Fixtures')
+		vfsStream::newDirectory('fixtures')
 			->at(vfsStreamWrapper::getRoot());
-		vfsStream::newDirectory('Config')
-			->at(vfsStreamWrapper::getRoot()->getChild('Fixtures'));
+		vfsStream::newDirectory('config')
+			->at(vfsStreamWrapper::getRoot()->getChild('fixtures'));
 
 		foreach ($fixtures as $i => $fixture) {
 			$io
@@ -229,7 +229,7 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 				->with('<info>Moved package `message/cog-cms` config fixture `' . $fixture . '` to application config directory.</info>');
 
 			vfsStream::newFile($fixture)
-				->at(vfsStreamWrapper::getRoot()->getChild('Fixtures')->getChild('Config'));
+				->at(vfsStreamWrapper::getRoot()->getChild('fixtures')->getChild('config'));
 		}
 
 		$manager
@@ -240,7 +240,7 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 		$manager
 			::staticExpects($this->any())
 			->method('getConfigFixtureDir')
-			->will($this->returnValue(vfsStream::url('root/Fixtures/Config') . '/'));
+			->will($this->returnValue(vfsStream::url('root/fixtures/config') . '/'));
 
 		$manager::postInstall($event);
 
@@ -293,24 +293,24 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->method('getFixtures')
 			->will($this->returnValue(array_keys($fixtures)));
 
-		$vfs = vfsStream::setup('Fixtures');
-		vfsStream::newDirectory('Config')
+		$vfs = vfsStream::setup('fixtures');
+		vfsStream::newDirectory('config')
 			->at(vfsStreamWrapper::getRoot());
 
 		foreach ($fixtures as $fixture => $content) {
 			vfsStream::newFile($fixture)
 				->setContent($content)
-				->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+				->at(vfsStreamWrapper::getRoot()->getChild('config'));
 		}
 
 		$manager
 			::staticExpects($this->any())
 			->method('getConfigFixtureDir')
-			->will($this->returnValue(vfsStream::url('Fixtures/Config') . '/'));
+			->will($this->returnValue(vfsStream::url('fixtures/config') . '/'));
 
 		$manager::preUpdate($event);
 
-		vfsStreamWrapper::getRoot()->getChild('Config')->getChild('rss.yml')
+		vfsStreamWrapper::getRoot()->getChild('config')->getChild('rss.yml')
 			->setContent("enabled: false\npost-types: all");
 
 		$io
@@ -342,7 +342,7 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->will($this->returnValue('Message/Cog'));
 
 		$this->assertEquals(
-			__DIR__ . '/message/cog-cms/Message/Cog/Fixtures/Config/',
+			__DIR__ . '/message/cog-cms/Message/Cog/fixtures/config/',
 			FixtureManager::getConfigFixtureDir($composer, $package)
 		);
 	}
@@ -383,7 +383,7 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 		vfsStream::newFile('Not Yaml.php')
 			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
 
-		$this->assertFalse(FixtureManager::getFixtures(vfsStream::url('Fixtures/Config')));
+		$this->assertFalse(FixtureManager::getFixtures(vfsStream::url('fixtures/config')));
 
 		vfsStream::newFile('a-real-config.yml')
 			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
@@ -395,20 +395,20 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			'wishlist.yml',
 		);
 
-		$this->assertEquals($expected, FixtureManager::getFixtures(vfsStream::url('Fixtures/Config')));
+		$this->assertEquals($expected, FixtureManager::getFixtures(vfsStream::url('fixtures/config')));
 	}
 
 	/**
 	 * @expectedException        Message\Cog\Config\Exception
-	 * @expectedExceptionMessage Configuration fixture directory `vfs://Fixtures/Config` is not readable
+	 * @expectedExceptionMessage Configuration fixture directory `vfs://fixtures/config` is not readable
 	 */
 	public function testGetFixturesThrowsExceptionWhenDirectoryUnreadable()
 	{
-		vfsStream::setup('Fixtures');
-		vfsStream::newDirectory('Config', 0333)
+		vfsStream::setup('fixtures');
+		vfsStream::newDirectory('config', 0333)
 			->at(vfsStreamWrapper::getRoot());
 
-		FixtureManager::getFixtures(vfsStream::url('Fixtures/Config'));
+		FixtureManager::getFixtures(vfsStream::url('fixtures/config'));
 	}
 
 	/**
@@ -417,12 +417,12 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGetFixturesThrowsExceptionWhenFixtureUnreadable()
 	{
-		vfsStream::setup('Fixtures');
-		vfsStream::newDirectory('Config')
+		vfsStream::setup('fixtures');
+		vfsStream::newDirectory('config')
 			->at(vfsStreamWrapper::getRoot());
 		vfsStream::newFile('myconfig.yml', 0000)
-			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+			->at(vfsStreamWrapper::getRoot()->getChild('config'));
 
-		FixtureManager::getFixtures(vfsStream::url('Fixtures/Config'));
+		FixtureManager::getFixtures(vfsStream::url('fixtures/config'));
 	}
 }

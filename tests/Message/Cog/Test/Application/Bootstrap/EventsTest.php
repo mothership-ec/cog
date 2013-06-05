@@ -21,6 +21,8 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 		$this->_container  = new FauxContainer;
 		$this->_dispatcher = new FauxDispatcher;
 		$this->_bootstrap  = new EventsBootstrap;
+		$fragmentHandler   = $this->getMock('Symfony\Component\HttpKernel\Fragment\FragmentHandler');
+		$uriSigner         = $this->getMock('Symfony\Component\HttpKernel\UriSigner', array(), array('123'));
 
 		// Set up services used when registering these events
 		$this->_container['router'] = $this->_container->share(function() {
@@ -39,6 +41,14 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 			return new CookieCollection;
 		});
 
+		$this->_container['http.fragment_handler'] = $this->_container->share(function() use ($fragmentHandler) {
+			return $fragmentHandler;
+		});
+
+		$this->_container['http.uri_signer'] = $this->_container->share(function() use ($uriSigner) {
+			return $uriSigner;
+		});
+
 		$this->_bootstrap->setContainer($this->_container);
 
 		$this->_bootstrap->registerEvents($this->_dispatcher);
@@ -53,7 +63,10 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 			'Message\Cog\HTTP\EventListener\Response'
 		));
 		$this->assertTrue($this->_dispatcher->isSubscriberRegistered(
-			'Message\Cog\HTTP\EventListener\Exception'
+			'Symfony\Component\HttpKernel\EventListener\ResponseListener'
+		));
+		$this->assertTrue($this->_dispatcher->isSubscriberRegistered(
+			'Symfony\Component\HttpKernel\EventListener\FragmentListener'
 		));
 	}
 
@@ -61,6 +74,27 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->assertTrue($this->_dispatcher->isSubscriberRegistered(
 			'Message\Cog\Debug\EventListener'
+		));
+	}
+
+	public function testFilesystemSubscribersRegistered()
+	{
+		$this->assertTrue($this->_dispatcher->isSubscriberRegistered(
+			'Message\Cog\Filesystem\EventListener'
+		));
+	}
+
+	public function testRoutingSubscribersRegistered()
+	{
+		$this->assertTrue($this->_dispatcher->isSubscriberRegistered(
+			'Message\Cog\Routing\EventListener'
+		));
+	}
+
+	public function testControllerSubscribersRegistered()
+	{
+		$this->assertTrue($this->_dispatcher->isSubscriberRegistered(
+			'Message\Cog\Controller\EventListener'
 		));
 	}
 }

@@ -94,9 +94,9 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Routing\UrlMatcher($c['routes.compiled'], $c['http.request.context']);
 		};
 
-		$serviceContainer['routing.url_generator'] = $serviceContainer->share(function($c) {
+		$serviceContainer['routing.generator'] = function($c) {
 			return new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
-		});
+		};
 
 		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
@@ -136,7 +136,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['http.kernel'] = function($c) {
-			return new \Symfony\Component\HttpKernel\HttpKernel(
+			return new \Message\Cog\HTTP\Kernel(
 				$c['event.dispatcher'],
 				new \Symfony\Component\HttpKernel\Controller\ControllerResolver
 			);

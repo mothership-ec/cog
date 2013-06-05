@@ -76,7 +76,7 @@ class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
 			$responseBuilder->render($reference, $params);
 		}
 		catch (NotAcceptableHttpException $e) {
-			$this->assertEquals(406, $e->getCode());
+			$this->assertEquals(406, $e->getStatusCode());
 			$this->assertEquals($renderException, $e->getPrevious());
 			return;
 		}

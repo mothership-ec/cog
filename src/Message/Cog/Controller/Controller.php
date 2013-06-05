@@ -64,7 +64,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function generateUrl($routeName, $params = array(), $absolute = false)
 	{
-		return $this->_services['routing.url_generator']->generate($routeName, $params, $absolute);
+		return $this->_services['routing.generator']->generate($routeName, $params, $absolute);
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 		$request = $this->_services['request']->duplicate($query, null, $attributes);
 
 		// Execute the sub-request
-		return $kernel->handle($request, $kernel::MASTER_REQUEST, $catch);
+		return $kernel->handle($request, $kernel::SUB_REQUEST, $catch);
 	}
 
 	/**
