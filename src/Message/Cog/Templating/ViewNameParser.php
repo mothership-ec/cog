@@ -68,11 +68,9 @@ class ViewNameParser extends TemplateNameParser
 			}
 		}
 
-		throw new NotAcceptableHttpException(
-			sprintf(
-				'View format could not be determined for reference `%s`',
-				$reference
-			),
-		);
+		throw new NotAcceptableHttpException(sprintf(
+			'View format could not be determined for reference `%s`',
+			$reference
+		));
 	}
 }
