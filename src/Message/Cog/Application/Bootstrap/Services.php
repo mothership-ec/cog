@@ -117,6 +117,7 @@ class Services implements ServicesInterface
 							new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
 							array(
 								'cache' => 'cog://tmp',
+								'auto_reload' => true,
 							)
 						),
 						$viewNameParser
@@ -231,7 +232,8 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us" => $baseDir.'tmp/$1',
+				"/^\/tmp\/(.*)/us" 	  => $baseDir.'tmp/$1',
+				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 			);
 
 			return $mapping;

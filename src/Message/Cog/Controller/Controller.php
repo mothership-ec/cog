@@ -29,6 +29,18 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	protected $_request;
 
 	/**
+	 * Get a service directly from the container by name
+	 *
+	 * @param  string $serviceName The service name
+	 *
+	 * @return mixed               The requested service.
+	 */
+	public function get($serviceName)
+	{
+		return $this->_services[$serviceName];
+	}
+
+	/**
 	 * Sets the service container.
 	 *
 	 * @param ContainerInterface $container The service container instance
