@@ -5,6 +5,8 @@ namespace Message\Cog\HTTP;
 /**
  * Our HTTP Request class, which extends Symfony's.
  *
+ * @see \Symfony\Component\HttpFoundation\Request
+ *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
 class Request extends \Symfony\Component\HttpFoundation\Request

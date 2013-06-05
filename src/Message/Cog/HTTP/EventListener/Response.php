@@ -19,19 +19,29 @@ class Response implements SubscriberInterface
 {
 	protected $_cookieCollection;
 
+	static public function getSubscribedEvents()
+	{
+		return array(KernelEvents::RESPONSE => array(
+			array('setCookies'),
+		));
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param CookieCollection $cookieCollection The cookie collection
+	 */
 	public function __construct(CookieCollection $cookieCollection)
 	{
 		$this->_cookieCollection = $cookieCollection;
 	}
 
-	static public function getSubscribedEvents()
-	{
-		return array(KernelEvents::RESPONSE => array(
-			array('setResponseCookies'),
-		));
-	}
-
-	public function setResponseCookies(FilterResponseEvent $event)
+	/**
+	 * Set cookies in the collection on the master response.
+	 *
+	 * @param FilterResponseEvent $event The event instance
+	 */
+	public function setCookies(FilterResponseEvent $event)
 	{
 		// Skip if this isn't the master request
 		if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
