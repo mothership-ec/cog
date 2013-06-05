@@ -29,26 +29,23 @@ class Builder extends SymfonyBuilder
 {
 	public function __construct($container, $type)
 	{
-		$dir = realpath(__DIR__ . '/../Views/' . ucfirst($type));
-
-		if (!is_dir($dir)) {
-			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - \'' . $dir . '\' is not a valid directory');
-		}
-
-		$engine = new \Message\Cog\Templating\PhpEngine(
-			new \Message\Cog\Form\Template\SimpleTemplateNameParser('php'),
-			new \Symfony\Component\Templating\Loader\FilesystemLoader(array())
-		);
-
-		$csrfSecret = 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr';
 		$this->addExtension(new CoreExtension)
 			->addExtension(new \Message\Cog\Form\Csrf\Csrf(
-					new \Message\Cog\Form\Csrf\Provider($csrfSecret))
+					new \Message\Cog\Form\Csrf\Provider($this->_getCsrfSecret()))
 			)
-			->addExtension(new \Message\Cog\Form\Template\Templating($engine, null, array(
-				realpath($dir),
-			)))
 		;
+	}
+
+	/**
+	 * Get csrf secret key
+	 *
+	 * @todo generate csrf key depending on environmental variables such as user etc.
+	 *
+	 * @return string
+	 */
+	protected function _getCsrfSecret()
+	{
+		return 'c2ioeEU1n48QF2WsHGWd2HmiuUUT6dxr';
 	}
 
 }
