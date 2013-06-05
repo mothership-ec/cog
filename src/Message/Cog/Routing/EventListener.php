@@ -5,16 +5,15 @@ namespace Message\Cog\Routing;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
+use Message\Cog\Event\EventListener as BaseListener;
 
 /**
  * Event listener for the Routing component.
  *
  * @author James Moss <james@message.co.uk>
  */
-class EventListener implements SubscriberInterface, ContainerAwareInterface
+class EventListener extends BaseListener implements SubscriberInterface
 {
-	protected $_services;
-
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -22,14 +21,6 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 				array('mountRoutes'),
 			)
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setContainer(ContainerInterface $services)
-	{
-		$this->_services = $services;
 	}
 
 	/**
