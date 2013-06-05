@@ -5,6 +5,8 @@ namespace Message\Cog\Form;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
+use Symfony\Component\Form\FormRenderer;
+use Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine;
 
 /**
  * Class EventListener
@@ -20,7 +22,7 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	{
 		return array(
 			'modules.load.success' => array(
-				array('mountRoutes'),
+				array('setupFormHelper'),
 			)
 		);
 	}
@@ -33,13 +35,11 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 		$this->_services = $services;
 	}
 
-//	/**
-//	 * Compile the routes from the CollectionManager and add them to the
-//	 * router, ready to be matched against a request.
-//	 */
-//	public function mountRoutes()
-//	{
-//		$compiledRoutes = $this->_services['routes']->compileRoutes()->getRouteCollection();
-//		$this->_services['router']->setRouteCollection($compiledRoutes);
-//	}
+	public function setupFormHelper()
+	{
+		$this->_services['templating.engine.php']->addHelpers(array(
+			new \Message\Cog\Form\Template\FormHelper(new FormRenderer(
+				new TemplatingRendererEngine($this->_services['templating.engine.php'], array('@form')), null))
+		));
+	}
 }

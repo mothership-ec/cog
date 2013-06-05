@@ -66,6 +66,9 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// Routing
 		$eventDispatcher->addSubscriber(new \Message\Cog\Routing\EventListener);
 
+		// Form
+		$eventDispatcher->addSubscriber(new \Message\Cog\Form\EventListener);
+
 		// TODO: add a caching layer that just also subscribes to the request/response events
 	}
 }

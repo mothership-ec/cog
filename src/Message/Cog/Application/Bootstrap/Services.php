@@ -121,7 +121,10 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Templating\PhpEngine(
 				$c['templating.viewnameparser'],
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
-					array($c['app.loader']->getBaseDir(), '/Users/thomas/Sites/cog/src/Message/Cog/Form/Views/Php')
+					array(
+						$c['app.loader']->getBaseDir(),
+						realpath(__DIR__ . '/../../Form/Views/Php')
+					)
 				),
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper
