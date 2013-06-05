@@ -9,6 +9,8 @@ use Message\Cog\HTTP\RequestAwareInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 use LogicException;
 
 /**
@@ -68,13 +70,14 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 *
 	 * @see \Message\Cog\Routing\UrlGenerator::generate()
 	 *
-	 * @param  string $routeName Name of the route to use
-	 * @param  array  $params    Parameters to use in the route
-	 * @param  bool   $absolute  True to return an absolute URL
+	 * @param string         $routeName     Name of the route to use
+	 * @param array          $params        Parameters to use in the route
+	 * @param boolean|string $referenceType The type of reference (one of the
+	 *                                      constants in UrlGeneratorInterface)
 	 *
 	 * @return string            The generated URL
 	 */
-	public function generateUrl($routeName, $params = array(), $absolute = false)
+	public function generateUrl($routeName, $params = array(), $absolute = UrlGeneratorInterface::ABSOLUTE_PATH)
 	{
 		return $this->_services['routing.generator']->generate($routeName, $params, $absolute);
 	}

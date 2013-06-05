@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Routes extends Helper
+class Routing extends Helper
 {
 	protected $_generator;
 
@@ -29,13 +29,14 @@ class Routes extends Helper
 	 *
 	 * @see UrlGeneratorInterface::generate
 	 *
-	 * @param string $name       The name of the route
-	 * @param mixed  $parameters An array of parameters
-	 * @param bool   absolute    True to generate an absolute URL
+	 * @param string         $name          The name of the route
+	 * @param mixed          $parameters    An array of parameters
+	 * @param boolean|string $referenceType The type of reference (one of the
+	 *                                      constants in UrlGeneratorInterface)
 	 *
 	 * @return string The generated URL
 	 */
-	public function generate($name, array $parameters = array(), $absolute = false)
+	public function generate($name, array $parameters = array(), $absolute = UrlGeneratorInterface::ABSOLUTE_PATH)
 	{
 		return $this->_generator->generate($name, $parameters, $absolute);
 	}
@@ -47,6 +48,6 @@ class Routes extends Helper
 	 */
 	public function getName()
 	{
-		return 'routes';
+		return 'routing';
 	}
 }
