@@ -375,20 +375,20 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->assertFalse(FixtureManager::getFixtures('/this/does/not/exist'));
 
-		vfsStream::setup('Fixtures');
-		vfsStream::newDirectory('Config')
+		vfsStream::setup('fixtures');
+		vfsStream::newDirectory('config')
 			->at(vfsStreamWrapper::getRoot());
 		vfsStream::newFile('myconfig.txt')
-			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+			->at(vfsStreamWrapper::getRoot()->getChild('config'));
 		vfsStream::newFile('Not Yaml.php')
-			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+			->at(vfsStreamWrapper::getRoot()->getChild('config'));
 
 		$this->assertFalse(FixtureManager::getFixtures(vfsStream::url('fixtures/config')));
 
 		vfsStream::newFile('a-real-config.yml')
-			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+			->at(vfsStreamWrapper::getRoot()->getChild('config'));
 		vfsStream::newFile('wishlist.yml')
-			->at(vfsStreamWrapper::getRoot()->getChild('Config'));
+			->at(vfsStreamWrapper::getRoot()->getChild('config'));
 
 		$expected = array(
 			'a-real-config.yml',
