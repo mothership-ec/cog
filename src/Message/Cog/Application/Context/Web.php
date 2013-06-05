@@ -26,6 +26,13 @@ class Web implements ContextInterface
 		$this->_services['http.request.master'] = $this->_services->share(function() {
 			return \Message\Cog\HTTP\Request::createFromGlobals();
 		});
+
+		$this->_services['http.request.context'] = function($c) {
+			$context = new \Message\Cog\Routing\RequestContext;
+			$context->fromRequest(isset($c['request']) ? $c['request'] : $c['http.request.master']);
+
+			return $context;
+		};
 	}
 
 	/**
@@ -36,11 +43,6 @@ class Web implements ContextInterface
 	 */
 	public function run()
 	{
-		// @todo can we move this somewhere better? it needs to happen here though :(
-		$this->_services['event.dispatcher']->addSubscriber(
-			new \Symfony\Component\HttpKernel\EventListener\RouterListener($this->_services['routing.matcher'])
-		);
-
 		$response = $this->_services['http.kernel']->handle($this->_services['http.request.master']);
 
 		$response->send();

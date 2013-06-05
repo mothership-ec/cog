@@ -54,7 +54,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	/**
 	 * Generate a URL from a route name.
 	 *
-	 * @see \Message\Cog\Routing\Router::generate()
+	 * @see \Message\Cog\Routing\UrlGenerator::generate()
 	 *
 	 * @param  string $routeName Name of the route to use
 	 * @param  array  $params    Parameters to use in the route
@@ -64,7 +64,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function generateUrl($routeName, $params = array(), $absolute = false)
 	{
-		return $this->_services['router']->generate($routeName, $params, $absolute);
+		return $this->_services['routing.url_generator']->generate($routeName, $params, $absolute);
 	}
 
 	/**
@@ -109,7 +109,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 * Render a view and return the rendered contents as a HTTP Response
 	 * instance.
 	 *
-	 * @see ResponseBuilder::render()
+	 * @see ResponseBuilder::render
 	 *
 	 * @param  string $reference The reference for the view
 	 * @param  array  $params    Optional parameters to pass to the view

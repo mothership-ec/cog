@@ -42,10 +42,15 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 
 		// TODO: move the below somewhere more suitable - we shouldn't register listeners here!
 		$this->_services['routing.matcher'] = function($c) use ($compiledRoutes) {
-			$context = new RequestContext;
-			$context->fromRequest($c['http.request.master']); // current request
-
-			return new UrlMatcher($compiledRoutes, $context);
+			return new UrlMatcher($compiledRoutes, $c['http.request.context']);
 		};
+
+		$this->_services['routing.url_generator'] = $this->_services->share(function($c) use ($compiledRoutes) {
+			return new UrlGenerator($compiledRoutes, $c['http.request.context']);
+		});
+
+		$this->_services['event.dispatcher']->addSubscriber(
+			new \Symfony\Component\HttpKernel\EventListener\RouterListener($this->_services['routing.matcher'])
+		);
 	}
 }
