@@ -129,7 +129,8 @@ class Services implements ServicesInterface
 							$c['app.loader']->getBaseDir()
 						),
 						array(
-							new \Symfony\Component\Templating\Helper\SlotsHelper
+							new \Symfony\Component\Templating\Helper\SlotsHelper,
+							new \Message\Cog\Templating\Helper\Subrequest($c['http.dispatcher']),
 						)
 					),
 				)
