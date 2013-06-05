@@ -78,7 +78,7 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 			// If none of the requested content types were acceptable, throw exception
 			if (empty($allowedContentTypes)) {
 				throw new NotAcceptableHttpException(sprintf(
-					'Unnaceptable content type(s) requested: `%s`',
+					'Unacceptable content type(s) requested: `%s`',
 					implode(', ', $requestedContentTypes)
 				));
 			}
