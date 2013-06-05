@@ -2,12 +2,14 @@
 
 namespace Message\Cog\Filesystem;
 
+use Symfony\Component\HttpFoundation\File\File as BaseFile;
+
 /**
 * An extension of SplFileInfo that enables us to add our own customisations.
 *
 * @author  James Moss <james@message.co.uk>
 */
-class File extends \SplFileInfo
+class File extends BaseFile
 {
 	const PUBLIC_PATH = 'cog://public/';
 
@@ -27,9 +29,7 @@ class File extends \SplFileInfo
 	 */
 	public function getChecksum()
 	{
-		$path = StreamWrapperManager::getHandler('cog')->getLocalPath($this->_reference, 'cog');
-
-		return md5_file($path);
+		return md5_file($this->realpath());
 	}
 
 	/**
@@ -58,5 +58,15 @@ class File extends \SplFileInfo
 	{
 		// Ensure our URL starts with PUBLIC_PATH
 		return !strncmp($this->_reference, self::PUBLIC_PATH, strlen(self::PUBLIC_PATH));
+	}
+
+	/**
+	 * Returns the true filesystem path for a file.
+	 *
+	 * @return string The path to the file on the filesystem.
+	 */
+	public function realpath()
+	{
+		return StreamWrapperManager::getHandler('cog')->getLocalPath($this->_reference, 'cog');
 	}
 }
