@@ -123,7 +123,7 @@ class Services implements ServicesInterface
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
 					array(
 						$c['app.loader']->getBaseDir(),
-						realpath(__DIR__ . '/../../Form/Views/Php')
+						__DIR__ . '/../../Form/Views/Php'
 					)
 				),
 				array(
@@ -266,7 +266,6 @@ class Services implements ServicesInterface
 
 
 		// Forms
-
 		$serviceContainer['form.wrapper.php'] = function($c) {
 			return new \Message\Cog\Form\Wrapper($c, 'php');
 		};
@@ -294,11 +293,15 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.helper.php'] = function($c) {
-			$engine = $c['form.engine.php'];
+			$engine = $c['templating.engine.php'];
 
-			$formHelper = new \Message\Cog\Form\Helper(
+			$formHelper = new \Message\Cog\Form\Template\Helper(
 				new \Symfony\Component\Form\FormRenderer(
-					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine($engine)
+					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
+						$engine,
+						array('@form')
+					),
+					null
 				)
 			);
 
@@ -306,16 +309,22 @@ class Services implements ServicesInterface
 
 		};
 
-		// @todo add form.helper.twig
+		$serviceContainer['form.helper.twig'] = function($c) {
+			$engine = $c['templating.engine.twig'];
 
-		$serviceContainer['form.engine.php'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\PhpEngine(
-				new \Message\Cog\Form\Template\SimpleTemplateNameParser('php'),
-				new \Symfony\Component\Templating\Loader\FilesystemLoader(array())
+			$formHelper = new \Message\Cog\Form\Template\Helper(
+				new \Symfony\Component\Form\FormRenderer(
+					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
+						$engine,
+						array('@form')
+					),
+					null
+				)
 			);
-		});
 
-		// @todo add form.engine.twig
+			return $formHelper;
+
+		};
 
 		// Validator
 		$serviceContainer['validator'] = function($c) {

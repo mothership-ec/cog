@@ -38,8 +38,7 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	public function setupFormHelper()
 	{
 		$this->_services['templating.engine.php']->addHelpers(array(
-			new \Message\Cog\Form\Template\FormHelper(new FormRenderer(
-				new TemplatingRendererEngine($this->_services['templating.engine.php'], array('@form')), null))
+			$this->_services['form.helper.php']
 		));
 	}
 }

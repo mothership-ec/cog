@@ -52,7 +52,7 @@ class ViewNameParser extends TemplateNameParser
 		$request = $this->_services['request'];
 
 		if(preg_match("/^@form:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
-			$baseFileName = realpath(__DIR__ . '/../Form/Views/Php/'.$matches[1]);
+			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
 			return new TemplateReference($baseFileName.'.html.php', 'php');
 		} else {
 			// Get the base file name from the reference parser

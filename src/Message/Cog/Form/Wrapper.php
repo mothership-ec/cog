@@ -36,6 +36,15 @@ class Wrapper
 	protected $_validator;
 
 	/**
+	 * @var string
+	 */
+	protected $_type;
+
+	protected $_defaults = array(
+		'required' => false,
+	);
+
+	/**
 	 * Creates instance of SymfonyForm and Validator on construction
 	 *
 	 * @param Container $container      Service container for getting instance of form builder and validation
@@ -43,9 +52,19 @@ class Wrapper
 	 */
 	public function __construct(Container $container, $type = 'php')
 	{
+		$this->_type = $type;
 		$this->_container = $container;
-		$this->_form = $container['form.builder.php']->getForm();
-		$this->_validator = $container['validator'];
+		$this->_form = $this->_container['form.builder.' . $this->_type]->getForm();
+		$this->_validator = $this->_container['validator'];
+	}
+
+	/**
+	 * Replaces instances of form and validator with fresh ones
+	 */
+	public function clear()
+	{
+		$this->_form = $this->_container['form.builder.' . $this->_type]->getForm();
+		$this->_validator = $this->_container['validator'];
 	}
 
 	/**
@@ -59,6 +78,8 @@ class Wrapper
 	 */
 	public function add($child, $type = null, array $options = array())
 	{
+		$options = array_merge($this->_defaults, $options);
+
 		$this->_form->add($child, $type, $options);
 		$this->_validator->field($this->_getChildName($child));
 

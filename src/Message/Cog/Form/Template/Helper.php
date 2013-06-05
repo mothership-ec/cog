@@ -11,7 +11,7 @@
 
 namespace Message\Cog\Form\Template;
 
-use Symfony\Component\Templating\Helper\Helper;
+use Symfony\Component\Templating\Helper\Helper as SymfonyHelper;
 use Symfony\Component\Form\FormRendererInterface;
 use Symfony\Component\Form\FormView;
 
@@ -21,7 +21,7 @@ use Symfony\Component\Form\FormView;
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class FormHelper extends Helper
+class Helper extends SymfonyHelper
 {
     /**
      * @var FormRendererInterface

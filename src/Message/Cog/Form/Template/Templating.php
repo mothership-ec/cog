@@ -6,7 +6,6 @@ use Symfony\Component\Form\Extension\Templating\TemplatingExtension as SymfonyTe
 use Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine;
 use Symfony\Component\Form\Extension\Csrf\CsrfProvider\CsrfProviderInterface;
 use Symfony\Component\Form\FormRenderer;
-use Message\Cog\Form\Helper;
 use Message\Cog\Templating\PhpEngine;
 
 class Templating extends SymfonyTemplating
