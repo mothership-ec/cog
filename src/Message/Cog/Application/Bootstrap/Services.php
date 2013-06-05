@@ -125,6 +125,7 @@ class Services implements ServicesInterface
 							new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
 							array(
 								'cache' => 'cog://tmp',
+								'auto_reload' => true,
 							)
 						),
 						$viewNameParser
