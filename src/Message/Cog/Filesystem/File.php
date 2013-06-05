@@ -27,7 +27,9 @@ class File extends \SplFileInfo
 	 */
 	public function getChecksum()
 	{
-		return md5_file($this->getRealPath());
+		$path = StreamWrapperManager::getHandler('cog')->getLocalPath($this->_reference, 'cog');
+
+		return md5_file($path);
 	}
 
 	/**

@@ -75,10 +75,10 @@ class StreamWrapper implements StreamWrapperInterface
 	 * @return string|boolean   If a valid URI is passed in, returns the full 
 	 *                          real path to the file, otherwise false.
 	 */
-	public function getLocalPath($uri)
+	public function getLocalPath($uri, $prefix = false)
 	{
 		// strip off the prefix and slashes
-		$len  = strlen($this->prefix . '://');
+		$len  = strlen(($prefix ?: $this->prefix) . '://');
 		$path = substr($uri, $len);
 
 		// Try and match a mapping regex
