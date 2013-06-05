@@ -107,5 +107,8 @@ class Loader implements LoaderInterface
 				new Event
 			);
 		}
+
+		// Fire the "all modules loaded" event
+		$this->_eventDispatcher->dispatch('modules.load.success', new Event);
 	}
 }

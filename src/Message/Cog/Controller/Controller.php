@@ -58,12 +58,13 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 *
 	 * @param  string $routeName Name of the route to use
 	 * @param  array  $params    Parameters to use in the route
+	 * @param  bool   $absolute  True to return an absolute URL
 	 *
 	 * @return string            The generated URL
 	 */
-	public function generateUrl($routeName, $params = array())
+	public function generateUrl($routeName, $params = array(), $absolute = false)
 	{
-		return $this->_services['router']->generate($routeName, $params);
+		return $this->_services['router']->generate($routeName, $params, $absolute);
 	}
 
 	/**

@@ -7,8 +7,9 @@ use Message\Cog\ReferenceParserInterface;
 use Message\Cog\HTTP\StatusException;
 
 use Symfony\Component\Templating\TemplateReference;
+use Symfony\Component\Templating\TemplateNameParser;
 
-class ViewNameParser extends \Symfony\Component\Templating\TemplateNameParser
+class ViewNameParser extends TemplateNameParser
 {
 	protected $_services;
 	protected $_parser;

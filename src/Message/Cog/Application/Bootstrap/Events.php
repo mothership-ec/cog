@@ -38,8 +38,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// HTTP Component Events
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Request(
-				$this->_services,
-				$this->_services['router']
+				$this->_services
 			)
 		);
 		$eventDispatcher->addSubscriber(
@@ -56,6 +55,16 @@ class Events implements EventsInterface, ContainerAwareInterface
 				$this->_services['environment']
 			)
 		);
+
+		// Filesystem
+		$eventDispatcher->addSubscriber(
+			new \Message\Cog\Filesystem\EventListener(
+				$this->_services
+			)
+		);
+
+		// Routing
+		$eventDispatcher->addSubscriber(new \Message\Cog\Routing\EventListener);
 
 		// TODO: add a caching layer that just also subscribes to the request/response events
 	}

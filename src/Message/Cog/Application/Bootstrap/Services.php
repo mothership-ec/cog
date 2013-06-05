@@ -13,6 +13,7 @@ use Message\Cog\DB;
  * Registers Cog service definitions when the application is loaded.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author James Moss <james@message.co.uk>
  */
 class Services implements ServicesInterface
 {
@@ -64,7 +65,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
 			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-			$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
+			$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
 			$cache        = new \Message\Cog\Cache\Instance(
 				new $adapterClass
 			);
@@ -81,33 +82,44 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Event\Event;
 		};
 
-		$serviceContainer['event.dispatcher'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Event\Dispatcher;
+		$serviceContainer['event.dispatcher'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Event\Dispatcher($c);
 		});
 
 		$serviceContainer['router'] = $serviceContainer->share(function($c) {
+			$context = new \Message\Cog\Routing\RequestContext;
+			$context->fromRequest($c['http.request.master']);
+
 			return new \Message\Cog\Routing\Router(
-				$c['reference_parser'],
 				array(
 					'cache_key' => 'router',
-				)
+				),
+				$context
 			);
+		});
+
+		$serviceContainer['routes'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
 		});
 
 		$serviceContainer['controller.resolver'] = $serviceContainer->share(function() {
 			return new \Message\Cog\Controller\ControllerResolver;
 		});
 
-		$serviceContainer['templating.engine'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.viewnameparser'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\ViewNameParser(
+				$c,
+				$c['reference_parser'],
+				array(
+					'twig',
+					'php',
+				)
+			);
+		});
+
+		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\PhpEngine(
-				new \Message\Cog\Templating\ViewNameParser(
-					$c,
-					$c['reference_parser'],
-					array(
-						'twig',
-						'php',
-					)
-				),
+				$c['templating.viewnameparser'],
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
 					array($c['app.loader']->getBaseDir(), '/Users/thomas/Sites/cog/src/Message/Cog/Form/Views/Php')
 				),
@@ -117,10 +129,24 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\TwigEngine(
+				new \Twig_Environment(
+					new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.viewnameparser']),
+					array(
+						'cache' => 'cog://tmp',
+					)
+				),
+				$c['templating.viewnameparser']
+			);
+		});
+
+		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
-					$c['templating.engine']
+					$c['templating.engine.php'],
+					$c['templating.engine.twig'],
 				)
 			);
 		});
@@ -148,11 +174,20 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['config.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Config\LoaderCache(
-				$c['app.loader']->getBaseDir() . 'config/',
-				$c['environment'],
-				$c['cache']
-			);
+			if ('local' === $c['env']) {
+				// When running locally, don't use the cache loader
+				return new \Message\Cog\Config\Loader(
+					$c['app.loader']->getBaseDir() . 'config/',
+					$c['environment']
+				);
+			}
+			else {
+				return new \Message\Cog\Config\LoaderCache(
+					$c['app.loader']->getBaseDir() . 'config/',
+					$c['environment'],
+					$c['cache']
+				);
+			}
 		});
 
 		$serviceContainer['cfg'] = $serviceContainer->share(function($c) {
@@ -185,6 +220,37 @@ class Services implements ServicesInterface
 		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
 		});
+
+		// Filesystem
+		$serviceContainer['filesystem.stream_wrapper_manager'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Filesystem\StreamWrapperManager;
+		});
+
+		$serviceContainer['filesystem.stream_wrapper'] = function($c) {
+			$wrapper = new \Message\Cog\Filesystem\StreamWrapper;
+			$wrapper->setReferenceParser($c['reference_parser']);
+			$wrapper->setMapping($c['filesystem.stream_wrapper_mapping']);
+
+			return $wrapper;
+		};
+
+		$serviceContainer['filesystem.stream_wrapper_mapping'] = function($c) {
+			$baseDir = $c['app.loader']->getBaseDir();
+			$mapping = array(
+				// Maps cog://tmp/* to /tmp/* (in the installation)
+				"/^\/tmp\/(.*)/us" => $baseDir.'tmp/$1',
+			);
+
+			return $mapping;
+		};
+
+		$serviceContainer['filesystem'] = function($c) {
+			return new \Message\Cog\Filesystem\Filesystem;
+		};
+
+		$serviceContainer['filesystem.finder'] = function($c) {
+			return new \Message\Cog\Filesystem\Finder;
+		};
 
 		// Application Contexts
 		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {
@@ -266,6 +332,14 @@ class Services implements ServicesInterface
 				)
 			);
 		};
+
+		$serviceContainer['security.salt'] = $serviceContainer->share(function() {
+			return new \Message\Cog\Security\Salt;
+		});
+
+		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
+		});
 
 	}
 }

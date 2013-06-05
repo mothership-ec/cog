@@ -2,19 +2,18 @@
 
 namespace Message\Cog\Routing;
 
-use Message\Cog\ReferenceParserInterface;
+use Symfony\Component\Routing\RouteCollection as SymfonyRouteCollection;
 
 /**
 * A wrapper around Symfony's Routing component making it easier to use.
 *
-* TODO: Document our custom Route class here with a usage example
+* TODO: Add a caching layer in getMatcher and getGenerator
 *
 * @link http://symfony.com/doc/current/components/routing.html
 * @link http://symfony.com/doc/current/book/routing.html
 */
 class Router implements RouterInterface
 {
-	protected $_referenceParser;
 	protected $_matcher;
 	protected $_generator;
 	protected $_context;
@@ -24,28 +23,13 @@ class Router implements RouterInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param ReferenceParserInterface $referenceParser Engine to parse references
 	 * @param array		               $options         An array of options
 	 * @param RequestContext           $context         The context
 	 */
-	public function __construct(ReferenceParserInterface $referenceParser, array $options = array(), RequestContext $context = null)
+	public function __construct(array $options = array(), RequestContext $context = null)
 	{
-		$this->_referenceParser = $referenceParser;
-		$this->_collection = new RouteCollection;
 		$this->_context = null === $context ? new RequestContext() : $context;
 		$this->setOptions($options);
-	}
-
-	public function add($name, $url, $controller)
-	{
-		$reference = $this->_referenceParser->parse($controller);
-		$defaults  = array(
-			'_controller' => $reference->getSymfonyLogicalControllerName()
-		);
-		$route     = new Route($url, $defaults);
-		$this->getRouteCollection()->add($name, $route);
-
-		return $route;
 	}
 
 	/**
@@ -143,7 +127,7 @@ class Router implements RouterInterface
 	 *
 	 * @param RouteCollection $collection The RouteCollection to use.
 	 */
-	public function setRouteCollection(RouteCollection $collection)
+	public function setRouteCollection(SymfonyRouteCollection $collection)
 	{
 		$this->_collection = $collection;
 	}
@@ -202,54 +186,10 @@ class Router implements RouterInterface
 			return $this->_matcher;
 		}
 
-		// TODO: Remove this line and re-instate cached matchers that dont rely on ConfigCache
-
-		if(null === $this->_options['cache'] || null === $this->_options['cache_key']) {
-			$matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
-			return $this->_matcher = $matcher;
-		}
-
-		if($matcher = $this->_options['cache']->fetch($this->_options['cache_key'])) {
-			//return $matcher;
-		}
-
-		$dumper = new $this->_options['matcher_dumper_class']($this->getRouteCollection());
-
-		$options = array(
-			'class'	  => $this->_options['matcher_cache_class'],
-			'base_class' => $this->_options['matcher_base_class'],
-		);
-
-		dump($dumper->dump($options));
-
-
+		// TODO: Remove this line and re-instate cached matchers that dont rely on Symfony's ConfigCache
 		$matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
 
-		$this->_options['cache']->store($this->_options['cache_key'], $matcher);
-
-		return $matcher;
-
-
-
-		/*
-
-		if (null === $this->_options['cache_dir'] || null === $this->_options['matcher_cache_class']) {
-			return $this->_matcher = new $this->_options['matcher_class']($this->getRouteCollection(), $this->_context);
-		}
-
-
-		$class = $this->_options['matcher_cache_class'];
-		$cache = new ConfigCache($this->_options['cache_dir'].'/'.$class.'.php', $this->_options['debug']);
-
-
-		if (!$cache->isFresh($class)) {
-
-		}
-
-		require_once $cache;
-
-		return $this->_matcher = new $class($this->_context);
-		*/
+		return $this->_matcher = $matcher;
 	}
 
 	/**
@@ -263,30 +203,7 @@ class Router implements RouterInterface
 			return $this->_generator;
 		}
 
-		// TODO: Remove this line and re-instate cached generators that dont rely on ConfigCache
+		// TODO: Remove this line and re-instate cached generators that dont rely on Symfony's ConfigCache
 		return $this->_generator = new $this->_options['generator_class']($this->getRouteCollection(), $this->_context);
-
-		/*
-		if (null === $this->_options['cache_dir'] || null === $this->_options['generator_cache_class']) {
-			return $this->_generator = new $this->_options['generator_class']($this->getRouteCollection(), $this->_context);
-		}
-
-		$class = $this->_options['generator_cache_class'];
-		$cache = new ConfigCache($this->_options['cache_dir'].'/'.$class.'.php', $this->_options['debug']);
-		if (!$cache->isFresh($class)) {
-			$dumper = new $this->_options['generator_dumper_class']($this->getRouteCollection());
-
-			$options = array(
-				'class'	  => $class,
-				'base_class' => $this->_options['generator_base_class'],
-			);
-
-			$cache->write($dumper->dump($options), $this->getRouteCollection()->getResources());
-		}
-
-		require_once $cache;
-
-		return $this->_generator = new $class($this->_context);
-		*/
 	}
 }
