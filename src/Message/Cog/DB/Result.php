@@ -281,7 +281,7 @@ class Result extends ResultArrayAccess
 		}
 	}
 
-	protected function _bindPropertiesToObject($object, $data, $force)
+	protected function _bindPropertiesToObject($subject, $data, $force)
 	{
 		foreach($data as $key => $value) {
 			if (property_exists($subject, $key) || $force) {
