@@ -9,6 +9,8 @@ use Message\Cog\HTTP\RequestAwareInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 use LogicException;
 
 /**
@@ -27,6 +29,18 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 {
 	protected $_services;
 	protected $_request;
+
+	/**
+	 * Get a service directly from the container by name
+	 *
+	 * @param  string $serviceName The service name
+	 *
+	 * @return mixed               The requested service.
+	 */
+	public function get($serviceName)
+	{
+		return $this->_services[$serviceName];
+	}
 
 	/**
 	 * Sets the service container.
@@ -54,17 +68,18 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	/**
 	 * Generate a URL from a route name.
 	 *
-	 * @see \Message\Cog\Routing\Router::generate()
+	 * @see \Message\Cog\Routing\UrlGenerator::generate()
 	 *
-	 * @param  string $routeName Name of the route to use
-	 * @param  array  $params    Parameters to use in the route
-	 * @param  bool   $absolute  True to return an absolute URL
+	 * @param string         $routeName     Name of the route to use
+	 * @param array          $params        Parameters to use in the route
+	 * @param boolean|string $referenceType The type of reference (one of the
+	 *                                      constants in UrlGeneratorInterface)
 	 *
 	 * @return string            The generated URL
 	 */
-	public function generateUrl($routeName, $params = array(), $absolute = false)
+	public function generateUrl($routeName, $params = array(), $absolute = UrlGeneratorInterface::ABSOLUTE_PATH)
 	{
-		return $this->_services['router']->generate($routeName, $params, $absolute);
+		return $this->_services['routing.generator']->generate($routeName, $params, $absolute);
 	}
 
 	/**
@@ -81,27 +96,35 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Triggers a sub-request for the given route name and returns a filtered
-	 * Response instance.
+	 * Triggers a sub-request for the given controller reference and returns a
+	 * filtered Response instance.
 	 *
-	 * @see \Message\Cog\HTTP\Dispatcher::forward()
-	 *
-	 * @param  string $routeName  Name of the route to execute
+	 * @param  string $reference  The reference for the controller
 	 * @param  array  $attributes Request attributes
 	 * @param  array  $query      Optional query (GET) parameters
+	 * @param  bool   $catch      True to catch exceptions thrown in the sub-request
 	 *
 	 * @return Response           The filtered Response instance
 	 */
-	public function forward($routeName, array $attributes = array(), array $query = array())
+	public function forward($reference, array $attributes = array(), array $query = array(), $catch = true)
 	{
-		return $this->_services['http.dispatcher']->forward($routeName, $attributes, $query);
+		// Copy the route format from the current request
+		$attributes['_format']     = $this->_services['request']->attributes->get('_format');
+		// Set the Symfony controller reference
+		$attributes['_controller'] = $this->_services['reference_parser']->parse($reference)->getSymfonyLogicalControllerName();
+
+		$kernel  = $this->_services['http.kernel'];
+		$request = $this->_services['request']->duplicate($query, null, $attributes);
+
+		// Execute the sub-request
+		return $kernel->handle($request, $kernel::SUB_REQUEST, $catch);
 	}
 
 	/**
 	 * Render a view and return the rendered contents as a HTTP Response
 	 * instance.
 	 *
-	 * @see ResponseBuilder::render()
+	 * @see ResponseBuilder::render
 	 *
 	 * @param  string $reference The reference for the view
 	 * @param  array  $params    Optional parameters to pass to the view

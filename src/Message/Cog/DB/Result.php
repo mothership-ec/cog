@@ -165,11 +165,7 @@ class Result extends ResultArrayAccess
 		if(is_object($subject)) {
 			// get the next row and bind it as the properties of the object
 			$data = $this->_result->fetchObject();
-			foreach($data as $key => $value) {
-				if (property_exists($subject, $key) || $force) {
-					$subject->{$key} = $value;
-				}
-			}
+			$this->_bindPropertiesToObject($subject, $data, $force);
 
 			return $subject;
 		}
@@ -177,7 +173,8 @@ class Result extends ResultArrayAccess
 		// Bind array of objects or classnames
 		if(is_array($subject)) {
 			foreach($subject as &$value) {
-				$value = $this->bind($value);
+				$data = $this->_result->fetchObject();
+				$this->_bindPropertiesToObject($value, $data, $force);
 			}
 
 			return $subject;
@@ -281,6 +278,15 @@ class Result extends ResultArrayAccess
 
 		if($value === null) {
 			$value = $this->columns(1);
+		}
+	}
+
+	protected function _bindPropertiesToObject($subject, $data, $force)
+	{
+		foreach($data as $key => $value) {
+			if (property_exists($subject, $key) || $force) {
+				$subject->{$key} = $value;
+			}
 		}
 	}
 }

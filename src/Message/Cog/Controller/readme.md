@@ -48,15 +48,9 @@ The parameters `competition` and `customParam` are passed to the view and are ac
 
 ## Controller Resolver
 
-Both the `ControllerResolver` class and the `ControllerResolverInterface` interface are taken from Symfony 2. We don't include this using a Composer dependency in the `composer.json` file because that would mean requiring the whole `HttpFoundation` component which is too large to justify for just two files.
-
-As such, these files should be maintained with care. Adjustments should not need to be made.
-
-The unit tests have also been copied from Symfony 2, but adjusted to work with our namespaces and also to provide 100% code coverage (there were some issues with some of the Symfony tests resulting in a less optimal code coverage).
-
 ### What does it do?
 
-The `ControllerResolver` class is responsible for invoking a controller for a given HTTP request. It also cleverly maps all parameters found in the request to arguments in the controller method. Consider the following example controller class & method:
+The `ControllerResolver` is responsible for invoking a controller for a given HTTP request. It also cleverly maps all parameters found in the request to arguments in the controller method. Consider the following example controller class & method:
 
 	namespace MyApp\PasswordReset;
 	

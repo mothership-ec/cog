@@ -7,7 +7,6 @@ use Message\Cog\Test\Module;
 
 use Message\Cog\Routing\Route;
 
-
 class RouteTest extends \PHPUnit_Framework_TestCase
 {
 	public function testThatDefaultFormatIsHtml()
@@ -15,7 +14,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 		$route = new Route('/blog');
 		$this->assertSame('html', $route->getDefault('_format'));
 	}
-	
+
 	public function testSettingScheme()
 	{
 		$route = new Route('/blog');
@@ -37,22 +36,6 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame('PUT', $route->getRequirement('_method'));
 	}
 
-	public function testSettingAccess()
-	{
-		$route = new Route('/blog');
-		$route->setAccess('external');
-		$this->assertSame('external', $route->getDefault('_access'));
-	}
-
-	/**
-	 * @expectedException \Exception
-	 */
-	public function testSettingInvalidAccess()
-	{
-		$route = new Route('/blog');
-		$route->setAccess('upternal');
-	}
-
 	public function testSettingOptional()
 	{
 		$route = new Route('/blog/{blogID}/comment/{commentID}');
@@ -66,8 +49,4 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertSame('.*', $route->getRequirement('orderID'));
 	}
-
-
-
-
 }

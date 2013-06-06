@@ -4,9 +4,10 @@ namespace Message\Cog\Controller;
 
 use Message\Cog\HTTP\Request;
 use Message\Cog\HTTP\Response;
-use Message\Cog\HTTP\StatusException;
 use Message\Cog\HTTP\RequestAwareInterface;
 use Message\Cog\Templating\EngineInterface;
+
+use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 /**
  * This class uses the given templating engine to render a view and turn it into
@@ -51,7 +52,7 @@ class ResponseBuilder implements RequestAwareInterface
 	 *
 	 * @return Response          The rendered result as a Response instance
 	 *
-	 * @throws StatusException   If view could not be rendered or generated
+	 * @throws NotAcceptableHttpException If view could not be rendered or generated
 	 *
 	 * @todo When rendering the view, find out the type of the view rendered and
 	 *       set the content type as appropriate.
@@ -67,12 +68,11 @@ class ResponseBuilder implements RequestAwareInterface
 				return $generatedResponse;
 			}
 			// If not, throw an exception
-			throw new StatusException(
+			throw new NotAcceptableHttpException(
 				sprintf(
 					'View could not be rendered or generated for reference `%s`',
 					$reference
 				),
-				StatusException::NOT_ACCEPTABLE,
 				$e
 			);
 		}

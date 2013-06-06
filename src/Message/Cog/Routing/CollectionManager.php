@@ -162,7 +162,7 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 			// Ensure that the parent exists
 			if(!isset($this->_collections[$parent])) {
 				throw new \RuntimeException(sprintf(
-					'Cannot add RouteCollection `%s` to `%s` as it does not exist.', 
+					'Cannot add RouteCollection `%s` to `%s` as it does not exist.',
 					$name,
 					$parent
 				));
@@ -172,16 +172,22 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 			$prefix           = $collection->getPrefix();
 			$parentCollection = $this->_collections[$parent]->getRouteCollection();
 
+			$symfonyCollection = $collection->getRouteCollection();
+			$symfonyCollection->addPrefix($prefix);
+
 			// Add it to Symfony's underlying RouteCollection
-			$parentCollection->addCollection($collection->getRouteCollection(), $prefix);
+			$parentCollection->addCollection($symfonyCollection);
 		}
 
 		// Create an empty route collection, all the others get added to this.
 		$root           = new RouteCollection($this->_referenceParser);
 		$rootCollection = $root->getRouteCollection();
-		
+
 		foreach($baseCollections as $name => $collection) {
-			$rootCollection->addCollection($collection->getRouteCollection(), $collection->getPrefix());
+			$symfonyCollection = $collection->getRouteCollection();
+			$symfonyCollection->addPrefix($collection->getPrefix());
+
+			$rootCollection->addCollection($symfonyCollection);
 		}
 
 		return $root;

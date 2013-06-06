@@ -86,27 +86,19 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Event\Dispatcher($c);
 		});
 
-		$serviceContainer['router'] = $serviceContainer->share(function($c) {
-			$context = new \Message\Cog\Routing\RequestContext;
-			$context->fromRequest($c['http.request.master']);
-
-			return new \Message\Cog\Routing\Router(
-				array(
-					'cache_key' => 'router',
-				),
-				$context
-			);
-		});
-
 		$serviceContainer['routes'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
 		});
 
-		$serviceContainer['controller.resolver'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Controller\ControllerResolver;
-		});
+		$serviceContainer['routing.matcher'] = function($c) {
+			return new \Message\Cog\Routing\UrlMatcher($c['routes.compiled'], $c['http.request.context']);
+		};
 
-		$serviceContainer['templating.viewnameparser'] = $serviceContainer->share(function($c) {
+		$serviceContainer['routing.generator'] = function($c) {
+			return new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+		};
+
+		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
 				$c['reference_parser'],
@@ -117,9 +109,31 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$serviceContainer['templating.actions_helper'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\Helper\Actions(
+				$c['http.fragment_handler'],
+				$c['reference_parser']
+			);
+		});
+
+		$serviceContainer['templating.twig_environment'] = $serviceContainer->share(function($c) {
+			$twigEnvironment = new \Twig_Environment(
+				new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']),
+				array(
+					#'cache' => 'cog://tmp',
+					'auto_reload' => true,
+				)
+			);
+
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
+
+			return $twigEnvironment;
+		});
+
 		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\PhpEngine(
-				$c['templating.viewnameparser'],
+				$c['templating.view_name_parser'],
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
 					array(
 						$c['app.loader']->getBaseDir(),
@@ -127,38 +141,35 @@ class Services implements ServicesInterface
 					)
 				),
 				array(
-					new \Symfony\Component\Templating\Helper\SlotsHelper
+					new \Symfony\Component\Templating\Helper\SlotsHelper,
+				//	$c['templating.actions_helper'],
+				//	new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 				)
 			);
 		});
 
 		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\TwigEngine(
-				new \Twig_Environment(
-					new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.viewnameparser']),
-					array(
-						'cache' => 'cog://tmp',
-					)
-				),
-				$c['templating.viewnameparser']
+				$c['templating.twig_environment'],
+				$c['templating.view_name_parser']
 			);
 		});
+
 
 		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
-					$c['templating.engine.php'],
 					$c['templating.engine.twig'],
+					$c['templating.engine.php'],
 				)
 			);
 		});
 
-		$serviceContainer['http.dispatcher'] = function($c) {
-			return new \Message\Cog\HTTP\Dispatcher(
+		$serviceContainer['http.kernel'] = function($c) {
+			return new \Message\Cog\HTTP\Kernel(
 				$c['event.dispatcher'],
-				$c['controller.resolver'],
-				(isset($c['http.request.master']) ? $c['http.request.master'] : null)
+				new \Symfony\Component\HttpKernel\Controller\ControllerResolver
 			);
 		};
 
@@ -168,6 +179,16 @@ class Services implements ServicesInterface
 
 		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
 			return new \Message\Cog\HTTP\CookieCollection;
+		});
+
+		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
+			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
+				new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel'])
+			), ('local' === $c['env']));
+		});
+
+		$serviceContainer['http.uri_signer'] = $serviceContainer->share(function() {
+			return new \Symfony\Component\HttpKernel\UriSigner(time());
 		});
 
 		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {
@@ -241,7 +262,8 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us" => $baseDir.'tmp/$1',
+				"/^\/tmp\/(.*)/us" 	  => $baseDir.'tmp/$1',
+				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 			);
 
 			return $mapping;
@@ -352,6 +374,5 @@ class Services implements ServicesInterface
 		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
 		});
-
 	}
 }
