@@ -20,6 +20,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 		$route = new Route('/blog');
 		$route->setScheme('https');
 		$this->assertSame('https', $route->getRequirement('_scheme'));
+
+		$route->setScheme(array('https', 'ftp'));
+		$this->assertSame('https|ftp', $route->getRequirement('_scheme'));
 	}
 
 	public function testSettingFormat()
@@ -34,19 +37,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 		$route = new Route('/blog');
 		$route->setMethod('PUT');
 		$this->assertSame('PUT', $route->getRequirement('_method'));
-	}
 
-	public function testSettingOptional()
-	{
-		$route = new Route('/blog/{blogID}/comment/{commentID}');
-		$route->setOptional(array('blogID', 'commentID'));
-
-		$this->assertSame('.*', $route->getRequirement('blogID'));
-		$this->assertSame('.*', $route->getRequirement('commentID'));
-
-		$route = new Route('/order/{orderID}');
-		$route->setOptional('orderID');
-
-		$this->assertSame('.*', $route->getRequirement('orderID'));
+		$route->setMethod(array('PUT', 'POST'));
+		$this->assertSame('PUT|POST', $route->getRequirement('_method'));
 	}
 }
