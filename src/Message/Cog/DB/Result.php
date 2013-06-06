@@ -208,9 +208,16 @@ class Result extends ResultArrayAccess
 			throw new \InvalidArgumentException(sprintf('`%s` class not found', $subject));
 		}
 
-		$class = new $subject;
+		$this->reset();
 
-		return $this->bind($class, $force);
+		$result = array();
+		while($row = $this->_result->fetchObject()) {
+			$class = new $subject;
+			$this->_bindPropertiesToObject($class, $row, $force);
+			$result[] = $class;
+		}
+
+		return $result;
 	}
 
 	/**
