@@ -135,7 +135,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function render($reference, array $params = array())
 	{
-		if (!$this->_request instanceof Request) {
+		if (!($this->_request instanceof Request)) {
 			throw new LogicException('Request must be set on the controller to render a view.');
 		}
 
