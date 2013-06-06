@@ -3,7 +3,7 @@
 namespace Message\Cog\Templating;
 
 use Message\Cog\Service\ContainerInterface;
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Module\ReferenceParserInterface;
 
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParser;

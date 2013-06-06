@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Filesystem;
 
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Module\ReferenceParserInterface;
 
 /**
  * A basic stream wrapper class that handles mapping cog:// style URLs to real

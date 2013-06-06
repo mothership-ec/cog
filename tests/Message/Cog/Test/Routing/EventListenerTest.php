@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Test\Routing;
 
-use Message\Cog\ReferenceParser;
+use Message\Cog\Module\ReferenceParser;
 use Message\Cog\Test\Module;
 use Message\Cog\Test\Service\FauxContainer;
 

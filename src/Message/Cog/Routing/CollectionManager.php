@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Routing;
 
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Module\ReferenceParserInterface;
 
 /**
  * Manages groups of routes for use in the router. Groups are represented as

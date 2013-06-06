@@ -222,7 +222,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
+			return new \Message\Cog\Module\ReferenceParser($c['module.locator'], $c['fns.utility']);
 		});
 
 		// Filesystem

@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Routing;
 
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Module\ReferenceParserInterface;
 use Symfony\Component\Routing\RouteCollection as SFRouteCollection;
 
 /**

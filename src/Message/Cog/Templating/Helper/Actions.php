@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Templating\Helper;
 
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Module\ReferenceParserInterface;
 
 use Symfony\Component\Templating\Helper\Helper;
 use Symfony\Component\HttpKernel\Fragment\FragmentHandler;
