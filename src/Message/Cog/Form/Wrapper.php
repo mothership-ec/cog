@@ -101,12 +101,21 @@ class Wrapper
 	 * Get a field, defaults to the most recently added
 	 *
 	 * @param string | null $name                               Name of field to retrieve
+	 * @throws \LogicException                                  Throws exception if no fields have been added
+	 * @throws \Exception                                       Throws exception if child does not exist
 	 *
 	 * @return \Symfony\Component\Form\FormInterface            Returns requested field or last field
 	 */
 	public function field($name = null)
 	{
 		$formChildren = $this->getForm()->all();
+
+		if (!count($formChildren)) {
+			throw new \LogicException('No fields added to form!');
+		}
+		elseif ($name && !array_key_exists($name, $formChildren)) {
+			throw new \Exception('Child \'' . $name . '\' does not exist!');
+		}
 
 		return $name ? $formChildren[$name] : end($formChildren);
 	}

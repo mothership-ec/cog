@@ -51,7 +51,7 @@ class ViewNameParser extends TemplateNameParser
 	{
 		// Get the current HTTP request
 		$request = $this->_services['request'];
-		
+
 		// @todo clean this up
 		// @todo twig integration
 		if(preg_match("/^@form:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
