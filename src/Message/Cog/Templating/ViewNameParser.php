@@ -16,6 +16,8 @@ class ViewNameParser extends TemplateNameParser
 	protected $_parser;
 	protected $_fileTypes;
 
+	protected $_lastAbsoluteModule;
+
 	/**
 	 * Constructor.
 	 *
@@ -51,8 +53,23 @@ class ViewNameParser extends TemplateNameParser
 	{
 		// Get the current HTTP request
 		$request = $this->_services['request'];
+		$parsed  = $this->_parser->parse($reference);
+
+		// If it is relative and an absolute path was used previously, make the
+		// reference absolute using the previous module name
+		// This is a fix for https://github.com/messagedigital/cog/issues/40
+		// which should be improved/refactored at a later date
+		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
+			// If it is relative, make it absolute with the last module name
+			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
+			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
+
+			// Parse the new reference
+			$parsed = $this->_parser->parse($newReference);
+		}
+
 		// Get the base file name from the reference parser
-		$baseFileName = $this->_parser->parse($reference)->getFullPath('View');
+		$baseFileName = $parsed->getFullPath('View');
 
 		// Loop through each content type
 		foreach ($request->getAllowedContentTypes() as $mimeType) {
@@ -60,9 +77,13 @@ class ViewNameParser extends TemplateNameParser
 
 			// Loop through the engines in order of preference
 			foreach ($this->_fileTypes as $engine) {
-				$fileName = $baseFileName . '.' . $format . '.' . $engine;
 				// Check if a view file exists for this format and this engine
+				$fileName = $baseFileName . '.' . $format . '.' . $engine;
 				if (file_exists($fileName)) {
+					// If the reference was absolute, save it for later use
+					if (!$parsed->isRelative()) {
+						$this->_lastAbsoluteModule = $parsed->getModuleName();
+					}
 					return new TemplateReference($fileName, $engine);
 				}
 			}

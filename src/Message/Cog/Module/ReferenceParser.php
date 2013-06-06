@@ -164,6 +164,11 @@ class ReferenceParser implements ReferenceParserInterface
 		return $this->_vendor . '\\' . $this->_module;
 	}
 
+	/**
+	 * Get the method for this reference, if set.
+	 *
+	 * @return string|null The method, or null if not set
+	 */
 	public function getMethod()
 	{
 		return $this->_method;
