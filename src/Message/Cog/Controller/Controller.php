@@ -31,15 +31,26 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	protected $_request;
 
 	/**
-	 * Get a service directly from the container by name
+	 * Get a service directly from the container by name.
 	 *
 	 * @param  string $serviceName The service name
 	 *
-	 * @return mixed               The requested service.
+	 * @return mixed               The requested service
 	 */
 	public function get($serviceName)
 	{
 		return $this->_services[$serviceName];
+	}
+
+	/**
+	 * Add a flash message to the session.
+	 *
+	 * @param string $type    The type of message
+	 * @param string $message The message to add
+	 */
+	public function addFlash($type, $message)
+	{
+		return $this->get('http.session')->getFlashBag()->add($type, $message);
 	}
 
 	/**
