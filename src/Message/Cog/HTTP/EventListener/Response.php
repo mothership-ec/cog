@@ -3,9 +3,11 @@
 namespace Message\Cog\HTTP\EventListener;
 
 use Message\Cog\Event\SubscriberInterface;
-use Message\Cog\HTTP\Event\Event;
-use Message\Cog\HTTP\Event\FilterResponseEvent;
 use Message\Cog\HTTP\CookieCollection;
+
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
  * Event listener for core functionality for any last actions on a Response
@@ -17,34 +19,37 @@ class Response implements SubscriberInterface
 {
 	protected $_cookieCollection;
 
+	static public function getSubscribedEvents()
+	{
+		return array(KernelEvents::RESPONSE => array(
+			array('setCookies'),
+		));
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param CookieCollection $cookieCollection The cookie collection
+	 */
 	public function __construct(CookieCollection $cookieCollection)
 	{
 		$this->_cookieCollection = $cookieCollection;
 	}
 
-	static public function getSubscribedEvents()
-	{
-		return array(Event::RESPONSE => array(
-			array('setResponseCookies'),
-			array('prepareResponse'),
-		));
-	}
-
 	/**
-	 * Prepare the Response.
+	 * Set cookies in the collection on the master response.
 	 *
-	 * @param  FilterResponseEvent $event The filter response event
+	 * @param FilterResponseEvent $event The event instance
 	 */
-	public function prepareResponse(FilterResponseEvent $event)
+	public function setCookies(FilterResponseEvent $event)
 	{
-		$event->getResponse()->prepare($event->getRequest());
-	}
-	
-	public function setResponseCookies(FilterResponseEvent $event)
-	{
+		// Skip if this isn't the master request
+		if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+			return false;
+		}
+
 		foreach ($this->_cookieCollection as $cookie) {
 			$event->getResponse()->headers->setCookie($cookie);
 		}
-
 	}
 }

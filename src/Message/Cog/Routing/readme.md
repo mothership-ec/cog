@@ -30,25 +30,25 @@ Taking the last URL as an example if you visited `/blog_archive_2012_10/tagged/c
 - `$month` => 10
 - `$tagID` => cycling
 
-By default placeholders are matched using a ungreedy regex which tries to match any character except for a forward slash. By default they are required so if you had a URL such as `/blog/{postTitle}`, visiting `/blog/` wouldnt cause the router to match anything. 
+By default placeholders are matched using a ungreedy regex which tries to match any character except for a forward slash. By default they are required so if you had a URL such as `/blog/{postTitle}`, visiting `/blog/` wouldnt cause the router to match anything.
 
 For more information on how to access placeholders in controllers, read the Controller component documentation.
 
 ### Names
 
-Each route must have a unique name to identify it. The route names can be any arbritary string but we recommend using a name made up of the module and a suitable action. This ensures that if it needs to be referenced in other parts of the system the URL can be changed without breaking any links. 
+Each route must have a unique name to identify it. The route names can be any arbritary string but we recommend using a name made up of the module and a suitable action. This ensures that if it needs to be referenced in other parts of the system the URL can be changed without breaking any links.
 
 An example of this could be a template tag which takes a route name and returns the URL for that route.
 
     <a href="{{ render_link('account.profile') }}">My account</a>
-    
+
 Becomes
-    
+
     <a href="/account">My account</a>
-    
+
 In the future if the URL for the route was updated to `/my/account` we wouldnt have to update any templates.
 
-### Requirements 
+### Requirements
 
 You can restrict the regular expression that placeholders are matched against using requirements. For example you might have a placeholder that is an ID and should only ever match against digits.
 
@@ -56,8 +56,8 @@ You can add requirements using the `setRequirement` method. It takes two argumen
 
 	$router->add('user.view', '/view/user/{userID}', 'Message:Cog:ClassName#view')
 		->setRequirement('userID', '\d+');
-		
-If all the placeholder requirements on a route are not met, then the route won't be matched. 
+
+If all the placeholder requirements on a route are not met, then the route won't be matched.
 
 Some requirements have special meaning, this are prefixed with an underscore.
 
@@ -71,7 +71,6 @@ By default all placeholders are required for a route to be matched. By setting a
 Some defaults have special meaning, this are prefixed with an underscore.
 
 - `_format` - The format responses can be returned in e.g. `xml` or `html`. Can be a regex such as `xml|http|json`. Defaults to any format.
-- `_access` - Specifies if the route is internal or external.
 - `_controller` - The controller and method which should be executed when this route is matched. Can be an absolute class name and path or a controller reference. e.g `Message\CMS\Controller\ClassName::viewMethod` or `Message:Cog:ClassName#view`.
 
 
@@ -81,7 +80,7 @@ The `Router` class is responsible for taking a request and returning a route tha
 
 `CollectionManager` allows you to create different groups of routes. Each group is represented using the `RouteCollection` class. `RouteCollection` is a decorator for Symfony's `RouteCollection` class.
 
-`CollectionManager` uses an array access based method of setting up groups. If you 
+`CollectionManager` uses an array access based method of setting up groups. If you
 
 	$manager = new CollectionManager(new ReferenceParser);
 

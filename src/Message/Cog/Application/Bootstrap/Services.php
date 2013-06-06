@@ -86,25 +86,17 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Event\Dispatcher($c);
 		});
 
-		$serviceContainer['router'] = $serviceContainer->share(function($c) {
-			$context = new \Message\Cog\Routing\RequestContext;
-			$context->fromRequest($c['http.request.master']);
-
-			return new \Message\Cog\Routing\Router(
-				array(
-					'cache_key' => 'router',
-				),
-				$context
-			);
-		});
-
 		$serviceContainer['routes'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
 		});
 
-		$serviceContainer['controller.resolver'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Controller\ControllerResolver;
-		});
+		$serviceContainer['routing.matcher'] = function($c) {
+			return new \Message\Cog\Routing\UrlMatcher($c['routes.compiled'], $c['http.request.context']);
+		};
+
+		$serviceContainer['routing.generator'] = function($c) {
+			return new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+		};
 
 		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
@@ -116,17 +108,26 @@ class Services implements ServicesInterface
 					'php',
 				)
 			);
+			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
+				$c['http.fragment_handler'],
+				$c['reference_parser']
+			);
+			$twigEnvironment = new \Twig_Environment(
+				new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
+				array(
+					#'cache' => 'cog://tmp',
+					'auto_reload' => true,
+				)
+			);
+
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
 					// Twig templating engine
 					new \Message\Cog\Templating\TwigEngine(
-						new \Twig_Environment(
-							new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
-							array(
-								'cache' => 'cog://tmp',
-							)
-						),
+						$twigEnvironment,
 						$viewNameParser
 					),
 					// Plain PHP templating engine
@@ -136,18 +137,19 @@ class Services implements ServicesInterface
 							$c['app.loader']->getBaseDir()
 						),
 						array(
-							new \Symfony\Component\Templating\Helper\SlotsHelper
+							new \Symfony\Component\Templating\Helper\SlotsHelper,
+							$actionsHelper,
+							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 						)
 					),
 				)
 			);
 		});
 
-		$serviceContainer['http.dispatcher'] = function($c) {
-			return new \Message\Cog\HTTP\Dispatcher(
+		$serviceContainer['http.kernel'] = function($c) {
+			return new \Message\Cog\HTTP\Kernel(
 				$c['event.dispatcher'],
-				$c['controller.resolver'],
-				(isset($c['http.request.master']) ? $c['http.request.master'] : null)
+				new \Symfony\Component\HttpKernel\Controller\ControllerResolver
 			);
 		};
 
@@ -157,6 +159,16 @@ class Services implements ServicesInterface
 
 		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
 			return new \Message\Cog\HTTP\CookieCollection;
+		});
+
+		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
+			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
+				new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel'])
+			), ('local' === $c['env']));
+		});
+
+		$serviceContainer['http.uri_signer'] = $serviceContainer->share(function() {
+			return new \Symfony\Component\HttpKernel\UriSigner(time());
 		});
 
 		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {
@@ -230,7 +242,8 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us" => $baseDir.'tmp/$1',
+				"/^\/tmp\/(.*)/us" 	  => $baseDir.'tmp/$1',
+				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 			);
 
 			return $mapping;

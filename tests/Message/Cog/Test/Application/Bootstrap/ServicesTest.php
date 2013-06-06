@@ -27,12 +27,15 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		$this->_container = new FauxContainer;
 		$this->_bootstrap = new ServicesBootstrap;
 
+		$requestContext  = $this->getMock('Message\\Cog\\Routing\\RequestContext');
+		$routeCollection = new \Symfony\Component\Routing\RouteCollection;
+
 		// Add config directory as the config loader needs it
 		vfsStream::setup('root');
 		vfsStream::newDirectory('config')
 			->at(vfsStreamWrapper::getRoot());
 
-		// Define services normally defined in Application\Loader.
+		// Define services normally defined in Application\Loader
 		$this->_container['app.loader'] = function($c) {
 			return new AppFauxLoader(vfsStream::url('root'));
 		};
@@ -43,6 +46,14 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 
 		$this->_container['bootstrap.loader'] = function($c) {
 			return new BootstrapFauxLoader($c);
+		};
+
+		$this->_container['routes.compiled'] = function() use ($routeCollection) {
+			return $routeCollection;
+		};
+
+		$this->_container['http.request.context'] = function() use ($requestContext) {
+			return $requestContext;
 		};
 
 		$this->_bootstrap->registerServices($this->_container);
@@ -76,19 +87,13 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function testRouterDefinition()
+	public function testRoutingDefinitions()
 	{
-		$this->assertTrue($this->_container->isShared('router'));
-		$this->assertInstanceOf('Message\Cog\Routing\RouterInterface', $this->_container['router']);
-	}
+		$this->assertTrue($this->_container->isShared('routes'));
+		$this->assertInstanceOf('Message\Cog\Routing\CollectionManager', $this->_container['routes']);
 
-	public function testControllerResolverDefinition()
-	{
-		$this->assertTrue($this->_container->isShared('controller.resolver'));
-		$this->assertInstanceOf(
-			'Message\Cog\Controller\ControllerResolverInterface',
-			$this->_container['controller.resolver']
-		);
+		$this->assertInstanceOf('Message\Cog\Routing\UrlMatcher', $this->_container['routing.matcher']);
+		$this->assertInstanceOf('Message\Cog\Routing\UrlGenerator', $this->_container['routing.generator']);
 	}
 
 	public function testTemplatingDefinition()
@@ -98,11 +103,6 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 			'Message\Cog\Templating\EngineInterface',
 			$this->_container['templating']
 		);
-	}
-
-	public function testHTTPDispatcherDefinition()
-	{
-		$this->assertInstanceOf('Message\Cog\HTTP\Dispatcher', $this->_container['http.dispatcher']);
 	}
 
 	public function testResponseBuilderDefinition()

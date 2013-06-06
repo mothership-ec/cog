@@ -4,6 +4,7 @@ namespace Message\Cog\Filesystem;
 
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\Event;
+use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Service\ContainerInterface;
 
 /**
@@ -11,25 +12,13 @@ use Message\Cog\Service\ContainerInterface;
  *
  * @author James Moss <james@message.co.uk>
  */
-class EventListener implements SubscriberInterface
+class EventListener extends BaseListener implements SubscriberInterface
 {
-	protected $_services;
-
 	static public function getSubscribedEvents()
 	{
 		return array('cog.load.success' => array(
 			array('registerStreamWrapper'),
 		));
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @param Profiler    $profiler    Instance of the service container
-	 */
-	public function __construct(ContainerInterface $services)
-	{
-		$this->_services = $services;
 	}
 
 	/**
