@@ -40,8 +40,5 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$this->_services['event.dispatcher']->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\RouterListener($this->_services['routing.matcher'])
 		);
-
-		$req = $this->_services['http.master.request'];
-		file_put_contents('cog://tmp/mossdebug.log', print_r($req, true), FILE_APPEND);
 	}
 }
