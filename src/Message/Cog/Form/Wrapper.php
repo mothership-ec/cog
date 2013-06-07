@@ -56,6 +56,7 @@ class Wrapper
 		$this->_container = $container;
 		$this->_form = $this->_container['form.builder.' . $this->_type]->getForm();
 		$this->_validator = $this->_container['validator'];
+		$this->_request = $this->_container['request'];
 	}
 
 	/**
@@ -73,17 +74,28 @@ class Wrapper
 	 * @param string | SymfonyForm $child       Name or instance of field, e.g. 'First name'
 	 * @param null $type                        Type of field, defaults to text
 	 * @param array $options                    Options for field, see Symfony Form documentation
+	 * @throws \InvalidArgumentException        Throws exception if $child is not a string or Form object
 	 *
 	 * @return Wrapper                          Returns $this for chainability
 	 */
 	public function add($child, $type = null, array $options = array())
 	{
+		if(!is_string($child) && (!$child instanceof SymfonyForm)) {
+			throw new \InvalidArgumentException('$child must be either a string or instance of Symfony\Component\Form\Form');
+		}
+
 		$options = array_merge($this->_defaults, $options);
 
 		$this->_form->add($child, $type, $options);
 		$this->_validator->field($this->_getChildName($child));
 
-		return $this;
+		/**
+		 * @todo decide whether we want to allow adds to be chained - could cause messy forms in contructors, if we
+		 * @todo do decide to return this, we need to make a test to check that this happens before too many projects
+		 * @todo use it
+		 */
+//		return $this;
+
 	}
 
 	/**
@@ -182,7 +194,7 @@ class Wrapper
 	public function isValid($fromPost = false, array $data = null)
 	{
 		if (!$this->_form->isBound() && !$data && !$fromPost) {
-			throw new \LogicException('You cannot call isValid() on a form that is not bound, unless $fromPost is set to true');
+			throw new \LogicException('You cannot call isValid() on a form that is not bound, unless $fromPost is set to true, or $data is set');
 		}
 		elseif ($fromPost) {
 			$data = $this->getPost();
@@ -219,11 +231,8 @@ class Wrapper
 		if ($this->_form->isBound()) {
 			return $this->_form->getData();
 		}
-		elseif (!empty($_POST[$this->_form->getName()])) {
-			return $this->getPost();
-		}
 
-		return array();
+		return $this->getPost();
 	}
 
 	/**
@@ -233,7 +242,8 @@ class Wrapper
 	 */
 	public function isPost()
 	{
-		return (!empty($_POST[$this->_form->getName()])) ? true : false;
+		$post = $this->_request->get($this->_form->getName());
+		return (!empty($post)) ? true : false;
 	}
 
 	/**
@@ -243,7 +253,8 @@ class Wrapper
 	 */
 	public function getPost()
 	{
-		return ($this->isPost()) ? $_POST[$this->_form->getName()] : array();
+		$post = $this->_request->get($this->_form->getName());
+		return ($post) ? $post : array();
 	}
 
 	/**
@@ -253,28 +264,23 @@ class Wrapper
 	 */
 	public function getMessages()
 	{
-		return ($this->_validator) ? $this->_validator->getMessages() : array();
+		return $this->_validator->getMessages();
 	}
 
 	/**
-	 * Checks if the form child given is an instance of SymfonyForm, and returns name if so. If it is a string,
-	 * it just returns that
+	 * Checks if the form child given is an instance of SymfonyForm, and returns name if so. Otherwise it casts the
+	 * param to a string and returns that
 	 *
 	 * @param string | SymfonyForm $child       Name of child, or instance of child field
-	 * @throws \InvalidArgumentException        Throws exception if $child is not a string or an instance of
-	 *                                          SymfonyForm
 	 *
 	 * @return string
 	 */
 	protected function _getChildName($child) {
-		if (is_string($child)) {
-			return $child;
-		}
-		elseif ($child instanceof SymfonyForm) {
+		if ($child instanceof SymfonyForm) {
 			return $child->getName();
 		}
 
-		throw new \InvalidArgumentException(__CLASS__ . '::' . __METHOD__ . ' - $child must be either a string or instance of Symfony\Component\Form\Form');
+		return (string) $child;
 	}
 
 }

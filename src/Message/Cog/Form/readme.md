@@ -12,7 +12,7 @@ To a build a form, we must first call the form wrapper from the service containe
 
 We can now add our fields using the same syntax as Symfony Form, only on the wrapper instead of directly on the form:
 
-	$wrapper->add('name', 'text);
+	$wrapper->add('name', 'text');
 
 Calling the `add()` method automatically adds the field to both the form and the validator, and all fields are required by default. To add further validation, call the `val()` method to call the Validator instance and add more rules:
 
