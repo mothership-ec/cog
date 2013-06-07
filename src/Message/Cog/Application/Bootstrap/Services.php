@@ -120,6 +120,9 @@ class Services implements ServicesInterface
 				)
 			);
 
+			$twigEnvironment->addGlobal('flashes', $c['http.session']->getFlashBag()->all());
+			$twigEnvironment->addGlobal('cfg', $c['cfg']);
+
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			//$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\ImageResize($c));
@@ -155,7 +158,11 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['http.session'] = $serviceContainer->share(function() {
-			return new \Symfony\Component\HttpFoundation\Session\Session;
+			return new \Symfony\Component\HttpFoundation\Session\Session(
+				null,
+				null,
+				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag('__cog_flashes')
+			);
 		});
 
 		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
