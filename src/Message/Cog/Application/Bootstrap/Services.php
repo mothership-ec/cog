@@ -125,7 +125,7 @@ class Services implements ServicesInterface
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
-			//$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\ImageResize($c));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\ImageResize($c['image.resize']));
 
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
@@ -144,6 +144,7 @@ class Services implements ServicesInterface
 							new \Symfony\Component\Templating\Helper\SlotsHelper,
 							$actionsHelper,
 							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
+							new \Message\Cog\Templating\Helper\ImageResize($c['image.resize']),
 						)
 					),
 				)

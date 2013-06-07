@@ -9,6 +9,7 @@ class Routes implements RoutesInterface
 	public function registerRoutes($router)
 	{
 		$router->add('imageresize.cache', '/resize/{url}', '::Controller#index')
-			->setRequirement('url', '.+');
+			->setRequirement('url', '.+')
+			->setFormat('ANY');
 	}
 }

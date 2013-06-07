@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Templating\Helper;
 
+use Message\Cog\ImageResize\Resize;
+
 use Symfony\Component\Templating\Helper\Helper;
 
 /**
@@ -11,32 +13,32 @@ use Symfony\Component\Templating\Helper\Helper;
  */
 class ImageResize extends Helper
 {
-	protected $_generator;
+	protected $_resize;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param UrlGeneratorInterface $generator A URL generator
+	 * @param Resize $resize An image resize instance
 	 */
-	public function __construct(UrlGeneratorInterface $generator)
+	public function __construct(Resize $resize)
 	{
-		$this->_generator = $generator;
+		$this->_resize = $resize;
 	}
 
 	/**
-	 * Generates a URL from the given parameters.
+	 * Generates a URL to a resized image.
 	 *
-	 * @see UrlGeneratorInterface::generate
+	 * @see Resize::generateUrl
 	 *
-	 * @param string         $name          The name of the route
-	 * @param mixed          $parameters    An array of parameters
-	 * @param boolean|string $referenceType The type of reference (one of the
-	 *                                      constants in UrlGeneratorInterface)
+	 * @param string         $url      The public path to the file to resize
+	 * @param int|null       $width    The width of the image to create
+	 * @param int|null       $height   The height of the image to create
+	 * 
 	 * @return string The generated URL
 	 */
-	public function generate($name, array $parameters = array(), $absolute = UrlGeneratorInterface::ABSOLUTE_PATH)
+	public function generateUrl($url, $width, $height)
 	{
-		return $this->_generator->generate($name, $parameters, $absolute);
+		return $this->_resize->generateUrl($url, $width, $height);
 	}
 
 	/**
@@ -46,6 +48,6 @@ class ImageResize extends Helper
 	 */
 	public function getName()
 	{
-		return 'imageresizer';
+		return 'imageresize';
 	}
 }

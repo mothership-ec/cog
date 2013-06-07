@@ -12,7 +12,6 @@ class Controller extends \Message\Cog\Controller\Controller
 			$resizer = $this->get('image.resize');
 			$saved = $resizer->resize($url);	
 		} catch(\Exception $e) {
-			mail('james@message.co.uk', 'debug', print_r($e->getMessage(), true));
 			throw $this->createNotFoundException($e->getMessage());
 		}
 
