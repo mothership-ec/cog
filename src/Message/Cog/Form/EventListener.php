@@ -3,10 +3,9 @@
 namespace Message\Cog\Form;
 
 use Message\Cog\Event\SubscriberInterface;
-use Message\Cog\Service\ContainerInterface;
-use Message\Cog\Service\ContainerAwareInterface;
 use Symfony\Component\Form\FormRenderer;
 use Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine;
+use Message\Cog\Event\EventListener as BaseListener;
 
 /**
  * Class EventListener
@@ -14,7 +13,7 @@ use Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine;
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class EventListener implements SubscriberInterface, ContainerAwareInterface
+class EventListener extends BaseListener implements SubscriberInterface
 {
 	protected $_services;
 
@@ -25,14 +24,6 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 				array('setupFormHelper'),
 			)
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setContainer(ContainerInterface $services)
-	{
-		$this->_services = $services;
 	}
 
 	public function setupFormHelper()

@@ -131,7 +131,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add('test');
+		$wrapper = $this->_wrapper->add('test');
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	public function testAddObjectChildOnly()
@@ -142,7 +143,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add($this->_form);
+		$wrapper = $this->_wrapper->add($this->_form);
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	public function testAddStringWithType()
@@ -153,7 +155,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add('test', 'select');
+		$wrapper = $this->_wrapper->add('test', 'select');
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	public function testAddObjectWithType()
@@ -164,7 +167,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add($this->_form, 'select');
+		$wrapper = $this->_wrapper->add($this->_form, 'select');
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	public function testAddStringWithTypeOptions()
@@ -175,7 +179,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add('test', 'select', array('option' => true));
+		$wrapper = $this->_wrapper->add('test', 'select', array('option' => true));
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	public function testAddObjectWithTypeOptions()
@@ -186,7 +191,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add($this->_form, 'select', array('option' => true));
+		$wrapper = $this->_wrapper->add($this->_form, 'select', array('option' => true));
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	public function testAddStringWithOptionsOnly()
@@ -197,7 +203,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add('test', null, array('option' => true));
+		$wrapper = $this->_wrapper->add('test', null, array('option' => true));
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	public function testAddObjectWithOptionsOnly()
@@ -208,7 +215,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$this->_wrapper->add($this->_form, null, array('option' => true));
+		$wrapper = $this->_wrapper->add($this->_form, null, array('option' => true));
+		$this->assertSame($wrapper, $this->_wrapper);
 	}
 
 	/**

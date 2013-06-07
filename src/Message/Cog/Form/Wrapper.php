@@ -89,12 +89,7 @@ class Wrapper
 		$this->_form->add($child, $type, $options);
 		$this->_validator->field($this->_getChildName($child));
 
-		/**
-		 * @todo decide whether we want to allow adds to be chained - could cause messy forms in contructors, if we
-		 * @todo do decide to return this, we need to make a test to check that this happens before too many projects
-		 * @todo use it
-		 */
-//		return $this;
+		return $this;
 
 	}
 
