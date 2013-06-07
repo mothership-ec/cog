@@ -30,6 +30,12 @@ class Web implements ContextInterface
 			return \Message\Cog\HTTP\Request::createFromGlobals();
 		});
 
+		$this->_services['request'] = $this->_services->share(function($c) {
+			return $c['http.request.master'];
+		});
+
+		$this->_services['http.fragment_handler']->setRequest($this->_services['request']);
+
 		$this->_services['http.request.context'] = function($c) {
 			$context = new \Message\Cog\Routing\RequestContext;
 			$context->fromRequest(isset($c['request']) ? $c['request'] : $c['http.request.master']);
