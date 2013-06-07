@@ -121,6 +121,7 @@ class Services implements ServicesInterface
 			);
 
 			$twigEnvironment->addGlobal('flashes', $c['http.session']->getFlashBag()->all());
+			$twigEnvironment->addGlobal('cfg', $c['cfg']);
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
