@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\ImageResizer\Bootstrap;
+namespace Message\Cog\ImageResize\Bootstrap;
 
 use Message\Cog\Bootstrap\RoutesInterface;
 
@@ -8,7 +8,7 @@ class Routes implements RoutesInterface
 {
 	public function registerRoutes($router)
 	{
-		$router->add('imageresizer.cache', '/cache/build/{url}', '::Controller#index')
+		$router->add('imageresize.cache', '/resize/{url}', '::Controller#index')
 			->setRequirement('url', '.+');
 	}
 }
