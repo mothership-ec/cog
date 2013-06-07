@@ -83,6 +83,8 @@ class Resize
 
 	public function generateUrl($url, $width, $height)
 	{
+		$url = ltrim($url, '/');
+
 		if(is_null($width)) {
 			$width = self::DIMENSION_AUTO;
 		}
@@ -93,13 +95,15 @@ class Resize
 
 		// build the full url
 		$parts = pathinfo($url);
-		$path = $parts['dirname'].'/'.$parts['filename'];
+		$path = $this->_cacheDir.'/'.$parts['dirname'].'/'.$parts['filename'];
 		$ext  = '.'.$parts['extension'];
 		$params = $width.'x'.$height;
 
 		$hash = $this->_makeHash($path, $ext, $params);
 
-		return $path.'_'.$params.'-'.$hash.$ext;
+
+
+		return $this->_cacheDir.'/'.$parts['dirname'].'/'.rawurlencode($parts['filename']).'_'.$params.'-'.$hash.$ext;
 	}
 
 	protected function _parseParams($paramString)
