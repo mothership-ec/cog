@@ -28,7 +28,9 @@ class DateTimeImmutable extends DateTime
 	 */
 	public static function createFromFormat($format, $time, $timezone = null)
 	{
-		$date = parent::createFromFormat($format, $time, $timezone);
+		$date = ($timezone)
+				? parent::createFromFormat($format, $time, $timezone)
+				: parent::createFromFormat($format, $time);
 
 		if (false === $date) {
 			return false;
@@ -97,14 +99,6 @@ class DateTimeImmutable extends DateTime
 	 * @see http://www.php.net/manual/en/datetimeimmutable.settimestamp.php
 	 */
 	public function setTimestamp($timestamp)
-	{
-		return $this->_guard(__FUNCTION__, func_get_args());
-	}
-
-	/**
-	 * @see http://www.php.net/manual/en/datetimeimmutable.diff.php
-	 */
-	public function diff($date, $absolute = false)
 	{
 		return $this->_guard(__FUNCTION__, func_get_args());
 	}
