@@ -29,7 +29,7 @@ class File extends \SplFileInfo
 	 */
 	public function getChecksum()
 	{
-		return md5_file($this->realpath());
+		return md5_file($this->getRealPath());
 	}
 
 	/**
@@ -42,7 +42,7 @@ class File extends \SplFileInfo
 	 */
 	public function getPublicUrl()
 	{
-		if(!$this->isPublic()) {
+		if (!$this->isPublic()) {
 			throw new \Exception(sprintf('`%s` is not publically accessible', $this->_reference));
 		}
 
