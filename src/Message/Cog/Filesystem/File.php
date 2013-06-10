@@ -69,4 +69,14 @@ class File extends \SplFileInfo
 	{
 		return StreamWrapperManager::getHandler('cog')->getLocalPath($this->_reference, 'cog');
 	}
+
+	/**
+	 * Get the name of the file without the extension and period.
+	 *
+	 * @return string The filename without it's extension
+	 */
+	public function getFilenameWithoutExtension()
+	{
+		return $this->getBasename('.' . $this->getExtension());
+	}
 }

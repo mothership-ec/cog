@@ -1,25 +1,16 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
-namespace Message;
+namespace Message\Cog\Templating\Helper;
 
 use Symfony\Component\Templating\Helper\Helper;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
- * TranslatorHelper.
+ * Translation
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class TranslatorHelper extends Helper
+class Translation extends Helper
 {
     protected $translator;
 

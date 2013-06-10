@@ -115,13 +115,14 @@ class Services implements ServicesInterface
 			$twigEnvironment = new \Twig_Environment(
 				new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
 				array(
-					#'cache' => 'cog://tmp',
+					'cache' => 'cog://tmp',
 					'auto_reload' => true,
 				)
 			);
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translation']));
 
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
@@ -140,6 +141,7 @@ class Services implements ServicesInterface
 							new \Symfony\Component\Templating\Helper\SlotsHelper,
 							$actionsHelper,
 							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
+							new \Message\Cog\Templating\Helper\Translation($c['translation']),
 						)
 					),
 				)
@@ -293,34 +295,25 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
 		});
 
+		// Hardcode to en_GB for the moment. In the future this can be determined
+		// from properties on the route or the session object
 		$serviceContainer['locale'] = new \Message\Cog\Localisation\Locale('en_GB');
 
-		$serviceContainer['translator'] = $serviceContainer->share(function ($app) {
-
-			$selector = $app['translator.message_selector'];
-			$id = $app['locale']->getId();
+		$serviceContainer['translator'] = $serviceContainer->share(function ($c) {
+			$selector = new \Message\Cog\Localisation\MessageSelector;
+			$id       = $c['locale']->getId();
 
 			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
-			//$translator->setFallbackLocale($app['locale_fallback']);
+			$translator->setFallbackLocale($fallback);
 
-			$translator->addLoader('array', new ArrayLoader());
-			$translator->addLoader('xliff', new XliffFileLoader());
+			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
 
-			foreach ($app['translator.domains'] as $domain => $data) {
-			foreach ($data as $locale => $messages) {
-			$translator->addResource('array', $messages, $locale, $domain);
+			$dir = $c['app.loader']->getBaseDir().'/translations';
+			foreach($c['filesystem.finder']->in($dir) as $file) {
+				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
 			}
-			}
-
+			
 			return $translator;
 		});
-
-		$app['translator.message_selector'] = $app->share(function () {
-			return new MessageSelector();
-		});
-
-		$app['translator.domains'] = array();
-
-		$app['locale_fallback'] = 'en';
 	}
 }
