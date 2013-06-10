@@ -7,9 +7,9 @@ use Message\Cog\ImageResize\Resize;
 use Symfony\Component\Templating\Helper\Helper;
 
 /**
- * Templating helper for generating URLs from route names.
+ * Templating helper for resizing images using the ImageResize component
  *
- * @author Joe Holdcroft <joe@message.co.uk>
+ * @author James Moss <james@message.co.uk>
  */
 class ImageResize extends Helper
 {

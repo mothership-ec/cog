@@ -301,26 +301,5 @@ class Services implements ServicesInterface
 		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
 		});
-
-
-		$serviceContainer['imagine'] = function($c) {
-			if(extension_loaded('imagick')) {
-				return new \Imagine\Imagick\Imagine();
-			}
-
-			if(extension_loaded('gmagick')) {
-				return new \Imagine\Gmagick\Imagine(); 
-			}
-
-			if(extension_loaded('gd')) {
-				return new \Imagine\Gd\Imagine(); 
-			}
-
-			throw new \Exception('No image processing libraries available for Imagine.');
-		};
-
-		$serviceContainer['image.resize'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\ImageResize\Resize($c['imagine'], $c['routing.generator']);
-		});
 	}
 }

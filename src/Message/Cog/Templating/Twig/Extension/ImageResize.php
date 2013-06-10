@@ -5,11 +5,9 @@ namespace Message\Cog\Templating\Twig\Extension;
 use Message\Cog\ImageResize\Resize;
 
 /**
- * Provides integration of the Routing component with Twig.
+ * Provides integration of the ImageResize component with Twig.
  *
- * @see https://github.com/symfony/symfony/blob/master/src/Symfony/Bridge/Twig/Extension/RoutingExtension.php
- *
- * @author Fabien Potencier <fabien@symfony.com>
+ * @author James Moss <james@message.co.uk>
  */
 class ImageResize extends \Twig_Extension
 {
@@ -28,7 +26,9 @@ class ImageResize extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'resize'  => new \Twig_Function_Method($this, 'getResizeUrl', array('is_safe_callback' => array($this, 'isUrlGenerationSafe'))),
+            'resize'  => new \Twig_Function_Method($this, 'getResizeUrl', array(
+            	'is_safe_callback' => array($this, 'isUrlGenerationSafe')
+            )),
         );
     }
 

@@ -41,7 +41,7 @@
 		"pimple/pimple"                : "1.0.1",
 		"mtdowling/cron-expression"    : "1.0.*",
 		"treasure-chest/treasure-chest": "0.1.*",
-		"imagine/imagine"			   : "0.4.1"
+		"imagine/imagine"			   : "0.4.*"
 	},
 	"require-dev": {
 		"mikey179/vfsStream": "1.1.*"

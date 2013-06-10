@@ -12,16 +12,22 @@ class ResizeTest extends \PHPUnit_Framework_TestCase
 		$imagine = $this->getMock('\\Imagine\\Image\\ImagineInterface');
 		$generator = $this->getMockBuilder('\\Message\\Cog\\Routing\\UrlGenerator')
 		    ->disableOriginalConstructor()
+		    ->setMethods(array('generate'))
 		    ->getMock();
 
-		$this->resize = new Resize($imagine, $generator);
+		$generator
+		    ->expects($this->any())
+		    ->method('generate')
+		    ->will($this->returnValue('/resizer/-'));
+
+		$this->resize = new Resize($imagine, $generator, 'faux_route_name', 'somesalt');
 	}
 
 	public function testGeneratingUrl()
 	{
 		$url = $this->resize->generateUrl('files/somefile.jpg', 300, 500);
 
-		var_dump($url);
+		$this->assertSame('/resizer/files/somefile_300x500-334ce4.jpg', $url);
 	}
 	
 }
