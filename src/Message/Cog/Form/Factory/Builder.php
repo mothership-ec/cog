@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormTypeExtensionInterface;
 use Symfony\Component\Form\ResolvedFormTypeFactory;
 use Symfony\Component\Form\ResolvedFormTypeFactoryInterface;
 use Message\Cog\Form\Registry;
+use Message\Cog\Service\ContainerInterface;
 
 /**
  * Class FormFactoryBuilder
@@ -27,7 +28,7 @@ use Message\Cog\Form\Registry;
  */
 class Builder extends SymfonyBuilder
 {
-	public function __construct($container, $type)
+	public function __construct(ContainerInterface $container, $type)
 	{
 		$this->addExtension(new CoreExtension)
 			->addExtension(new \Message\Cog\Form\Csrf\Csrf(

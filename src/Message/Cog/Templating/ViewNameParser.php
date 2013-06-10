@@ -54,13 +54,13 @@ class ViewNameParser extends TemplateNameParser
 
 		// @todo clean this up
 		// @todo twig integration
-		if(preg_match("/^@form:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
+		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
 			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
 			return new TemplateReference($baseFileName.'.html.php', 'php');
-		} else {
-// Get the base file name from the reference parser
-			$baseFileName = $this->_parser->parse($reference)->getFullPath('View');
+		}elseif (preg_match("/^@form.twig:_?(.*)\\..*\\..*$/u", $reference, $matches)){
 		}
+		// Get the base file name from the reference parser
+		$baseFileName = $this->_parser->parse($reference)->getFullPath('View');
 
 		// Loop through each content type
 		foreach ($request->getAllowedContentTypes() as $mimeType) {

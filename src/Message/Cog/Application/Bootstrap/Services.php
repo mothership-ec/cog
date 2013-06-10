@@ -321,7 +321,7 @@ class Services implements ServicesInterface
 				new \Symfony\Component\Form\FormRenderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
 						$engine,
-						array('@form')
+						array('@form.php')
 					),
 					null
 				)
@@ -333,12 +333,12 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.helper.twig'] = function($c) {
 			$engine = $c['templating.engine.twig'];
-
+die('here');
 			$formHelper = new \Message\Cog\Form\Template\Helper(
 				new \Symfony\Component\Form\FormRenderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
 						$engine,
-						array('@form')
+						array('@form.twig')
 					),
 					null
 				)

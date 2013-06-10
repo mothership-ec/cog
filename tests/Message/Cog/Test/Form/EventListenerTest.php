@@ -16,13 +16,15 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 		$this->assertContains(array('setupFormHelper'), $subscriptions['modules.load.success']);
 	}
 
-	// @todo test fails!
 	public function testSetupFormHelper()
 	{
 		$services   = new FauxContainer;
 		$listener   = new EventListener;
 
-		$phpTemplatingEngine = $this->getMockBuilder('\\\Message\\Cog\\Templating\\PhpEngine')
+		$this->assertInstanceOf('\\Message\\Cog\\Event\\SubscriberInterface', $listener);
+		$this->assertInstanceOf('\\Message\\Cog\\Event\\EventListener', $listener);
+
+		$phpTemplatingEngine = $this->getMockBuilder('\\Message\\Cog\\Templating\\PhpEngine')
 			->disableOriginalConstructor()
 			->setMethods(array('addHelpers'))
 			->getMock();
@@ -36,7 +38,7 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 
 		$listener->setContainer($services);
 
-		$phpFormHelper->expects($this->once())
+		$phpTemplatingEngine->expects($this->once())
 			->method('addHelpers');
 
 		$listener->setupFormHelper();
