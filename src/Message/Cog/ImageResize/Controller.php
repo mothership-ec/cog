@@ -18,10 +18,10 @@ class Controller extends \Message\Cog\Controller\Controller
 			throw $this->createNotFoundException($e->getMessage());
 		}
 		catch(Exception\BadParameters $e) {
-			throw BadRequestHttpException($e->getMessage());
+			throw new BadRequestHttpException($e->getMessage());
 		}
 		catch(\Exception $e) {
-			throw HttpException(500, $e->getMessage());
+			throw new HttpException(500, $e->getMessage());
 		}
 
 		return new BinaryFileResponse($saved->realpath());

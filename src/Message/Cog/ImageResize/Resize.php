@@ -8,15 +8,30 @@ use Message\Cog\Filesystem\Filesystem;
 use Imagine\Image\ImagineInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * Resize
+ *
+ * Resizes a publically accessible image based on URL.
+ */
 class Resize
 {
 	const DIMENSION_AUTO = 9999;
 	const AUTO_KEYWORD   = 'AUTO';
+	const QUALITY = 90;
 
 	protected $_imagine;
 	protected $_generator;
 	protected $_salt;
 
+	/**
+	 * Constructor
+	 *
+	 * @param ImagineInterface      $imagine   An instance of the Imagine library
+	 * @param UrlGeneratorInterface $generator An instance of the URL generator
+	 * @param string                $routeName The route for the controller where this class is used
+	 * @param string                $salt      A random string used to prevent people from 
+	 *                                         creating arbritary sized images.
+	 */
 	public function __construct(ImagineInterface $imagine, UrlGeneratorInterface $generator, $routeName, $salt)
 	{
 		$this->_imagine   = $imagine;
@@ -24,9 +39,16 @@ class Resize
 		// The url param is mandatory for this route so we pass it in then strip it off with substr()
 		$this->_cacheDir  =  substr($this->_generator->generate($routeName, array('url' => '-')), 0, -2);
 		$this->_cachePath = 'cog://public'.$this->_cacheDir;
-		$this->_salt = $salt;
+		$this->_salt      = $salt;
 	}
 
+	/**
+	 * Resize a public image based on it's URL
+	 *
+	 * @param  string $url The image to resize
+	 *
+	 * @return File        An object representing the newly resized image.
+	 */
 	public function resize($url)
 	{
 		$url = '/'.ltrim($url, '/');
@@ -62,7 +84,7 @@ class Resize
 
 		// make sure the target dir exists and we can write to it.
 		$saved    = new File($this->_cachePath.$url);
-		$savedRaw = new \SplFileInfo($saved->realpath());
+		$savedRaw = new File($saved->realpath());
 		$fs       = new Filesystem;
 		
 		$fs->mkdir($savedRaw->getPath(), 0777);
@@ -78,11 +100,22 @@ class Resize
 		$image = $this->_imagine
 			->open($original->getPathname())
 			->thumbnail($box, $mode)
-			->save($saved->realpath());
+			->save($saved->realpath(), array('quality' => self::QUALITY));
 
 		return $saved;
 	}
 
+	/**
+	 * Generate a URL to be fed into resize()
+	 *
+	 * @param  string   $url      A publically accessible image.
+	 * @param  int|null $width    The width of the image to generate (in pixels). If null
+	 *                            it is calculated based on height.
+	 * @param  int|null $height   The height of the image to generate (in pixels). If null
+	 *                            it is calculated based on width.
+	 *                            
+	 * @return string 	The URL that the resized image can be accessed at.
+	 */
 	public function generateUrl($url, $width, $height)
 	{
 		$url = ltrim($url, '/');
@@ -106,6 +139,13 @@ class Resize
 		return $this->_cacheDir.'/'.$parts['dirname'].'/'.rawurlencode($parts['filename']).'_'.$params.'-'.$hash.$ext;
 	}
 
+	/**
+	 * Parse and validate the parameters from a string into an array.
+	 *
+	 * @param  string $paramString The parameters to be parsed
+	 *
+	 * @return array               The parsed parameters.
+	 */
 	protected function _parseParams($paramString)
 	{
 		$params = explode('-', $paramString);
@@ -129,6 +169,19 @@ class Resize
 		);
 	}
 
+	/**
+	 * Check if the hash for a URL is valid.
+	 *
+	 * This is used to stop people from modifying the URL and creating arbitrarily
+	 * sized images.
+	 *
+	 * @param  string $path   The path to the image
+	 * @param  string $params The parameters for the image.
+	 * @param  string $hash   The hash to compare to.
+	 * @param  string $ext    The file extension.
+	 *
+	 * @return void
+	 */
 	protected function _validateHash($path, $params, $hash, $ext)
 	{
 		if($this->_makeHash($path, $ext, $params) !== $hash) {
@@ -136,10 +189,19 @@ class Resize
 		}
 	}
 
+	/**
+	 * Create a basic security hash.
+	 *
+	 * @param  string $path   The path to the image
+	 * @param  string $ext    The extension of the image
+	 * @param  string $params The parameters for the image
+	 *
+	 * @return string         A 6 character hash.
+	 */
 	public function _makeHash($path, $ext, $params)
 	{
 		$path = basename($path);
-		
+
 		return substr(md5($path.$ext.'|'.$params.'|'.$this->_salt), 0, 6);
 	}
 }

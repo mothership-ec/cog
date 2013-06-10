@@ -11,7 +11,7 @@ class Services implements ServicesInterface
 
 	public function registerServices($container)
 	{
-		$serviceContainer['imagine'] = function($c) {
+		$container['imagine'] = function($c) {
 			if(extension_loaded('imagick')) {
 				return new \Imagine\Imagick\Imagine();
 			}
@@ -27,12 +27,12 @@ class Services implements ServicesInterface
 			throw new \Exception('No image processing libraries available for Imagine.');
 		};
 
-		$serviceContainer['image.resize'] = $serviceContainer->share(function($c) {
+		$container['image.resize'] = $container->share(function($c) {
 			return new \Message\Cog\ImageResize\Resize(
 				$c['imagine'],
 				$c['routing.generator'],
-				self::ROUTE_NAME,
-				self::SALT
+				Services::ROUTE_NAME,
+				Services::SALT
 			);
 		});
 	}
