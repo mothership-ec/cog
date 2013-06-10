@@ -84,7 +84,7 @@ class Resize
 
 		// make sure the target dir exists and we can write to it.
 		$saved    = new File($this->_cachePath.$url);
-		$savedRaw = new File($saved->realpath());
+		$savedRaw = new File($saved->getRealPath());
 		$fs       = new Filesystem;
 		
 		$fs->mkdir($savedRaw->getPath(), 0777);
@@ -100,7 +100,7 @@ class Resize
 		$image = $this->_imagine
 			->open($original->getPathname())
 			->thumbnail($box, $mode)
-			->save($saved->realpath(), array('quality' => self::QUALITY));
+			->save($saved->getRealPath(), array('quality' => self::QUALITY));
 
 		return $saved;
 	}

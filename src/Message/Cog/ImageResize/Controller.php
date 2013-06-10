@@ -24,6 +24,6 @@ class Controller extends \Message\Cog\Controller\Controller
 			throw new HttpException(500, $e->getMessage());
 		}
 
-		return new BinaryFileResponse($saved->realpath());
+		return new BinaryFileResponse($saved->getRealPath());
 	}
 }
