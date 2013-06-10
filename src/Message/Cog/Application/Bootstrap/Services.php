@@ -122,7 +122,7 @@ class Services implements ServicesInterface
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translation']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
 
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
@@ -141,7 +141,7 @@ class Services implements ServicesInterface
 							new \Symfony\Component\Templating\Helper\SlotsHelper,
 							$actionsHelper,
 							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
-							new \Message\Cog\Templating\Helper\Translation($c['translation']),
+							new \Message\Cog\Templating\Helper\Translation($c['translator']),
 						)
 					),
 				)
@@ -304,7 +304,7 @@ class Services implements ServicesInterface
 			$id       = $c['locale']->getId();
 
 			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
-			$translator->setFallbackLocale($fallback);
+			$translator->setFallbackLocale($c['locale']->getFallback());
 
 			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
 
