@@ -7,6 +7,9 @@ use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Event\EventListener as BaseListener;
 
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
 /**
  * Event listener for the Routing component.
  *
@@ -19,7 +22,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 		return array(
 			'modules.load.success' => array(
 				array('mountRoutes'),
-			)
+			),
+			'kernel.request' => array(
+				array('checkCsrf'),
+			),
 		);
 	}
 
@@ -40,5 +46,28 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$this->_services['event.dispatcher']->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\RouterListener($this->_services['routing.matcher'])
 		);
+	}
+
+	public function checkCsrf(GetResponseEvent $event)
+	{
+		$attributes = $event->getRequest()->attributes;
+
+		if($csrfKey = $attributes->get(Route::CSRF_ATTRIBUTE_NAME)) {
+			$routeName = $attributes->get('_route');
+			$route     = $this->_services['routes.compiled']->get($routeName);
+
+			$this->_services['http.session']->start();
+
+			$calculatedHash = $route->getCsrfToken(
+				$routeName,
+				$attributes->get('_route_params'),
+				$this->_services['http.session']->getId(),
+				Route::CSRF_SECRET
+			);
+
+			if($attributes->get($csrfKey) !== $calculatedHash) {
+				throw new AccessDeniedHttpException('CSRF is invalid.');
+			}
+		}
 	}
 }

@@ -95,7 +95,11 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['routing.generator'] = function($c) {
-			return new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+			$c['http.session']->start();
+			$generator = new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+			$generator->setCsrfSecrets($c['http.session']->getId(), \Message\Cog\Routing\Route::CSRF_SECRET);
+			
+			return $generator;
 		};
 
 		// Service for the templating delegation engine
