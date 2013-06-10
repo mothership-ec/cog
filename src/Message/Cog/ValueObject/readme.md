@@ -62,18 +62,16 @@ It is possible to remove the "deleted" metadata by calling the `restore` method.
 This class is used to work out whether a given date falls between a given date range. The class also has methods to work out the interval between the start and end periods.
 At least one date must be passed through when instantiating the class like so:
 
-```
-$from = new DateTime('-1 hour');
-$to = new DateTime('-10 minutes');
+	$from = new DateTime('-1 hour');
+	$to = new DateTime('-10 minutes');
 
-// The following will work
-$dateRange = new DateRange($from, $to);
-$dateRange = new DateRange(null, $to);
-$dateRange = new DateRange($from, null);
+	// The following will work
+	$dateRange = new DateRange($from, $to);
+	$dateRange = new DateRange(null, $to);
+	$dateRange = new DateRange($from, null);
 
-// This will throw an exception
-$dateRange = new DateRange;
-```
+	// This will throw an exception
+	$dateRange = new DateRange;
 
 The following methods are public:
 
@@ -83,14 +81,15 @@ The following methods are public:
 
 If you `echo` out the DateRange object, then a full timestamp of the range will be displayed:
 
-```
-$from = new DateTime('-10 minutes');
-$to = new DateTime('+10 minutes');
-$dateRange = new DateRange($from, $to);
+	$from = new DateTime('-10 minutes');
+	$to = new DateTime('+10 minutes');
+	$dateRange = new DateRange($from, $to);
 
-echo $dateRange; // 2013-05-15T12:24:10+00:00 - 2013-05-15T12:44:10+00:00
+	echo $dateRange; // 2013-05-15T12:24:10+00:00 - 2013-05-15T12:44:10+00:00
 
-```
+## DateTimeImmutable
+
+This is a fallback for the [core `\DateTimeImmutable` object](http://www.php.net/manual/en/class.datetimeimmutable.php) which is only available in PHP 5.5. It can be removed once Cog's required PHP version is >=5.5.
 
 ## Slug
 

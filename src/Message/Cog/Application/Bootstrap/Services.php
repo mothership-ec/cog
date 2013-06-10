@@ -158,9 +158,16 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$serviceContainer['http.session'] = $serviceContainer->share(function() {
+		$serviceContainer['http.session'] = $serviceContainer->share(function($c) {
+			$storage = new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+
+			// Use an array as the session storage when running unit tests
+			if ('test' === $c['env']) {
+				$storage = new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+			}
+
 			return new \Symfony\Component\HttpFoundation\Session\Session(
-				null,
+				$storage,
 				null,
 				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag('__cog_flashes')
 			);

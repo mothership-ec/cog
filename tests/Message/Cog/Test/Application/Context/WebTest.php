@@ -14,6 +14,13 @@ class WebTest extends \PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		$this->_container = new FauxContainer;
+
+		$fragmentHandler = $this->getMock('Symfony\Component\HttpKernel\Fragment\FragmentHandler');
+
+		$this->_container['http.fragment_handler'] = function() use ($fragmentHandler) {
+			return $fragmentHandler;
+		};
+
 		$this->_context   = new Web($this->_container);
 	}
 

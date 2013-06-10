@@ -3,15 +3,14 @@
 namespace Message\Cog\Test\ValueObject;
 
 use Message\Cog\ValueObject\Authorship;
-
-use DateTime;
+use Message\Cog\ValueObject\DateTimeImmutable;
 
 class AuthorshipTest extends \PHPUnit_Framework_TestCase
 {
 	public function testCreating()
 	{
 		$authorship = new Authorship;
-		$timestamp  = new DateTime('10 minutes ago');
+		$timestamp  = new DateTimeImmutable('10 minutes ago');
 		$author     = 5;
 
 		$this->assertNull($authorship->createdAt());
@@ -34,7 +33,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$createdBy = $authorship->createdBy();
 
 		try {
-			$authorship->create(new DateTime('now'), 65);
+			$authorship->create(new DateTimeImmutable('now'), 65);
 		}
 		catch (\LogicException $e) {
 			$this->assertEquals($createdAt, $authorship->createdAt());
@@ -49,7 +48,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 	public function testUpdating()
 	{
 		$authorship = new Authorship;
-		$timestamp  = new DateTime('1 day ago');
+		$timestamp  = new DateTimeImmutable('1 day ago');
 		$author     = 'Joe Holdcroft';
 
 		$this->assertNull($authorship->updatedAt());
@@ -68,7 +67,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testUpdatingMultipleTimes($authorship)
 	{
-		$timestamp = new DateTime('+2 minutes');
+		$timestamp = new DateTimeImmutable('+2 minutes');
 		$author    = 'Danny Hannah';
 
 		$authorship->update($timestamp, $author);
@@ -80,7 +79,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 	public function testDeleting()
 	{
 		$authorship = new Authorship;
-		$timestamp  = new DateTime('-639 minutes');
+		$timestamp  = new DateTimeImmutable('-639 minutes');
 		$author     = new \stdClass;
 
 		$this->assertNull($authorship->deletedAt());
@@ -107,7 +106,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$deletedBy = $authorship->deletedBy();
 
 		try {
-			$authorship->delete(new DateTime('now'), 'Test McTester');
+			$authorship->delete(new DateTimeImmutable('now'), 'Test McTester');
 		}
 		catch (\LogicException $e) {
 			$this->assertEquals($deletedAt, $authorship->deletedAt());
@@ -162,7 +161,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 
 		$authorship = new Authorship;
 
-		$authorship->create(new DateTime('3 April 2013 09:30'), 'Joe');
+		$authorship->create(new DateTimeImmutable('3 April 2013 09:30'), 'Joe');
 
 		echo $authorship;
 	}
@@ -177,8 +176,8 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$authorship = new Authorship;
 
 		$authorship
-			->create(new DateTime('24 January 1991 23:55'), 'Jimbo')
-			->update(new DateTime('13 May 2013 13:45'), 'James');
+			->create(new DateTimeImmutable('24 January 1991 23:55'), 'Jimbo')
+			->update(new DateTimeImmutable('13 May 2013 13:45'), 'James');
 
 		echo $authorship;
 	}
@@ -194,9 +193,9 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$authorship = new Authorship;
 
 		$authorship
-			->create(new DateTime('17 February 2000 18:00'), 'Tester')
-			->update(new DateTime('26 March 2005 16:00'), 'Someone else')
-			->delete(new DateTime('4 September 2014 04:00'), 'Danny');
+			->create(new DateTimeImmutable('17 February 2000 18:00'), 'Tester')
+			->update(new DateTimeImmutable('26 March 2005 16:00'), 'Someone else')
+			->delete(new DateTimeImmutable('4 September 2014 04:00'), 'Danny');
 
 		echo $authorship;
 	}
@@ -207,7 +206,7 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 
 		$authorship = new Authorship;
 
-		$authorship->update(new DateTime('1 January 2010 12:30'), 'Jamie');
+		$authorship->update(new DateTimeImmutable('1 January 2010 12:30'), 'Jamie');
 
 		echo $authorship;
 	}

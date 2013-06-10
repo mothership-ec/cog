@@ -67,6 +67,9 @@ class ViewNameParser extends TemplateNameParser
 			// Parse the new reference
 			$parsed = $this->_parser->parse($newReference);
 		}
+		else if (!$parsed->isRelative()) {
+			$this->_lastAbsoluteModule = $parsed->getModuleName();
+		}
 
 		// Get the base file name from the reference parser
 		$baseFileName = $parsed->getFullPath('View');
@@ -80,10 +83,6 @@ class ViewNameParser extends TemplateNameParser
 				// Check if a view file exists for this format and this engine
 				$fileName = $baseFileName . '.' . $format . '.' . $engine;
 				if (file_exists($fileName)) {
-					// If the reference was absolute, save it for later use
-					if (!$parsed->isRelative()) {
-						$this->_lastAbsoluteModule = $parsed->getModuleName();
-					}
 					return new TemplateReference($fileName, $engine);
 				}
 			}
