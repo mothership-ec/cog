@@ -98,9 +98,8 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
 		};
 
-		// Service for the templating delegation engine
-		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
-			$viewNameParser = new \Message\Cog\Templating\ViewNameParser(
+		$serviceContainer['templating.view_name_parser'] = function($c) {
+			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
 				$c['reference_parser'],
 				array(
@@ -108,12 +107,11 @@ class Services implements ServicesInterface
 					'php',
 				)
 			);
-			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
-				$c['http.fragment_handler'],
-				$c['reference_parser']
-			);
+		};
+
+		$serviceContainer['templating.twig_environment'] = $serviceContainer->share(function($c) {
 			$twigEnvironment = new \Twig_Environment(
-				new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
+				new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']),
 				array(
 					#'cache' => 'cog://tmp',
 					'auto_reload' => true,
@@ -123,25 +121,43 @@ class Services implements ServicesInterface
 			$twigEnvironment->addGlobal('flashes', $c['http.session']->getFlashBag()->all());
 			$twigEnvironment->addGlobal('cfg', $c['cfg']);
 
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.helper.actions']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 
+			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
+
+			return $twigEnvironment;
+		});
+
+		$serviceContainer['templating.helper.actions'] = function($c) {
+			return new \Message\Cog\Templating\Helper\Actions(
+				$c['http.fragment_handler'],
+				$c['reference_parser']
+			);
+		};
+
+		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\TwigEngine(
+				$c['templating.twig_environment'],
+				$c['templating.view_name_parser']
+			);
+		});
+
+		// Service for the templating delegation engine
+		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
 					// Twig templating engine
-					new \Message\Cog\Templating\TwigEngine(
-						$twigEnvironment,
-						$viewNameParser
-					),
+					$c['templating.engine.twig'],
 					// Plain PHP templating engine
 					new \Message\Cog\Templating\PhpEngine(
-						$viewNameParser,
+						$c['templating.view_name_parser'],
 						new \Symfony\Component\Templating\Loader\FilesystemLoader(
 							$c['app.loader']->getBaseDir()
 						),
 						array(
 							new \Symfony\Component\Templating\Helper\SlotsHelper,
-							$actionsHelper,
+							$c['templating.helper.actions'],
 							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 						)
 					),
@@ -305,6 +321,31 @@ class Services implements ServicesInterface
 
 		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
+		});
+
+
+
+
+		$serviceContainer['asset.manager'] = $serviceContainer->share(function($c) {
+			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
+				'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig_environment']),
+			));
+
+			$c['asset.factory']->setAssetManager($manager);
+
+			return $manager;
+		});
+
+		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
+			$factory = new \Assetic\Factory\AssetFactory($c['app.loader']->getBaseDir());
+
+		#	$factory->setAssetManager($c['asset.manager']);
+
+			return $factory;
+		});
+
+		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
+			return new \Assetic\AssetWriter('cog://public');
 		});
 	}
 }

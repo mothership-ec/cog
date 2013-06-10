@@ -73,5 +73,18 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
+
+		// temporary saving of assets
+		$container = $this->_services;
+		$eventDispatcher->addListener('terminate', function() use ($container) {
+			foreach ($container['templating.engine.twig']->templates as $template) {
+				$container['asset.manager']->addResource(new \Assetic\Extension\Twig\TwigResource(
+					$container['templating.twig_environment']->getLoader(),
+					$template
+				), 'twig');
+			}
+
+			$container['asset.writer']->writeManagerAssets($container['asset.manager']);
+		});
 	}
 }

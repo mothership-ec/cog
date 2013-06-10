@@ -23,6 +23,8 @@ class TwigEngine implements EngineInterface, StreamingEngineInterface
 	protected $_twig;
 	protected $_parser;
 
+	public $templates = array();
+
 	/**
 	 * Constructor.
 	 *
@@ -110,7 +112,11 @@ class TwigEngine implements EngineInterface, StreamingEngineInterface
 		}
 
 		try {
-			return $this->_twig->loadTemplate($name);
+			$template = $this->_twig->loadTemplate($name);
+
+			$this->templates[$name] = $name;
+
+			return $template;
 		}
 		catch (Twig_Error_Loader $e) {
 			throw new InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
