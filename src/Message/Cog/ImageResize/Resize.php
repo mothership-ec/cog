@@ -150,7 +150,8 @@ class Resize
 	{
 		$params = explode('-', $paramString);
 
-		// ensure we specify a size
+		// Ensure we specify a size. 
+		// This matches sizes like 600x400 or 900xAUTO or AUTOx300
 		$regex = "/^([0-9]+?|".preg_quote(self::AUTO_KEYWORD).")x([0-9]+?|".preg_quote(self::AUTO_KEYWORD).")$/u";
 		if(!preg_match($regex, $params[0], $matches)) {
 			throw new \Exception('Bad dimensions.');
