@@ -48,6 +48,14 @@ class EventListener extends BaseListener implements SubscriberInterface
 		);
 	}
 
+	/**
+	 * Checks if the matched route has had CSRF protection enabled. If it 
+	 * does then it checks that the hash is present and correct.
+	 *
+	 * @param  GetResponseEvent $event The incoming response
+	 *
+	 * @return void
+	 */
 	public function checkCsrf(GetResponseEvent $event)
 	{
 		$attributes = $event->getRequest()->attributes;

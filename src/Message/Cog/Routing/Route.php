@@ -38,16 +38,39 @@ class Route extends \Symfony\Component\Routing\Route
 		return $this->setDefault('_format', $format);
 	}
 
+	/**
+	 * Enables CSRF protection for this route. When enabled a hash must be passed
+	 * in as one of the parameters in the URL.
+	 *
+	 * @param  string $parameterName The name of the parameter to treat as a hash
+	 *
+	 * @return Route 	Returns $this for chainability
+	 */
 	public function enableCsrf($parameterName)
 	{
 		return $this->setDefault(self::CSRF_ATTRIBUTE_NAME, $parameterName);
 	}
 
+	/**
+	 * Disables CSRF protection (if it was enabled with enableCsrf in the past)
+	 *
+	 * @return Route Returns $this for chainability
+	 */
 	public function disableCsrf()
 	{
 		return $this->setDefault(self::CSRF_ATTRIBUTE_NAME, null);
 	}
 
+	/**
+	 * Generate the CSRF token for this route.
+	 *
+	 * @param  string $routeName The name of the route as it's stored in the collection
+	 * @param  array $params     The parameters required for this route
+	 * @param  string $sessionId A unique session ID for the current user
+	 * @param  string $pepper    An installation unique salt for more randomness / security
+	 *
+	 * @return string            The generated token as a 40 character hex string.
+	 */
 	public function getCsrfToken($routeName, $params, $sessionId, $pepper)
 	{
 		$csrfKey = $this->getDefault(self::CSRF_ATTRIBUTE_NAME);
@@ -63,9 +86,6 @@ class Route extends \Symfony\Component\Routing\Route
 				$parts[] = $key.'=>'.$param;
 			}
 		}
-
-	//	var_dump($parts, $pepper, $routeName, $csrfKey, hash_hmac('sha1', implode('|', $parts), $pepper));
-	//	exit;
 
 		return hash_hmac('sha1', implode('|', $parts), $pepper);
 	}
