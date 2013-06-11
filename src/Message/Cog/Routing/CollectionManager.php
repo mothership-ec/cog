@@ -206,7 +206,7 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		$exists = isset($this->_collections[$name]);
 
 		if(!$exists && $create) {
-			$this->_collections[$name] = new RouteCollection($this->_referenceParser);
+			$this->_collections[$name] = new RouteCollection($this->_referenceParser, $name);
 		}
 
 		return $exists;
