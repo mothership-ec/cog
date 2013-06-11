@@ -39,7 +39,7 @@
 		"twig/twig"                    : "1.13.*",
 		"symfony/filesystem"           : "2.2.*",
 		"symfony/finder"               : "2.2.*",
-		"symfony/twig-bundle"          : "2.2.*",
+		"symfony/twig-bridge"          : "2.3.*",
 		"pimple/pimple"                : "1.0.1",
 		"mtdowling/cron-expression"    : "1.0.*",
 		"treasure-chest/treasure-chest": "0.1.*"

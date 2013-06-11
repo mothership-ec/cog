@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Message\Cog\Form;
+namespace Message\Cog\Templating\Twig\Extension;
 
 use Message\Cog\Form\Twig\Theme\TokenParser;
 use Message\Cog\Form\Template\Twig\RendererInterface;
@@ -24,7 +24,7 @@ use Symfony\Component\Form\Extension\Core\View\ChoiceView;
  *
  * @author Thomas Marchant
  */
-class Twig extends \Twig_Extension
+class Form extends \Twig_Extension
 {
     /**
      * This property is public so that it can be accessed directly from compiled
@@ -64,12 +64,12 @@ class Twig extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'form_enctype' => new \Twig_Function_Node('Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
-            'form_widget'  => new \Twig_Function_Node('Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
-            'form_errors'  => new \Twig_Function_Node('Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
-            'form_label'   => new \Twig_Function_Node('Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
-            'form_row'     => new \Twig_Function_Node('Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
-            'form_rest'    => new \Twig_Function_Node('Symfony\Bridge\Twig\Node\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
+            'form_enctype' => new \Twig_Function_Node('Message\Cog\Form\Twig\Theme\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
+            'form_widget'  => new \Twig_Function_Node('Message\Cog\Form\Twig\Theme\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
+            'form_errors'  => new \Twig_Function_Node('Message\Cog\Form\Twig\Theme\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
+            'form_label'   => new \Twig_Function_Node('Message\Cog\Form\Twig\Theme\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
+            'form_row'     => new \Twig_Function_Node('Message\Cog\Form\Twig\Theme\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
+            'form_rest'    => new \Twig_Function_Node('Message\Cog\Form\Twig\Theme\SearchAndRenderBlockNode', array('is_safe' => array('html'))),
             'csrf_token'   => new \Twig_Function_Method($this, 'renderer->renderCsrfToken'),
         );
     }

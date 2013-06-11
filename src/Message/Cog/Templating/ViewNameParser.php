@@ -58,6 +58,7 @@ class ViewNameParser extends TemplateNameParser
 			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
 			return new TemplateReference($baseFileName.'.html.php', 'php');
 		}elseif (preg_match("/^@form.twig:_?(.*)\\..*\\..*$/u", $reference, $matches)){
+			die('here');
 		}
 		// Get the base file name from the reference parser
 		$baseFileName = $this->_parser->parse($reference)->getFullPath('View');

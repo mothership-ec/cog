@@ -127,6 +127,7 @@ class Services implements ServicesInterface
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Form($c['form.renderer.twig']));
 
 			return $twigEnvironment;
 		});
@@ -142,8 +143,8 @@ class Services implements ServicesInterface
 				),
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
-				//	$c['templating.actions_helper'],
-				//	new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
+					$c['templating.actions_helper'],
+					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 				)
 			);
 		});
@@ -332,20 +333,22 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.helper.twig'] = function($c) {
-			$engine = $c['templating.engine.twig'];
-die('here');
+//			$engine = $c['form.engine.twig'];
+
 			$formHelper = new \Message\Cog\Form\Template\Helper(
-				new \Symfony\Component\Form\FormRenderer(
-					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
-						$engine,
-						array('@form.twig')
-					),
-					null
-				)
+				$c['form.renderer.twig']
 			);
 
 			return $formHelper;
 
+		};
+
+		$serviceContainer['form.renderer.twig'] = function($c) {
+			return new \Symfony\Bridge\Twig\Form\TwigRenderer($c['form.engine.twig']);
+		};
+
+		$serviceContainer['form.engine.twig'] = function($c) {
+			return new \Symfony\Bridge\Twig\Form\TwigRendererEngine;
 		};
 
 		// Validator
