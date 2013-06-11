@@ -2,6 +2,8 @@
 
 namespace Message\Cog\ImageResize\Bootstrap;
 
+use Message\Cog\ImageResize\Resize\TwigExtension;
+
 use Message\Cog\Bootstrap\ServicesInterface;
 
 class Services implements ServicesInterface
@@ -28,12 +30,15 @@ class Services implements ServicesInterface
 		};
 
 		$container['image.resize'] = $container->share(function($c) {
-			return new \Message\Cog\ImageResize\Resize(
+			$resize = new \Message\Cog\ImageResize\Resize(
 				$c['imagine'],
 				$c['routing.generator'],
 				Services::ROUTE_NAME,
 				Services::SALT
 			);
+			$resize->setDefaultQuality(90);
+
+			return $resize;
 		});
 	}
 }

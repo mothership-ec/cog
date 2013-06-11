@@ -1,9 +1,8 @@
 <?php
 
-namespace Message\Cog\Templating\Helper;
+namespace Message\Cog\ImageResize\Templating;
 
 use Message\Cog\ImageResize\Resize;
-
 use Symfony\Component\Templating\Helper\Helper;
 
 /**
@@ -11,7 +10,7 @@ use Symfony\Component\Templating\Helper\Helper;
  *
  * @author James Moss <james@message.co.uk>
  */
-class ImageResize extends Helper
+class PhpHelper extends Helper
 {
 	protected $_resize;
 

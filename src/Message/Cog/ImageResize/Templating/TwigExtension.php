@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Templating\Twig\Extension;
+namespace Message\Cog\ImageResize\Templating;
 
 use Message\Cog\ImageResize\Resize;
 
@@ -9,7 +9,7 @@ use Message\Cog\ImageResize\Resize;
  *
  * @author James Moss <james@message.co.uk>
  */
-class ImageResize extends \Twig_Extension
+class TwigExtension extends \Twig_Extension
 {
 	protected $_resize;
 

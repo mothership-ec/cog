@@ -17,11 +17,11 @@ class Resize
 {
 	const DIMENSION_AUTO = 9999;
 	const AUTO_KEYWORD   = 'AUTO';
-	const QUALITY = 90;
 
 	protected $_imagine;
 	protected $_generator;
 	protected $_salt;
+	protected $_defaultQuality = 90;
 
 	/**
 	 * Constructor
@@ -87,6 +87,9 @@ class Resize
 		$savedRaw = new File($saved->getRealPath());
 		$fs       = new Filesystem;
 		
+		var_dump($saved);
+		var_dump($savedRaw->getRealPath(), $savedRaw->getPath());
+
 		$fs->mkdir($savedRaw->getPath(), 0777);
 	//	$fs->chmod($savedRaw->getPath(), 0777, 0777, true);
 
@@ -95,6 +98,10 @@ class Resize
 		} else {
 			$mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
 		}
+
+		var_dump($saved->getRealPath());
+
+
 
 		$box = new \Imagine\Image\Box($params['width'], $params['height']);
 		$image = $this->_imagine
@@ -137,6 +144,16 @@ class Resize
 		$hash = $this->_makeHash($path, $ext, $params);
 
 		return $this->_cacheDir.'/'.$parts['dirname'].'/'.rawurlencode($parts['filename']).'_'.$params.'-'.$hash.$ext;
+	}
+
+	/**
+	 * Sets the default image quality when saving an image
+	 *
+	 * @param int $quality A value between 0 and 100 representing the quality level.
+	 */
+	public function setDefaultQuality($quality)
+	{
+		$this->_defaultQuality = (int)$quality;
 	}
 
 	/**
