@@ -2,7 +2,6 @@
 
 namespace Message\Cog\ValueObject;
 
-use DateTimeImmutable;
 use DateInterval;
 
 /**
