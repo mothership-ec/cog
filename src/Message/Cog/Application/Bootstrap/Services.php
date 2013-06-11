@@ -127,7 +127,7 @@ class Services implements ServicesInterface
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Form($c['form.renderer.twig']));
+			$twigEnvironment->addExtension(new \Symfony\Bridge\Twig\Extension\FormExtension($c['form.renderer.twig']));
 
 			return $twigEnvironment;
 		});

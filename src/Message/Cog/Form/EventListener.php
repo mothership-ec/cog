@@ -32,7 +32,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			$this->_services['form.helper.php']
 		));
 
-		var_dump($this->_services['form.helper.twig']);
+		$this->_services['form.renderer.twig'];
 
 	}
 }
