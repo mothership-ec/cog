@@ -44,7 +44,6 @@ class RouteCollection
 		$reference = $this->_referenceParser->parse($controller);
 		$defaults  = array(
 			'_controller'      => $reference->getSymfonyLogicalControllerName(),
-			'_routeCollection' => $this->_name,
 		);
 		$route     = new Route($url, $defaults);
 

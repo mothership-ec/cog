@@ -107,6 +107,31 @@ class CollectionManagerTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('\\Message\\Cog\\Routing\\RouteCollection', $result);
 	}
 
+	public function testCompilingRouteCollectionNames()
+	{
+		$route1 = $this->_collection->add('core.homepage', '/', '::Controller:Test#login');
+		$this->_collection['orders']->setParent('admin')->setPrefix('/orders');
+		$route2 = $this->_collection['orders']->add('core.bob', '/another', '::Controller:Test#another');
+		$route3 = $this->_collection['shipping']->setParent('refunds')->add('shipping.list', '/shipping', '::Controller:Shipping#another');
+		$this->_collection['admin']->setPrefix('/admin')->add('core.more', '/more', '::Controller:Test#more');
+		$this->_collection['refunds']->setParent('orders')->add('refunds.list', '/refunds', '::Controller:Refunds#another');
+		$route4 = $this->_collection['gifts']->setParent('refunds')->add('gifts.list', '/gifts', '::Controller:Shipping#another');
+
+		$this->_collection->compileRoutes();
+
+		$defaults = $route1->getDefaults();
+		$this->assertSame($defaults['_route_collections'], array('default'));
+
+		$defaults = $route2->getDefaults();
+		$this->assertSame($defaults['_route_collections'], array('admin', 'orders'));
+
+		$defaults = $route3->getDefaults();
+		$this->assertSame($defaults['_route_collections'], array('admin', 'orders', 'refunds', 'shipping'));
+
+		$defaults = $route4->getDefaults();
+		$this->assertSame($defaults['_route_collections'], array('admin', 'orders', 'refunds', 'gifts'));
+	}
+
 	/**
 	 * @expectedException \Exception
 	 */
