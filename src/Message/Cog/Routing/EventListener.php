@@ -10,6 +10,8 @@ use Message\Cog\Event\EventListener as BaseListener;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+use Symfony\Component\HttpKernel\KernelEvents;
+
 /**
  * Event listener for the Routing component.
  *
@@ -23,7 +25,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			'modules.load.success' => array(
 				array('mountRoutes'),
 			),
-			'kernel.request' => array(
+			KernelEvents::REQUEST => array(
 				array('checkCsrf'),
 			),
 		);
@@ -64,13 +66,14 @@ class EventListener extends BaseListener implements SubscriberInterface
 			$routeName = $attributes->get('_route');
 			$route     = $this->_services['routes.compiled']->get($routeName);
 
+			// Ensure that the session is started before we try to get it's ID.
 			$this->_services['http.session']->start();
 
 			$calculatedHash = $route->getCsrfToken(
 				$routeName,
 				$attributes->get('_route_params'),
 				$this->_services['http.session']->getId(),
-				Route::CSRF_SECRET
+				$this->_services['routing.csrf_secret']
 			);
 
 			if($attributes->get($csrfKey) !== $calculatedHash) {

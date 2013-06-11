@@ -5,7 +5,6 @@ namespace Message\Cog\Routing;
 class Route extends \Symfony\Component\Routing\Route
 {
 	const CSRF_ATTRIBUTE_NAME = '_csrf';
-	const CSRF_SECRET         = 'SECRETPEPPER';
 
 	protected $_defaultFormat = 'html';
 

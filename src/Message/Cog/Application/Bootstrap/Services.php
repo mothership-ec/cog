@@ -95,11 +95,15 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['routing.generator'] = function($c) {
-			$c['http.session']->start();
 			$generator = new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
-			$generator->setCsrfSecrets($c['http.session']->getId(), \Message\Cog\Routing\Route::CSRF_SECRET);
+			$generator->setCsrfSecrets($c['http.session'], $c['routing.csrf_secret']);
 			
 			return $generator;
+		};
+
+		// @todo - Get this out of the config  rather than hardcoding it and change it for every site
+		$serviceContainer['routing.csrf_secret'] = function($c) {
+			return 'THIS IS A SECRET DO NOT SHARE IT AROUND';
 		};
 
 		// Service for the templating delegation engine
