@@ -59,8 +59,8 @@ namespace Message\Cog\Test\Application {
 		public function getLoader($baseDir, array $methodsToMock = array())
 		{
 			$loader = $this->getMockForAbstractClass(
-				'Message\Cog\Application\Loader',
-				array($baseDir),
+				'Message\\Cog\\Application\\Loader',
+				array($baseDir, $this->getMock('Composer\\Autoload\\ClassLoader')),
 				'',
 				true,
 				true,
@@ -122,7 +122,10 @@ namespace Message\Cog\Test\Application {
 
 		public function testGetAppName()
 		{
-			$loader = new \MyTestApp\MyInitialisationModule\AppLoader('/');
+			$loader = new \MyTestApp\MyInitialisationModule\AppLoader(
+				'/', 
+				$this->getMock('Composer\\Autoload\\ClassLoader')
+			);
 
 			$this->assertEquals('MyTestApp', $loader->getAppName());
 		}
@@ -304,27 +307,6 @@ namespace Message\Cog\Test\Application {
 			$this->assertInstanceOf('Composer\Autoload\ClassLoader', $container['class.loader']);
 		}
 
-		/**
-		 * @expectedException        RuntimeException
-		 * @expectedExceptionMessage does not exist
-		 */
-		public function testAutoloaderNotFoundException()
-		{
-			$loader = $this->getLoader('/not/a/real/path');
-			$loader->initialise();
-		}
-
-		/**
-		 * @expectedException        RuntimeException
-		 * @expectedExceptionMessage is not readable
-		 */
-		public function testAutoloaderNotReadableException()
-		{
-			$this->createAutoloadFile(0333); // 0333 = none readable, all writeable & executable
-			$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-			$loader->initialise();
-		}
-
 		public function testLoadCogDefinesBaseServices()
 		{
 			$this->createAutoloadFile();
@@ -337,7 +319,7 @@ namespace Message\Cog\Test\Application {
 			$this->assertEquals($loader, $container['app.loader']);
 			$this->assertTrue($container->isShared('app.loader'));
 
-			$this->assertInstanceOf('Message\Cog\Bootstrap\LoaderInterface', $container['bootstrap.loader']);
+			$this->assertInstanceOf('Message\\Cog\\Bootstrap\\LoaderInterface', $container['bootstrap.loader']);
 		}
 
 		public function testLoadModules()
@@ -388,7 +370,7 @@ namespace Message\Cog\Test\Application {
 			// Force the context to change
 			$container['environment']->setContext('web');
 
-			$contextMock = $this->getMock('Message\Cog\Test\Application\Context\FauxContext');
+			$contextMock = $this->getMock('Message\\Cog\\Test\\Application\\Context\\FauxContext');
 
 			$contextMock
 				->expects($this->exactly(1))
@@ -405,7 +387,7 @@ namespace Message\Cog\Test\Application {
 			$this->assertEquals($contextReturnVal, $returnVal);
 
 			// Assert 'terminate' event fired
-			$this->assertInstanceOf('Message\Cog\Event\Event', $dispatcher->getDispatchedEvent('terminate'));
+			$this->assertInstanceOf('Message\\Cog\\Event\\Event', $dispatcher->getDispatchedEvent('terminate'));
 		}
 
 		public function testChainability()
