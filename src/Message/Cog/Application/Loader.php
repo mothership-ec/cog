@@ -8,6 +8,8 @@ use Message\Cog\Service\Container as ServiceContainer;
 use RuntimeException;
 use LogicException;
 
+use Composer\Autoload\ClassLoader;
+
 /**
  * Cog application loader.
  *
@@ -36,9 +38,10 @@ abstract class Loader
 	 *
 	 * @param string $baseDir Absolute path to the installation base directory
 	 */
-	public function __construct($baseDir)
+	public function __construct($baseDir, ClassLoader $autoloader)
 	{
-		$this->_baseDir = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$this->_baseDir    = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$this->_autoloader = $autoloader;
 	}
 
 	/**
@@ -135,21 +138,16 @@ abstract class Loader
 	public function initialise()
 	{
 		$this->_setDefaults();
-		$this->_includeAutoloader();
 
 		// Create the service container if not already created
 		if (!isset($this->_services)) {
 			$this->setServiceContainer(ServiceContainer::instance());
 		}
 
+		$autoloader = $this->_autoloader;
 		// Set up service definition for Composer autoloader class
-		$this->_services['class.loader'] = $this->_services->share(function() {
-			// Bit hacky but the only clean way to do this at the moment
-			foreach (get_declared_classes() as $className) {
-				if ('ComposerAutoloaderInit' === substr($className, 0, 22)) {
-					return $className::getLoader();
-				}
-			}
+		$this->_services['class.loader'] = $this->_services->share(function() use ($autoloader) {
+			return $autoloader;
 		});
 
 		return $this;
@@ -252,30 +250,6 @@ abstract class Loader
 		);
 
 		return $return;
-	}
-
-	/**
-	 * Include the Composer autoloader.
-	 *
-	 * This is determined by looking for the `vendor` directory within the
-	 * defined base directory, and the file `autoload.php` within that.
-	 *
-	 * @throws RuntimeException If the autoloader file can't be found
-	 * @throws RuntimeException If the autoloader file is not readable
-	 */
-	protected function _includeAutoloader()
-	{
-		$autoloadPath = $this->_baseDir . 'vendor/autoload.php';
-
-		if (!file_exists($autoloadPath)) {
-			throw new RuntimeException(sprintf('Autoloader file at `%s` does not exist. Is the base directory set correctly?', $autoloadPath));
-		}
-
-		if (!is_readable($autoloadPath)) {
-			throw new RuntimeException(sprintf('Autoloader file at `%s` is not readable.', $autoloadPath));
-		}
-
-		require_once $this->_baseDir . 'vendor/autoload.php';
 	}
 
 	/**

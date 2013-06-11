@@ -37,11 +37,17 @@ class Console implements ContextInterface
 			return $console;
 		});
 
-		// Set the environment from the CLI option, if defined
-		$input = new ArgvInput(null, $console->getDefinition());
-		if($env = $input->getOption(Factory::ENV_OPT_NAME)) {
-			$this->_services['environment']->set(trim($env));
+		$input = new ArgvInput();
+		if($env   = $input->getParameterOption(array('--env', '-e'), '')) {
+			$this->_services['environment']->set($env);
 		}
+
+		// Setup a fake request context
+		$this->_services['http.request.context'] = function($c) {
+			$context = new \Message\Cog\Routing\RequestContext;
+
+			return $context;
+		};
 	}
 
 	/**
