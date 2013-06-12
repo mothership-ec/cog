@@ -2,11 +2,13 @@
 
 namespace Message\Cog\Localisation;
 
-
 /**
  * Locale class
  *
- * Represents a locale in Cog
+ * Represents a locale in Cog.
+ *
+ * @see  https://en.wikipedia.org/wiki/IETF_language_tag
+ * @see  https://tools.ietf.org/html/rfc5646
  */
 class Locale
 {

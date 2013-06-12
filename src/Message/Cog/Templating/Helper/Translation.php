@@ -9,6 +9,8 @@ use Symfony\Component\Translation\TranslatorInterface;
  * Translation
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @see  https://github.com/symfony/FrameworkBundle/blob/master/Templating/Helper/TranslatorHelper.php
  */
 class Translation extends Helper
 {

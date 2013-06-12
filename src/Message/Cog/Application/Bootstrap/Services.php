@@ -297,7 +297,9 @@ class Services implements ServicesInterface
 
 		// Hardcode to en_GB for the moment. In the future this can be determined
 		// from properties on the route or the session object
-		$serviceContainer['locale'] = new \Message\Cog\Localisation\Locale('en_GB');
+		$serviceContainer['locale'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Localisation\Locale('en_GB');
+		});
 
 		$serviceContainer['translator'] = $serviceContainer->share(function ($c) {
 			$selector = new \Message\Cog\Localisation\MessageSelector;
