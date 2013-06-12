@@ -96,3 +96,20 @@ By default collections are mounted at '/', but you can choose to mount them with
 	$manager['blog']->setPrefix('/blog');
 
 This will prefix all routes URLs in the `blog` collection with `/blog`. In the example above to access the `Message:Blog::Comments#view` controller you'd visit /blog/comments in your browser.
+
+## Built in CSRF protection
+
+You can enable URL based CSRF protection by including a token in your URL pattern to represent the
+hash and then call `enableCsrf()` and pass in the name of the token like so:
+
+	$manager->add('post.delete', '/posts/{id}/delete/{csrfHash}', 'Post#delete')->enableCsrf('csrfHash');
+
+When you call `generateUrl()` the hash parameter is automatically created for you. In the example above you'd do something like this in your template:
+
+	<a href="{{ url('post.delete', {id => 5})">delete</a>
+
+Which would output
+
+	<a href="/posts/5/delete/3fbaa8055cbaa8cfa147c2d944a6df4926e69904">delete</a>
+
+When you access a route that has CSRF protection enabled an event listener fires (on `kernel.request`). It automatically checks that the hash is correct and will thrown an `AccessDeniedHttpException` exception if it isnt.
