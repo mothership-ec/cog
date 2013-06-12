@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d92f205a257a5c1f53473ccb4c204886",
+    "hash": "22f32030f32a21b914ca9bc849186ba5",
     "packages": [
         {
             "name": "imagine/imagine",
@@ -179,26 +179,37 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.1.11",
+            "version": "v2.3.1",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "v2.1.11"
+                "reference": "v2.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/v2.1.11",
-                "reference": "v2.1.11",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/v2.3.1",
+                "reference": "v2.3.1",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3"
             },
+            "require-dev": {
+                "symfony/event-dispatcher": ">=2.1,<3.0"
+            },
+            "suggest": {
+                "symfony/event-dispatcher": ""
+            },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
-                    "Symfony\\Component\\Console": ""
+                    "Symfony\\Component\\Console\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -217,21 +228,21 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2013-05-26 18:42:07"
+            "time": "2013-06-11 07:15:14"
         },
         {
             "name": "symfony/debug",
-            "version": "v2.3.0",
+            "version": "v2.3.1",
             "target-dir": "Symfony/Component/Debug",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Debug.git",
-                "reference": "v2.3.0"
+                "reference": "v2.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Debug/zipball/v2.3.0",
-                "reference": "v2.3.0",
+                "url": "https://api.github.com/repos/symfony/Debug/zipball/v2.3.1",
+                "reference": "v2.3.1",
                 "shasum": ""
             },
             "require": {
@@ -420,17 +431,17 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v2.3.0",
+            "version": "v2.3.1",
             "target-dir": "Symfony/Component/HttpFoundation",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpFoundation.git",
-                "reference": "v2.3.0-RC1"
+                "reference": "v2.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.3.0-RC1",
-                "reference": "v2.3.0-RC1",
+                "url": "https://api.github.com/repos/symfony/HttpFoundation/zipball/v2.3.1",
+                "reference": "v2.3.1",
                 "shasum": ""
             },
             "require": {

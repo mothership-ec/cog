@@ -20,7 +20,7 @@ class Factory
 	{
 		$app = new Application;
 
-		$app->getDefinition()->addOption(new InputOption('--' . self::ENV_OPT_NAME, '-e', InputOption::VALUE_OPTIONAL, 'The Environment name.'));
+		$app->getDefinition()->addOption(new InputOption('--' . self::ENV_OPT_NAME, '', InputOption::VALUE_OPTIONAL, 'The Environment name.'));
 
 		// Setup the default commands
 		$app->add(new Command\ModuleGenerate);

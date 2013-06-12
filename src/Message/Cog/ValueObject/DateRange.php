@@ -18,10 +18,10 @@ class DateRange
 	/**
 	 * Constructor.
 	 *
-	 * @param DateTimeImmutable|null $from Starting timestamp, null for infinite past
-	 * @param DateTimeImmutable|null $to   Ending timestamp, null for infinite future
+	 * @param \DateTime|null $from Starting timestamp, null for infinite past
+	 * @param \DateTime|null $to   Ending timestamp, null for infinite future
 	 */
-	public function __construct(DateTimeImmutable $from = null, DateTimeImmutable $to = null)
+	public function __construct(\DateTime $from = null, \DateTime $to = null)
 	{
 		if (!$from && !$to) {
 			throw new \LogicException('Date range could not be instantiated: at least one date must be provided');
@@ -34,15 +34,15 @@ class DateRange
 	/**
 	 * Check whether a given date & time falls within the date range.
 	 *
-	 * @param DateTimeImmutable|null  $datetime The date & time to check, null for
+	 * @param \DateTime|null  $datetime The date & time to check, null for
 	 *                                 current date & time
 	 *
 	 * @return boolean                 True if the date & time is in the range
 	 */
-	public function isInRange(DateTimeImmutable $datetime = null)
+	public function isInRange(\DateTime $datetime = null)
 	{
 		if (!$datetime) {
-			$datetime = new DateTimeImmutable;
+			$datetime = new \DateTime;
 		}
 
 		// If there is not a start date, ensure that the given timestamp is less than
@@ -64,16 +64,16 @@ class DateRange
 	 * Get the period between a given date & time and the start of the date
 	 * range, represented as an instance of `DateInterval`.
 	 *
-	 * @param DateTimeImmutable|null  $datetime The date & time to use, null for
+	 * @param \DateTime|null  $datetime The date & time to use, null for
 	 *                                 current date & time
 	 *
 	 * @return DateInterval            The interval between the supplied date &
 	 *                                 time and the start of this date range
 	 */
-	public function getIntervalToStart(DateTimeImmutable $datetime = null)
+	public function getIntervalToStart(\DateTime $datetime = null)
 	{
 		if (!$datetime) {
-			$datetime = new DateTimeImmutable;
+			$datetime = new \DateTime;
 		}
 
 		if (!$this->_start) {
@@ -93,10 +93,10 @@ class DateRange
 	 * @return DateInterval            The interval between the supplied date &
 	 *                                 time and the end of this date range
 	 */
-	public function getIntervalToEnd(DateTimeImmutable $datetime = null)
+	public function getIntervalToEnd(\DateTime $datetime = null)
 	{
 		if (!$datetime) {
-			$datetime = new DateTimeImmutable;
+			$datetime = new \DateTime;
 		}
 
 		if (!$this->_end) {

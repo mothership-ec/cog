@@ -35,31 +35,41 @@ class ServicesList extends Command
 		$output->getFormatter()->setStyle('bold', new OutputFormatterStyle(null, null, array('bold')));
 		$term = $input->getArgument('search_term');
 
-		$services = ServiceContainer::instance()->getAll();
+		$container = ServiceContainer::instance();
+
+		$services = $container->keys();
+		$result = array();
 		ksort($services);
 
-		foreach($services as $name => &$service) {
-			$result = ServiceContainer::get($name);
+		foreach($services as $name) {
+			try {
+				$serviceResult = $container[$name];
 
-			if(is_object($result)) {
-				$service = get_class($result);
-			} else {
-				$service = gettype($result) . '(' . var_export($result, true) . ')';
+				if(is_object($serviceResult)) {
+					$service = get_class($serviceResult);
+				} else {
+					$service = gettype($serviceResult) . '(' . var_export($serviceResult, true) . ')';
+				}
+
+				if(strlen($term) && strpos(strtolower($service.' '.$name), strtolower($term)) === false) {
+					continue;
+				}
+			} catch(\Exception $e) {
+				$service = 'ERROR';
 			}
 
-			if(strlen($term) && strpos(strtolower($service.' '.$name), strtolower($term)) === false) {
-				$service = false;
-			}
+			$result[$name] = $service;
 		}
 
-		$services = array_filter($services);
 		$msg = 'Found %s registered services'.(strlen($term) ? ' matching `%s`' : '').'.';
-		$output->writeln(sprintf('<info>'.$msg.'</info>', count($services), $term));
-		$table = new TableFormatter(array('Name', 'Type'));
-		foreach($services as $name => $service) {
+		$output->writeln(sprintf('<info>'.$msg.'</info>', count($result), $term));
+		$table = $app->getHelperSet()->get('table')
+			->setHeaders(array('Name', 'Type'));
+
+		foreach($result as $name => $service) {
 			$table->addRow(array($name, $service));
 		}
 
-		$table->write($output);
+		$table->render($output);
 	}
 }

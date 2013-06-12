@@ -120,15 +120,10 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 	public function getEnvironmentOptions()
 	{
 		return array(
-			array(array('-e', 'live'), 		'live'),
 			array(array('--env=live'), 		'live'),
-			array(array('-e', 'test'), 		'test'),
 			array(array('--env=test'), 		'test'),
-			array(array('-e', 'dev'), 		'dev'),
 			array(array('--env=dev'), 		'dev'),
-			array(array('-e', 'staging'), 	'staging'),
 			array(array('--env=staging'), 	'staging'),
-			array(array('-e', 'local'), 	'local'),
 			array(array('--env=local'), 	'local'),
 		);
 	}

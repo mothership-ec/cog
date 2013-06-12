@@ -43,7 +43,7 @@ class Console implements ContextInterface
 		}
 
 		$input = new ArgvInput($arguments);
-		if($env   = $input->getParameterOption(array('--env', '-e'), '')) {
+		if($env   = $input->getParameterOption(array('--env'), '')) {
 			$this->_services['environment']->set($env);
 		}
 

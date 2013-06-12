@@ -1,30 +1,36 @@
-# Tasks
+# Console component
 
-Tasks in Mothership are units of work which run independently from a page request. This might  be via a cronjob at regular intervals, as part of a queue or message system, by a post-receive hook after a deploy, or just manually by a developer. Examples jobs could be: 
+The console component is split into two areas Tasks and Commands. This document mostly deals with Tasks as they are 
 
-- regenerating some cached content.
-- requesting an resource or time intensive external API.
-- processing items in a queue.
-- emailing the output of a report to a client
-- porting items from a CSV file into the database
+## What is a Task?
+
+Tasks in Cog are units of work which run independently from a page request.  This might be via a cronjob at regular intervals, as part of a queue or message system, by a post-receive hook after a deploy, or just manually by a developer. In the past we managed these using adhoc scripts in `/utility_scripts` but the Task system provides a structured platform with helpful methods.
+
+Examples tasks could be: 
+
+- Regenerating some cached content.
+- Requesting an resource or time intensive external API.
+- Processing items in a queue.
+- Emailing the output of a report to a client
+- Porting items from a CSV file into the database
 
 ## Running tasks
 
-Tasks are run via Mothership's console using the `task:run` command like so:
+Tasks are run via Cog's console using the `task:run` command like so:
 
-    $ bin/mothership task:run core:clean_tmp_data
+    $ bin/cog task:run core:clean_tmp_data
 
 ## File structure
 
-Tasks can sit anywhere within modules but for consistency we recommend keeping them in a `/Task` directory e.g `Mothership/Core/Task/SendOrderData.php`. The file's name must match the PHP class that is contained within it as per the PSR-0 spec.
+Tasks can sit anywhere within modules but for consistency we recommend keeping them in a `/Task` directory e.g `Message/CMS/Task/SendOrderData.php`. The file's name must match the PHP class that is contained within it as per the PSR-0 spec.
 
 ## Class structure
 
-Here's the bare minimum needed for a task that would be part of the `Mothership\Core` module:
+Here's the bare minimum needed for a task that would be part of the `Cog\Core` module:
 
-	namespace Mothership\Core\Task;
+	namespace Message\CMS\Task;
 
-	use Mothership\Framework\Console\Task;
+	use Message\Cog\Console\Task;
 
 	class SendOrderData extends Task
 	{
@@ -34,20 +40,20 @@ Here's the bare minimum needed for a task that would be part of the `Mothership\
 		}
 	}
 
-Tasks **must** extend `Mothership\Framework\Console\Task`, they must also implement a `process()` method. This is what is called when the task is run. Whatever `process()` returns is output back to the user on the command line.
+Tasks **must** extend `Message\Cog\Console\Task`, they must also implement a `process()` method. This is what is called when the task is run. Whatever `process()` returns is output back to the user on the command line.
 
 ## Registering a task
 
 **This is an important step**.
 
-Registering a task involves telling Mothership that a task name like `core:send_order_data` maps to the PHP class `Mothership\Core\Task\SendOrderData`. This process is done in the `registerTasks()` method of the module's bootstrap.
+Registering a task involves telling Cog that a task name like `core:send_order_data` maps to the PHP class `Message\CMS\Task\SendOrderData`. This process is done in the `registerTasks()` method of the module's bootstrap.
 
-Here's an example for `Mothership\Core`:
+Here's an example for `Cog\Core`:
 
-	namespace Mothership\Core\Bootstrap;
+	namespace Message\CMS\Bootstrap;
 
-	use Mothership\Framework\Module\Bootstrap\TasksInterface,
-		Mothership\Core\Task;
+	use Cog\Framework\Module\Bootstrap\TasksInterface,
+		Message\CMS\Task;
 
 	class Tasks implements TasksInterface
 	{
@@ -62,7 +68,7 @@ Here's an example for `Mothership\Core`:
 
 The `$tasks` parameter which is pass into the `registerTasks()` method is an instance of `TaskCollection`. The `add()` method takes two parameters:
 
-- First is an instance of your task class, in our example this is `Mothership\Core\Task\SendOrderData`; the constructor has a single parameter which is the name of the task you want to use in the console when running the task e.g `core:send_order_data`.
+- First is an instance of your task class, in our example this is `Message\CMS\Task\SendOrderData`; the constructor has a single parameter which is the name of the task you want to use in the console when running the task e.g `core:send_order_data`.
 
 - The second parameter is a description of what the task does. This is required and an `InvalidArgumentException` will be thrown if you omit it. Keep your descriptions accurate but concise.
 
@@ -70,7 +76,7 @@ The `$tasks` parameter which is pass into the `registerTasks()` method is an ins
 
 Once you've created your task class and registered it in the bootstrap you should be able to run it by typing the following in your terminal:
 
-    $ bin/mothership task:run core:clean_tmp_data
+    $ bin/cog task:run core:clean_tmp_data
     
 You should then see the following output (which is what gets returned from `SendOrderData`'s `process()` method):
 
@@ -78,7 +84,7 @@ You should then see the following output (which is what gets returned from `Send
     
 You can see a list of all registered tasks by running:
 
-    $ bin/mothership task:list
+    $ bin/cog task:list
     
 If you can't see your task in the list then it's likely that you havent registered it properly.
 
@@ -86,9 +92,9 @@ If you can't see your task in the list then it's likely that you havent register
 
 The task system comes with a way of schduling tasks to run at certain, repeated points in time; the same as a cronjob but without the hassle of having to edit a crontab file. To do this you'll need to add a protected `configure()` method to your task class like so:
 
-    namespace Mothership\Core\Task;
+    namespace Message\CMS\Task;
 
-	use Mothership\Framework\Console\Task;
+	use Message\Cog\Console\Task;
 
 	class SendOrderData extends Task
 	{
@@ -117,7 +123,7 @@ In this case we call `$this->schedule('*/5 * * * *')` which tells the task runne
 
 The console has a feature which lets you automatically generate a task and the associated PHP files based on a few basic questions. You can run this command by calling:
 
-    $ bin/mothership task:generate
+    $ bin/cog task:generate
 
 ## Working with the output of tasks
 
@@ -151,11 +157,11 @@ Lastly it's possible to email recipients the output of your task using the `mail
 
 ### Example
 
-    namespace Mothership\Core\Task;
+    namespace Message\CMS\Task;
 
-	use Mothership\Framework\Console\Task;
+	use Message\Cog\Console\Task as BaseTask;
 
-	class SendOrderData extends Task
+	class SendOrderData extends BaseTask
 	{
 	    protected function configure()
 	    {
@@ -182,9 +188,9 @@ Lastly it's possible to email recipients the output of your task using the `mail
 
 You can use a simple tagging feature similar to HTML to add colour to the output of your tasks like so:
 
-    namespace Mothership\Core\Task;
+    namespace Message\CMS\Task;
 
-	use Mothership\Framework\Console\Task;
+	use Message\Cog\Console\Task;
 
 	class SendOrderData extends Task
 	{
@@ -214,9 +220,9 @@ By default when you `echo` or `return` output within a task it's not displayed t
 
 If you want to display progress to a user as it happens use the `write()` and `writeln()` methods like so:
 
-    namespace Mothership\Core\Task;
+    namespace Message\CMS\Task;
 
-	use Mothership\Framework\Console\Task;
+	use Message\Cog\Console\Task;
 
 	class SendOrderData extends Task
 	{
@@ -232,19 +238,27 @@ If you want to display progress to a user as it happens use the `write()` and `w
 
 ### Internals
 
-Really a task is just an instance of `Symfony\Component\Console\Command\Command`. It has it's `execute()` method has been proxied to `process()` so that it's signature can be simplified  for ease of use. 
+Really a task is just an instance of `Symfony\Component\Console\Command\Command`. It's `execute()` method has been proxied to `process()` so that it's signature can be simplified  for ease of use. 
 
 The `$input` and `$output` parameters found in a `execute()` method call have been added as protected properties at `$this->_input` and `$this->output` accordingly.  This means you can do things like adding new style formatters and user dialogs if you so wish from within your task.
 
 The task itself runs in a special sandboxed instance of `Symfony\Component\Console\Application` so that help commands and the parent command can't be accessed or modified.
 
+### Task scheduling
+
+A cronjob should run every minute which invokes the `task:run_scheduled` command that, in turn,  finds tasks which have a valid cron expression which is due to run. It then launches seperate processes for each of the tasks so that they can run asynchronously of each other.
+
+The line in the cronjob might look like this:
+
+	*	*	*	*	*	/var/www/example.org/bin/cog --env=live task:run_scheduled
+
 ### Commands vs Tasks
 
-A command is a top level part of the console, normally registered by something in `Mothership\Framework`. Examples of commands are `task:list`, `task:generate`, `task:run`, `module:list`. 
+A command is a top level part of the console, normally registered by something in `Cog\Framework`. Examples of commands are `task:list`, `task:generate`, `task:run`, `module:list`. 
 
 A task is more specific piece of work usually related to a business-rule within a module. e.g `core:order_post_process`, `core:send_oia_orders`, `core:twitter_cache`. Tasks can only be run by the `task:run` command. It's not possible to do:
 
-    $ bin/mothership core:order_post_process
+    $ bin/cog core:order_post_process
     
 You'll just get a command not found error. It's possible for modules to register commands as well as tasks but this is generally discouraged.
 
@@ -252,11 +266,9 @@ You'll just get a command not found error. It's possible for modules to register
 
 Output handlers are simply lambda functions which get called when a task has completed and have the output of the task passed to them as a parameter.
 
-See the `registerHandler` method in `Mothership\Framework\Console\Task` for more information.
+See the `registerHandler` method in `Message\Cog\Console\Task` for more information.
 
-### Scheduled tasks
 
-A cronjob runs every minute which calls the `task:run_scheduled` command which, in turn,  finds tasks which have a valid cron expression which is due. It then launches seperate processes for each of the tasks so that they can run asynchronously of each other.
 
 
 
