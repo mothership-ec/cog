@@ -70,7 +70,7 @@ class TaskGenerate extends Command
 		});
 
 
-		$modulePath = $this->get('class.loader')->findFile($module.'\Foo');
+		$modulePath = $this->get('module.locator')->getPath($module);
 		$taskPath   = $modulePath . 'Task/';
 		$fileName   = $taskPath . $class . '.php';
 
