@@ -172,7 +172,7 @@ class Services implements ServicesInterface
 				$storage = new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 			}
 
-			return new \Symfony\Component\HttpFoundation\Session\Session(
+			return new \Message\Cog\HTTP\Session(
 				$storage,
 				null,
 				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag('__cog_flashes')

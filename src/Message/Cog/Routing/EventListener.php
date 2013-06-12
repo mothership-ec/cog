@@ -66,9 +66,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 			$routeName = $attributes->get('_route');
 			$route     = $this->_services['routes.compiled']->get($routeName);
 
-			// Ensure that the session is started before we try to get it's ID.
-			$this->_services['http.session']->start();
-
 			$calculatedHash = $route->getCsrfToken(
 				$routeName,
 				$attributes->get('_route_params'),

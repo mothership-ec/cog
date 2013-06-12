@@ -18,10 +18,6 @@ class UrlGenerator extends \Symfony\Component\Routing\Generator\UrlGenerator
 		// Check if this URL needs a CSRF token.
 		if (null !== $route = $this->routes->get($name)) {
 			if($csrfField = $route->getDefault(Route::CSRF_ATTRIBUTE_NAME)) {
-
-				// Ensure session has started before we get the ID
-				$this->_session->start();
-
 				$parameters[$csrfField] = $route->getCsrfToken(
 					$name,
 					$parameters,
