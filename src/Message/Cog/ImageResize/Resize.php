@@ -87,11 +87,7 @@ class Resize
 		$savedRaw = new File($saved->getRealPath());
 		$fs       = new Filesystem;
 		
-		var_dump($saved);
-		var_dump($savedRaw->getRealPath(), $savedRaw->getPath());
-
 		$fs->mkdir($savedRaw->getPath(), 0777);
-	//	$fs->chmod($savedRaw->getPath(), 0777, 0777, true);
 
 		if($params['width'] === self::DIMENSION_AUTO || $params['height'] === self::DIMENSION_AUTO) {
 			$mode = \Imagine\Image\ImageInterface::THUMBNAIL_INSET;
@@ -99,15 +95,13 @@ class Resize
 			$mode = \Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
 		}
 
-		var_dump($saved->getRealPath());
-
-
-
 		$box = new \Imagine\Image\Box($params['width'], $params['height']);
 		$image = $this->_imagine
 			->open($original->getPathname())
 			->thumbnail($box, $mode)
-			->save($saved->getRealPath(), array('quality' => self::QUALITY));
+			->save($saved->getRealPath(), array('quality' => $this->_defaultQuality));
+
+		$fs->chmod($saved->getRealPath(), 0777);
 
 		return $saved;
 	}
