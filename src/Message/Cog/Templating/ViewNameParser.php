@@ -55,18 +55,12 @@ class ViewNameParser extends TemplateNameParser
 		// @todo clean this up
 		// @todo twig integration
 		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
-//			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
-//			return new TemplateReference($baseFileName.'.html.php', 'php');
-			$baseFileName = __DIR__ . '/../Form/View/Twig/'.$matches[1];
-			return new TemplateReference($baseFileName . '.html.twig', 'twig');
+			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
+			return new TemplateReference($baseFileName.'.html.php', 'php');
 		}
-//		elseif (preg_match("/^@form.twig:_?(.*)\\..*\\..*$/u", $reference, $matches)){
-		elseif (preg_match("/^@form.twig/u", $reference, $matches)){
-			var_dump(debug_backtrace()); die();
-//			die('hooray!');
-//			$baseFileName = __DIR__ . '/../Form/View/Twig/'.$matches[1];
-			$baseFileName = __DIR__ . '/../Form/View/Twig/form_div_layout';
-			return new TemplateReference($baseFileName . '.html.twig', 'twig');
+		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
+			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
+			return new TemplateReference($baseFileName, 'twig');
 		}
 
 

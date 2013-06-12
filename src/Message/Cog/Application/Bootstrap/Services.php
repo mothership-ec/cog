@@ -345,8 +345,7 @@ class Services implements ServicesInterface
 		$serviceContainer['form.renderer.twig'] = function($c) {
 			return new \Symfony\Bridge\Twig\Form\TwigRenderer(
 				new \Symfony\Bridge\Twig\Form\TwigRendererEngine(
-//					$c['templating.engine.twig'],
-					array('@form.twig')
+					$c['form.templates.twig']
 				)
 			);
 		};
@@ -356,12 +355,8 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.templates.twig'] = function($c) {
-			$themeDir = __DIR__ . '/../../Form/Views/Twig/';
-			$themeDir = '';
-
 			return array(
-//				$themeDir . 'form_div_layout.html.twig',
-//				$themeDir . 'form_table_layout.html.twig',
+				'@form.twig:form_div_layout',
 			);
 
 		};
