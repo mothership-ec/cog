@@ -18,10 +18,10 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 		$this->_container = new FauxContainer;
 	}
 
-	public function setUpContextClass()
+	public function setUpContextClass($args = null)
 	{
 		//var_dump(__CLASS__, $_SERVER['argv']);
-		$this->_context = new Console($this->_container);
+		$this->_context = new Console($this->_container, $args);
 
 		$this->_container['app.console']->setAutoExit(false);
 		$this->_container['app.console']->add(new Foo1Command);
@@ -48,9 +48,7 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 			return $c['environment']->get();
 		};
 
-		$_SERVER['argv'] += $option;
-
-		$this->setUpContextClass();
+		$this->setUpContextClass(array_merge(array('/usr/bin/php', 'foo:bar1'), $option));
 
 		$this->assertEquals($expectedEnvironment, $this->_container['environment']->get());
 		$this->assertEquals($expectedEnvironment, $this->_container['env']);

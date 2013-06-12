@@ -24,11 +24,12 @@ class Console implements ContextInterface
 	 * initialise the console here.
 	 *
 	 * @param ContainerInterface $container The service container
+	 * @param array|null 		 $arguments Arguments to pass into the Console component
 	 *
 	 * @todo Change the environment earlier if possible. Can we make the context
 	 * run something before even Cog is bootstrapped?
 	 */
-	public function __construct(ContainerInterface $container)
+	public function __construct(ContainerInterface $container, array $arguments = null)
 	{
 		$this->_services = $container;
 
@@ -37,7 +38,11 @@ class Console implements ContextInterface
 			return $console;
 		});
 
-		$input = new ArgvInput();
+		if(null === $arguments) {
+			$arguments = $_SERVER['argv'];
+		}
+
+		$input = new ArgvInput($arguments);
 		if($env   = $input->getParameterOption(array('--env', '-e'), '')) {
 			$this->_services['environment']->set($env);
 		}
