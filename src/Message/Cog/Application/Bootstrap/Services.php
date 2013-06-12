@@ -100,7 +100,20 @@ class Services implements ServicesInterface
 
 		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
-			$viewNameParser = new \Message\Cog\Templating\ViewNameParser(
+			return new \Message\Cog\Templating\DelegatingEngine(
+				array(
+					// Twig templating engine
+					new \Message\Cog\Templating\TwigEngine(
+						$c['templating.twig.environment'],
+						$c['templating.view_name_parser']
+					),
+					$c['templating.php.engine'],
+				)
+			);
+		});
+
+		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
 				$c['reference_parser'],
 				array(
@@ -108,14 +121,13 @@ class Services implements ServicesInterface
 					'php',
 				)
 			);
-			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
-				$c['http.fragment_handler'],
-				$c['reference_parser']
-			);
+		});
+
+		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
 			$twigEnvironment = new \Twig_Environment(
-				new \Message\Cog\Templating\TwigFilesystemLoader('/', $viewNameParser),
+				new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']),
 				array(
-					#'cache' => 'cog://tmp',
+					'cache' => 'cog://tmp',
 					'auto_reload' => true,
 				)
 			);
@@ -123,28 +135,34 @@ class Services implements ServicesInterface
 			$twigEnvironment->addGlobal('flashes', $c['http.session']->getFlashBag()->all());
 			$twigEnvironment->addGlobal('cfg', $c['cfg']);
 
+			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
+				$c['http.fragment_handler'],
+				$c['reference_parser']
+			);
+
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 
-			return new \Message\Cog\Templating\DelegatingEngine(
+			return $twigEnvironment;
+		});
+
+		$serviceContainer['templating.php.engine'] = $serviceContainer->share(function($c) {
+
+			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
+				$c['http.fragment_handler'],
+				$c['reference_parser']
+			);
+
+			// Plain PHP templating engine
+			return new \Message\Cog\Templating\PhpEngine(
+				$c['templating.view_name_parser'],
+				new \Symfony\Component\Templating\Loader\FilesystemLoader(
+					$c['app.loader']->getBaseDir()
+				),
 				array(
-					// Twig templating engine
-					new \Message\Cog\Templating\TwigEngine(
-						$twigEnvironment,
-						$viewNameParser
-					),
-					// Plain PHP templating engine
-					new \Message\Cog\Templating\PhpEngine(
-						$viewNameParser,
-						new \Symfony\Component\Templating\Loader\FilesystemLoader(
-							$c['app.loader']->getBaseDir()
-						),
-						array(
-							new \Symfony\Component\Templating\Helper\SlotsHelper,
-							$actionsHelper,
-							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
-						)
-					),
+					new \Symfony\Component\Templating\Helper\SlotsHelper,
+					$actionsHelper,
+					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 				)
 			);
 		});
