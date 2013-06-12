@@ -2,15 +2,11 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Service\Container as ServiceContainer;
-use Message\Cog\Console\TaskRunner;
-
 use Message\Cog\Console\Command;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 /**
  * ServicesList
@@ -31,18 +27,15 @@ class ServiceList extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$output->getFormatter()->setStyle('bold', new OutputFormatterStyle(null, null, array('bold')));
 		$term = $input->getArgument('search_term');
 
-		$container = ServiceContainer::instance();
-
-		$services = $container->keys();
+		$services = $this->_services->keys();
 		$result = array();
-		ksort($services);
+		natsort($services);
 
 		foreach($services as $name) {
 			try {
-				$serviceResult = $container[$name];
+				$serviceResult = $this->get($name);
 
 				if(is_object($serviceResult)) {
 					$service = get_class($serviceResult);

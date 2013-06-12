@@ -2,12 +2,9 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Service\Container as ServiceContainer;
-
 use Message\Cog\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
+
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -30,24 +27,30 @@ class TaskGenerate extends Command
 	{
 		$dialog = $this->getHelperSet()->get('dialog');
 
-		$module = $dialog->askAndValidate($output, '<question>Name of the module (e.g Fedex)</question>:', function($answer){
+		$services = $this->_services;
+		$question = '<question>Full name of the module (e.g Message\CMS)</question>:';
+		$module = $dialog->askAndValidate($output, $question, function($answer) use ($services) {
 			if(!preg_match('/^[A-Za-z0-9\\\\_]*$/', $answer)) {
 				throw new \InvalidArgumentException('Module names can only contain alphanumeric chars and \\.');
 			}
-			if(!ServiceContainer::get('module.loader')->exists($answer)) {
+			if(!$services['module.loader']->exists($answer)) {
 				throw new \InvalidArgumentException('Module `'.$answer.'` does not exist.');
 			}
 			return $answer;
 		});
 
 		$classGuess = '';
-		$name = $dialog->askAndValidate($output, '<question>Name of the task (e.g core:push_orders)</question>:', function($answer) use (&$classGuess) {
+		$question = '<question>Name of the task (e.g core:push_orders)</question>:';
+		$name = $dialog->askAndValidate($output, $question, function($answer) use (&$classGuess) {
 			if(!preg_match('/^([a-z0-9_]+?):([a-z][a-z0-9_:]*)$/', $answer, $matches)) {
 				throw new \Exception('Task names must be in the format module:task_name');
 			}
+			// Try and guess a good class name based on the task name for later use
+			$matches[2] = str_replace(':', '_', $matches[2]);
 			foreach(explode('_', $matches[2]) as $part) {
 				$classGuess.= ucfirst($part);
 			}
+
 			return $answer;
 		});
 
@@ -66,7 +69,8 @@ class TaskGenerate extends Command
 			return $answer;
 		});
 
-		$modulePath = ServiceContainer::get('module.loader')->getPath($module);
+
+		$modulePath = $this->get('class.loader')->findFile($module.'\Foo');
 		$taskPath   = $modulePath . 'Task/';
 		$fileName   = $taskPath . $class . '.php';
 

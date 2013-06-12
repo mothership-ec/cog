@@ -2,12 +2,9 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Service\Container as ServiceContainer;
-
 use Message\Cog\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
+
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -28,7 +25,7 @@ class RouteList extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$routes = ServiceContainer::get('routes.compiled');
+		$routes = $this->get('routes.compiled');
 
 		$output->writeln('<info>Found ' . count($routes) . ' registered routes.</info>');
 
