@@ -28,11 +28,14 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 	public function setupFormHelper()
 	{
+		// @todo consider the pattern of the infinite loop to help you find it
+
 		$this->_services['templating.engine.php']->addHelpers(array(
-			$this->_services['form.helper.php']
+			$this->_services['form.helper.php'],
+			$this->_services['form.helper.twig']
 		));
 
-		$this->_services['form.renderer.twig'];
+//		var_dump($this->_services['form.factory.twig']);
 
 	}
 }

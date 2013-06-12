@@ -127,7 +127,7 @@ class Services implements ServicesInterface
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
-			$twigEnvironment->addExtension(new \Symfony\Bridge\Twig\Extension\FormExtension($c['form.renderer.twig']));
+			$twigEnvironment->addExtension($c['form.twig_form_extension']);
 
 			return $twigEnvironment;
 		});
@@ -138,7 +138,8 @@ class Services implements ServicesInterface
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
 					array(
 						$c['app.loader']->getBaseDir(),
-						__DIR__ . '/../../Form/Views/Php'
+						__DIR__ . '/../../Form/Views/Php',
+						__DIR__ . '/../../Form/Views/Twig'
 					)
 				),
 				array(
@@ -155,7 +156,6 @@ class Services implements ServicesInterface
 				$c['templating.view_name_parser']
 			);
 		});
-
 
 		// Service for the templating delegation engine
 		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
@@ -332,8 +332,7 @@ class Services implements ServicesInterface
 
 		};
 
-		$serviceContainer['form.helper.twig'] = function($c) {
-//			$engine = $c['form.engine.twig'];
+		$serviceContainer['form.helper.twig'] = $serviceContainer->share(function($c) {
 
 			$formHelper = new \Message\Cog\Form\Template\Helper(
 				$c['form.renderer.twig']
@@ -341,14 +340,34 @@ class Services implements ServicesInterface
 
 			return $formHelper;
 
-		};
+		});
 
 		$serviceContainer['form.renderer.twig'] = function($c) {
-			return new \Symfony\Bridge\Twig\Form\TwigRenderer($c['form.engine.twig']);
+			return new \Symfony\Bridge\Twig\Form\TwigRenderer(
+				new \Symfony\Bridge\Twig\Form\TwigRendererEngine(
+//					$c['templating.engine.twig'],
+					array('@form.twig')
+				)
+			);
 		};
 
-		$serviceContainer['form.engine.twig'] = function($c) {
-			return new \Symfony\Bridge\Twig\Form\TwigRendererEngine;
+		$serviceContainer['form.renderer.engine.twig'] = function($c) {
+			return new \Symfony\Bridge\Twig\Form\TwigRendererEngine($c['form.templates.twig']);
+		};
+
+		$serviceContainer['form.templates.twig'] = function($c) {
+			$themeDir = __DIR__ . '/../../Form/Views/Twig/';
+			$themeDir = '';
+
+			return array(
+//				$themeDir . 'form_div_layout.html.twig',
+//				$themeDir . 'form_table_layout.html.twig',
+			);
+
+		};
+
+		$serviceContainer['form.twig_form_extension'] = function($c) {
+			return new \Symfony\Bridge\Twig\Extension\FormExtension($c['form.renderer.twig']);
 		};
 
 		// Validator
