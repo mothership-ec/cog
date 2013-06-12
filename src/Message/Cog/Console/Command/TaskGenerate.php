@@ -4,7 +4,7 @@ namespace Message\Cog\Console\Command;
 
 use Message\Cog\Service\Container as ServiceContainer;
 
-use Symfony\Component\Console\Command\Command;
+use Message\Cog\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

@@ -4,12 +4,11 @@ namespace Message\Cog\Console\Command;
 
 use Message\Cog\Service\Container as ServiceContainer;
 
-use Symfony\Component\Console\Command\Command;
+use Message\Cog\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Process\Process;
 
 

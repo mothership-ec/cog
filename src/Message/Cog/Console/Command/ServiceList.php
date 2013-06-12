@@ -3,10 +3,9 @@
 namespace Message\Cog\Console\Command;
 
 use Message\Cog\Service\Container as ServiceContainer;
-use Message\Cog\Console\TableFormatter;
 use Message\Cog\Console\TaskRunner;
 
-use Symfony\Component\Console\Command\Command;
+use Message\Cog\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,12 +18,12 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
  * Provides the services:list command.
  * List all registered services.
  */
-class ServicesList extends Command
+class ServiceList extends Command
 {
 	protected function configure()
 	{
 		$this
-			->setName('services:list')
+			->setName('service:list')
 			->setDescription('List all registered services.')
 			->addArgument('search_term', InputArgument::OPTIONAL, 'Display services matching [search_term]')
 		;
@@ -48,7 +47,11 @@ class ServicesList extends Command
 				if(is_object($serviceResult)) {
 					$service = get_class($serviceResult);
 				} else {
-					$service = gettype($serviceResult) . '(' . var_export($serviceResult, true) . ')';
+					$export = var_export($serviceResult, true);
+					if(strlen($export) > 80) {
+						$export = substr($export, 0, 80).'...';
+					}
+					$service = gettype($serviceResult) . '(' . str_replace("\n", '\n', $export) . ')';
 				}
 
 				if(strlen($term) && strpos(strtolower($service.' '.$name), strtolower($term)) === false) {
@@ -63,7 +66,8 @@ class ServicesList extends Command
 
 		$msg = 'Found %s registered services'.(strlen($term) ? ' matching `%s`' : '').'.';
 		$output->writeln(sprintf('<info>'.$msg.'</info>', count($result), $term));
-		$table = $app->getHelperSet()->get('table')
+
+		$table = $this->getHelperSet()->get('table')
 			->setHeaders(array('Name', 'Type'));
 
 		foreach($result as $name => $service) {

@@ -33,7 +33,7 @@ class Console implements ContextInterface
 	{
 		$this->_services = $container;
 
-		$console = Factory::create();
+		$console = Factory::create($container);
 		$this->_services['app.console'] = $this->_services->share(function() use ($console) {
 			return $console;
 		});

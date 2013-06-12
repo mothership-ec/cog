@@ -2,9 +2,8 @@
 
 namespace Message\Cog\Console;
 
-use Message\Cog\Console\Command;
+use Message\Cog\Service\ContainerInterface;
 
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -16,21 +15,26 @@ class Factory
 {
 	const ENV_OPT_NAME = 'env';
 
-	public static function create()
+	public static function create(ContainerInterface $container)
 	{
 		$app = new Application;
+		$app->setContainer($container);
 
-		$app->getDefinition()->addOption(new InputOption('--' . self::ENV_OPT_NAME, '', InputOption::VALUE_OPTIONAL, 'The Environment name.'));
+		$app->getDefinition()->addOption(
+			new InputOption('--' . self::ENV_OPT_NAME, '', InputOption::VALUE_OPTIONAL, 'The Environment name.')
+		);
 
 		// Setup the default commands
 		$app->add(new Command\ModuleGenerate);
 		$app->add(new Command\ModuleList);
-		$app->add(new Command\TaskRun);
-		$app->add(new Command\TaskRunScheduled);
+		$app->add(new Command\RouteList);
+		$app->add(new Command\RouteCollectionTree);
+		$app->add(new Command\ServiceList);
+		$app->add(new Command\Setup);
 		$app->add(new Command\TaskGenerate);
 		$app->add(new Command\TaskList);
-		$app->add(new Command\ServicesList);
-		$app->add(new Command\Setup);
+		$app->add(new Command\TaskRun);
+		$app->add(new Command\TaskRunScheduled);
 
 		return $app;
 	}
