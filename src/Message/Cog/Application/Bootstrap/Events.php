@@ -65,9 +65,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Filesystem
 		$eventDispatcher->addSubscriber(
-			new \Message\Cog\Filesystem\EventListener(
-				$this->_services
-			)
+			new \Message\Cog\Filesystem\EventListener
 		);
 
 		// Routing

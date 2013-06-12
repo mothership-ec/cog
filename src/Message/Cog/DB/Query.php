@@ -89,10 +89,11 @@ class Query
 		$fields     = $this->_params;
 		$types      = $this->_typeTokens;
 		$self       = $this;
+		$query 		= $this->_query;
 
 		$this->_parsedQuery = preg_replace_callback(
 			self::TOKEN_REGEX,
-			function($matches) use($self, $fields, $types, &$counter, $connection) {
+			function($matches) use($self, $fields, $types, &$counter, $connection, $query) {
 
 				// parse and validate the token
 				$full  = $matches[0];
@@ -103,7 +104,7 @@ class Query
 				$type  = str_replace('j', '', $type, $useJoin);
 
 				if(!isset($types[$type])) {
-					throw new Exception(sprintf('Unknown type `%s` in token `%s`', $type, $full), $this->_parsedQuery);
+					throw new Exception(sprintf('Unknown type `%s` in token `%s`', $type, $full), $query);
 				}
 
 				// decide what data to use
@@ -118,7 +119,10 @@ class Query
 
 				if ($useJoin) {
 					if (!is_array($data)) {
-						throw new Exception(sprintf('Cannot use join in token `%s` as it is not an array.', $full), $this->_parsedQuery);
+						throw new Exception(
+							sprintf('Cannot use join in token `%s` as it is not an array.', $full),
+							$query
+						);
 					}
 
 					foreach ($data as $key => $value) {

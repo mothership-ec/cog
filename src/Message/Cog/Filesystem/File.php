@@ -11,13 +11,17 @@ use Symfony\Component\HttpFoundation\File\File as BaseFile;
 */
 class File extends \SplFileInfo
 {
-	const PUBLIC_PATH = 'cog://public/';
+	const PUBLIC_DIR = 'public/';
+	const COG_PREFIX = 'cog';
 
 	protected $_reference;
 
 	public function __construct($fileName)
 	{
-		$this->_reference = $fileName;
+		$prefix = self::COG_PREFIX . '://';
+		if(substr($fileName, 0, strlen($prefix)) === $prefix) {
+			$this->_reference = $fileName;
+		}
 
 		parent::__construct($fileName);
 	}
@@ -29,7 +33,7 @@ class File extends \SplFileInfo
 	 */
 	public function getChecksum()
 	{
-		return md5_file($this->realpath());
+		return md5_file($this->getRealPath());
 	}
 
 	/**
@@ -42,11 +46,13 @@ class File extends \SplFileInfo
 	 */
 	public function getPublicUrl()
 	{
-		if(!$this->isPublic()) {
+		if (!$this->isPublic()) {
 			throw new \Exception(sprintf('`%s` is not publically accessible', $this->_reference));
 		}
 
-		return '/'.substr($this->_reference, strlen(self::PUBLIC_PATH));
+		$path = self::COG_PREFIX . '://' . self::PUBLIC_DIR;
+
+		return '/' . substr($this->_reference, strlen($path));
 	}
 
 	/**
@@ -56,8 +62,10 @@ class File extends \SplFileInfo
 	 */
 	public function isPublic()
 	{
+		$path = self::COG_PREFIX . '://' . self::PUBLIC_DIR;
+
 		// Ensure our URL starts with PUBLIC_PATH
-		return !strncmp($this->_reference, self::PUBLIC_PATH, strlen(self::PUBLIC_PATH));
+		return !strncmp($this->_reference, $path, strlen($path));
 	}
 
 	/**
@@ -65,9 +73,15 @@ class File extends \SplFileInfo
 	 *
 	 * @return string The path to the file on the filesystem.
 	 */
-	public function realpath()
+	public function getRealPath()
 	{
-		return StreamWrapperManager::getHandler('cog')->getLocalPath($this->_reference, 'cog');
+		if($this->_reference) {
+			$handler = StreamWrapperManager::getHandler(self::COG_PREFIX);
+
+			return $handler->getLocalPath($this->_reference, self::COG_PREFIX);
+		}
+
+		return parent::getRealPath();
 	}
 
 	/**

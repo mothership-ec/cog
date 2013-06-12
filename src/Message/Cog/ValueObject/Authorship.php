@@ -2,8 +2,6 @@
 
 namespace Message\Cog\ValueObject;
 
-use DateTime;
-
 /**
  * Represents the created, updated and deleted metadata for a model.
  *
@@ -94,21 +92,21 @@ class Authorship
 	/**
 	 * Set the created metadata.
 	 *
-	 * @param  DateTime|null $datetime The date & time of creation, null to use
-	 *                                 current date & time
-	 * @param  mixed $user             The user responsible
+	 * @param  DateTimeImmutable|null $datetime The date & time of creation,
+	 *                                          null to use current date & time
+	 * @param  mixed $user                      The user responsible
 	 *
-	 * @return Authorship              Returns $this for chainability
+	 * @return Authorship                       Returns $this for chainability
 	 *
-	 * @throws \LogicException         If the created metadata already exists
+	 * @throws \LogicException If the created metadata already exists
 	 */
-	public function create(DateTime $datetime = null, $user = null)
+	public function create(DateTimeImmutable $datetime = null, $user = null)
 	{
 		if (!is_null($this->_createdAt)) {
 			throw new \LogicException('Cannot set created metadata: it has already been set');
 		}
 
-		$this->_createdAt = $datetime ?: new DateTime('now');
+		$this->_createdAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_createdBy = $user;
 
 		return $this;
@@ -117,15 +115,15 @@ class Authorship
 	/**
 	 * Set the updated metadata.
 	 *
-	 * @param  DateTime|null $datetime The date & time of the update, null to use
-	 *                                 current date & time
-	 * @param  mixed $user             The user responsible
+	 * @param  DateTimeImmutable|null $datetime The date & time of the update,
+	 *                                          null to use current date & time
+	 * @param  mixed $user                      The user responsible
 	 *
-	 * @return Authorship              Returns $this for chainability
+	 * @return Authorship                       Returns $this for chainability
 	 */
-	public function update(DateTime $datetime = null, $user = null)
+	public function update(DateTimeImmutable $datetime = null, $user = null)
 	{
-		$this->_updatedAt = $datetime ?: new DateTime('now');
+		$this->_updatedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_updatedBy = $user;
 
 		return $this;
@@ -134,21 +132,21 @@ class Authorship
 	/**
 	 * Set the deleted metadata.
 	 *
-	 * @param  DateTime|null $datetime The date & time of deletion, null to use
-	 *                                 current date & time
-	 * @param  mixed $user             The user responsible
+	 * @param  DateTimeImmutable|null $datetime The date & time of deletion,
+	 *                                          null to use current date & time
+	 * @param  mixed $user                      The user responsible
 	 *
-	 * @return Authorship              Returns $this for chainability
+	 * @return Authorship                       Returns $this for chainability
 	 *
-	 * @throws \LogicException         If the deleted metadata already exists
+	 * @throws \LogicException If the deleted metadata already exists
 	 */
-	public function delete(DateTime $datetime = null, $user = null)
+	public function delete(DateTimeImmutable $datetime = null, $user = null)
 	{
 		if (!is_null($this->_deletedAt)) {
 			throw new \LogicException('Cannot set deleted metadata: it has already been set');
 		}
 
-		$this->_deletedAt = $datetime ?: new DateTime('now');
+		$this->_deletedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_deletedBy = $user;
 
 		return $this;

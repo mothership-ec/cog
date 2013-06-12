@@ -2,14 +2,13 @@
 
 namespace Message\Cog\ValueObject;
 
-use DateTime;
 use DateInterval;
 
 /**
  * Represents a date range: the period between two specific timestamps.
  *
- * @author    Joe Holdcroft <joe@message.co.uk>
- * @author    Danny Hannah <danny@message.co.uk>
+ * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Danny Hannah <danny@message.co.uk>
  */
 class DateRange
 {
@@ -19,31 +18,31 @@ class DateRange
 	/**
 	 * Constructor.
 	 *
-	 * @param DateTime|null $from Starting timestamp, null for infinite past
-	 * @param DateTime|null $to   Ending timestamp, null for infinite future
+	 * @param DateTimeImmutable|null $from Starting timestamp, null for infinite past
+	 * @param DateTimeImmutable|null $to   Ending timestamp, null for infinite future
 	 */
-	public function __construct(DateTime $from = null, DateTime $to = null)
+	public function __construct(DateTimeImmutable $from = null, DateTimeImmutable $to = null)
 	{
 		if (!$from && !$to) {
-			throw new \LogicException('Date range could not be instantiated: at least one date must be supplied');
+			throw new \LogicException('Date range could not be instantiated: at least one date must be provided');
 		}
 
-		$this->_end = $to;
+		$this->_end   = $to;
 		$this->_start = $from;
 	}
 
 	/**
 	 * Check whether a given date & time falls within the date range.
 	 *
-	 * @param DateTime|null  $datetime The date & time to check, null for
+	 * @param DateTimeImmutable|null  $datetime The date & time to check, null for
 	 *                                 current date & time
 	 *
 	 * @return boolean                 True if the date & time is in the range
 	 */
-	public function isInRange(DateTime $datetime = null)
+	public function isInRange(DateTimeImmutable $datetime = null)
 	{
 		if (!$datetime) {
-			$datetime = new DateTime;
+			$datetime = new DateTimeImmutable;
 		}
 
 		// If there is not a start date, ensure that the given timestamp is less than
@@ -65,16 +64,16 @@ class DateRange
 	 * Get the period between a given date & time and the start of the date
 	 * range, represented as an instance of `DateInterval`.
 	 *
-	 * @param DateTime|null  $datetime The date & time to use, null for
+	 * @param DateTimeImmutable|null  $datetime The date & time to use, null for
 	 *                                 current date & time
 	 *
 	 * @return DateInterval            The interval between the supplied date &
 	 *                                 time and the start of this date range
 	 */
-	public function getIntervalToStart(DateTime $datetime = null)
+	public function getIntervalToStart(DateTimeImmutable $datetime = null)
 	{
 		if (!$datetime) {
-			$datetime = new DateTime;
+			$datetime = new DateTimeImmutable;
 		}
 
 		if (!$this->_start) {
@@ -94,10 +93,10 @@ class DateRange
 	 * @return DateInterval            The interval between the supplied date &
 	 *                                 time and the end of this date range
 	 */
-	public function getIntervalToEnd(DateTime $datetime = null)
+	public function getIntervalToEnd(DateTimeImmutable $datetime = null)
 	{
 		if (!$datetime) {
-			$datetime = new DateTime;
+			$datetime = new DateTimeImmutable;
 		}
 
 		if (!$this->_end) {

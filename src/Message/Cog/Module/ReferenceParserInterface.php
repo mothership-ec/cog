@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog;
+namespace Message\Cog\Module;
 
 /**
  * Interface for reference parser class.

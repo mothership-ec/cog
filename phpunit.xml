@@ -47,8 +47,8 @@
 		<testsuite name="HTTP">
 			<directory>./tests/Message/Cog/Test/HTTP/</directory>
 		</testsuite>
-		<testsuite name="Hash">
-			<directory>./tests/Message/Cog/Test/Hash/</directory>
+		<testsuite name="ImageResize">
+			<directory>./tests/Message/Cog/Test/ImageResize/</directory>
 		</testsuite>
 		<testsuite name="Localisation">
 			<directory>./tests/Message/Cog/Test/Localisation/</directory>

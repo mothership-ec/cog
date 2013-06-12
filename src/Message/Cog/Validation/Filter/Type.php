@@ -205,7 +205,7 @@ class Type implements CollectionInterface
 	 */
 	protected function _filterTimezone($tz)
 	{
-		if ($tz && !is_string($tz) && !$tz instanceof \DateTimeZone) {
+		if ($tz && !is_string($tz) && !($tz instanceof \DateTimeZone)) {
 			$callers = debug_backtrace();
 			throw new \InvalidArgumentException(sprintf(
 				'%s: $tz must be either a string or instance of \DateTimeZone, `%s` given',

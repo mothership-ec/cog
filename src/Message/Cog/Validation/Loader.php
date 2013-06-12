@@ -40,7 +40,7 @@ class Loader
 	{
 		foreach($classes as $class) {
 
-			if(!$class instanceof CollectionInterface) {
+			if(!($class instanceof CollectionInterface)) {
 				throw new \Exception(sprintf('%s must implement CollectionInterface.', $class));
 			}
 

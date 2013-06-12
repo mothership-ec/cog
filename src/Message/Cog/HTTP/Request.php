@@ -12,6 +12,22 @@ namespace Message\Cog\HTTP;
 class Request extends \Symfony\Component\HttpFoundation\Request
 {
 	/**
+	 * Constructor.
+	 *
+	 * HTTP method overriding using the special `_method` parameter is enabled
+	 * by default in our Request object.
+	 *
+	 * @see \Symfony\Component\HttpFoundation\Request::__construct
+	 * @see \Symfony\Component\HttpFoundation\Request::enableHttpMethodParameterOverride
+	 */
+	public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
+	{
+		parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+
+		self::enableHttpMethodParameterOverride();
+	}
+
+	/**
 	 * Gets the allowed content types for this request.
 	 *
 	 * If the route only allows certain formats, then these will be determined
