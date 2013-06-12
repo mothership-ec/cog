@@ -114,7 +114,7 @@ class ".$class." extends Task
 			'Success. The task has been generated.',
 			'You now need to add the following line to the task bootstrap in `'.$module.'`:',
 			'',
-			'	<comment>'.$bootstrapCode.'</comment>',
+			'	'.$bootstrapCode,
 			'',
 		), 'info'));
 	}
