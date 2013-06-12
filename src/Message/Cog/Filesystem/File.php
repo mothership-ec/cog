@@ -76,9 +76,9 @@ class File extends \SplFileInfo
 	public function getRealPath()
 	{
 		if($this->_reference) {
-			$realPath = StreamWrapperManager::getHandler(self::COG_PREFIX)->getLocalPath($this->_reference, self::COG_PREFIX);
+			$handler = StreamWrapperManager::getHandler(self::COG_PREFIX);
 
-			return realpath($realPath);
+			return $handler->getLocalPath($this->_reference, self::COG_PREFIX);
 		}
 
 		return parent::getRealPath();
