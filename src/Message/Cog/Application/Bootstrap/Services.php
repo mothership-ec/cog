@@ -128,6 +128,9 @@ class Services implements ServicesInterface
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
+			$twigEnvironment->addExtension(new \Symfony\Bridge\Twig\Extension\TranslationExtension(
+				new \Symfony\Component\Translation\Translator('uk')
+			));
 
 			return $twigEnvironment;
 		});
