@@ -16,6 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RouteCollectionTree extends Command
 {
+	protected $_collections;
+
 	protected function configure()
 	{
 		$this
@@ -26,10 +28,10 @@ class RouteCollectionTree extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$collections = $this->get('routes');
+		$this->_collections = $this->get('routes');
 
 		$parents = array();
-		foreach ($collections as $collectionName => $collection) {
+		foreach ($this->_collections as $collectionName => $collection) {
 			$parents[$collectionName] = $collection->getParent();
 		}
 
@@ -51,7 +53,9 @@ class RouteCollectionTree extends Command
 
 		foreach($tree as $key => $node) {
 			$i++;
-			$output->writeln(str_repeat("  ", $depth+1) . ($i == $count ? '└' : '├') . ' ' . $key);
+			$prefix = $this->_collections[$key]->getPrefix() ?: '/';
+			$line = str_repeat("  ", $depth+1) . ($i == $count ? '└' : '├') . ' ' . $key . ' (' . $prefix . ')';
+			$output->writeln($line);
 			$this->_printTree($output, $node, $depth+1);
 		}
 	}

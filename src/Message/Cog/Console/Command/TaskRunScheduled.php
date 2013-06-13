@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Service\Container as ServiceContainer;
-
 use Message\Cog\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +21,9 @@ use Symfony\Component\Process\Process;
  * asynchronously launched as seperate processes which run independantly.
  *
  * The entry in the crontab file needs to look something like this:
+ * 
  * 		* * * * * /path/to/site/bin/cog --env=live task:run_scheduled > /dev/null 2>&1
+ * 		
  */
 class TaskRunScheduled extends Command
 {
@@ -38,9 +38,9 @@ class TaskRunScheduled extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$path = $_SERVER['argv'][0];
-		$env  = ' --env='.ServiceContainer::get('env');
-		foreach(ServiceContainer::get('task.collection')->all() as $task) {
-			if($task[2]->isDue(time(), ServiceContainer::get('env'))) {
+		$env  = ' --env='.$this->get('env');
+		foreach($this->get('task.collection')->all() as $task) {
+			if($task[2]->isDue(time(), $this->get('env'))) {
 				$output->writeln('Running ' . $task[2]->getName());
 				try {
 					$process = new Process($path . $env . ' task:run ' . $task[2]->getName());

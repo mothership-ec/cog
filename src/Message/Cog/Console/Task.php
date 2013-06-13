@@ -2,15 +2,15 @@
 
 namespace Message\Cog\Console;
 
-use Message\Cog\Service\Container as ServiceContainer;
-
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Cron\CronExpression;
 
 /**
  * Task
+ *
+ * Many of the methods in this class are declared as final as Tasks extend this
+ * class and we don't want them to interfere with functionality.
  */
 abstract class Task extends Command
 {
@@ -22,8 +22,8 @@ abstract class Task extends Command
 
 	final public function __construct($name)
 	{
-		$this->_services = ServiceContainer::instance();
 		parent::__construct($name);
+
 		// output to console by default
 		$this->printOutput(true);
 	}
@@ -40,8 +40,9 @@ abstract class Task extends Command
 			$recipients = array($recipients => '');
 		}
 
-		$this->registerHandler('mail', function($output) use ($recipients, $subject, $body, $filename) {
-			$output = implode('', $output);
+		$this->registerHandler('mail', function($buffer, $printed, $returned) 
+				use ($recipients, $subject, $body, $filename) {
+			$output = $buffer.$printed.$returned;
 			// TODO: Use Cog's proper email component when it's done
 			$subject = $subject ?: 'Output of '.$this->getName();
 			$body    = $body ?: !$filename ? $output : '';
@@ -54,7 +55,7 @@ abstract class Task extends Command
 	final public function saveOutput($path, $append = false)
 	{
 		$this->registerHandler('file', function($output) use ($path, $append) {
-			$output = implode('', $output);
+			$output = $buffer.$printed.$returned;
 			if(!$append && is_writable(dirname($path))) {
 				file_put_contents($path, $output);
 			} else if($append && is_writable($path)) {
@@ -67,10 +68,11 @@ abstract class Task extends Command
 
 	final public function printOutput($write = true)
 	{
-		$writer = '';
-		$this->registerHandler('print', function($output) use ($write, &$writer) {
+		$self = $this;
+		$this->registerHandler('print', function($buffer, $printed, $returned) use ($write, $self) {
+			$output = $buffer.$printed.$returned;
 			if($write) {
-				$this->_output->writeln($output[1].$output[2]);
+				$self->getOutput()->writeln($output);
 			}
 		});
 	}
@@ -92,7 +94,8 @@ abstract class Task extends Command
 		return $this->_cronEnvironments;
 	}
 
-	final public function isDue($time, $env) {
+	final public function isDue($time, $env)
+	{
 		if(!$this->_cronExpression) {
 			return false;
 		}
@@ -111,6 +114,11 @@ abstract class Task extends Command
 		return isset($this->_outputHandlers[$type]) ? $this->_outputHandlers[$type] : false;
 	}
 
+	final public function getOutput()
+	{
+		return $this->_output;
+	}
+
 	final protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$this->_input  = $input;
@@ -120,11 +128,8 @@ abstract class Task extends Command
 		$returnedOutput = $this->process();
 		$printedOutput = ob_get_clean();
 
-		// Prepare the output for handlers
-		$returnedOutput = array($this->getBuffer(), $printedOutput, $returnedOutput);
-
 		foreach($this->_outputHandlers as $handler) {
-			call_user_func($handler, $returnedOutput);
+			call_user_func($handler, $this->getBuffer(), $printedOutput, $returnedOutput);
 		}
 	}
 
@@ -136,8 +141,7 @@ abstract class Task extends Command
 
 	final public function writeln($text)
 	{
-		$this->_buffer.= $text . "\n";
-		$this->_output->writeln($text);
+		$this->write($text."\n");
 	}
 
 	final public function getBuffer()

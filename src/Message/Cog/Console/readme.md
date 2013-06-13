@@ -1,6 +1,6 @@
 # Console component
 
-The console component is split into two areas Tasks and Commands. This document mostly deals with Tasks as they are 
+The console component is split into two areas Tasks and Commands. This document mostly deals with Tasks as they are primarily what developers will be dealing with.
 
 ## What is a Task?
 
