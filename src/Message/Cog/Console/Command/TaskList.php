@@ -2,14 +2,11 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Service\Container as ServiceContainer;
-
 use Message\Cog\Console\Command;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 /**
  * TaskList
@@ -30,11 +27,10 @@ class TaskList extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$output->getFormatter()->setStyle('bold', new OutputFormatterStyle(null, null, array('bold')));
 		$module_name = $input->getArgument('module_name');
 
 		$tasks = array();
-		foreach(ServiceContainer::get('task.collection')->all() as $task) {
+		foreach($this->get('task.collection')->all() as $task) {
 			if($module_name && $module_name !== $task[0]) {
 				continue;
 			}
@@ -54,7 +50,7 @@ class TaskList extends Command
 			if($cron = $task[2]->getCronExpression()) {
 				$scheduled = $cron->getExpression();
 				$next      = $cron->getNextRunDate()->format('d/m/y H:i T');
-				if(count($envs = $task[2]->getCronEnvironments()) && !in_array(ServiceContainer::get('env'), $envs)) {
+				if(count($envs = $task[2]->getCronEnvironments()) && !in_array($this->get('env'), $envs)) {
 					$next = 'Only runs on '.implode('|', $envs);
 				}
 			}

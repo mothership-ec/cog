@@ -1,11 +1,13 @@
 <?php
 
-namespace Message\Cog\Console;
+namespace Message\Cog\Console\Task;
+
+use Message\Cog\Console\Application as BaseApplication;
 
 /**
 * Stops the default help and list commands from working when executing a task
 */
-class TaskApplication extends Application
+class Application extends BaseApplication
 {
 	protected function getDefaultCommands()
 	{

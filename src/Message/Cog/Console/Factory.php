@@ -25,6 +25,7 @@ class Factory
 		);
 
 		// Setup the default commands
+		$app->add(new Command\EventList);
 		$app->add(new Command\ModuleGenerate);
 		$app->add(new Command\ModuleList);
 		$app->add(new Command\RouteList);

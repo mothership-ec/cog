@@ -247,7 +247,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['task.collection'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Console\TaskCollection;
+			return new \Message\Cog\Console\Task\Collection($c);
 		});
 
 		// Functions

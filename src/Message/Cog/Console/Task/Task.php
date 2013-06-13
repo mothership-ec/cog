@@ -1,6 +1,8 @@
 <?php
 
-namespace Message\Cog\Console;
+namespace Message\Cog\Console\Task;
+
+use Message\Cog\Console\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -1,15 +1,22 @@
 <?php
 
-namespace Message\Cog\Console;
+namespace Message\Cog\Console\Task;
+
+use Message\Cog\Service\ContainerInterface;
 
 /**
  * TaskCollection
  *
  * Maintains a list of tasks.
  */
-class TaskCollection
+class Collection
 {
 	protected $_tasks = array();
+
+	public function __construct(ContainerInterface $services)
+	{
+		$this->_services = $services;
+	}
 
 	/**
 	 * Add a task to the collection
@@ -27,7 +34,7 @@ class TaskCollection
 
 		// Add the task to the internal array
 		$this->_tasks[$task->getName()] = array(
-			\Message\Cog\Service\Container::get('fns.utility')->traceCallingModuleName(),
+			$this->_services['fns.utility']->traceCallingModuleName(),
 			$description,
 			$task,
 		);

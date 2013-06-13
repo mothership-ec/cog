@@ -92,7 +92,7 @@ class TaskGenerate extends Command
 
 namespace ".$module."\Task;
 
-use Message\Cog\Console\Task;
+use Message\Cog\Console\Task\Task;
 
 class ".$class." extends Task
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Console;
+namespace Message\Cog\Console\Task;
 
 use Message\Cog\Service\ContainerInterface;
 
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\StringInput;
 * A factory for creating an instance of a TaskApplication, adding a task 
 * to it and running it.
 */
-class TaskRunner
+class Runner
 {
 	/**
 	 * Constructor
@@ -22,7 +22,7 @@ class TaskRunner
 	 */
 	public function __construct(Task $command, ContainerInterface $container)
 	{
-		$app = new TaskApplication('Cog task runner');
+		$app = new Application('Cog task runner');
 		$app->setContainer($container);
 		$app->add($command);
 		$app->setAutoExit(false);
