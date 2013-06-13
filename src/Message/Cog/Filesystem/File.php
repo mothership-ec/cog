@@ -83,4 +83,14 @@ class File extends \SplFileInfo
 
 		return parent::getRealPath();
 	}
+
+	/**
+	 * Get the name of the file without the extension and period.
+	 *
+	 * @return string The filename without it's extension
+	 */
+	public function getFilenameWithoutExtension()
+	{
+		return $this->getBasename('.' . $this->getExtension());
+	}
 }

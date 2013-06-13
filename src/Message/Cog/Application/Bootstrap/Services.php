@@ -150,6 +150,7 @@ class Services implements ServicesInterface
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
 
 			return $twigEnvironment;
 		});
@@ -171,6 +172,7 @@ class Services implements ServicesInterface
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
 					$actionsHelper,
 					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
+					new \Message\Cog\Templating\Helper\Translation($c['translator']),
 				)
 			);
 		});
@@ -331,6 +333,29 @@ class Services implements ServicesInterface
 
 		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
+		});
+
+		// Hardcode to en_GB for the moment. In the future this can be determined
+		// from properties on the route or the session object
+		$serviceContainer['locale'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Localisation\Locale('en_GB');
+		});
+
+		$serviceContainer['translator'] = $serviceContainer->share(function ($c) {
+			$selector = new \Message\Cog\Localisation\MessageSelector;
+			$id       = $c['locale']->getId();
+
+			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
+			$translator->setFallbackLocale($c['locale']->getFallback());
+
+			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
+
+			$dir = $c['app.loader']->getBaseDir().'/translations';
+			foreach($c['filesystem.finder']->in($dir) as $file) {
+				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+			}
+			
+			return $translator;
 		});
 	}
 }
