@@ -95,8 +95,28 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['routing.generator'] = function($c) {
-			return new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+
+			$generator = new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+			$generator->setCsrfSecrets($c['http.session'], $c['routing.csrf_secret']);
+			
+			return $generator;
 		};
+
+		// @todo - Get this out of the config  rather than hardcoding it and change it for every site
+		$serviceContainer['routing.csrf_secret'] = function($c) {
+			return 'THIS IS A SECRET DO NOT SHARE IT AROUND';
+		};
+
+		// Service for the templating delegation engine
+		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\DelegatingEngine(
+				array(
+					// Twig templating engine
+					$c['templating.twig.engine'],
+					$c['templating.php.engine'],
+				)
+			);
+		});
 
 		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\ViewNameParser(
@@ -116,26 +136,24 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$serviceContainer['templating.twig_environment'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
 			$twigEnvironment = new \Twig_Environment(
 				new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']),
 				array(
-					#'cache' => 'cog://tmp',
+					'cache' => 'cog://tmp',
 					'auto_reload' => true,
 				)
 			);
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
-			$twigEnvironment->addExtension(new \Symfony\Bridge\Twig\Extension\TranslationExtension(
-				new \Symfony\Component\Translation\Translator('uk')
-			));
 
 			return $twigEnvironment;
 		});
 
-		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.php.engine'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
@@ -149,24 +167,15 @@ class Services implements ServicesInterface
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
 					$c['templating.actions_helper'],
 					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
+					new \Message\Cog\Templating\Helper\Translation($c['translator']),
 				)
 			);
 		});
 
-		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.twig.engine'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\TwigEngine(
-				$c['templating.twig_environment'],
+				$c['templating.twig.environment'],
 				$c['templating.view_name_parser']
-			);
-		});
-
-		// Service for the templating delegation engine
-		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\DelegatingEngine(
-				array(
-					$c['templating.engine.twig'],
-					$c['templating.engine.php'],
-				)
 			);
 		});
 
@@ -177,8 +186,19 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$serviceContainer['http.session'] = $serviceContainer->share(function() {
-			return new \Symfony\Component\HttpFoundation\Session\Session;
+		$serviceContainer['http.session'] = $serviceContainer->share(function($c) {
+			$storage = new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+
+			// Use an array as the session storage when running unit tests
+			if ('test' === $c['env']) {
+				$storage = new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+			}
+
+			return new \Message\Cog\HTTP\Session(
+				$storage,
+				null,
+				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag('__cog_flashes')
+			);
 		});
 
 		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
@@ -246,7 +266,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\ReferenceParser($c['module.locator'], $c['fns.utility']);
+			return new \Message\Cog\Module\ReferenceParser($c['module.locator'], $c['fns.utility']);
 		});
 
 		// Filesystem
@@ -319,7 +339,7 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.helper.php'] = function($c) {
-			$engine = $c['templating.engine.php'];
+			$engine = $c['templating.php.engine'];
 
 			$formHelper = new \Message\Cog\Form\Template\Helper(
 				new \Symfony\Component\Form\FormRenderer(
@@ -393,6 +413,30 @@ class Services implements ServicesInterface
 
 		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
+		});
+
+
+		// Hardcode to en_GB for the moment. In the future this can be determined
+		// from properties on the route or the session object
+		$serviceContainer['locale'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Localisation\Locale('en_GB');
+		});
+
+		$serviceContainer['translator'] = $serviceContainer->share(function ($c) {
+			$selector = new \Message\Cog\Localisation\MessageSelector;
+			$id       = $c['locale']->getId();
+
+			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
+			$translator->setFallbackLocale($c['locale']->getFallback());
+
+			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
+
+			$dir = $c['app.loader']->getBaseDir().'/translations';
+			foreach($c['filesystem.finder']->in($dir) as $file) {
+				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+			}
+			
+			return $translator;
 		});
 	}
 }

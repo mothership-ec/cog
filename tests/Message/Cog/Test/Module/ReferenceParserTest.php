@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Test;
 
-use Message\Cog\ReferenceParser;
+use Message\Cog\Module\ReferenceParser;
 
 class ReferenceParserTest extends \PHPUnit_Framework_TestCase
 {

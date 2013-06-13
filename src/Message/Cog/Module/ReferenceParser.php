@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog;
+namespace Message\Cog\Module;
 
 /**
  * This method parses a view/controller reference and provides an easy API
@@ -43,7 +43,7 @@ class ReferenceParser implements ReferenceParserInterface
 	 * @param Module\LocatorInterface $moduleLocator The module locator
 	 * @param Functions\Utility       $fnsUtility    Function class for utility functions
 	 */
-	public function __construct(Module\LocatorInterface $moduleLocator, $fnsUtility)
+	public function __construct(LocatorInterface $moduleLocator, $fnsUtility)
 	{
 		$this->_moduleLocator = $moduleLocator;
 		$this->_fnsUtility    = $fnsUtility;
@@ -164,6 +164,11 @@ class ReferenceParser implements ReferenceParserInterface
 		return $this->_vendor . '\\' . $this->_module;
 	}
 
+	/**
+	 * Get the method for this reference, if set.
+	 *
+	 * @return string|null The method, or null if not set
+	 */
 	public function getMethod()
 	{
 		return $this->_method;

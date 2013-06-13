@@ -2,12 +2,23 @@
 
 namespace Message\Cog\DB;
 
+use Message\Cog\DB\Adapter\ConnectionInterface;
+
 /**
 *
 */
-class Transaction extends Query
+class Transaction
 {
+	protected $_query;
+	protected $_connection;
 	protected $_queries = array();
+
+	public function __construct(ConnectionInterface $connection)
+	{
+		$this->_connection = $connection;
+		$this->_query = new Query($connection);
+		$this->_query->fromTransaction = true;
+	}
 
 	public function add($query, $params = array())
 	{
@@ -18,22 +29,22 @@ class Transaction extends Query
 
 	public function rollback()
 	{
-		return $this->run($this->_connection->getTransactionRollback());
+		return $this->_query->run($this->_connection->getTransactionRollback());
 	}
 
 	public function commit()
 	{
-		$this->run($this->_connection->getTransactionStart());
+		$this->_query->run($this->_connection->getTransactionStart());
 		try {
 			foreach($this->_queries as $query) {
-				$this->run($query[0], $query[1]);
+				$this->_query->run($query[0], $query[1]);
 			}
 		} catch(Exception $e) {
 			$this->rollback();
 			throw $e;
 		}
 
-		return $this->run($this->_connection->getTransactionEnd());
+		return $this->_query->run($this->_connection->getTransactionEnd());
 	}
 
 	public function setID($name)

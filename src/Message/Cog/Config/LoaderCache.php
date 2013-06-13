@@ -105,7 +105,7 @@ class LoaderCache extends Loader
 				if (!$name) {
 					throw new Exception(sprintf('Config cache `%s` has empty group key(s)', $this->getCacheKey()));
 				}
-				if (!$group instanceof Group) {
+				if (!($group instanceof Group)) {
 					throw new Exception(sprintf('Config cache `%s` group `%s` value was not a valid Group instance', $this->getCacheKey(), $name));
 				}
 

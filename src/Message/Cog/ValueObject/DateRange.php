@@ -2,14 +2,14 @@
 
 namespace Message\Cog\ValueObject;
 
-use DateTime;
 use DateInterval;
+use \DateTime;
 
 /**
  * Represents a date range: the period between two specific timestamps.
  *
- * @author    Joe Holdcroft <joe@message.co.uk>
- * @author    Danny Hannah <danny@message.co.uk>
+ * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Danny Hannah <danny@message.co.uk>
  */
 class DateRange
 {
@@ -25,10 +25,10 @@ class DateRange
 	public function __construct(DateTime $from = null, DateTime $to = null)
 	{
 		if (!$from && !$to) {
-			throw new \LogicException('Date range could not be instantiated: at least one date must be supplied');
+			throw new \LogicException('Date range could not be instantiated: at least one date must be provided');
 		}
 
-		$this->_end = $to;
+		$this->_end   = $to;
 		$this->_start = $from;
 	}
 

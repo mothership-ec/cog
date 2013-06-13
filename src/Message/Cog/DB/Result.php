@@ -184,9 +184,8 @@ class Result extends ResultArrayAccess
 	}
 
 	/**
-	 * Instatiates an object based (using its name as a string) and sets the
-	 * properties of it based on the keys/values returned from the first row
-	 * of the result set.
+	 * Instatiates an objects for each row of the resultset and sets the 
+	 * properties of it based on the keys/values.
 	 *
 	 * @see bind
 	 *
@@ -196,21 +195,28 @@ class Result extends ResultArrayAccess
 	 *
 	 * @return object          The updated object(s) with data bound to them.
 	 */
-	public function bindTo($subject, $force = false)
+	public function bindTo($className, $force = false)
 	{
 		// Only strings can be passed in
-		if(!is_string($subject)) {
+		if(!is_string($className)) {
 			throw new \InvalidArgumentException('Only a fully qualified classname can be passed to Result::bindTo()');
 		}
 
 		// Existing, valid class name?
-		if(!class_exists($subject)) {
-			throw new \InvalidArgumentException(sprintf('`%s` class not found', $subject));
+		if(!class_exists($className)) {
+			throw new \InvalidArgumentException(sprintf('`%s` class not found', $className));
 		}
 
-		$class = new $subject;
+		$this->reset();
 
-		return $this->bind($class, $force);
+		$result = array();
+		while($row = $this->_result->fetchObject()) {
+			$obj = new $className;
+			$this->_bindPropertiesToObject($obj, $row, $force);
+			$result[] = $obj;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -260,7 +266,7 @@ class Result extends ResultArrayAccess
 	 */
 	public function isFromTransaction()
 	{
-		return $this->_query instanceof Transaction;
+		return isset($this->_query->fromTransaction);
 	}
 
 	/**

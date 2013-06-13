@@ -30,7 +30,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	{
 		// @todo consider the pattern of the infinite loop to help you find it
 
-		$this->_services['templating.engine.php']->addHelpers(array(
+		$this->_services['templating.php.engine']->addHelpers(array(
 			$this->_services['form.helper.php'],
 			$this->_services['form.helper.twig']
 		));

@@ -33,7 +33,7 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$services['templating.engine.php'] = $phpTemplatingEngine;
+		$services['templating.php.engine'] = $phpTemplatingEngine;
 		$services['form.helper.php'] = $phpFormHelper;
 
 		$listener->setContainer($services);

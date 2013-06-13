@@ -2,7 +2,9 @@
 
 namespace Message\Cog\Routing;
 
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Module\ReferenceParserInterface;
+
+use Message\Cog\Functions\Iterable;
 
 /**
  * Manages groups of routes for use in the router. Groups are represented as
@@ -138,8 +140,13 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	{
 		// Firstly, find collections that have a parent set and add them to that
 		// parent.
+		$hierarchy = $this->_getCollectionHierarchy();
+
 		$baseCollections = array();
 		foreach($this as $name => $collection) {
+
+			// Save the parent route collection names onto the routes.
+			$this->_saveCollectionNameToRoutes($collection->getRouteCollection(), $hierarchy[$name]);
 
 			// Save collections without parents as we have to loop over them
 			// later.
@@ -206,9 +213,51 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		$exists = isset($this->_collections[$name]);
 
 		if(!$exists && $create) {
-			$this->_collections[$name] = new RouteCollection($this->_referenceParser);
+			$this->_collections[$name] = new RouteCollection($this->_referenceParser, $name);
 		}
 
 		return $exists;
+	}
+
+	/**
+	 * Sets route collection names on a route (if they arent already set)
+	 *
+	 * @param  RouteCollection    $collection A collection to set the parent names on
+	 * @param  array $hierarchy  An array of the parent collection names
+	 *
+	 * @return void
+	 */
+	protected function _saveCollectionNameToRoutes($collection, $parents)
+	{
+		foreach($collection->all() as $route) {
+			if(!$route->hasDefault('_route_collections')) {
+				$route->setDefault('_route_collections', $parents);
+			}
+			
+		}
+	}
+
+	/**
+	 * Gets the parent collection names for each route collection.
+	 *
+	 * @return array An array where the key is the collection name and the 
+	 *               value is an array of the parent collection names.
+	 */
+	protected function _getCollectionHierarchy()
+	{
+		$parents = array();
+		foreach ($this as $collectionName => $collection) {
+			$parents[$collectionName] = $collection->getParent();
+		}
+
+		$tree = Iterable::toTree($parents);
+		$keys = Iterable::arrayKeysMultidimensional($tree);
+
+		$result = array();
+		foreach($keys as $key) {
+			$result[$key] = array_merge((array)Iterable::getParentsFromKey($key, $tree), array($key));
+		}
+
+		return $result;
 	}
 }

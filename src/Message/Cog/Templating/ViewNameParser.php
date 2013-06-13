@@ -3,7 +3,7 @@
 namespace Message\Cog\Templating;
 
 use Message\Cog\Service\ContainerInterface;
-use Message\Cog\ReferenceParserInterface;
+use Message\Cog\Module\ReferenceParserInterface;
 
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParser;
@@ -15,6 +15,8 @@ class ViewNameParser extends TemplateNameParser
 	protected $_services;
 	protected $_parser;
 	protected $_fileTypes;
+
+	protected $_lastAbsoluteModule;
 
 	/**
 	 * Constructor.
@@ -49,23 +51,43 @@ class ViewNameParser extends TemplateNameParser
 	 */
 	public function parse($reference)
 	{
+
+		// If a form template is being rendered, get the appropriate template
+		if (preg_match('/^@form/', $reference)) {
+			return $this->_formTemplate($reference);
+		}
+
+//		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
+//			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
+//			return new TemplateReference($baseFileName.'.html.php', 'php');
+//		}
+//		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
+//			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
+//			return new TemplateReference($baseFileName, 'twig');
+//		}
+
 		// Get the current HTTP request
 		$request = $this->_services['request'];
+		$parsed  = $this->_parser->parse($reference);
 
-		// @todo clean this up
-		// @todo twig integration
-		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
-			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
-			return new TemplateReference($baseFileName.'.html.php', 'php');
-		}
-		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
-			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
-			return new TemplateReference($baseFileName, 'twig');
-		}
+		// If it is relative and an absolute path was used previously, make the
+		// reference absolute using the previous module name
+		// This is a fix for https://github.com/messagedigital/cog/issues/40
+		// which should be improved/refactored at a later date
+		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
+			// If it is relative, make it absolute with the last module name
+			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
+			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
 
+			// Parse the new reference
+			$parsed = $this->_parser->parse($newReference);
+		}
+		else if (!$parsed->isRelative()) {
+			$this->_lastAbsoluteModule = $parsed->getModuleName();
+		}
 
 		// Get the base file name from the reference parser
-		$baseFileName = $this->_parser->parse($reference)->getFullPath('View');
+		$baseFileName = $parsed->getFullPath('View');
 
 		// Loop through each content type
 		foreach ($request->getAllowedContentTypes() as $mimeType) {
@@ -73,8 +95,8 @@ class ViewNameParser extends TemplateNameParser
 
 			// Loop through the engines in order of preference
 			foreach ($this->_fileTypes as $engine) {
-				$fileName = $baseFileName . '.' . $format . '.' . $engine;
 				// Check if a view file exists for this format and this engine
+				$fileName = $baseFileName . '.' . $format . '.' . $engine;
 				if (file_exists($fileName)) {
 					return new TemplateReference($fileName, $engine);
 				}
@@ -85,5 +107,36 @@ class ViewNameParser extends TemplateNameParser
 			'View format could not be determined for reference `%s`',
 			$reference
 		));
+	}
+
+	/**
+	 * Method to return a template for forms
+	 *
+	 * @param string $reference             Reference to parse
+	 * @throws NotAcceptableHttpException   Throws exception if template file cannot be found
+	 *
+	 * @return TemplateReference            Returns reference to view file
+	 */
+	protected function _formTemplate($reference) {
+
+		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
+			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1].'.html.php';
+			$engine = 'php';
+		}
+
+		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
+			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
+			$engine = 'twig';
+		}
+
+		if (!file_exists($baseFileName)) {
+			throw new NotAcceptableHttpException(sprintf(
+				'View format could not be determined for reference `%s`',
+				$reference
+			));
+		}
+
+		return new TemplateReference($baseFileName, $engine);
+
 	}
 }

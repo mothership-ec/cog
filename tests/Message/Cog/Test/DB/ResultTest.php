@@ -268,9 +268,31 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$className = 'Message\Cog\Test\DB\BindClass';
 
 		$result = $this->getQuery()->run("SELECT * FROM staff");
-		$obj = $result->bindTo($className);
+		$result = $result->bindTo($className);
 
-		$this->assertInstanceOf($className, $obj);
+		$testClasses = array();
+
+		$obj = new BindClass;
+		$obj->forename = 'James';
+		$obj->surname = 'Moss';
+		$testClasses[] = $obj;
+
+		$obj = new BindClass;
+		$obj->forename = 'Joe';
+		$obj->surname = 'Holdcroft';
+		$testClasses[] = $obj;
+
+		$obj = new BindClass;
+		$obj->forename = 'Danny';
+		$obj->surname = 'Hannah';
+		$testClasses[] = $obj;
+
+		$obj = new BindClass;
+		$obj->forename = 'Joe';
+		$obj->surname = 'Bloggs';
+		$testClasses[] = $obj;
+
+		$this->assertEquals($testClasses, $result);
 	}
 
 	/**
@@ -316,7 +338,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$query = new \Message\Cog\DB\Transaction($connection);
+		$query = new \Message\Cog\DB\Query($connection);
 		$result = $query->run("SELECT * FROM staff");
 
 		$this->assertEquals(1337, $result->id());
@@ -335,7 +357,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$query = new \Message\Cog\DB\Transaction($connection);
+		$query = new \Message\Cog\DB\Query($connection);
 		$result = $query->run("SELECT * FROM staff");
 
 		$this->assertEquals(2345, $result->affected());
@@ -353,7 +375,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		));
 
 		$query = new \Message\Cog\DB\Transaction($connection);
-		$result = $query->run("SELECT * FROM staff");
+		$result = $query->add("SELECT * FROM staff")->commit();
 
 		$this->assertTrue($result->isFromTransaction());
 	}

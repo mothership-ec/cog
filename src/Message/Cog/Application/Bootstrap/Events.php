@@ -5,6 +5,7 @@ namespace Message\Cog\Application\Bootstrap;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Bootstrap\EventsInterface;
+use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
 /**
  * Cog event listener bootstrap.
@@ -38,13 +39,16 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Request
 		);
+
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
 		);
+
 		// Symfony's HTTP Response Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
 		);
+
 		// Symfony's HTTP Fragment Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
@@ -62,18 +66,20 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Filesystem
 		$eventDispatcher->addSubscriber(
-			new \Message\Cog\Filesystem\EventListener(
-				$this->_services
-			)
+			new \Message\Cog\Filesystem\EventListener
 		);
 
-		// Form
-		$eventDispatcher->addSubscriber(new \Message\Cog\Form\EventListener);
 
 		// Routing
 		$eventDispatcher->addSubscriber(new \Message\Cog\Routing\EventListener);
 
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
+
+		// Form
+		$eventDispatcher->addSubscriber(new \Message\Cog\Form\EventListener);
+
+		//Templating
+		$eventDispatcher->addSubscriber(new \Message\Cog\Templating\EventListener);
 	}
 }

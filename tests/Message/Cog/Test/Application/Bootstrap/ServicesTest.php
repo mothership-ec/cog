@@ -155,7 +155,7 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 	public function testReferenceParserDefinitions()
 	{
 		$this->assertInstanceOf(
-			'Message\Cog\ReferenceParserInterface',
+			'Message\Cog\Module\ReferenceParserInterface',
 			$this->_container['reference_parser']
 		);
 	}

@@ -10,6 +10,7 @@ use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use LogicException;
 
@@ -31,15 +32,26 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	protected $_request;
 
 	/**
-	 * Get a service directly from the container by name
+	 * Get a service directly from the container by name.
 	 *
 	 * @param  string $serviceName The service name
 	 *
-	 * @return mixed               The requested service.
+	 * @return mixed               The requested service
 	 */
 	public function get($serviceName)
 	{
 		return $this->_services[$serviceName];
+	}
+
+	/**
+	 * Add a flash message to the session.
+	 *
+	 * @param string $type    The type of message
+	 * @param string $message The message to add
+	 */
+	public function addFlash($type, $message)
+	{
+		return $this->get('http.session')->getFlashBag()->add($type, $message);
 	}
 
 	/**
@@ -135,12 +147,29 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function render($reference, array $params = array())
 	{
-		if (!$this->_request instanceof Request) {
+		if (!($this->_request instanceof Request)) {
 			throw new LogicException('Request must be set on the controller to render a view.');
 		}
 
 		return $this->_services['response_builder']
 			->setRequest($this->_request)
 			->render($reference, $params);
+	}
+
+	/**
+	 * Returns a NotFoundHttpException.
+	 *
+	 * This will result in a 404 response code. Usage example:
+	 *
+	 *     throw $this->createNotFoundException('Page not found!');
+	 *
+	 * @param string    $message  A message
+	 * @param \Exception $previous The previous exception
+	 *
+	 * @return NotFoundHttpException
+	 */
+	public function createNotFoundException($message = 'Not Found', \Exception $previous = null)
+	{
+	    return new NotFoundHttpException($message, $previous);
 	}
 }

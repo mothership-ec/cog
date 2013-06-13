@@ -5,7 +5,7 @@ namespace Message\Cog\Test\Filesystem;
 use Message\Cog\Filesystem\StreamWrapperManager;
 use Message\Cog\Filesystem\StreamWrapper;
 
-use Message\Cog\ReferenceParser;
+use Message\Cog\Module\ReferenceParser;
 use Message\Cog\Test\Module;
 
 use Message\Cog\Filesystem\Finder;

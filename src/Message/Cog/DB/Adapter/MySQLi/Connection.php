@@ -37,6 +37,9 @@ class Connection implements ConnectionInterface
 			$this->_params['db']
 		);
 
+		// Set to natively return integer & float types where appropriate
+		$this->_handle->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
+
 		// Set the charset
 		if(isset($this->_params['charset'])) {
 			$this->_handle->set_charset($this->_params['charset']);
