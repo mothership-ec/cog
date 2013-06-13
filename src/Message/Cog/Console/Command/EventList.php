@@ -52,22 +52,26 @@ class EventList extends Command
 				} else {
 					$reflection = new \ReflectionFunction($listener);
 					$file        = new \Message\Cog\Filesystem\File($reflection->getFileName());
-
-
 					$object     = $reflection->getNamespaceName().'\\'.$file->getFilenameWithoutExtension();
-					$methodName = 'L:'.$reflection->getStartLine() . ' - L:'.$reflection->getEndLine();
+					$methodName = 'Closure (L:'.$reflection->getStartLine() . ' - L:'.$reflection->getEndLine().')';
 					$priority   = '';
-					
-					var_dump($reflection->getFileName());
 				}
 
-				
+				// look for the search term
+				if($term 
+					&& strpos(strtolower($object), strtolower($term)) === false
+					&& strpos(strtolower($methodName), strtolower($term)) === false
+					&& strpos(strtolower($eventName), strtolower($term)) === false
+				) {
+					continue;
+				}
+
 				$events[] = array(
 					$object,
 					$methodName,
 					$eventName,
 					$priority,
-					$order,
+					$order, // We still have to rely on this order dir as closures dont have a priority
 				);
 			}
 		}
