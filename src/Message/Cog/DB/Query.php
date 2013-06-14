@@ -146,16 +146,19 @@ class Query
 			return 'NULL';
 		}
 
-		// sanitize
-		settype($value, $this->_typeTokens[$type]);
-		$safe = $this->_connection->escape($value);
-
+		if ($type == 'd') {
+			// If is has been cast as date, and is not an ctype_digit, it will be a
+			// DateTime object and we need to convert it into an int
+			$safe = ctype_digit($value) ? $value : $value->getTimestamp();
+		} else {
+			// sanitize
+			settype($value, $this->_typeTokens[$type]);
+			$safe = $this->_connection->escape($value);
+		}
 		// format it ready for the query
 		if ($type == 'd') {
-			if (ctype_digit($safe)) {
-				$safe = 'FROM_UNIXTIME('.$safe.')';
-			} else {
-				$safe = "'".$safe."'";
+			if (!ctype_digit($safe)) {
+				$safe = $safe;
 			}
 		} elseif($type == 's' || $type == 'f') {
 			$safe = "'".$safe."'";
