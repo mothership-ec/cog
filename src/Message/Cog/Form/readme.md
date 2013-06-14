@@ -6,9 +6,10 @@ Due to the complexity of the Symfony Form component, and the fact that many of t
 
 ## Building a form
 
-To a build a form, we must first call the form wrapper from the service container in your controller:
+To a build a form, we must first call the form wrapper from the service container in your controller, defining how you want to render it:
 
-	$wrapper = $this->_services['form.wrapper.php'];
+	$wrapper = $this->_services['form.wrapper.php']; // call this to render in php
+	$wrapper = $this->_services['form.wrapper.twig']; // call this to render in twig
 
 We can now add our fields using the same syntax as Symfony Form, only on the wrapper instead of directly on the form:
 
@@ -41,3 +42,13 @@ It is also possible to get the data once it has been filtered through the valida
 
 	// returns array
 	$wrapper->getFilteredData();
+
+## Rendering
+
+To pass the form to the view, you need to give it an instance of the `FormView` class by calling the `createView()` method:
+
+	return $this->render('::form', array(
+    			'form' => $form->createView(),
+    		));
+
+You can then follow the documentation on the Symfony site for how to render it in the view (http://symfony.com/doc/current/cookbook/form/form_customization.html)
