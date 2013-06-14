@@ -53,12 +53,11 @@ class Wrapper
 	 */
 	public function __construct(Container $container, $type = 'php')
 	{
-		$this->_type = $type;
-		$this->_container = $container;
-		$this->_container['templating.php.engine']->addHelpers(array($this->_container['form.helper.' . $type]));
-		$this->_form = $this->_container['form.builder']->getForm();
-		$this->_validator = $this->_container['validator'];
-		$this->_request = $this->_container['request'];
+		$this->_type        = $type;
+		$this->_container   = $container;
+		$this->_form        = $this->_container['form.builder']->getForm();
+		$this->_validator   = $this->_container['validator'];
+		$this->_request     = $this->_container['request'];
 	}
 
 	/**
@@ -66,8 +65,8 @@ class Wrapper
 	 */
 	public function clear()
 	{
-		$this->_form = $this->_container['form.builder']->getForm();
-		$this->_validator = $this->_container['validator'];
+		$this->_form        = $this->_container['form.builder']->getForm();
+		$this->_validator   = $this->_container['validator'];
 	}
 
 	/**
@@ -83,7 +82,9 @@ class Wrapper
 	public function add($child, $type = null, array $options = array())
 	{
 		if(!is_string($child) && (!$child instanceof SymfonyForm)) {
-			throw new \InvalidArgumentException('$child must be either a string or instance of Symfony\Component\Form\Form');
+			throw new \InvalidArgumentException(
+				'$child must be either a string or instance of Symfony\Component\Form\Form'
+			);
 		}
 
 		$options = array_merge($this->_defaults, $options);
@@ -164,6 +165,8 @@ class Wrapper
 	 */
 	public function getForm()
 	{
+		$this->_container['templating.php.engine']
+			->addHelpers(array($this->_container['form.helper.' . $this->_type]));
 		return $this->_form;
 	}
 
@@ -191,7 +194,9 @@ class Wrapper
 	public function isValid($fromPost = false, array $data = null)
 	{
 		if (!$this->_form->isBound() && !$data && !$fromPost) {
-			throw new \LogicException('You cannot call isValid() on a form that is not bound, unless $fromPost is set to true, or $data is set');
+			throw new \LogicException(
+				'You cannot call isValid() on a form that is not bound, unless $fromPost is set to true, or $data is set'
+			);
 		}
 		elseif ($fromPost) {
 			$data = $this->getPost();

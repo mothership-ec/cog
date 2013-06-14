@@ -101,20 +101,31 @@ class ViewNameParser extends TemplateNameParser
 	}
 
 	/**
-	 * Method to return a template for forms
+	 * Parses reference as defined by service container.
+	 *
+	 *
+	 *
+
 	 *
 	 * @param string $reference             Reference to parse
-	 * @throws NotAcceptableHttpException   Throws exception if template file cannot be found
+	 * @throws NotAcceptableHttpException   Throws exception if twig template file cannot be found
 	 *
 	 * @return TemplateReference            Returns reference to view file
 	 */
 	protected function _formTemplate($reference) {
 
+		/**
+		 * A php reference, it could be directly referencing a template file, i.e. '@form.php:field_row.html.php', or
+		 * be generated depending on the field name like '@form.php:_form_fieldName_widget.html.php'
+		 */
 		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
 			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1].'.html.php';
 			$engine = 'php';
 		}
 
+		/**
+		 * A twig reference should always be '@form.twig:form_div_layout'
+		 */
 		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
 			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
 			$engine = 'twig';

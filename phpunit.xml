@@ -81,6 +81,7 @@
 			<exclude>
 				<directory>./vendor</directory>
 				<directory>./tests</directory>
+				<directory>./src/Message/Cog/Form/Views</directory>
 			</exclude>
 		</whitelist>
 	</filter>
