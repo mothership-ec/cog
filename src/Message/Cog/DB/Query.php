@@ -146,14 +146,9 @@ class Query
 			return 'NULL';
 		}
 
-		// If the type is cast as date and either all digits, or DateTime
-		// then we turn it into a timestamp
-		if ($type == 'd' && (ctype_digit($value) || $value instanceof \DateTime) ) {
-			if ($value instanceof \DateTime) {
-				$value =$value->getTimestamp();
-			}
-			// Return the int
-			$safe = $value;
+		// If a type is set to date then cast it to an int
+		if ($type == 'd') {
+		    $safe = (int) ($value instanceof \DateTime) ? $value->getTimestamp() : $value;
 		} else {
 			// sanitize
 			settype($value, $this->_typeTokens[$type]);
