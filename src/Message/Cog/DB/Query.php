@@ -146,10 +146,14 @@ class Query
 			return 'NULL';
 		}
 
-		if ($type == 'd') {
-			// If the type has been cast as date, and is not an ctype_digit, it
-			// will be a DateTime object and we need to convert it into an int
-			$safe = ctype_digit($value) ? $value : $value->getTimestamp();
+		// If the type is true, cast as date, and either all digits, or DateTime
+		// then we turn it into a timestamp
+		if ($type == 'd' && $type && (ctype_digit($value) || $value instanceof \DateTime) ) {
+			if (!$value instanceof \DateTime) {
+				$value = new \DateTime('@'.$value);
+			}
+			// get the timestamp for either
+			$safe = $value->getTimestamp();
 		} else {
 			// sanitize
 			settype($value, $this->_typeTokens[$type]);
