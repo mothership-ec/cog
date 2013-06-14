@@ -159,7 +159,8 @@ class Query
 			settype($value, $this->_typeTokens[$type]);
 			$safe = $this->_connection->escape($value);
 		}
-
+		// Floats are quotes to support all locales.
+		// See: http://stackoverflow.com/questions/2030684/which-mysql-data-types-should-i-not-be-quoting-during-an-insert"
 		if($type == 's' || $type == 'f') {
 			$safe = "'".$safe."'";
 		}
