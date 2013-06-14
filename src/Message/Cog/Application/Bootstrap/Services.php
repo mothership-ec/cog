@@ -312,12 +312,8 @@ class Services implements ServicesInterface
 
 
 		// Forms
-		$serviceContainer['form.creator.php'] = function($c) {
-			return new \Message\Cog\Form\Creator($c, 'php');
-		};
-
-		$serviceContainer['form.creator.twig'] = function($c) {
-			return new \Message\Cog\Form\Creator($c, 'twig');
+		$serviceContainer['form.handler'] = function($c) {
+			return new \Message\Cog\Form\Handler($c);
 		};
 
 		$serviceContainer['form.builder'] = function($c) {

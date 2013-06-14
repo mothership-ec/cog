@@ -18,7 +18,7 @@ use Message\Cog\Service\Container;
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Creator
+class Handler
 {
 	/**
 	 * @var \Message\Cog\Service\Container
@@ -51,9 +51,9 @@ class Creator
 	 * @param Container $container      Service container for getting instance of form builder and validation
 	 * @param string $type              Type of rendering engine to use, i.e. php or twig
 	 */
-	public function __construct(Container $container, $type = 'php')
+	public function __construct(Container $container)
 	{
-		$this->_type        = $type;
+//		$this->_type        = $type;
 		$this->_container   = $container;
 		$this->_form        = $this->_container['form.builder']->getForm();
 		$this->_validator   = $this->_container['validator'];
@@ -77,7 +77,7 @@ class Creator
 	 * @param array $options                    Options for field, see Symfony Form documentation
 	 * @throws \InvalidArgumentException        Throws exception if $child is not a string or Form object
 	 *
-	 * @return Wrapper                          Returns $this for chainability
+	 * @return Handler                          Returns $this for chainability
 	 */
 	public function add($child, $type = null, array $options = array())
 	{
@@ -135,7 +135,7 @@ class Creator
 	 *
 	 * @param SymfonyForm $form       New instance of form
 	 *
-	 * @return Wrapper                Returns $this for chainability
+	 * @return Handler                Returns $this for chainability
 	 */
 	public function setForm(SymfonyForm $form)
 	{
@@ -149,7 +149,7 @@ class Creator
 	 *
 	 * @param Validator $validator      Validator instance to provide validation rules
 	 *
-	 * @return Wrapper                  Returns $this for chainability
+	 * @return Handler                  Returns $this for chainability
 	 */
 	public function setValidator(Validator $validator)
 	{
@@ -166,7 +166,11 @@ class Creator
 	public function getForm()
 	{
 		$this->_container['templating.php.engine']
-			->addHelpers(array($this->_container['form.helper.' . $this->_type]));
+			->addHelpers(array(
+				$this->_container['form.helper.twig'],
+				$this->_container['form.helper.php'],
+			));
+
 		return $this->_form;
 	}
 
