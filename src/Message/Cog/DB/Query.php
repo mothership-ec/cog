@@ -147,8 +147,8 @@ class Query
 		}
 
 		if ($type == 'd') {
-			// If is has been cast as date, and is not an ctype_digit, it will be a
-			// DateTime object and we need to convert it into an int
+			// If the type has been cast as date, and is not an ctype_digit, it
+			// will be a DateTime object and we need to convert it into an int
 			$safe = ctype_digit($value) ? $value : $value->getTimestamp();
 		} else {
 			// sanitize
