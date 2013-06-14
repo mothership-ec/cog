@@ -66,7 +66,7 @@ class Wrapper
 	 */
 	public function clear()
 	{
-		$this->_form = $this->_container['form.builder.' . $this->_type]->getForm();
+		$this->_form = $this->_container['form.builder']->getForm();
 		$this->_validator = $this->_container['validator'];
 	}
 

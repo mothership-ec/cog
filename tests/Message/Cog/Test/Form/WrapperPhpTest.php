@@ -15,7 +15,11 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_wrapper;
 
-	protected $_phpBuilder;
+	protected $_builder;
+
+	protected $_engine;
+
+	protected $_helper;
 
 	protected $_container;
 
@@ -55,7 +59,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			));
 
 		// Add form builder mock to container
-		$this->_phpBuilder = $this->getMock(
+		$this->_builder = $this->getMock(
 			'\\Symfony\\Component\\Form\\FormBuilder',
 			array(),
 			array(
@@ -65,7 +69,23 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 				$factory
 			));
 
-		$container['form.builder.php'] = $this->_phpBuilder;
+		$container['form.builder'] = $this->_builder;
+
+		// Mock rendering engine
+		$this->_engine = $this->getMockBuilder('\\Message\\Cog\\Templating\\PhpEngine')
+			->disableOriginalConstructor()
+			->setMethods(array('addHelpers'))
+			->getMock();
+
+		$container['templating.php.engine'] = $this->_engine;
+
+		// Mock helpers
+		$this->_helper = $this->getMockBuilder('\\Message\\Cog\\Form\\Template\\Helper')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$container['form.helper.php'] = $this->_helper;
+		$container['form.helper.twig'] = $this->_helper;
 
 		// Add validator mock to container
 		$messages = $this->getMock('\\Message\\Cog\\Validation\\Messages');
@@ -100,7 +120,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 
 		$this->_form = $this->getMockBuilder('\\Symfony\\Component\\Form\\Form')
 			->setConstructorArgs(array($this->_config))
-			->setMethods(array()) //@todo mock isBound without breaking e'rytin'!
+			->setMethods(array())
 			->getMock();
 
 		$this->_config->expects($this->any())
@@ -113,7 +133,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 
 	public function testClear()
 	{
-		$this->_phpBuilder->expects($this->once())
+		$this->_builder->expects($this->once())
 			->method('getForm')
 			->will($this->returnValue($this->_form));
 
