@@ -103,10 +103,6 @@ class ViewNameParser extends TemplateNameParser
 	/**
 	 * Parses reference as defined by service container.
 	 *
-	 *
-	 *
-
-	 *
 	 * @param string $reference             Reference to parse
 	 * @throws NotAcceptableHttpException   Throws exception if twig template file cannot be found
 	 *
