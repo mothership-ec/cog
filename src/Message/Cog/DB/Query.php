@@ -148,23 +148,19 @@ class Query
 
 		// If the type is true, cast as date, and either all digits, or DateTime
 		// then we turn it into a timestamp
-		if ($type == 'd' && $type && (ctype_digit($value) || $value instanceof \DateTime) ) {
-			if (!$value instanceof \DateTime) {
-				$value = new \DateTime('@'.$value);
+		if ($type == 'd' && (ctype_digit($value) || $value instanceof \DateTime) ) {
+			if ($value instanceof \DateTime) {
+				$value =$value->getTimestamp();
 			}
 			// get the timestamp for either
-			$safe = $value->getTimestamp();
+			$safe = $value;
 		} else {
 			// sanitize
 			settype($value, $this->_typeTokens[$type]);
 			$safe = $this->_connection->escape($value);
 		}
-		// format it ready for the query
-		if ($type == 'd') {
-			if (!ctype_digit($safe)) {
-				$safe = $safe;
-			}
-		} elseif($type == 's' || $type == 'f') {
+
+		if($type == 's' || $type == 'f') {
 			$safe = "'".$safe."'";
 		}
 
