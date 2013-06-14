@@ -76,9 +76,6 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
 
-		// Form
-		$eventDispatcher->addSubscriber(new \Message\Cog\Form\EventListener);
-
 		//Templating
 		$eventDispatcher->addSubscriber(new \Message\Cog\Templating\EventListener);
 	}

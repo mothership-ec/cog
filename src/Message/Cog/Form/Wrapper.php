@@ -44,6 +44,7 @@ class Wrapper
 //		'required' => false,
 	);
 
+
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
 	 *
@@ -54,7 +55,8 @@ class Wrapper
 	{
 		$this->_type = $type;
 		$this->_container = $container;
-		$this->_form = $this->_container['form.builder.' . $this->_type]->getForm();
+		$this->_container['templating.php.engine']->addHelpers(array($this->_container['form.helper.' . $type]));
+		$this->_form = $this->_container['form.builder']->getForm();
 		$this->_validator = $this->_container['validator'];
 		$this->_request = $this->_container['request'];
 	}

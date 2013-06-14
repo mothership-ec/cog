@@ -57,15 +57,6 @@ class ViewNameParser extends TemplateNameParser
 			return $this->_formTemplate($reference);
 		}
 
-//		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
-//			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1];
-//			return new TemplateReference($baseFileName.'.html.php', 'php');
-//		}
-//		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
-//			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
-//			return new TemplateReference($baseFileName, 'twig');
-//		}
-
 		// Get the current HTTP request
 		$request = $this->_services['request'];
 		$parsed  = $this->_parser->parse($reference);
@@ -127,13 +118,13 @@ class ViewNameParser extends TemplateNameParser
 		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
 			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
 			$engine = 'twig';
-		}
 
-		if (!file_exists($baseFileName)) {
-			throw new NotAcceptableHttpException(sprintf(
-				'View format could not be determined for reference `%s`',
-				$reference
-			));
+			if (!file_exists($baseFileName)) {
+				throw new NotAcceptableHttpException(sprintf(
+					'View format could not be determined for reference `%s`',
+					$reference
+				));
+			}
 		}
 
 		return new TemplateReference($baseFileName, $engine);

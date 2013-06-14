@@ -320,21 +320,12 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Form\Wrapper($c, 'twig');
 		};
 
-		$serviceContainer['form.builder.php'] = function($c) {
-			return $c['form.factory.php']->createBuilder();
+		$serviceContainer['form.builder'] = function($c) {
+			return $c['form.factory']->createBuilder();
 		};
 
-		$serviceContainer['form.builder.twig'] = function($c) {
-			return $c['form.factory.twig']->createBuilder();
-		};
-
-		$serviceContainer['form.factory.php'] = function($c) {
-			$builder = new \Message\Cog\Form\Factory\Builder($c, 'php');
-			return $builder->getFormFactory();
-		};
-
-		$serviceContainer['form.factory.twig'] = function($c) {
-			$builder = new \Message\Cog\Form\Factory\Builder($c, 'twig');
+		$serviceContainer['form.factory'] = function($c) {
+			$builder = new \Message\Cog\Form\Factory\Builder($c);
 			return $builder->getFormFactory();
 		};
 

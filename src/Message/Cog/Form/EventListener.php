@@ -12,6 +12,8 @@ use Message\Cog\Event\EventListener as BaseListener;
  * @package Message\Cog\Form
  *
  * @author Thomas Marchant <thomas@message.co.uk>
+ *
+ * @todo can probably be deleted as form helper is registered in form wrapper
  */
 class EventListener extends BaseListener implements SubscriberInterface
 {
@@ -28,14 +30,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 	public function setupFormHelper()
 	{
-		// @todo consider the pattern of the infinite loop to help you find it
-
-		$this->_services['templating.php.engine']->addHelpers(array(
-			$this->_services['form.helper.php'],
-			$this->_services['form.helper.twig']
-		));
-
-//		var_dump($this->_services['form.factory.twig']);
+//		$this->_services['templating.php.engine']->addHelpers(array(
+//			$this->_services['form.helper.php'],
+//			$this->_services['form.helper.twig']
+//		));
 
 	}
 }
