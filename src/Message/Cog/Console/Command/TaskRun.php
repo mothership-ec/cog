@@ -3,7 +3,7 @@
 namespace Message\Cog\Console\Command;
 
 use Message\Cog\Console\Command;
-use Message\Cog\Console\TaskRunner;
+use Message\Cog\Console\Task\Runner;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +35,7 @@ class TaskRun extends Command
 			return;
 		}
 
-		$command = $task[2];
-		$runner = new TaskRunner($command, $this->_services);
+		$command = $task[1];
+		$runner = new Runner($command, $this->_services);
 	}
 }

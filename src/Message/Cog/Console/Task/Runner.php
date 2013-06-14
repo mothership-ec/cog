@@ -24,6 +24,16 @@ class Runner
 	{
 		$app = new Application('Cog task runner');
 		$app->setContainer($container);
+
+		$command->addOutputHandler(new OutputHandler\Printer);
+		$command->addOutputHandler(new OutputHandler\Mail);
+		$command->addOutputHandler(new OutputHandler\Log);
+
+		// Output to the console by default
+		$command->output('print')->enable();
+		$command->output('mail')->enable('james@message.co.uk');
+		$command->output('log')->enable('/tmp/bob/thing/path');
+
 		$app->add($command);
 		$app->setAutoExit(false);
 		$app->run(new StringInput($command->getName()));

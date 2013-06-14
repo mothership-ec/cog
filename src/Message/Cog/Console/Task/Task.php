@@ -3,6 +3,8 @@
 namespace Message\Cog\Console\Task;
 
 use Message\Cog\Console\Command;
+use Message\Cog\Service\ContainerAwareInterface;
+
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,65 +20,24 @@ abstract class Task extends Command
 {
 	protected $_services;
 	protected $_input;
-	protected $_cronExpression = false;
-	protected $_outputHandlers = array();
-	protected $_buffer = '';
+	protected $_cronExpression   = false;
+	protected $_cronEnvironments = array();
+	protected $_outputHandlers   = array();
+	protected $_buffer           = '';
 
 	final public function __construct($name)
 	{
 		parent::__construct($name);
-
-		// output to console by default
-		$this->printOutput(true);
 	}
 
-	final public function registerHandler($name, $handler)
+	final public function addOutputHandler(OutputHandler\OutputHandler $handler)
 	{
-		$this->_outputHandlers[$name] = $handler;
-	}
-
-	final public function mailOutput($recipients, $subject = false, $body = false, $filename = false)
-	{
-		// if a single string is provided turn it into the format we expect
-		if(!is_array($recipients)) {
-			$recipients = array($recipients => '');
+		if($handler instanceof ContainerAwareInterface) {
+			$handler->setContainer($this->services);
 		}
 
-		$this->registerHandler('mail', function($buffer, $printed, $returned) 
-				use ($recipients, $subject, $body, $filename) {
-			$output = $buffer.$printed.$returned;
-			// TODO: Use Cog's proper email component when it's done
-			$subject = $subject ?: 'Output of '.$this->getName();
-			$body    = $body ?: !$filename ? $output : '';
-			mail(implode(', ', $recipients), $subject, $body);
-		});
-
-		// TODO: return the email component object so the developer can modify it if they wish
-	}
-
-	final public function saveOutput($path, $append = false)
-	{
-		$this->registerHandler('file', function($output) use ($path, $append) {
-			$output = $buffer.$printed.$returned;
-			if(!$append && is_writable(dirname($path))) {
-				file_put_contents($path, $output);
-			} else if($append && is_writable($path)) {
-				file_put_contents($path, $output, FILE_APPEND);
-			} else {
-				$this->_output->writeln('<error>Cannot write to '.$path.'</error>');
-			}
-		});
-	}
-
-	final public function printOutput($write = true)
-	{
-		$self = $this;
-		$this->registerHandler('print', function($buffer, $printed, $returned) use ($write, $self) {
-			$output = $buffer.$printed.$returned;
-			if($write) {
-				$self->getOutput()->writeln($output);
-			}
-		});
+		$handler->setTask($this);
+		$this->_outputHandlers[$handler->getName()] = $handler;
 	}
 
 	final public function schedule($expression, $env = array())
@@ -96,42 +57,42 @@ abstract class Task extends Command
 		return $this->_cronEnvironments;
 	}
 
-	final public function isDue($time, $env)
+	final public function output($name)
 	{
-		if(!$this->_cronExpression) {
-			return false;
-		}
-		if(!$this->_cronExpression->isDue($time)) {
-			return false;
-		}
-		if(count($this->_cronEnvironments) && !in_array($env, $this->_cronEnvironments)) {
-			return false;
-		}
-
-		return true;
+		return isset($this->_outputHandlers[$name]) ? $this->_outputHandlers[$name] : false;
 	}
 
-	final public function getOutputHandler($type)
-	{
-		return isset($this->_outputHandlers[$type]) ? $this->_outputHandlers[$type] : false;
-	}
-
-	final public function getOutput()
+	final public function getRawOutput()
 	{
 		return $this->_output;
 	}
+
+	final public function getRawInput()
+	{
+		return $this->_input;
+	}
+
 
 	final protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$this->_input  = $input;
 		$this->_output = $output;
 
-		ob_start(); // capcture any calls to `echo`
-		$returnedOutput = $this->process();
-		$printedOutput = ob_get_clean();
+		$exception = '';
+
+		ob_start(); // capture any calls to `echo` or `print`
+		try {
+			$returned = $this->process();
+		} catch(\Exception $e) {
+			$exception = $e->getMessage();
+		}
+		$printed = ob_get_clean();
 
 		foreach($this->_outputHandlers as $handler) {
-			call_user_func($handler, $this->getBuffer(), $printedOutput, $returnedOutput);
+			$all = implode("\n", array_filter(array(
+				$this->getBuffer(), $printed, $returned, $exception
+			)));
+			$handler->process(array($all, $this->getBuffer(), $printed, $returned, $exception));
 		}
 	}
 

@@ -30,7 +30,7 @@ Here's the bare minimum needed for a task that would be part of the `Cog\Core` m
 
 	namespace Message\CMS\Task;
 
-	use Message\Cog\Console\Task;
+	use Message\Cog\Console\Task\Task;
 
 	class SendOrderData extends Task
 	{
@@ -242,7 +242,7 @@ Really a task is just an instance of `Symfony\Component\Console\Command\Command`
 
 The `$input` and `$output` parameters found in a `execute()` method call have been added as protected properties at `$this->_input` and `$this->output` accordingly.  This means you can do things like adding new style formatters and user dialogs if you so wish from within your task.
 
-The task itself runs in a special sandboxed instance of `Symfony\Component\Console\Application` so that help commands and the parent command can't be accessed or modified.
+The task itself runs in a special sandboxed instance of `Symfony\Component\Console\Application` so that help commands and the parent command can't be accessed or modified. This also allows it to capture any output so that it can be printed, emailed or logged.
 
 ### Task scheduling
 

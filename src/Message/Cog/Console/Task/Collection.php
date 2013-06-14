@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Console\Task;
 
-use Message\Cog\Service\ContainerInterface;
-
 /**
  * TaskCollection
  *
@@ -12,11 +10,6 @@ use Message\Cog\Service\ContainerInterface;
 class Collection
 {
 	protected $_tasks = array();
-
-	public function __construct(ContainerInterface $services)
-	{
-		$this->_services = $services;
-	}
 
 	/**
 	 * Add a task to the collection
@@ -34,7 +27,6 @@ class Collection
 
 		// Add the task to the internal array
 		$this->_tasks[$task->getName()] = array(
-			$this->_services['fns.utility']->traceCallingModuleName(),
 			$description,
 			$task,
 		);

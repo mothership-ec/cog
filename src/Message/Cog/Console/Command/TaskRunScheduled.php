@@ -40,7 +40,7 @@ class TaskRunScheduled extends Command
 		$path = $_SERVER['argv'][0];
 		$env  = ' --env='.$this->get('env');
 		foreach($this->get('task.collection')->all() as $task) {
-			if($task[2]->isDue(time(), $this->get('env'))) {
+			if($this->_isDue($task[2], time(), $this->get('env'))) {
 				$output->writeln('Running ' . $task[2]->getName());
 				try {
 					$process = new Process($path . $env . ' task:run ' . $task[2]->getName());
@@ -50,5 +50,20 @@ class TaskRunScheduled extends Command
 				}
 			}
 		}
+	}
+
+	protected function _isDue($task, $time, $env)
+	{
+		if(!$task->getCronExpression()) {
+			return false;
+		}
+		if(!$task->getCronExpression()->isDue($time)) {
+			return false;
+		}
+		if(count($this->getCronEnvironments()) && !in_array($env, $this->getCronEnvironments())) {
+			return false;
+		}
+
+		return true;
 	}
 }
