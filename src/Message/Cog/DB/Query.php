@@ -146,13 +146,13 @@ class Query
 			return 'NULL';
 		}
 
-		// If the type is true, cast as date, and either all digits, or DateTime
+		// If the type is cast as date and either all digits, or DateTime
 		// then we turn it into a timestamp
 		if ($type == 'd' && (ctype_digit($value) || $value instanceof \DateTime) ) {
 			if ($value instanceof \DateTime) {
 				$value =$value->getTimestamp();
 			}
-			// get the timestamp for either
+			// Return the int
 			$safe = $value;
 		} else {
 			// sanitize
