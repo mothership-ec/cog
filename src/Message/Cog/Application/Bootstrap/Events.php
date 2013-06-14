@@ -53,8 +53,6 @@ class Events implements EventsInterface, ContainerAwareInterface
 			)
 		);
 
-
-
 		// Profiler
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\Debug\EventListener(
@@ -73,5 +71,27 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
+
+		$eventDispatcher->addListener('console.status.check', function($event){
+
+			$event->header('PHP Environment');
+
+			// Needed for running scheduled tasks
+			$event->check('proc_open() exists', function() {
+				return function_exists('proc_open');
+			});
+
+			// Needed for stream wrappers
+			$event->check('eval() exists', function() {
+				return function_exists('eval');
+			});
+
+			$event->header('Message\\Cog');
+
+			$event->checkDirectory('Temp directory', 'cog://tmp/');
+			$event->checkDirectory('Public directory', 'cog://public/');
+			$event->checkDirectory('Log directory', 'cog://logs/');
+		
+		}, 900);
 	}
 }

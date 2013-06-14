@@ -6,6 +6,7 @@ use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Event\EventListener as BaseListener;
+use Message\Cog\Console\Command\Event\Status;
 
 /**
  * Event listener for the ImageResize component.
@@ -19,7 +20,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 		return array(
 			'modules.load.success' => array(
 				array('loadTemplatingHelpers'),
-			)
+			),
+			'console.status.check' => array(
+				array('checkStatus'),
+			),
 		);
 	}
 
@@ -32,5 +36,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$this->_services['templating.twig.environment']->addExtension(
 			new Templating\TwigExtension($this->_services['image.resize'])
 		);
+	}
+
+	public function checkStatus(Status $event)
+	{
+		$event->header('Message\\Cog\\ImageResize');
+		$event->checkDirectory('Cache directory', $this->_services['image.resize']->getCachePath());
 	}
 }

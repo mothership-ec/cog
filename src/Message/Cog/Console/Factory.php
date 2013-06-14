@@ -32,6 +32,7 @@ class Factory
 		$app->add(new Command\RouteCollectionTree);
 		$app->add(new Command\ServiceList);
 		$app->add(new Command\Setup);
+		$app->add(new Command\Status);
 		$app->add(new Command\TaskGenerate);
 		$app->add(new Command\TaskList);
 		$app->add(new Command\TaskRun);
