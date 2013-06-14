@@ -77,6 +77,32 @@ class Slug implements \IteratorAggregate, \Countable
 		return count($this->_segments);
 	}
 
+	public function sanitize(array $substitutes = array('&' => 'and'))
+	{
+		foreach ($this->_segments as $i => $segment) {
+			// Perform substitutions
+			foreach ($substitutions as $find => $replace) {
+				$segment = str_replace($find, $replace, $segment);
+			}
+			// Transliterate
+			$segment = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $segment);
+			// Remove any quote marks added by the transliteration
+			$segment = str_replace(array('"', '\'', '`'), '', $segment);
+			// Lowercase
+			$segment = strtolower($segment);
+			// Replace any non-alphanumeric characters with hyphens
+			$segment = preg_replace('/[^a-z0-9]/i', '-', $segment);
+			// Set any double hyphens to just a single hyphen
+			$segment = preg_replace('/-+/i', '-', $segment);
+			// Remove any hyphens at the start or end
+			$segment = trim($segment, '-');
+
+			$this->_segments[$i] = $segment;
+		}
+
+		return $this;
+	}
+
 	/**
 	 * @see getFull()
 	 */
