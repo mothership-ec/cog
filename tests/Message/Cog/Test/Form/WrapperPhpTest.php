@@ -2,16 +2,16 @@
 
 namespace Message\Cog\Test\Form;
 
-use Message\Cog\Form\Wrapper;
+use Message\Cog\Form\Creator;
 
 /**
- * Class WrapperPhpTest
+ * Class CreatorPhpTest
  * @package Message\Cog\Test\Form
  */
 
-class WrapperPhpTest extends \PHPUnit_Framework_TestCase
+class CreatorPhpTest extends \PHPUnit_Framework_TestCase
 {
-	protected $_wrapper;
+	protected $_creator;
 
 	protected $_builder;
 
@@ -125,11 +125,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('getEventDispatcher')
 			->will($this->returnValue($this->_dispatcher));
 
-		$this->_engine->expects($this->once())
-			->method('addHelpers');
-
-		$this->_wrapper = new Wrapper($container, 'php');
-		$this->_wrapper->setForm($this->_form);
+		$this->_creator = new Creator($container, 'php');
+		$this->_creator->setForm($this->_form);
 	}
 
 	public function testClear()
@@ -138,10 +135,10 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('getForm')
 			->will($this->returnValue($this->_form));
 
-		$this->_wrapper->clear();
+		$this->_creator->clear();
 
-		$this->assertEquals($this->_form, $this->_wrapper->getForm());
-		$this->assertEquals($this->_validator, $this->_wrapper->getValidator());
+		$this->assertEquals($this->_form, $this->_creator->getForm());
+		$this->assertEquals($this->_validator, $this->_creator->getValidator());
 	}
 
 	public function testAddStringChildOnly()
@@ -152,8 +149,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add('test');
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add('test');
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testAddObjectChildOnly()
@@ -164,8 +161,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add($this->_form);
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add($this->_form);
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testAddStringWithType()
@@ -176,8 +173,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add('test', 'select');
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add('test', 'select');
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testAddObjectWithType()
@@ -188,8 +185,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add($this->_form, 'select');
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add($this->_form, 'select');
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testAddStringWithTypeOptions()
@@ -200,8 +197,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add('test', 'select', array('option' => true));
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add('test', 'select', array('option' => true));
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testAddObjectWithTypeOptions()
@@ -212,8 +209,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add($this->_form, 'select', array('option' => true));
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add($this->_form, 'select', array('option' => true));
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testAddStringWithOptionsOnly()
@@ -224,8 +221,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add('test', null, array('option' => true));
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add('test', null, array('option' => true));
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testAddObjectWithOptionsOnly()
@@ -236,8 +233,8 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('field');
 
-		$wrapper = $this->_wrapper->add($this->_form, null, array('option' => true));
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->add($this->_form, null, array('option' => true));
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	/**
@@ -251,28 +248,32 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->never())
 			->method('field');
 
-		$this->_wrapper->add(null);
+		$this->_creator->add(null);
 	}
 
 	public function testVal()
 	{
-		$this->assertInstanceOf('\\Message\\Cog\\Validation\\Validator', $this->_wrapper->val());
+		$this->assertInstanceOf('\\Message\\Cog\\Validation\\Validator', $this->_creator->val());
 	}
 
 	public function testSetAndGetForm()
 	{
 		$form = clone $this->_form;
-		$wrapper = $this->_wrapper->setForm($form);
-		$this->assertSame($form, $this->_wrapper->getForm());
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->setForm($form);
+
+		$this->_engine->expects($this->once())
+			->method('addHelpers');
+
+		$this->assertSame($form, $this->_creator->getForm());
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testSetAndGetValidator()
 	{
 		$validator = clone $this->_validator;
-		$wrapper = $this->_wrapper->setValidator($validator);
-		$this->assertSame($validator, $this->_wrapper->getValidator());
-		$this->assertSame($wrapper, $this->_wrapper);
+		$creator = $this->_creator->setValidator($validator);
+		$this->assertSame($validator, $this->_creator->getValidator());
+		$this->assertSame($creator, $this->_creator);
 	}
 
 	public function testFieldNoName()
@@ -286,7 +287,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 				)
 			));
 
-		$result = $this->_wrapper->field();
+		$result = $this->_creator->field();
 		$this->assertSame('two', $result);
 	}
 
@@ -301,7 +302,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 				)
 			));
 
-		$result = $this->_wrapper->field('yes');
+		$result = $this->_creator->field('yes');
 		$this->assertSame('one', $result);
 	}
 
@@ -316,7 +317,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 				array()
 			));
 
-		$this->_wrapper->field();
+		$this->_creator->field();
 	}
 
 	/**
@@ -330,7 +331,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 				array()
 			));
 
-		$this->_wrapper->field('test');
+		$this->_creator->field('test');
 	}
 
 	/**
@@ -344,7 +345,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 				array('no' => 'one')
 			));
 
-		$this->_wrapper->field('yes');
+		$this->_creator->field('yes');
 	}
 
 	public function testIsValidBound()
@@ -361,7 +362,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(true));
 
-		$this->assertTrue($this->_wrapper->isValid());
+		$this->assertTrue($this->_creator->isValid());
 	}
 
 	public function testIsValidBoundNotValid()
@@ -378,7 +379,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(false));
 
-		$this->assertFalse($this->_wrapper->isValid());
+		$this->assertFalse($this->_creator->isValid());
 	}
 
 	public function testIsValidBoundWithData()
@@ -394,7 +395,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(true));
 
-		$this->assertTrue($this->_wrapper->isValid(false, array('data')));
+		$this->assertTrue($this->_creator->isValid(false, array('data')));
 	}
 
 	public function testIsValidBoundWithDataNotValid()
@@ -410,7 +411,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(false));
 
-		$this->assertFalse($this->_wrapper->isValid(false, array('data')));
+		$this->assertFalse($this->_creator->isValid(false, array('data')));
 	}
 
 	public function testIsValidBoundFromPost()
@@ -430,7 +431,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(true));
 
-		$this->assertTrue($this->_wrapper->isValid(true));
+		$this->assertTrue($this->_creator->isValid(true));
 	}
 
 	public function testIsValidBoundFromPostNotValid()
@@ -450,7 +451,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(false));
 
-		$this->assertFalse($this->_wrapper->isValid(true));
+		$this->assertFalse($this->_creator->isValid(true));
 	}
 
 	/**
@@ -462,7 +463,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('isBound')
 			->will($this->returnValue(false));
 
-		$this->_wrapper->isValid();
+		$this->_creator->isValid();
 	}
 
 	public function testIsValidNotBoundWithData()
@@ -475,7 +476,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(true));
 
-		$this->assertTrue($this->_wrapper->isValid(false, array('data')));
+		$this->assertTrue($this->_creator->isValid(false, array('data')));
 	}
 
 	public function testIsValidNotBoundWithDataNotValid()
@@ -488,7 +489,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(false));
 
-		$this->assertFalse($this->_wrapper->isValid(false, array('data')));
+		$this->assertFalse($this->_creator->isValid(false, array('data')));
 	}
 
 	public function testIsValidNotBoundFromPost()
@@ -508,7 +509,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(true));
 
-		$this->assertTrue($this->_wrapper->isValid(true));
+		$this->assertTrue($this->_creator->isValid(true));
 	}
 
 	public function testIsValidNotBoundFromPostNotValid()
@@ -528,7 +529,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('validate')
 			->will($this->returnValue(false));
 
-		$this->assertFalse($this->_wrapper->isValid(true));
+		$this->assertFalse($this->_creator->isValid(true));
 	}
 
 	public function testGetFilteredData()
@@ -539,7 +540,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('getData');
 
-		$this->_wrapper->getFilteredData();
+		$this->_creator->getFilteredData();
 	}
 
 	public function testGetFilteredDataWithData()
@@ -550,7 +551,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->expects($this->once())
 			->method('getData');
 
-		$this->_wrapper->getFilteredData(array('data'));
+		$this->_creator->getFilteredData(array('data'));
 	}
 
 	public function testGetDataBound()
@@ -563,7 +564,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('getData')
 			->will($this->returnValue(array('data')));
 
-		$this->assertSame(array('data'), $this->_wrapper->getData());
+		$this->assertSame(array('data'), $this->_creator->getData());
 	}
 
 	// @todo this currently fails: isBound was expected to be called 1 times, actually called 0 times.
@@ -576,7 +577,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->never())
 			->method('getData');
 
-		$this->assertSame(array(), $this->_wrapper->getData());
+		$this->assertSame(array(), $this->_creator->getData());
 	}
 
 	public function testIsPostTrue()
@@ -585,7 +586,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('get')
 			->will($this->returnValue(array('data')));
 
-		$this->assertTrue($this->_wrapper->isPost());
+		$this->assertTrue($this->_creator->isPost());
 	}
 
 	public function testIsPostFalse()
@@ -597,7 +598,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('getName');
 
-		$this->assertFalse($this->_wrapper->isPost());
+		$this->assertFalse($this->_creator->isPost());
 	}
 
 	public function testGetPost()
@@ -609,7 +610,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('getName');
 
-		$this->assertSame(array('data'), $this->_wrapper->getPost());
+		$this->assertSame(array('data'), $this->_creator->getPost());
 	}
 
 	public function testGetPostNoPost()
@@ -621,7 +622,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('getName');
 
-		$this->assertSame(array(), $this->_wrapper->getPost());
+		$this->assertSame(array(), $this->_creator->getPost());
 	}
 
 	public function testGetMessages()
@@ -630,6 +631,6 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->method('getMessages')
 			->will($this->returnValue(array('messages')));
 
-		$this->assertSame(array('messages'), $this->_wrapper->getMessages());
+		$this->assertSame(array('messages'), $this->_creator->getMessages());
 	}
 }

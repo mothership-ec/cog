@@ -312,12 +312,12 @@ class Services implements ServicesInterface
 
 
 		// Forms
-		$serviceContainer['form.wrapper.php'] = function($c) {
-			return new \Message\Cog\Form\Wrapper($c, 'php');
+		$serviceContainer['form.creator.php'] = function($c) {
+			return new \Message\Cog\Form\Creator($c, 'php');
 		};
 
-		$serviceContainer['form.wrapper.twig'] = function($c) {
-			return new \Message\Cog\Form\Wrapper($c, 'twig');
+		$serviceContainer['form.creator.twig'] = function($c) {
+			return new \Message\Cog\Form\Creator($c, 'twig');
 		};
 
 		$serviceContainer['form.builder'] = function($c) {

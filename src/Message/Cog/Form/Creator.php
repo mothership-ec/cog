@@ -18,7 +18,7 @@ use Message\Cog\Service\Container;
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Wrapper
+class Creator
 {
 	/**
 	 * @var \Message\Cog\Service\Container
