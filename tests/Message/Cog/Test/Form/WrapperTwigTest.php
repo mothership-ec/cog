@@ -9,7 +9,7 @@ use Message\Cog\Form\Wrapper;
  * @package Message\Cog\Test\Form
  */
 
-class WrapperPhpTest extends \PHPUnit_Framework_TestCase
+class WrapperTwigTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_wrapper;
 
@@ -82,7 +82,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 			->disableOriginalConstructor()
 			->getMock();
 
-		$container['form.helper.php'] = $this->_helper;
+		$container['form.helper.twig'] = $this->_helper;
 
 		// Add validator mock to container
 		$messages = $this->getMock('\\Message\\Cog\\Validation\\Messages');
@@ -128,7 +128,7 @@ class WrapperPhpTest extends \PHPUnit_Framework_TestCase
 		$this->_engine->expects($this->once())
 			->method('addHelpers');
 
-		$this->_wrapper = new Wrapper($container, 'php');
+		$this->_wrapper = new Wrapper($container, 'twig');
 		$this->_wrapper->setForm($this->_form);
 	}
 
