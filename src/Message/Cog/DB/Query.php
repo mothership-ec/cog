@@ -146,18 +146,17 @@ class Query
 			return 'NULL';
 		}
 
-		// sanitize
-		settype($value, $this->_typeTokens[$type]);
-		$safe = $this->_connection->escape($value);
-
-		// format it ready for the query
+		// If a type is set to date then cast it to an int
 		if ($type == 'd') {
-			if (ctype_digit($safe)) {
-				$safe = 'FROM_UNIXTIME('.$safe.')';
-			} else {
-				$safe = "'".$safe."'";
-			}
-		} elseif($type == 's' || $type == 'f') {
+		    $safe = (int) ($value instanceof \DateTime) ? $value->getTimestamp() : $value;
+		} else {
+			// sanitize
+			settype($value, $this->_typeTokens[$type]);
+			$safe = $this->_connection->escape($value);
+		}
+		// Floats are quotes to support all locales.
+		// See: http://stackoverflow.com/questions/2030684/which-mysql-data-types-should-i-not-be-quoting-during-an-insert"
+		if($type == 's' || $type == 'f') {
 			$safe = "'".$safe."'";
 		}
 
