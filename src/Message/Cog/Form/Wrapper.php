@@ -41,7 +41,7 @@ class Wrapper
 	protected $_type;
 
 	protected $_defaults = array(
-//		'required' => false,
+		'required' => false,
 	);
 
 
