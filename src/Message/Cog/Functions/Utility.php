@@ -30,7 +30,7 @@ class Utility
 	#	var_dump($backtrace);
 		foreach ($backtrace as $call) {
 			foreach ($this->_moduleLoader->getModules() as $moduleName) {
-				if ($moduleName === substr($call['class'], 0, strlen($moduleName))) {
+				if (isset($call['class']) && $moduleName === substr($call['class'], 0, strlen($moduleName))) {
 					return $moduleName;
 				}
 			}
