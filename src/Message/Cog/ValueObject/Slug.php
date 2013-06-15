@@ -84,18 +84,18 @@ class Slug implements \IteratorAggregate, \Countable
 	 * key as the character(s) to substitute and the value as the substitution
 	 * value. This defaults to one substitution of '&' => 'and'.
 	 *
-	 * After this, the slug is transliterated; made lowercase and any
-	 * non-alphanumeric characters are replaced with hyphens (-).
+	 * After this, the slug is transliterated (if `iconv` is available); made
+	 * lowercase and any non-alphanumeric characters are replaced with hyphens.
 	 *
 	 * If this results in sequential hyphens, they are replaced with a single
 	 * hyphen to stop slugs like 'my-blog--post'. Finally, any hyphens at the
 	 * start or end of the segment are trimmed.
 	 *
-	 * @param  array  $substitutes Array of substitutions
+	 * @param  array  $substitutions Array of substitutions
 	 *
-	 * @return Slug                Returns $this for chainability
+	 * @return Slug                  Returns $this for chainability
 	 */
-	public function sanitize(array $substitutes = array('&' => 'and'))
+	public function sanitize(array $substitutions = array('&' => 'and'))
 	{
 		foreach ($this->_segments as $i => $segment) {
 			// Perform substitutions
@@ -103,9 +103,11 @@ class Slug implements \IteratorAggregate, \Countable
 				$segment = str_replace($find, $replace, $segment);
 			}
 			// Transliterate
-			$segment = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $segment);
-			// Remove any quote marks added by the transliteration
-			$segment = str_replace(array('"', '\'', '`'), '', $segment);
+			if (function_exists('iconv')) {
+				$segment = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $segment);
+			}
+			// Remove any weird characters added by the transliteration
+			$segment = str_replace(array('"', '\'', '`', '^'), '', $segment);
 			// Lowercase
 			$segment = strtolower($segment);
 			// Replace any non-alphanumeric characters with hyphens
