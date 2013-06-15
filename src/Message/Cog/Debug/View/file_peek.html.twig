@@ -1,0 +1,12 @@
+{% if lines %}
+<ol class="code">
+	{% for number, line in lines %}
+	<li>
+		<span class="number">{{ number }}</span>
+		<pre>{{ line }}</pre>
+	</li>
+	{% endfor %}
+</ol>
+{% else %}
+<p class="notice">Could not read file.</p>
+{% endif %}
