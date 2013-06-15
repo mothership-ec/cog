@@ -105,9 +105,9 @@ class Slug implements \IteratorAggregate, \Countable
 			// Transliterate
 			if (function_exists('iconv')) {
 				$segment = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $segment);
+				// Remove any weird characters added by the transliteration
+				$segment = str_replace(array('"', '\'', '`', '^'), '', $segment);
 			}
-			// Remove any weird characters added by the transliteration
-			$segment = str_replace(array('"', '\'', '`', '^'), '', $segment);
 			// Lowercase
 			$segment = strtolower($segment);
 			// Replace any non-alphanumeric characters with hyphens
