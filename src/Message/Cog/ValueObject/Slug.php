@@ -77,6 +77,24 @@ class Slug implements \IteratorAggregate, \Countable
 		return count($this->_segments);
 	}
 
+	/**
+	 * Sanitize each segment of the slug.
+	 *
+	 * Custom substitutions can be passed in as the first argument, with the
+	 * key as the character(s) to substitute and the value as the substitution
+	 * value. This defaults to one substitution of '&' => 'and'.
+	 *
+	 * After this, the slug is transliterated; made lowercase and any
+	 * non-alphanumeric characters are replaced with hyphens (-).
+	 *
+	 * If this results in sequential hyphens, they are replaced with a single
+	 * hyphen to stop slugs like 'my-blog--post'. Finally, any hyphens at the
+	 * start or end of the segment are trimmed.
+	 *
+	 * @param  array  $substitutes Array of substitutions
+	 *
+	 * @return Slug                Returns $this for chainability
+	 */
 	public function sanitize(array $substitutes = array('&' => 'and'))
 	{
 		foreach ($this->_segments as $i => $segment) {
