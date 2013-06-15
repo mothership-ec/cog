@@ -78,6 +78,52 @@ class Slug implements \IteratorAggregate, \Countable
 	}
 
 	/**
+	 * Sanitize each segment of the slug.
+	 *
+	 * Custom substitutions can be passed in as the first argument, with the
+	 * key as the character(s) to substitute and the value as the substitution
+	 * value. This defaults to one substitution of '&' => 'and'.
+	 *
+	 * After this, the slug is transliterated (if `iconv` is available); made
+	 * lowercase and any non-alphanumeric characters are replaced with hyphens.
+	 *
+	 * If this results in sequential hyphens, they are replaced with a single
+	 * hyphen to stop slugs like 'my-blog--post'. Finally, any hyphens at the
+	 * start or end of the segment are trimmed.
+	 *
+	 * @param  array  $substitutions Array of substitutions
+	 *
+	 * @return Slug                  Returns $this for chainability
+	 */
+	public function sanitize(array $substitutions = array('&' => 'and'))
+	{
+		foreach ($this->_segments as $i => $segment) {
+			// Perform substitutions
+			foreach ($substitutions as $find => $replace) {
+				$segment = str_replace($find, $replace, $segment);
+			}
+			// Transliterate
+			if (function_exists('iconv')) {
+				$segment = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $segment);
+				// Remove any weird characters added by the transliteration
+				$segment = str_replace(array('"', '\'', '`', '^'), '', $segment);
+			}
+			// Lowercase
+			$segment = strtolower($segment);
+			// Replace any non-alphanumeric characters with hyphens
+			$segment = preg_replace('/[^a-z0-9]/i', '-', $segment);
+			// Set any double hyphens to just a single hyphen
+			$segment = preg_replace('/-+/i', '-', $segment);
+			// Remove any hyphens at the start or end
+			$segment = trim($segment, '-');
+
+			$this->_segments[$i] = $segment;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * @see getFull()
 	 */
 	public function __toString()
