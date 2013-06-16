@@ -91,6 +91,11 @@ class Events implements EventsInterface, ContainerAwareInterface
 				return strtolower(ini_get('suhosin.executor.disable_eval')) !== 'Off';
 			});
 
+			// Needed for localisation / forms
+			$event->check('intl extension loaded', function() {
+				return extension_loaded('intl');
+			});
+
 			$event->header('Message\\Cog');
 
 			$event->report('Installation directory', $appLoader->getBaseDir());

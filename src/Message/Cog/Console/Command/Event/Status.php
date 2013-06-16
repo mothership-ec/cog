@@ -4,20 +4,22 @@ namespace Message\Cog\Console\Command\Event;
 
 use Message\Cog\Event\Event;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 class Status extends Event
 {
-	const LINE_WIDTH = 100;
+	const LINE_WIDTH = 50;
 
 	protected $_checks = 0;
 	protected $_passed = 0;
 	protected $_failed = 0;
 
-	public function __construct($output)
+	public function __construct(OutputInterface $output)
 	{
 		$this->_output = $output;
 	}
 
-	public function check($title, $func)
+	public function check($title, \Closure $func)
 	{
 		$this->_checks++;
 		$this->_output->write(str_pad($title, self::LINE_WIDTH, '.'));

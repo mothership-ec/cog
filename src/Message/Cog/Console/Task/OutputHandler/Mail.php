@@ -17,6 +17,15 @@ class Mail extends OutputHandler
 		return 'mail';
 	}
 
+	/**
+	 * Enable this output handler
+	 *
+	 * @param  string|array $recipients The recipients this should be delivered to
+	 * @param  string $subject    The subject of the email to send
+	 * @param  string $body       The body to prepend to the output in the email.
+	 *
+	 * @return void
+	 */
 	public function enable($recipients, $subject = '', $body = '')
 	{
 		$this->_recipients = $recipients;

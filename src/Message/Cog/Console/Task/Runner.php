@@ -7,9 +7,9 @@ use Message\Cog\Service\ContainerInterface;
 use Symfony\Component\Console\Input\StringInput;
 
 /**
-* TaskRunner.
+* Runner.
 *
-* A factory for creating an instance of a TaskApplication, adding a task 
+* A factory for creating an instance of a Task\Application, adding a task 
 * to it and running it.
 */
 class Runner
@@ -31,8 +31,6 @@ class Runner
 
 		// Output to the console by default
 		$command->output('print')->enable();
-		$command->output('mail')->enable('james@message.co.uk');
-		$command->output('log')->enable('/tmp/bob/thing/path');
 
 		$app->add($command);
 		$app->setAutoExit(false);

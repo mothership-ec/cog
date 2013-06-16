@@ -8,6 +8,15 @@ class ClearCache extends Task
 {
 	public function process()
 	{
-		return '<info>Successfully ran `imageresize:clear:cache`</info>';
+		$path = $this->get('image.resize')->getCachePath();
+
+		$fs = $this->get('filesystem.finder');
+
+		foreach($fs->in($path) as $file) {
+			var_dump($file->getRealPath());
+			//§$this->get('filesystem')->remove($file->getRealPath());
+		}
+
+		return $path;
 	}
 }
