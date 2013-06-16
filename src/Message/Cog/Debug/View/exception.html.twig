@@ -27,7 +27,7 @@
 				<li>
 					at {% if trace.class %}
 					<abbr class="class" title="{{ trace.class }}">{{ trace.short_class }}</abbr>->{% endif %}<span class="method">{{ trace.function }}</span>{{ _self.args(trace.args) }}
-					on <span class="file">{{ trace.file }}</span> line <span class="line">{{ trace.line }}</span>
+					in <span class="file">{{ trace.file }}</span> line <span class="line">{{ trace.line }}</span>
 
 					{{ render(controller('Message:Cog:Debug::Controller:Exception#filePeek', {file: trace.file, line: trace.line})) }}
 				</li>
