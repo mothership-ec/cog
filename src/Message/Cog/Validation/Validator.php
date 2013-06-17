@@ -74,7 +74,7 @@ class Validator
 	 * @param  bool   $readableName If true, a "readable name" is saved, assuming
 	 *                              the name is formatted as camel case
 	 *
-	 * @return Validation           Returns $this for chainability
+	 * @return Validator            Returns $this for chainability
 	 */
 	public function field($name, $readableName = false)
 	{
