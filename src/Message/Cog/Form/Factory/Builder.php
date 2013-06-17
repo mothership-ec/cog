@@ -28,7 +28,7 @@ use Message\Cog\Service\ContainerInterface;
  */
 class Builder extends SymfonyBuilder
 {
-	public function __construct(ContainerInterface $container)
+	public function __construct()
 	{
 		$this->addExtension(new CoreExtension)
 			->addExtension(new \Message\Cog\Form\Csrf\Csrf(

@@ -26,7 +26,7 @@ class Helper extends SymfonyHelper
     /**
      * @var FormRendererInterface
      */
-    private $renderer;
+    protected $renderer;
 
     /**
      * @param FormRendererInterface $renderer
