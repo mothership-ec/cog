@@ -40,7 +40,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 	public function checkStatus(Status $event)
 	{
-		$event->header('Message\\Cog\\ImageResize');
-		$event->checkDirectory('Cache directory', $this->_services['image.resize']->getCachePath());
+		$event
+			->header('Message\\Cog\\ImageResize')
+			->checkPath('Cache directory', $this->_services['image.resize']->getCachePath())
+		;
 	}
 }

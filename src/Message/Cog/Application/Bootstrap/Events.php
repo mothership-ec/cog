@@ -76,32 +76,32 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$appLoader = $this->_services['app.loader'];
 		$eventDispatcher->addListener('console.status.check', function($event) use ($appLoader) {
 
-			$event->header('PHP Environment');
+			$event
+				->header('PHP Environment')
+					->report('PHP version', PHP_VERSION)
+					->report('Default timezone', date_default_timezone_get())
 
-			$event->report('PHP version', PHP_VERSION);
-			$event->report('Default timezone', date_default_timezone_get());
+					// Needed for running scheduled tasks
+					->check('proc_open() exists', function() {
+						return function_exists('proc_open');
+					})
 
-			// Needed for running scheduled tasks
-			$event->check('proc_open() exists', function() {
-				return function_exists('proc_open');
-			});
+					// Needed for stream wrappers
+					->check('eval() available', function() {
+						return strtolower(ini_get('suhosin.executor.disable_eval')) !== 'Off';
+					})
 
-			// Needed for stream wrappers
-			$event->check('eval() available', function() {
-				return strtolower(ini_get('suhosin.executor.disable_eval')) !== 'Off';
-			});
-
-			// Needed for localisation / forms
-			$event->check('intl extension loaded', function() {
-				return extension_loaded('intl');
-			});
-
-			$event->header('Message\\Cog');
-
-			$event->report('Installation directory', $appLoader->getBaseDir());
-			$event->checkDirectory('Temp directory', 'cog://tmp/');
-			$event->checkDirectory('Public directory', 'cog://public/');
-			$event->checkDirectory('Log directory', 'cog://logs/');
+					// Needed for localisation / forms
+					->check('intl extension loaded', function() {
+						return extension_loaded('intl');
+					})
+				
+				->header('Message\\Cog')
+					->report('Installation directory', $appLoader->getBaseDir())
+					->checkPath('Temp directory', 'cog://tmp/')
+					->checkPath('Public directory', 'cog://public/')
+					->checkPath('Log directory', 'cog://logs/')
+			;
 		
 		}, 900);
 	}

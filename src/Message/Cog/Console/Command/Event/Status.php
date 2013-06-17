@@ -19,6 +19,14 @@ class Status extends Event
 		$this->_output = $output;
 	}
 
+	/**
+	 * Run a status check and output the result.
+	 *
+	 * @param  string   $title The name for this check
+	 * @param  \Closure $func  A callback that must return true or false, or throw and exception.
+	 *
+	 * @return Status Returns instance of itself for chainability
+	 */
 	public function check($title, \Closure $func)
 	{
 		$this->_checks++;
@@ -41,9 +49,19 @@ class Status extends Event
 		}
 
 		$this->_output->writeln($result);
+
+		return $this;
 	}
 
-	public function checkDirectory($title, $path)
+	/**
+	 * Check to see if a directory or file exists and is writeable.
+	 *
+	 * @param  string $title The name of the path.
+	 * @param  string $path  The file path
+	 *
+	 * @return Status Returns instance of itself for chainability
+	 */
+	public function checkPath($title, $path)
 	{
 		$this->report($title . ' location', $path);
 		$this->check($title . ' is created', function() use ($path) { 
@@ -52,18 +70,44 @@ class Status extends Event
 		$this->check($title . ' is writeable', function() use ($path) {
 			return is_writeable($path);
 		});
+
+		return $this;
 	}
 
+	/**
+	 * Output a variable during a status check. Useful for reporting literal values.
+	 *
+	 * @param  string $title The title of the variable
+	 * @param  mixed $value The value of the variable
+	 *
+	 * @return Status Returns instance of itself for chainability
+	 */
 	public function report($title, $value)
 	{
 		$this->_output->writeln(str_pad($title, self::LINE_WIDTH, '.') . '<info>'.$value.'</info>');
+
+		return $this;
 	}
 
+	/**
+	 * Renders a bold heading in the output.
+	 *
+	 * @param  string $heading The heading to putput
+	 *
+	 * @return Status Returns instance of itself for chainability
+	 */
 	public function header($heading)
 	{
 		$this->_output->writeln('<bold>'.$heading.'</bold>');
+
+		return $this;
 	}
 
+	/**
+	 * Prints a summary of all checks made
+	 *
+	 * @return Status Returns instance of itself for chainability
+	 */
 	public function summerise()
 	{
 		$this->header('Summary');
@@ -71,5 +115,7 @@ class Status extends Event
 		$this->_output->writeln('Total checks:   '.$this->_checks);
 		$this->_output->writeln('Passed:         '.$this->_passed);
 		$this->_output->writeln('Failed:         '.$this->_failed);
+
+		return $this;
 	}
 }
