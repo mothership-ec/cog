@@ -19,8 +19,9 @@ class Runner
 	 *
 	 * @param Task               $command   The task to run
 	 * @param ContainerInterface $container A instance of the service container
+	 * @param array              $arguments An array of arguments to pass to the task.
 	 */
-	public function __construct(Task $command, ContainerInterface $container)
+	public function __construct(Task $command, ContainerInterface $container, array $arguments)
 	{
 		$app = new Application('Cog task runner');
 		$app->setContainer($container);
@@ -34,6 +35,7 @@ class Runner
 
 		$app->add($command);
 		$app->setAutoExit(false);
-		$app->run(new StringInput($command->getName()));
+
+		$app->run(new StringInput($command->getName(). ' '. implode(' ', $arguments)));
 	}
 }

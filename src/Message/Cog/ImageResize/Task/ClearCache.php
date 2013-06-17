@@ -5,6 +5,8 @@ namespace Message\Cog\ImageResize\Task;
 use Message\Cog\Console\Task\Task;
 use Message\Cog\Filesystem\File;
 
+use Symfony\Component\Console\Input\InputArgument;
+
 class ClearCache extends Task
 {
 	public function process()

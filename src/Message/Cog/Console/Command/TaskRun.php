@@ -23,6 +23,9 @@ class TaskRun extends Command
 			->setName('task:run')
 			->setDescription('Run a task.')
 			->addArgument('task_name', InputArgument::REQUIRED, 'The full name of the task.')
+			->addArgument('arguments', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 
+				'(Optional) Any arguments required by the task.')
+			
 		;
 	}
 
@@ -36,6 +39,6 @@ class TaskRun extends Command
 		}
 
 		$command = $task[1];
-		$runner = new Runner($command, $this->_services);
+		$runner = new Runner($command, $this->_services, $input->getArgument('arguments'));
 	}
 }
