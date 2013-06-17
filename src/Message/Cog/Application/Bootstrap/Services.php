@@ -418,7 +418,7 @@ class Services implements ServicesInterface
 
 			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
 
-			$dir = $c['app.loader']->getBaseDir().'/translations';
+			$dir = $c['app.loader']->getBaseDir().'translations';
 			foreach($c['filesystem.finder']->in($dir) as $file) {
 				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
 			}
