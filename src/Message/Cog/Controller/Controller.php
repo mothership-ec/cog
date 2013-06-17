@@ -108,6 +108,20 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
+	 * Returns a RedirectResponse instance for redirection to the given route name.
+	 *
+	 * @param string         $routeName     Name of the route to redirect to
+	 * @param array          $params        Parameters to use in the route
+	 * @param  int    $status HTTP status code to use when redirecting
+	 *
+	 * @return RedirectResponse
+	 */
+	public function redirectToRoute($routeName, $params = array(), $status = 302)
+	{
+		return $this->redirect($this->generateUrl($routeName, $params), $status);
+	}
+
+	/**
 	 * Triggers a sub-request for the given controller reference and returns a
 	 * filtered Response instance.
 	 *
