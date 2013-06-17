@@ -79,6 +79,7 @@ abstract class Task extends Command
 		$this->_output = $output;
 
 		$exception = '';
+		$returned  = '';
 
 		ob_start(); // capture any calls to `echo` or `print`
 		try {

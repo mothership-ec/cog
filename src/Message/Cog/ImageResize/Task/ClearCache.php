@@ -3,20 +3,20 @@
 namespace Message\Cog\ImageResize\Task;
 
 use Message\Cog\Console\Task\Task;
+use Message\Cog\Filesystem\File;
 
 class ClearCache extends Task
 {
 	public function process()
 	{
-		$path = $this->get('image.resize')->getCachePath();
+		$path = new File($this->get('image.resize')->getCachePath());
 
 		$fs = $this->get('filesystem.finder');
 
-		foreach($fs->in($path) as $file) {
-			var_dump($file->getRealPath());
-			//§$this->get('filesystem')->remove($file->getRealPath());
+		foreach($fs->depth('== 0')->in($path->getRealPath()) as $file) {
+			$this->get('filesystem')->remove($file->getRealPath());
 		}
 
-		return $path;
+		return '<info>'.$path.' has been emptied.</info>';
 	}
 }
