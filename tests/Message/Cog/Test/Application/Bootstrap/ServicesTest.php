@@ -34,6 +34,8 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		vfsStream::setup('root');
 		vfsStream::newDirectory('config')
 			->at(vfsStreamWrapper::getRoot());
+		vfsStream::newDirectory('translations')
+			->at(vfsStreamWrapper::getRoot());
 
 		// Define services normally defined in Application\Loader
 		$this->_container['app.loader'] = function($c) {
