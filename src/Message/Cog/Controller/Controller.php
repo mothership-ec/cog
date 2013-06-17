@@ -11,6 +11,7 @@ use Message\Cog\Service\ContainerAwareInterface;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 use LogicException;
 
@@ -171,18 +172,41 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Returns a NotFoundHttpException.
+	 * Returns a `NotFoundHttpException`.
 	 *
 	 * This will result in a 404 response code. Usage example:
 	 *
+	 * <code>
 	 *     throw $this->createNotFoundException('Page not found!');
+	 * </code>
 	 *
-	 * @param string    $message  A message
+	 * @param string     $message  The exception message
 	 * @param \Exception $previous The previous exception
+	 * @param int        $code     The exception code
 	 *
 	 * @return NotFoundHttpException
 	 */
-	public function createNotFoundException($message = 'Not Found', \Exception $previous = null)
+	public function createNotFoundException($message = 'Not Found', \Exception $previous = null, $code = 0)
+	{
+	    return new NotFoundHttpException($message, $previous);
+	}
+
+	/**
+	 * Returns a `AccessDeniedHttpException`.
+	 *
+	 * This will result in a 403 response code. Usage example:
+	 *
+	 * <code>
+	 *     throw $this->createAccessDeniedException('Page not found!');
+	 * </code>
+	 *
+	 * @param string     $message  The exception message
+	 * @param \Exception $previous The previous exception
+	 * @param int        $code     The exception code
+	 *
+	 * @return AccessDeniedHttpException
+	 */
+	public function createAccessDeniedException($message = 'Access Denied', \Exception $previous = null, $code = 0)
 	{
 	    return new NotFoundHttpException($message, $previous);
 	}
