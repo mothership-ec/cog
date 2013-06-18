@@ -317,12 +317,11 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.builder'] = function($c) {
-			return $c['form.factory']->createBuilder();
+			return $c['form.factory']->getFormFactory()->createBuilder();
 		};
 
 		$serviceContainer['form.factory'] = function($c) {
-			$builder = new \Message\Cog\Form\Factory\Builder();
-			return $builder->getFormFactory();
+			return new \Message\Cog\Form\Factory\Builder($c);
 		};
 
 		$serviceContainer['form.helper.php'] = function($c) {
