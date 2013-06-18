@@ -30,11 +30,13 @@ class Builder extends SymfonyBuilder
 {
 	public function __construct()
 	{
-		$this->addExtension(new CoreExtension)
+		$this->addExtension(new CoreExtension);
+		/*
 			->addExtension(new \Message\Cog\Form\Csrf\Csrf(
 					new \Message\Cog\Form\Csrf\Provider($this->_getCsrfSecret()))
 			)
 		;
+		*/
 	}
 
 	/**

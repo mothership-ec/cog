@@ -40,6 +40,10 @@ class Handler
 	 */
 	protected $_type;
 
+	protected $_defaultValues;
+
+	protected $_name = 'form';
+
 	protected $_defaults = array(
 		'required' => false,
 	);
@@ -55,9 +59,31 @@ class Handler
 	{
 //		$this->_type        = $type;
 		$this->_container   = $container;
-		$this->_form        = $this->_container['form.builder']->getForm();
+
+		$this->_factory     = $this->_container['form.factory']->getFormFactory();
+		$this->_builder     = $this->_container['form.builder'];
 		$this->_validator   = $this->_container['validator'];
 		$this->_request     = $this->_container['request'];
+
+		$this->_container['templating.php.engine']
+			->addHelpers(array(
+				$this->_container['form.helper.twig'],
+				$this->_container['form.helper.php'],
+			));
+	}
+
+	public function setName($name)
+	{
+		$this->_name = $name;
+
+		return $this;
+	}
+
+	public function setDefaultValues($values)
+	{
+		$this->_defaultValues = (array)$values;
+
+		return $this;
 	}
 
 	/**
@@ -89,7 +115,7 @@ class Handler
 
 		$options = array_merge($this->_defaults, $options);
 
-		$this->_form->add($child, $type, $options);
+		$this->getForm()->add($child, $type, $options);
 		$this->_validator->field($this->_getChildName($child));
 
 		return $this;
@@ -165,13 +191,16 @@ class Handler
 	 */
 	public function getForm()
 	{
-		$this->_container['templating.php.engine']
-			->addHelpers(array(
-				$this->_container['form.helper.twig'],
-				$this->_container['form.helper.php'],
-			));
+		if(!$this->_form) {
+			$this->_form = $this->_initialiseForm();
+		}
 
 		return $this->_form;
+	}
+
+	protected function _initialiseForm()
+	{
+		return $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues);
 	}
 
 	/**
@@ -195,18 +224,22 @@ class Handler
 	 *
 	 * @return bool                 Returns true if data is valid
 	 */
-	public function isValid($fromPost = false, array $data = null)
+	public function isValid()
 	{
-		if (!$this->_form->isBound() && !$data && !$fromPost) {
-			throw new \LogicException(
-				'You cannot call isValid() on a form that is not bound, unless $fromPost is set to true, or $data is set'
-			);
-		}
-		elseif ($fromPost) {
-			$data = $this->getPost();
+		// try and bind it to a request if it's been posted.
+		if(!$this->getForm()->isBound() && $data = $this->getPost()) {
+			$this->getForm()->bind($data);
 		}
 
-		return ($data) ? $this->_validator->validate($data) : $this->_validator->validate($this->_form->getData());
+		$valid = $this->_validator->validate($this->getForm()->getData());
+
+		foreach($this->_validator->getMessages() as $fields) {
+			foreach($fields as $message) {
+				$this->_container['http.session']->getFlashBag()->add('error', $message);
+			}
+		}
+
+		return $this->getPost() && $valid && $this->getForm()->isValid();
 	}
 
 	/**
@@ -234,8 +267,8 @@ class Handler
 	 */
 	public function getData()
 	{
-		if ($this->_form->isBound()) {
-			return $this->_form->getData();
+		if ($this->getForm()->isBound()) {
+			return $this->getForm()->getData();
 		}
 
 		return $this->getPost();
@@ -248,7 +281,7 @@ class Handler
 	 */
 	public function isPost()
 	{
-		$post = $this->_request->get($this->_form->getName());
+		$post = $this->_request->get($this->getForm()->getName());
 		return (!empty($post)) ? true : false;
 	}
 
@@ -259,7 +292,7 @@ class Handler
 	 */
 	public function getPost()
 	{
-		$post = $this->_request->get($this->_form->getName());
+		$post = $this->_request->get($this->getForm()->getName());
 		return ($post) ? $post : array();
 	}
 
