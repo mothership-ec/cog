@@ -116,7 +116,7 @@ class Handler
 		$options = array_merge($this->_defaults, $options);
 
 		$this->getForm()->add($child, $type, $options);
-		$this->_validator->field($this->_getChildName($child));
+		$this->_validator->field($this->_getChildName($child))->optional();
 
 		return $this;
 
@@ -231,6 +231,10 @@ class Handler
 			$this->getForm()->bind($data);
 		}
 
+		if(!$this->getPost()) {
+			return false;
+		}
+
 		$valid = $this->_validator->validate($this->getForm()->getData());
 
 		foreach($this->_validator->getMessages() as $fields) {
@@ -239,7 +243,7 @@ class Handler
 			}
 		}
 
-		return $this->getPost() && $valid && $this->getForm()->isValid();
+		return $valid && $this->getForm()->isValid();
 	}
 
 	/**
