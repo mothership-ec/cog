@@ -116,7 +116,7 @@ class Handler
 		$options = array_merge($this->_defaults, $options);
 
 		$this->getForm()->add($child, $type, $options);
-		$this->_validator->field($this->_getChildName($child))->optional();
+		#$this->_validator->field($this->_getChildName($child))->optional();
 
 		return $this;
 
