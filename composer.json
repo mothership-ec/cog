@@ -11,7 +11,7 @@
 	],
 	"support": {
 		"wiki"  : "http://server.local/wiki/projects/cog",
-		"issues": "http://server.local:3000/cog/issues"
+		"issues": "http://github.com/messagedigital/cog/issues"
 	},
 	"autoload": {
 		"psr-0": {
