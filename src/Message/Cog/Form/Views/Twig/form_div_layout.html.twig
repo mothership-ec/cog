@@ -255,6 +255,7 @@
         {{ form_label(form) }}
         {{ form_errors(form) }}
         {{ form_widget(form) }}
+        {{ block('form_help') }}
     </div>
 {% endspaceless %}
 {% endblock form_row %}
@@ -328,3 +329,12 @@
 {% block field_errors %}{{ block('form_errors') }}{% endblock %}
 {% block field_rest %}{{ block('form_rest') }}{% endblock %}
 {% block field_rows %}{{ block('form_rows') }}{% endblock %}
+
+
+{# Custom form blocks added by Message #}
+
+{% block form_help %}
+{% if attr['data-help'] is defined %} 
+	<div class="help">{{ attr['data-help'] }}</div>
+{% endif %} 
+{% endblock form_help %}
