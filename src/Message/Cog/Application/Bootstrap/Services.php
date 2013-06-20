@@ -136,9 +136,13 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$serviceContainer['templating.twig.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']);
+		});
+
 		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
 			$twigEnvironment = new \Twig_Environment(
-				new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']),
+				$c['templating.twig.loader'],
 				array(
 					'cache' => 'cog://tmp',
 					'auto_reload' => true,
@@ -441,9 +445,9 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
-			$factory = new \Assetic\Factory\AssetFactory($c['app.loader']->getBaseDir());
+			$factory = new \Message\Cog\AssetManagement\Factory($c['app.loader']->getBaseDir());
 
-		#	$factory->setAssetManager($c['asset.manager']);
+			$factory->setReferenceParser($c['reference_parser']);
 
 			return $factory;
 		});
