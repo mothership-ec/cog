@@ -140,7 +140,7 @@ class Services implements ServicesInterface
 			$twigEnvironment = new \Twig_Environment(
 				new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']),
 				array(
-					'cache' => 'cog://tmp',
+				#	'cache' => 'cog://tmp',
 					'auto_reload' => true,
 				)
 			);
