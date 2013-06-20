@@ -280,6 +280,7 @@
 			{{ form_label(form) }}
 			{{ form_errors(form) }}
 			{{ form_widget(form) }}
+			{{ block('help_widget') }}
 		</div>
 	{% endspaceless %}
 {% endblock form_row %}
@@ -391,7 +392,7 @@
 
 {# Custom blocks defined by message #}
 {% block help_widget %}
-	{% if attr['data-translation-key'] is defined %}
-		{{ attr['data-translation-key']|trans }}
+	{% if attr['data-help-key'] is defined %}
+		{{ attr['data-help-key']|trans }}
 	{% endif %}
 {% endblock help_widget %}
