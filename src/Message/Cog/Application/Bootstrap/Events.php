@@ -81,7 +81,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addListener('terminate', function() use ($container) {
 			foreach ($container['templating.engine.twig']->templates as $template) {
 				$container['asset.manager']->addResource(new \Assetic\Extension\Twig\TwigResource(
-					$container['templating.twig_environment']->getLoader(),
+					$container['templating.twig.environment']->getLoader(),
 					$template
 				), 'twig');
 			}

@@ -107,7 +107,18 @@ class Services implements ServicesInterface
 			return 'THIS IS A SECRET DO NOT SHARE IT AROUND';
 		};
 
-		$serviceContainer['templating.view_name_parser'] = function($c) {
+		// Service for the templating delegation engine
+		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\DelegatingEngine(
+				array(
+					// Twig templating engine
+					$c['templating.engine.twig'],
+					$c['templating.engine.php'],
+				)
+			);
+		});
+
+		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
 				$c['reference_parser'],
@@ -116,7 +127,7 @@ class Services implements ServicesInterface
 					'php',
 				)
 			);
-		};
+		});
 
 		$serviceContainer['templating.actions_helper'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\Helper\Actions(
@@ -144,39 +155,29 @@ class Services implements ServicesInterface
 			return $twigEnvironment;
 		});
 
-		$serviceContainer['templating.helper.actions'] = function($c) {
-			return new \Message\Cog\Templating\Helper\Actions(
-				$c['http.fragment_handler'],
-				$c['reference_parser']
-			);
-		};
-
-		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\TwigEngine(
-				$c['templating.twig_environment'],
-				$c['templating.view_name_parser']
+		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\PhpEngine(
+				$c['templating.view_name_parser'],
+				new \Symfony\Component\Templating\Loader\FilesystemLoader(
+					array(
+						$c['app.loader']->getBaseDir(),
+						__DIR__ . '/../../Form/Views/Php',
+						__DIR__ . '/../../Form/Views/Twig'
+					)
+				),
+				array(
+					new \Symfony\Component\Templating\Helper\SlotsHelper,
+					$c['templating.actions_helper'],
+					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
+					new \Message\Cog\Templating\Helper\Translation($c['translator']),
+				)
 			);
 		});
 
-		// Service for the templating delegation engine
-		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\DelegatingEngine(
-				array(
-					// Twig templating engine
-					$c['templating.engine.twig'],
-					// Plain PHP templating engine
-					new \Message\Cog\Templating\PhpEngine(
-						$c['templating.view_name_parser'],
-						new \Symfony\Component\Templating\Loader\FilesystemLoader(
-							$c['app.loader']->getBaseDir()
-						),
-						array(
-							new \Symfony\Component\Templating\Helper\SlotsHelper,
-							$c['templating.helper.actions'],
-							new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
-						)
-					),
-				)
+		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\TwigEngine(
+				$c['templating.twig.environment'],
+				$c['templating.view_name_parser']
 			);
 		});
 
@@ -326,7 +327,7 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.helper.php'] = function($c) {
-			$engine = $c['templating.php.engine'];
+			$engine = $c['templating.engine.php'];
 
 			$formHelper = new \Message\Cog\Form\Template\Helper(
 				new \Symfony\Component\Form\FormRenderer(
@@ -403,28 +404,6 @@ class Services implements ServicesInterface
 		});
 
 
-		$serviceContainer['asset.manager'] = $serviceContainer->share(function($c) {
-			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
-				'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig_environment']),
-			));
-
-			$c['asset.factory']->setAssetManager($manager);
-
-			return $manager;
-		});
-
-		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
-			$factory = new \Assetic\Factory\AssetFactory($c['app.loader']->getBaseDir());
-
-		#	$factory->setAssetManager($c['asset.manager']);
-
-			return $factory;
-		});
-
-		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
-			return new \Assetic\AssetWriter('cog://public');
-		});
-
 		// Hardcode to en_GB for the moment. In the future this can be determined
 		// from properties on the route or the session object
 		$serviceContainer['locale'] = $serviceContainer->share(function($c) {
@@ -446,6 +425,31 @@ class Services implements ServicesInterface
 			}
 
 			return $translator;
+		});
+
+
+
+
+		$serviceContainer['asset.manager'] = $serviceContainer->share(function($c) {
+			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
+				'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig.environment']),
+			));
+
+			$c['asset.factory']->setAssetManager($manager);
+
+			return $manager;
+		});
+
+		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
+			$factory = new \Assetic\Factory\AssetFactory($c['app.loader']->getBaseDir());
+
+		#	$factory->setAssetManager($c['asset.manager']);
+
+			return $factory;
+		});
+
+		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
+			return new \Assetic\AssetWriter('cog://public');
 		});
 	}
 }
