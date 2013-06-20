@@ -3,7 +3,7 @@
 namespace Message\Cog\ValueObject;
 
 use DateInterval;
-use \DateTime;
+use DateTime;
 
 /**
  * Represents a date range: the period between two specific timestamps.

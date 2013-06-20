@@ -39,21 +39,22 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Request
 		);
+
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
 		);
+
 		// Symfony's HTTP Response Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
 		);
+
 		// Symfony's HTTP Fragment Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
 				$this->_services['http.uri_signer']
 			)
 		);
-
-
 
 		// Profiler
 		$eventDispatcher->addSubscriber(
@@ -68,10 +69,14 @@ class Events implements EventsInterface, ContainerAwareInterface
 			new \Message\Cog\Filesystem\EventListener
 		);
 
+
 		// Routing
 		$eventDispatcher->addSubscriber(new \Message\Cog\Routing\EventListener);
 
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
+
+		//Templating
+		$eventDispatcher->addSubscriber(new \Message\Cog\Templating\EventListener);
 	}
 }
