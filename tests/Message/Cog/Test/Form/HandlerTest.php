@@ -31,6 +31,8 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 
 	protected $_dispatcher;
 
+	protected $_factory;
+
 	public function setUp()
 	{
 		// Instanciate container
@@ -48,13 +50,15 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 				$resolvedFormTypeFactory
 			));
 
-		$factory = $this->getMock(
+		$this->_factory = $this->getMock(
 			'\\Symfony\\Component\\Form\\FormFactory',
-			array(),
+			array('getFormFactory'),
 			array(
 				$registry,
 				$resolvedFormTypeFactory
 			));
+
+		$container['form.factory'] = $this->_factory;
 
 		// Add form builder mock to container
 		$this->_builder = $this->getMock(
@@ -64,7 +68,7 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 				'form',
 				'\\Symfony\\Component\\Form\\Extension\\Core\\DataMapper\\PropertyPathMapper',
 				$dispatcher,
-				$factory
+				$this->_factory
 			));
 
 		$container['form.builder'] = $this->_builder;

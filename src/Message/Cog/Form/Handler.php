@@ -40,7 +40,7 @@ class Handler
 	 */
 	protected $_type;
 
-	protected $_defaultValues;
+	protected $_defaultValues = array();
 
 	protected $_name = 'form';
 
@@ -52,8 +52,8 @@ class Handler
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
 	 *
-	 * @param Container $container      Service container for getting instance of form builder and validation
-	 * @param string $type              Type of rendering engine to use, i.e. php or twig
+	 * @param Container $container      Service container for getting instance of form builder and
+	 *                                  validation
 	 */
 	public function __construct(Container $container)
 	{
@@ -72,6 +72,13 @@ class Handler
 			));
 	}
 
+	/**
+	 * Set the name of the form
+	 *
+	 * @param string $name      Name of form
+	 *
+	 * @return Handler          Return $this for chainability
+	 */
 	public function setName($name)
 	{
 		$this->_name = $name;
@@ -79,9 +86,54 @@ class Handler
 		return $this;
 	}
 
+	/**
+	 * Set the default values for the form
+	 *
+	 * @param array $values     Set default values for form
+	 *
+	 * @return Handler          Returns $this for chainability
+	 */
 	public function setDefaultValues($values)
 	{
 		$this->_defaultValues = (array)$values;
+
+		return $this;
+	}
+
+	/**
+	 * Set the method for the form
+	 *
+	 * @param string $method        Method for form
+	 * @throws \LogicException      Throws exception if form has already been instanciated
+	 *
+	 * @return Handler              Returns $this for chainability
+	 */
+	public function setMethod($method)
+	{
+		if ($this->_form) {
+			throw new \LogicException('You cannot set the method for a form that has already been instanciated');
+		}
+
+		$this->_defaults['method'] = $method;
+
+		return $this;
+	}
+
+	/**
+	 * Set the action for the form
+	 *
+	 * @param string $action        Action for form
+	 * @throws \LogicException      Throws exception if form has already been instanciated
+	 *
+	 * @return Handler              Return $this for chainability
+	 */
+	public function setAction($action)
+	{
+		if ($this->_form) {
+			throw new \LogicException('You cannot set the action for a form that has already been instanciated');
+		}
+
+		$this->_defaults['action'] = $action;
 
 		return $this;
 	}
@@ -200,7 +252,7 @@ class Handler
 
 	protected function _initialiseForm()
 	{
-		return $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues);
+		return $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_defaults);
 	}
 
 	/**
@@ -217,10 +269,6 @@ class Handler
 	 * Check submitted data for validator. You can toggle whether the data validated is bound to the form, or if
 	 * it is posted. You can also submit your own array of data, although this will be overwritten if $fromPost
 	 * is set to to true
-	 *
-	 * @param bool $fromPost        If set to true, data is taken from posted form data, instead of bound data
-	 * @param array $data           Data to be validated, defaults to form's data
-	 * @throws \LogicException      Throws exception if method is called before form data has been set
 	 *
 	 * @return bool                 Returns true if data is valid
 	 */
