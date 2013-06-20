@@ -121,6 +121,7 @@ class ViewNameParser extends TemplateNameParser
 
 		/**
 		 * A twig reference should always be '@form.twig:form_div_layout'
+		 * @todo direct to file in twig bundle and remove Form/Views/Twig directory
 		 */
 		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
 			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
