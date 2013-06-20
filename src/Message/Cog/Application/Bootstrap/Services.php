@@ -144,7 +144,7 @@ class Services implements ServicesInterface
 			$twigEnvironment = new \Twig_Environment(
 				$c['templating.twig.loader'],
 				array(
-				#	'cache' => 'cog://tmp',
+					'cache' => 'cog://tmp',
 					'auto_reload' => true,
 				)
 			);
