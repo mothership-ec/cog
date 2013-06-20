@@ -48,6 +48,8 @@ class Handler
 		'required' => false,
 	);
 
+	protected $_lastField;
+
 
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
@@ -152,12 +154,13 @@ class Handler
 	 *
 	 * @param string | SymfonyForm $child       Name or instance of field, e.g. 'First name'
 	 * @param null $type                        Type of field, defaults to text
+	 * @param string $label                     Label for the field, if null it's auto generated from the name
 	 * @param array $options                    Options for field, see Symfony Form documentation
 	 * @throws \InvalidArgumentException        Throws exception if $child is not a string or Form object
 	 *
 	 * @return Handler                          Returns $this for chainability
 	 */
-	public function add($child, $type = null, array $options = array())
+	public function add($child, $type = null, $label = null, array $options = array())
 	{
 		if(!is_string($child) && (!$child instanceof SymfonyForm)) {
 			throw new \InvalidArgumentException(
@@ -165,10 +168,12 @@ class Handler
 			);
 		}
 
+		$options = array_merge(array('label' => $label), $options);
 		$options = array_merge($this->_defaults, $options);
 
 		$this->getForm()->add($child, $type, $options);
-		#$this->_validator->field($this->_getChildName($child))->optional();
+
+		$this->_lastField = $child;
 
 		return $this;
 
@@ -182,6 +187,10 @@ class Handler
 	 */
 	public function val()
 	{
+		// add it to the validation component
+		$field = $this->field($this->_getChildName($child));
+		$this->getValidator()->field($field->getName(), $field->getConfig()->getAttribute('label'));
+
 		return $this->getValidator();
 	}
 
