@@ -173,7 +173,10 @@ class Handler
 			);
 		}
 
-		$options = array_merge(array('label' => $label), $options);
+		if ($label) {
+			$options = array_merge(array('label' => $label), $options);
+		}
+
 		$options = array_merge($this->_options, $options);
 
 		$this->getForm()->add($child, $type, $options);
