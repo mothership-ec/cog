@@ -75,7 +75,7 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 			->setMethods(array('addHelpers'))
 			->getMock();
 
-		$container['templating.php.engine'] = $this->_engine;
+		$container['templating.engine.php'] = $this->_engine;
 
 		// Mock helpers
 		$this->_helper = $this->getMockBuilder('\\Message\\Cog\\Form\\Template\\Helper')

@@ -65,7 +65,7 @@ class Handler
 		$this->_validator   = $this->_container['validator'];
 		$this->_request     = $this->_container['request'];
 
-		$this->_container['templating.php.engine']
+		$this->_container['templating.engine.php']
 			->addHelpers(array(
 				$this->_container['form.helper.twig'],
 				$this->_container['form.helper.php'],
