@@ -48,8 +48,6 @@ class Handler
 		'required' => false,
 	);
 
-	protected $_lastField;
-
 
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
@@ -180,7 +178,9 @@ class Handler
 
 		$this->getForm()->add($child, $type, $options);
 
-		$this->_lastField = $child;
+		// Get the field we just added and add it to the validator
+		$field = $this->field($this->_getChildName($child));
+		$this->getValidator()->field($field->getName(), $field->getConfig()->getOption('label'));
 
 		return $this;
 
@@ -194,10 +194,6 @@ class Handler
 	 */
 	public function val()
 	{
-		// add it to the validation component
-		$field = $this->field($this->_getChildName($this->_lastField));
-		$this->getValidator()->field($field->getName(), $field->getConfig()->getAttribute('label'));
-
 		return $this->getValidator();
 	}
 
