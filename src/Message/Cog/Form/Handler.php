@@ -183,7 +183,7 @@ class Handler
 
 		// Get the field we just added and add it to the validator
 		$field = $this->field($this->_getChildName($child));
-		$this->getValidator()->field($field->getName(), $field->getConfig()->getOption('label'));
+		$this->getValidator()->field($field->getName(), $field->getConfig()->getOption('label') ?: false);
 
 		return $this;
 
