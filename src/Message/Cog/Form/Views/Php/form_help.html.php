@@ -1,3 +1,3 @@
-<?php if(isset($attr['data-help'])): ?>
-<div class="p"><?php echo $view->escape($attr['data-help']) ?></div>
+<?php if(isset($attr['data-translation-key'])): ?>
+<div class="help"><?php echo $view['translator']->trans($attr['data-translation-key']) ?></div>
 <?php endif; ?>

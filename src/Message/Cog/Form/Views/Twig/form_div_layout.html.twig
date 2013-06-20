@@ -388,3 +388,10 @@
 		{% for attrname, attrvalue in attr %}{{ attrname }}="{{ attrvalue }}" {% endfor %}
 	{% endspaceless %}
 {% endblock button_attributes %}
+
+{# Custom blocks defined by message #}
+{% block help_widget %}
+	{% if attr['data-translation-key'] is defined %}
+		{{ attr['data-translation-key']|trans }}
+	{% endif %}
+{% endblock help_widget %}
