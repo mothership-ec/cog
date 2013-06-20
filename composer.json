@@ -43,6 +43,7 @@
 		"pimple/pimple"                : "1.0.1",
 		"mtdowling/cron-expression"    : "1.0.*",
 		"treasure-chest/treasure-chest": "0.1.*",
+		"kriswallsmith/assetic"        : "1.1.*",
 		"imagine/imagine"			   : "0.4.*"
 	},
 	"require-dev": {
