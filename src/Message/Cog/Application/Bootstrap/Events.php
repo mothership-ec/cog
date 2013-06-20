@@ -39,21 +39,22 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Request
 		);
+
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
 		);
+
 		// Symfony's HTTP Response Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
 		);
+
 		// Symfony's HTTP Fragment Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
 				$this->_services['http.uri_signer']
 			)
 		);
-
-
 
 		// Profiler
 		$eventDispatcher->addSubscriber(
@@ -67,6 +68,7 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\Filesystem\EventListener
 		);
+
 
 		// Routing
 		$eventDispatcher->addSubscriber(new \Message\Cog\Routing\EventListener);
@@ -86,5 +88,8 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 			$container['asset.writer']->writeManagerAssets($container['asset.manager']);
 		});
+
+		//Templating
+		$eventDispatcher->addSubscriber(new \Message\Cog\Templating\EventListener);
 	}
 }

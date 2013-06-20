@@ -37,6 +37,19 @@ class Validator
 		$this->_messages = $this->_loader->getMessages();
 	}
 
+	public function __clone()
+	{
+		foreach($this as $name => $value) { 
+			if(is_object($value)) { 
+				$this->$name = clone $this->$name;
+			}
+		}
+
+		// break the references
+		unset($this->_fieldPointer);
+		unset($this->_rulePointer);
+	}
+
 	/**
 	 * Get assigned loader class
 	 *
@@ -74,7 +87,7 @@ class Validator
 	 * @param  bool   $readableName If true, a "readable name" is saved, assuming
 	 *                              the name is formatted as camel case
 	 *
-	 * @return Validation           Returns $this for chainability
+	 * @return Validator            Returns $this for chainability
 	 */
 	public function field($name, $readableName = false)
 	{
@@ -209,6 +222,15 @@ class Validator
 			->_cleanData();
 
 		return count($this->getMessages()) == 0;
+	}
+
+	public function clear()
+	{
+		$this->_data         = array();
+		$this->_fields       = array();
+		$this->_fieldPointer = null;
+		$this->_rulePointer  = null;
+		$this->_messages->clear();
 	}
 
 	/**

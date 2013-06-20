@@ -94,4 +94,45 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 		$slug     = new Slug($fullSlug);
 		$this->assertSame($slug->getLastSegment(), 'website');
 	}
+
+	public function testSanitize()
+	{
+		$segments = array(
+			'(MY Website',
+			'bløgs',
+			'march!/2013',
+			'me & you',
+			'50 % 5 = 10.00',
+			'YåYéî!',
+		);
+		$slug = new Slug($segments);
+
+		$this->assertSame($slug, $slug->sanitize());
+
+		$this->assertSame(array(
+			'my-website',
+			'blogs',
+			'march-2013',
+			'me-and-you',
+			'50-5-10-00',
+			'yayei',
+		), $slug->getSegments());
+
+		$slug = new Slug($segments);
+
+		$this->assertSame($slug, $slug->sanitize(array(
+			'%'   => 'Divided By',
+			'='   => 'equals',
+			'.00' => '',
+		)));
+
+		$this->assertSame(array(
+			'my-website',
+			'blogs',
+			'march-2013',
+			'me-you',
+			'50-divided-by-5-equals-10',
+			'yayei',
+		), $slug->getSegments());
+	}
 }

@@ -41,4 +41,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 		$route->setMethod(array('PUT', 'POST'));
 		$this->assertSame('PUT|POST', $route->getRequirement('_method'));
 	}
+
+	public function testSettingCsrf()
+	{
+		$route = new Route('/blog/{hash}');
+		$route->enableCsrf('hashParameter');
+
+		$this->assertSame('hashParameter', $route->getDefault('_csrf'));
+	}
 }

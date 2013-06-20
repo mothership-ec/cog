@@ -41,14 +41,20 @@
 		<testsuite name="Filesystem">
 			<directory>./tests/Message/Cog/Test/Filesystem/</directory>
 		</testsuite>
+		<testsuite name="Form">
+			<directory>./tests/Message/Cog/Test/Form/</directory>
+		</testsuite>
 		<testsuite name="Functions">
 			<directory>./tests/Message/Cog/Test/Functions/</directory>
 		</testsuite>
 		<testsuite name="HTTP">
 			<directory>./tests/Message/Cog/Test/HTTP/</directory>
 		</testsuite>
-		<testsuite name="Hash">
-			<directory>./tests/Message/Cog/Test/Hash/</directory>
+		<testsuite name="ImageResize">
+			<directory>./tests/Message/Cog/Test/ImageResize/</directory>
+		</testsuite>
+		<testsuite name="Localisation">
+			<directory>./tests/Message/Cog/Test/Localisation/</directory>
 		</testsuite>
 		<testsuite name="Module">
 			<directory>./tests/Message/Cog/Test/Module/</directory>
@@ -75,6 +81,7 @@
 			<exclude>
 				<directory>./vendor</directory>
 				<directory>./tests</directory>
+				<directory>./src/Message/Cog/Form/Views</directory>
 			</exclude>
 		</whitelist>
 	</filter>
