@@ -6,6 +6,7 @@ use Message\Cog\HTTP\Request;
 use Message\Cog\HTTP\Response;
 use Message\Cog\HTTP\RequestAwareInterface;
 use Message\Cog\Templating\EngineInterface;
+use Message\Cog\Form\Handler as FormHandler;
 
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
@@ -59,6 +60,13 @@ class ResponseBuilder implements RequestAwareInterface
 	 */
 	public function render($reference, array $params = array())
 	{
+		// Convert any shorthand parameters to what they should be
+		foreach ($params as $key => $val) {
+			if ($val instanceof FormHandler) {
+				$params[$key] = $val->getForm()->createView();
+			}
+		}
+
 		try {
 			return Response::create($this->_engine->render($reference, $params));
 		}
