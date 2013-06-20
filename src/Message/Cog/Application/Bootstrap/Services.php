@@ -421,11 +421,11 @@ class Services implements ServicesInterface
 			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
 			$translator->setFallbackLocale($c['locale']->getFallback());
 
-			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
+			#$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
 
 			$dir = $c['app.loader']->getBaseDir().'translations';
 			foreach($c['filesystem.finder']->in($dir) as $file) {
-				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+			#	$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
 			}
 
 			return $translator;
