@@ -195,7 +195,7 @@ class Handler
 	public function val()
 	{
 		// add it to the validation component
-		$field = $this->field($this->_getChildName($child));
+		$field = $this->field($this->_getChildName($this->_lastField));
 		$this->getValidator()->field($field->getName(), $field->getConfig()->getAttribute('label'));
 
 		return $this->getValidator();
