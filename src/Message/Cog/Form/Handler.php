@@ -44,7 +44,7 @@ class Handler
 
 	protected $_name = 'form';
 
-	protected $_defaults = array(
+	protected $_options = array(
 		'required' => false,
 	);
 
@@ -116,7 +116,14 @@ class Handler
 			throw new \LogicException('You cannot set the method for a form that has already been instanciated');
 		}
 
-		$this->_defaults['method'] = $method;
+		$this->_options['method'] = $method;
+
+		return $this;
+	}
+
+	public function addOptions(array $options)
+	{
+		$this->_options = array_merge($this->_options, $options);
 
 		return $this;
 	}
@@ -135,7 +142,7 @@ class Handler
 			throw new \LogicException('You cannot set the action for a form that has already been instanciated');
 		}
 
-		$this->_defaults['action'] = $action;
+		$this->_options['action'] = $action;
 
 		return $this;
 	}
@@ -169,7 +176,7 @@ class Handler
 		}
 
 		$options = array_merge(array('label' => $label), $options);
-		$options = array_merge($this->_defaults, $options);
+		$options = array_merge($this->_options, $options);
 
 		$this->getForm()->add($child, $type, $options);
 
@@ -261,7 +268,7 @@ class Handler
 
 	protected function _initialiseForm()
 	{
-		return $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_defaults);
+		return $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_options);
 	}
 
 	/**
