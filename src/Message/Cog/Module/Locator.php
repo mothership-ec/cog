@@ -41,11 +41,9 @@ class Locator implements LocatorInterface
 			while (1) {
 				if (isset($this->_namespaces[$namespaceToFind])) {
 					// Get first path in the list for this namespace
-					$directory = array_shift($this->_namespaces[$namespaceToFind]);
+					$directory = reset($this->_namespaces[$namespaceToFind]);
 					// Ensure directory ends with directory separator
-					if (substr($directory, -1) !== DIRECTORY_SEPARATOR) {
-						$directory .= DIRECTORY_SEPARATOR;
-					}
+					$directory = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 					// Add PSR-0 namespace
 					$this->_paths[$moduleName] = $directory . str_replace('\\', DIRECTORY_SEPARATOR, $moduleName) . DIRECTORY_SEPARATOR;
 
