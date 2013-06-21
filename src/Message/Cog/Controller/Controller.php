@@ -56,7 +56,24 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Sets the service container.
+	 * Run a string through the translation engine.
+	 *
+	 * @see Message\Cog\Localisation\Translator::trans
+	 *
+	 * @param  string      $message Message or message ID
+	 * @param  array       $params  Array of parameters
+	 * @param  string|null $domain  Message domain
+	 * @param  string|null $locale  Override of locale to use
+	 *
+	 * @return string               Translated string
+	 */
+	public function trans($message, array $params = array(), $domain = null, $locale = null)
+	{
+		return $this->get('translator')->trans($message, $params, $domain, $locale);
+	}
+
+	/**
+	 * {@inheritdoc}
 	 *
 	 * @param ContainerInterface $container The service container instance
 	 */
@@ -66,7 +83,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Set the current HTTP request on this controller.
+	 * {@inheritdoc}
 	 *
 	 * This is used by `ResponseBuilder` to help determine the response format
 	 * type.
