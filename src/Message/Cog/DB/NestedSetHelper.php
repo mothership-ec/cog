@@ -651,12 +651,11 @@ class NestedSetHelper
 		return $this->_trans;
 	}
 
-	public function moveNodeRight($nodeID, $parentID, $createChild = false)
+	public function moveNodeRight($nodeID, $parentID)
 	{
 		var_dump('right');
 		$node = $this->_getNode($nodeID, true);
 		$parent = $this->_getNode($parentID, true);
-
 		/**
 		 * Adds a script to the transaction
 		 */
@@ -679,9 +678,22 @@ class NestedSetHelper
 		 *	Getting the difference between the depths of nodeID #9 and nodeID #8
 		 *	We would build this in the PHP I think
 		 */
+		if ($parent[$this->_depth] > $node[$this->_depth]) {
+			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
+			$direction = 'down';
+		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth]) {
+			// The depth doesn't need to chnage here so a depth change of 0
+			// will be added
+			$depth = 0;
+			$direction = 'flat';
+		} else {
+			$depth = abs($parent[$this->_depth] - $node[$this->_depth]) - 1;
+			$direction = 'up';
+		}
+
 		$this->_trans->add('SET @NODE_DEPTH = ?i',
 			array(
-				abs($node[$this->_depth] - $parent[$this->_depth]) + 1,
+				$depth,
 			)
 		);
 
@@ -695,13 +707,13 @@ class NestedSetHelper
 			SET
 				`' . $this->_right . '` = (`' . $this->_right . '` - @NODEID_TOTAL)
 			WHERE
-				`' . $this->_left . '` < ?i
+				`' . $this->_right . '` >= ?i
 			AND
 				`' . $this->_right . '` < ?i
 			AND
 				`' . $this->_left . '` NOT BETWEEN ?i AND ?i',
 			array(
-				$parent[$this->_left],
+				$node[$this->_left],
 				$parent[$this->_right],
 				$node[$this->_left],
 				$node[$this->_right],
@@ -716,10 +728,13 @@ class NestedSetHelper
 			WHERE
 				`' . $this->_left . '` < ?i
 			AND
+				`' . $this->_left . '` > ?i
+			AND
 				`' . $this->_left . '` NOT BETWEEN ?i AND ?i
 			AND `' . $this->_left . '` > 1',
 			array(
 				$parent[$this->_right],
+				$node[$this->_left],
 				$node[$this->_left],
 				$node[$this->_right],
 			)
@@ -734,7 +749,7 @@ class NestedSetHelper
 			SET
 				`' . $this->_left . '`  = (`' . $this->_left . '`  + (@NODE_MOVE_AMOUNT - @NODEID_TOTAL)),
 				`' . $this->_right . '`  = (`' . $this->_right . '` + (@NODE_MOVE_AMOUNT - @NODEID_TOTAL)),
-				`' . $this->_depth . '`  = (`' . $this->_depth . '` + @NODE_DEPTH)
+				`' . $this->_depth . '`  = (`' . $this->_depth . '` - @NODE_DEPTH)
 			WHERE
 				`' . $this->_pk . '` IN (?ij)',
 			array(
