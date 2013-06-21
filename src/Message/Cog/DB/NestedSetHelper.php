@@ -212,7 +212,7 @@ class NestedSetHelper
 		', $node[$this->_left]);
 
 		// Move the target element
-		$trans->add('
+		$this->_trans->add('
 			UPDATE
 				`' . $this->_table . '`
 			SET
@@ -542,6 +542,258 @@ class NestedSetHelper
 		}
 
 		return (array) $result->first();
+	}
+
+	public function moveNodeLeft($nodeID, $parentID, $createChild = null)
+	{
+		var_dump('left');
+		$node = $this->_getNode($nodeID, true);
+		$parent = $this->_getNode($parentID, true);
+
+		/**
+		 * Adds a script to the transaction
+		 */
+		$this->_setNodeTotal($node);
+
+		/**
+		 * Returns an array of childrenIDs of the given node
+		 */
+		$childrenPageIDs = $this->_getNodeChildrenIDs($node);
+
+		/**
+		 *	$node left position - $parent right position
+		 *	gives us the differece we need to change the children of $node
+		 */
+		$this->_trans->add('SET @NODE_MOVE_AMOUNT = ?i', array(
+			abs($node[$this->_left] - $parent[$this->_right]),
+		));
+
+		/**
+		 *	Getting the difference between the depths of nodeID #9 and nodeID #8
+		 *	We would build this in the PHP I think
+		 */
+		if ($parent[$this->_depth] > $node[$this->_depth]) {
+			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
+			$direction = 'down';
+		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth]) {
+			// The depth doesn't need to chnage here so a depth change of 0
+			// will be added
+			$depth = 0;
+			$direction = 'flat';
+		} else {
+			$depth = $parent[$this->_depth] - 1;
+			$direction = 'up';
+		}
+		$this->_trans->add('SET @NODE_DEPTH = ?i',
+			array(
+				$depth,
+			)
+		);
+
+		/**
+		 *	Increase all positions from nodeID #8's right hand side onwards,
+		 *	except between nodeID #9's left and right
+		 */
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_right . '` = (`' . $this->_right . '` + @NODEID_TOTAL)
+			WHERE
+				`' . $this->_right . '` >= ?i
+			AND
+				`' . $this->_right . '` < ?i
+			AND
+				`' . $this->_left . '` NOT BETWEEN ?i AND ?i',
+			array(
+				$parent[$this->_right],
+				$node[$this->_right],
+				$node[$this->_left],
+				$node[$this->_right],
+			)
+		);
+
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '` = (`' . $this->_left . '` + @NODEID_TOTAL)
+			WHERE
+				`' . $this->_left . '` >= ?i
+			AND
+				`' . $this->_left . '` <= ?i
+			AND
+				`' . $this->_left . '` NOT BETWEEN ?i AND ?i',
+			array(
+				$parent[$this->_right],
+				$node[$this->_right],
+				$node[$this->_left],
+				$node[$this->_right],
+			)
+		);
+
+		/**
+		 *	Move the positions of left and right of children of nodeID #9 AND nodeID #9 itself
+		 */
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '`  = (`' . $this->_left . '`  - @NODE_MOVE_AMOUNT),
+				`' . $this->_right . '`  = (`' . $this->_right . '` - @NODE_MOVE_AMOUNT),
+				`' . $this->_depth . '`  = (`' . $this->_depth . '` + @NODE_DEPTH)
+			WHERE
+				`' . $this->_pk . '` IN (?ij)',
+			array(
+				(array) $childrenPageIDs,
+			)
+		);
+		return $this->_trans;
+	}
+
+	public function moveNodeRight($nodeID, $parentID, $createChild = false)
+	{
+		var_dump('right');
+		$node = $this->_getNode($nodeID, true);
+		$parent = $this->_getNode($parentID, true);
+
+		/**
+		 * Adds a script to the transaction
+		 */
+		$this->_setNodeTotal($node);
+
+		/**
+		 * Returns an array of childrenIDs of the given node
+		 */
+		$childrenPageIDs = $this->_getNodeChildrenIDs($node);
+
+		/**
+		 *	$node left position - $parent right position
+		 *	gives us the differece we need to change the children of $node
+		 */
+		$this->_trans->add('SET @NODE_MOVE_AMOUNT = ?i', array(
+			abs($node[$this->_left] - $parent[$this->_right]),
+		));
+
+		/**
+		 *	Getting the difference between the depths of nodeID #9 and nodeID #8
+		 *	We would build this in the PHP I think
+		 */
+		$this->_trans->add('SET @NODE_DEPTH = ?i',
+			array(
+				abs($node[$this->_depth] - $parent[$this->_depth]) + 1,
+			)
+		);
+
+		/**
+		 *	Increase all positions from nodeID #8's right hand side onwards,
+		 *	except between nodeID #9's left and right
+		 */
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_right . '` = (`' . $this->_right . '` - @NODEID_TOTAL)
+			WHERE
+				`' . $this->_left . '` < ?i
+			AND
+				`' . $this->_right . '` < ?i
+			AND
+				`' . $this->_left . '` NOT BETWEEN ?i AND ?i',
+			array(
+				$parent[$this->_left],
+				$parent[$this->_right],
+				$node[$this->_left],
+				$node[$this->_right],
+			)
+		);
+
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '` = (`' . $this->_left . '` - @NODEID_TOTAL)
+			WHERE
+				`' . $this->_left . '` < ?i
+			AND
+				`' . $this->_left . '` NOT BETWEEN ?i AND ?i
+			AND `' . $this->_left . '` > 1',
+			array(
+				$parent[$this->_right],
+				$node[$this->_left],
+				$node[$this->_right],
+			)
+		);
+
+		/**
+		 *	Move the positions of left and right of children of nodeID #9 AND nodeID #9 itself
+		 */
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '`  = (`' . $this->_left . '`  + (@NODE_MOVE_AMOUNT - @NODEID_TOTAL)),
+				`' . $this->_right . '`  = (`' . $this->_right . '` + (@NODE_MOVE_AMOUNT - @NODEID_TOTAL)),
+				`' . $this->_depth . '`  = (`' . $this->_depth . '` + @NODE_DEPTH)
+			WHERE
+				`' . $this->_pk . '` IN (?ij)',
+			array(
+				(array) $childrenPageIDs,
+			)
+		);
+		return $this->_trans;
+	}
+
+	public function _setNodeTotal($node)
+	{
+		$this->_trans->add('SET @NODEID_TOTAL = (
+			SELECT
+				/*
+					count children and add itself multiplied
+					by 2 to get the left and right difference
+				*/
+				(COUNT(`' . $this->_pk . '`) + 1 ) * 2
+			FROM
+				`' . $this->_table . '`
+			WHERE
+				`' . $this->_left . '` > ?i
+			AND
+				`' . $this->_right . '` < ?i
+		)',array(
+			$node[$this->_left],
+			$node[$this->_right],
+		));
+	}
+
+	protected function _getNodeChildrenIDs($node)
+	{
+
+		$result = $this->_query->run('
+			SELECT
+				`' . $this->_pk . '`
+			FROM
+				`' . $this->_table . '`
+			WHERE
+				`' . $this->_left . '` >= ?i
+			AND
+				`' . $this->_right . '` <= ?i
+			', array(
+				$node[$this->_left],
+				$node[$this->_right],
+				$node[$this->_depth] - 1,
+		));
+
+		/**
+		 * Build an array of the children as we will need to update these using
+		 * there ID's as things would have already moved and wtheir position may
+		 * not be unique anymore
+		 */
+		$childrenPageIDs = array();
+		foreach($result as $value) {
+			$childrenPageIDs[] = $value->{$this->_pk};
+		}
+
+		return $childrenPageIDs;
 	}
 }
 
