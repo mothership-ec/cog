@@ -544,7 +544,7 @@ class NestedSetHelper
 		return (array) $result->first();
 	}
 
-	public function moveNodeLeft($nodeID, $parentID, $createChild = null)
+	public function moveNodeLeft($nodeID, $parentID, $adjacent = false)
 	{
 		var_dump('left');
 		$node = $this->_getNode($nodeID, true);
@@ -572,10 +572,10 @@ class NestedSetHelper
 		 *	Getting the difference between the depths of nodeID #9 and nodeID #8
 		 *	We would build this in the PHP I think
 		 */
-		if ($parent[$this->_depth] > $node[$this->_depth]) {
+		if ($parent[$this->_depth] > $node[$this->_depth] && !$adjacent) {
 			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
 			$direction = 'down';
-		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth]) {
+		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth] || $adjacent) {
 			// The depth doesn't need to chnage here so a depth change of 0
 			// will be added
 			$depth = 0;
@@ -651,7 +651,7 @@ class NestedSetHelper
 		return $this->_trans;
 	}
 
-	public function moveNodeRight($nodeID, $parentID)
+	public function moveNodeRight($nodeID, $parentID, $adjacent = false)
 	{
 		var_dump('right');
 		$node = $this->_getNode($nodeID, true);
@@ -678,10 +678,10 @@ class NestedSetHelper
 		 *	Getting the difference between the depths of nodeID #9 and nodeID #8
 		 *	We would build this in the PHP I think
 		 */
-		if ($parent[$this->_depth] > $node[$this->_depth]) {
+		if ($parent[$this->_depth] > $node[$this->_depth] && !$adjacent) {
 			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
 			$direction = 'down';
-		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth]) {
+		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth] || $adjacent) {
 			// The depth doesn't need to chnage here so a depth change of 0
 			// will be added
 			$depth = 0;
