@@ -221,7 +221,7 @@ class Validator
 			->_applyRules()
 			->_applyFilters('post')
 			->_cleanData();
-var_dump($this->getMessages());
+
 		return count($this->getMessages()) == 0;
 	}
 
