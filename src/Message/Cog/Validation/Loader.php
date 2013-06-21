@@ -14,6 +14,26 @@ namespace Message\Cog\Validation;
 class Loader
 {
 	/**
+	 * @var Messages
+	 */
+	protected $_messages;
+
+	/**
+	 * @var array
+	 */
+	protected $_rules;
+
+	/**
+	 * @var array
+	 */
+	protected $_filters;
+
+	/**
+	 * @var Validator
+	 */
+	protected $_validator;
+
+	/**
 	 * @param Messages $messages    Instance of Messages object to manage error messages
 	 * @param array $classes        Classes to be registered
 	 */
@@ -120,6 +140,30 @@ class Loader
 	public function getMessages()
 	{
 		return $this->_messages;
+	}
+
+	/**
+	 * Assign Validator instance to loader, so it can be accessed from rules and filters if need be
+	 *
+	 * @param Validator $validator      Validator instance to assign to loader
+	 *
+	 * @return Loader                   Returns $this for chainability
+	 */
+	public function setValidator(Validator $validator)
+	{
+		$this->_validator = $validator;
+
+		return $this;
+	}
+
+	/**
+	 * Get assigned instance of Validator
+	 *
+	 * @return Validator
+	 */
+	public function getValidator()
+	{
+		return $this->_validator;
 	}
 
 	/**

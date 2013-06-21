@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Validation\Filter;
 
-use Message\Cog\Validation\CollectionInterface;
+use Message\Cog\Validation\OtherCollectionAbstract;
 use Message\Cog\Validation\Loader;
 
 /**
@@ -14,7 +14,7 @@ use Message\Cog\Validation\Loader;
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Other implements CollectionInterface
+class Other extends OtherCollectionAbstract
 {
 	/**
 	 * Register filters to loader
@@ -38,7 +38,7 @@ class Other implements CollectionInterface
 	public function filter($var, $func)
 	{
 		if (is_callable($func)) {
-			return call_user_func($func, $var);
+			return call_user_func($func, $var, $this->_getSubmittedData());
 		}
 		else {
 			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $func must be callable');

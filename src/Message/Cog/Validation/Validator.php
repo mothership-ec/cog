@@ -35,6 +35,7 @@ class Validator
 	{
 		$this->_loader = $loader;
 		$this->_messages = $this->_loader->getMessages();
+		$this->_loader->setValidator($this);
 	}
 
 	public function __clone()
@@ -220,7 +221,7 @@ class Validator
 			->_applyRules()
 			->_applyFilters('post')
 			->_cleanData();
-
+var_dump($this->getMessages());
 		return count($this->getMessages()) == 0;
 	}
 

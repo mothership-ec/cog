@@ -2,8 +2,8 @@
 
 namespace Message\Cog\Validation\Rule;
 
-use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Validation\OtherCollectionAbstract;
 
 /**
  * Other rule
@@ -14,7 +14,7 @@ use Message\Cog\Validation\Loader;
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Other implements CollectionInterface
+class Other extends OtherCollectionAbstract
 {
 	/**
 	 * Register rules to loader
@@ -26,6 +26,7 @@ class Other implements CollectionInterface
 	public function register(Loader $loader)
 	{
 		$loader->registerRule('rule', array($this, 'rule'), '%s must%s pass a custom rule.');
+		$this->_loader = $loader;
 	}
 
 	/**
@@ -38,7 +39,7 @@ class Other implements CollectionInterface
 	public function rule($var, $func)
 	{
 		if (is_callable($func)) {
-			return call_user_func($func, $var);
+			return call_user_func($func, $var, $this->_getSubmittedData());
 		}
 		else {
 			throw new \Exception (__CLASS__ . '::' . __METHOD__ . ' - $func must be callable');
