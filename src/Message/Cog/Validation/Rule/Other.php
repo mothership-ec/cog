@@ -3,7 +3,7 @@
 namespace Message\Cog\Validation\Rule;
 
 use Message\Cog\Validation\Loader;
-use Message\Cog\Validation\OtherCollectionAbstract;
+use Message\Cog\Validation\CollectionInterface;
 
 /**
  * Other rule
@@ -14,8 +14,12 @@ use Message\Cog\Validation\OtherCollectionAbstract;
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Other extends OtherCollectionAbstract
+class Other implements CollectionInterface
 {
+	/**
+	 * @var Loader
+	 */
+	protected $_loader;
 	/**
 	 * Register rules to loader
 	 *
@@ -38,8 +42,10 @@ class Other extends OtherCollectionAbstract
 	 */
 	public function rule($var, $func)
 	{
+		$data = $this->_loader->getValidator()->getData();
+
 		if (is_callable($func)) {
-			return call_user_func($func, $var, $this->_getSubmittedData());
+			return call_user_func($func, $var, $data);
 		}
 		else {
 			throw new \Exception (__CLASS__ . '::' . __METHOD__ . ' - $func must be callable');

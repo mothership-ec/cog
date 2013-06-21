@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Validation\Filter;
 
-use Message\Cog\Validation\OtherCollectionAbstract;
+use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
 
 /**
@@ -14,7 +14,7 @@ use Message\Cog\Validation\Loader;
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Other extends OtherCollectionAbstract
+class Other implements CollectionInterface
 {
 	/**
 	 * Register filters to loader
