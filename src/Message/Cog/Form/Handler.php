@@ -270,6 +270,11 @@ class Handler
 		return $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_options);
 	}
 
+	public function getBuilder()
+	{
+		return $this->_builder;
+	}
+
 	/**
 	 * Get instance of Validator
 	 *
