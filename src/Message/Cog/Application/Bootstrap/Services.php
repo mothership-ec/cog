@@ -425,11 +425,26 @@ class Services implements ServicesInterface
 			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
 			$translator->setFallbackLocale($c['locale']->getFallback());
 
-			#$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
+			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader(
+				new \Symfony\Component\Yaml\Parser
+			));
 
+			// Load translation files from modules
+			foreach ($c['module.loader']->getModules() as $moduleName) {
+				$moduleName = str_replace('\\', $c['reference_parser']::SEPARATOR, $moduleName);
+				$dir        = 'cog://@' . $moduleName . $c['reference_parser']::MODULE_SEPARATOR . 'translations';
+
+				if (file_exists($dir)) {
+					foreach ($c['filesystem.finder']->in($dir) as $file) {
+						$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+					}
+				}
+			}
+
+			// Load application translation files
 			$dir = $c['app.loader']->getBaseDir().'translations';
-			foreach($c['filesystem.finder']->in($dir) as $file) {
-			#	$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+			foreach ($c['filesystem.finder']->in($dir) as $file) {
+				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
 			}
 
 			return $translator;
