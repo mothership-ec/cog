@@ -1,4 +1,4 @@
-{% macro exception(exception) %}
+{% macro exception(exception, statusTexts) %}
 	<section class="exception">
 		<hgroup>
 			<h1>
@@ -11,29 +11,33 @@
 				{{ exception.getMessage() }}
 				{% endif %}
 			</h1>
-			<h2>{{ exception.getClass() }}</h2>
-			{% if exception.getStatusCode() %}
-			<h3>HTTP Status Code <strong>{{ exception.getStatusCode() }}</strong></h3>
-			{% endif %}
+			<div class="container">
+				<h2>{{ exception.getClass() }}</h2>
+				{% if exception.getStatusCode() %}
+				<p class="status"><strong>{{ exception.getStatusCode() }}</strong> {{ statusTexts[exception.getStatusCode()] }}</p>
+				{% endif %}
+			</div>
 		</hgroup>
 
-		<p>Thrown in <em>{{ exception.getFile() }}</em> on line <strong> {{exception.getLine() }}</strong>.</p>
-
-		<section class="trace">
-			<h1>Stack trace</h1>
-
-			<ol>
+		<div class="container">
+			<ol class="trace">
 				{% for trace in exception.getTrace() %}
 				<li>
+					{% if loop.first %}
+					thrown
+					{% else %}
 					at {% if trace.class %}
-					<abbr class="class" title="{{ trace.class }}">{{ trace.short_class }}</abbr>->{% endif %}<span class="method">{{ trace.function }}</span>{{ _self.args(trace.args) }}
+					<span class="code">
+						<abbr class="class" title="{{ trace.class }}">{{ trace.short_class }}</abbr>->{% endif %}<span class="method">{{ trace.function }}</span>{{ _self.args(trace.args) }}
+					</span>
+					{% endif %}
 					in <span class="file">{{ trace.file }}</span> line <span class="line">{{ trace.line }}</span>
 
 					{{ render(controller('Message:Cog:Debug::Controller:Exception#filePeek', {file: trace.file, line: trace.line})) }}
 				</li>
 				{% endfor %}
 			</ol>
-		</section>
+		</div>
 	</section>
 {% endmacro %}
 {% macro args(args) %}
@@ -48,7 +52,6 @@
 		)
 	</span>
 {% endmacro %}
-{% import _self as debug %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -56,58 +59,36 @@
 
 		<title>Cog Exception</title>
 
-		<style type="text/css">
-			* {
-				margin: 0;
-				padding: 0;
+		{% stylesheets
+			'Message:Cog:Debug::_assets/css/shCoreRDark.css'
+			'Message:Cog:Debug::_assets/css/exception.css'
+			output='/assets/css/exception.css' %}
+			<link href="{{ asset_url }}" rel="stylesheet">
+		{% endstylesheets %}
 
-				font-family: Arial, sans-serif;
-			}
+		<link rel="stylesheet" href="//fast.fonts.com/cssapi/97534885-97aa-4253-9892-b983a466ab47.css"/>
 
-			h1,
-			h2,
-			h3,
-			p,
-			ol {
-				padding: 20px 20px 0;
-			}
+		{% javascripts
+			'Message:Cog:Debug::_assets/js/shCore.js'
+			'Message:Cog:Debug::_assets/js/shBrushPhp.js'
+			'Message:Cog:Debug::_assets/js/shBrushSql.js'
+			output='/assets/js/exception.js' %}
+			<script src="{{ asset_url }}"></script>
+		{% endjavascripts %}
 
-			hgroup h1 {
-				background: red;
-				padding: 30px 20px;
-			}
+		<script>
+			SyntaxHighlighter.all();
+		</script>
 
-			ol.code {
-				float: left;
-				clear: left;
-				width: 100%;
-				list-style: none;
-			}
-
-			ol.code li {
-				clear: left;
-			}
-
-			ol.code span.number {
-				float: left;
-				padding: 10px;
-				background: #ececec;
-				font-weight: bold;
-			}
-
-			ol.code pre {
-				padding: 10px 0;
-			}
-		</style>
 	</head>
 	<body>
-		{{ debug.exception(exception) }}
+		{{ _self.exception(exception, statusTexts) }}
 
 		<section class="previous">
 			<h1>Previous exceptions</h1>
 
 			{% for previous in exception.getAllPrevious() %}
-			{{ debug.exception(previous) }}
+			{{ _self.exception(previous, statusTexts) }}
 			{% endfor %}
 		</section>
 	</body>
