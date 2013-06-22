@@ -27,10 +27,11 @@ class Utility
 	public function traceCallingModuleName()
 	{
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-	#	var_dump($backtrace);
+
 		foreach ($backtrace as $call) {
 			foreach ($this->_moduleLoader->getModules() as $moduleName) {
-				if (isset($call['class']) && $moduleName === substr($call['class'], 0, strlen($moduleName))) {
+				if (isset($call['class'])
+				 && $moduleName === substr($call['class'], 0, strlen($moduleName))) {
 					return $moduleName;
 				}
 			}

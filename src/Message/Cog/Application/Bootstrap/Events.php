@@ -39,19 +39,23 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Request
 		);
+
 		$eventDispatcher->addSubscriber(
 			new \Message\Cog\HTTP\EventListener\Response($this->_services['http.cookies'])
 		);
+
 		// Symfony's HTTP Response Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
 		);
+
 		// Symfony's HTTP Exception Listener
 		if (in_array($this->_services['env'], array('local', 'dev'))) {
 			$eventDispatcher->addSubscriber(
 				new \Symfony\Component\HttpKernel\EventListener\ExceptionListener('Message\\Cog\\Debug\\Controller\\Exception::viewException')
 			);
 		}
+
 		// Symfony's HTTP Fragment Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
@@ -72,10 +76,17 @@ class Events implements EventsInterface, ContainerAwareInterface
 			new \Message\Cog\Filesystem\EventListener
 		);
 
+
 		// Routing
 		$eventDispatcher->addSubscriber(new \Message\Cog\Routing\EventListener);
 
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
+
+		// Templating
+		$eventDispatcher->addSubscriber(new \Message\Cog\Templating\EventListener);
+
+		// Asset Management
+		$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
 	}
 }

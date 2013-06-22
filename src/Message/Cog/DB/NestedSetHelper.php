@@ -133,10 +133,18 @@ class NestedSetHelper
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` + 2,
 				`' . $this->_right . '` = `' . $this->_right . '` + 2
 			WHERE
 				`' . $this->_right . '` > ?i
+		', $targetNode[$this->_right]);
+
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '`  = `' . $this->_left . '` + 2
+			WHERE
+				`' . $this->_left . '` > ?i
 		', $targetNode[$this->_right]);
 
 		// Add the node into the tree
@@ -395,6 +403,7 @@ class NestedSetHelper
 	 */
 	public function remove($nodeID)
 	{
+
 		$this->_checkTableInfoSet();
 
 		$node = $this->_getNode($nodeID);
@@ -403,10 +412,18 @@ class NestedSetHelper
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` - 2,
 				`' . $this->_right . '` = `' . $this->_right . '` - 2
 			WHERE
 				`' . $this->_right . '` > ?i
+		', $node[$this->_right]);
+
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '` = `' . $this->_left . '` - 2
+			WHERE
+				`' . $this->_left . '` > ?i
 		', $node[$this->_right]);
 
 		$this->_trans->add('

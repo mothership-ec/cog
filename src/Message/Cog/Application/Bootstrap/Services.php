@@ -95,9 +95,10 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['routing.generator'] = function($c) {
+
 			$generator = new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
 			$generator->setCsrfSecrets($c['http.session'], $c['routing.csrf_secret']);
-			
+
 			return $generator;
 		};
 
@@ -111,11 +112,8 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
 					// Twig templating engine
-					new \Message\Cog\Templating\TwigEngine(
-						$c['templating.twig.environment'],
-						$c['templating.view_name_parser']
-					),
-					$c['templating.php.engine'],
+					$c['templating.engine.twig'],
+					$c['templating.engine.php'],
 				)
 			);
 		});
@@ -131,49 +129,59 @@ class Services implements ServicesInterface
 			);
 		});
 
+		$serviceContainer['templating.actions_helper'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\Helper\Actions(
+				$c['http.fragment_handler'],
+				$c['reference_parser']
+			);
+		});
+
+		$serviceContainer['templating.twig.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']);
+		});
+
 		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
 			$twigEnvironment = new \Twig_Environment(
-				new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']),
+				$c['templating.twig.loader'],
 				array(
 					'cache' => 'cog://tmp',
 					'auto_reload' => true,
 				)
 			);
 
-			$twigEnvironment->addGlobal('flashes', $c['http.session']->getFlashBag()->all());
-			$twigEnvironment->addGlobal('cfg', $c['cfg']);
-
-			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
-				$c['http.fragment_handler'],
-				$c['reference_parser']
-			);
-
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($actionsHelper));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
+			$twigEnvironment->addExtension($c['form.twig_form_extension']);
+
+			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
 
 			return $twigEnvironment;
 		});
 
-		$serviceContainer['templating.php.engine'] = $serviceContainer->share(function($c) {
-
-			$actionsHelper = new \Message\Cog\Templating\Helper\Actions(
-				$c['http.fragment_handler'],
-				$c['reference_parser']
-			);
-
-			// Plain PHP templating engine
+		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
-					$c['app.loader']->getBaseDir()
+					array(
+						$c['app.loader']->getBaseDir(),
+						__DIR__ . '/../../Form/Views/Php',
+						__DIR__ . '/../../Form/Views/Twig'
+					)
 				),
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
-					$actionsHelper,
+					$c['templating.actions_helper'],
 					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 					new \Message\Cog\Templating\Helper\Translation($c['translator']),
 				)
+			);
+		});
+
+		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\TwigEngine(
+				$c['templating.twig.environment'],
+				$c['templating.view_name_parser']
 			);
 		});
 
@@ -308,6 +316,74 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Application\Context\Console($c);
 		});
 
+
+		// Forms
+		$serviceContainer['form'] = function($c) {
+			return $c['form.handler'];
+		};
+
+		$serviceContainer['form.handler'] = function($c) {
+			return new \Message\Cog\Form\Handler($c);
+		};
+
+		$serviceContainer['form.builder'] = function($c) {
+			return $c['form.factory']->getFormFactory()->createBuilder();
+		};
+
+		$serviceContainer['form.factory'] = function($c) {
+			return new \Message\Cog\Form\Factory\Builder($c);
+		};
+
+		$serviceContainer['form.helper.php'] = function($c) {
+			$engine = $c['templating.engine.php'];
+
+			$formHelper = new \Message\Cog\Form\Template\Helper(
+				new \Symfony\Component\Form\FormRenderer(
+					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
+						$engine,
+						array('@form.php')
+					),
+					null
+				)
+			);
+
+			return $formHelper;
+
+		};
+
+		$serviceContainer['form.helper.twig'] = $serviceContainer->share(function($c) {
+
+			$formHelper = new \Message\Cog\Form\Template\Helper(
+				$c['form.renderer.twig']
+			);
+
+			return $formHelper;
+
+		});
+
+		$serviceContainer['form.renderer.twig'] = function($c) {
+			return new \Symfony\Bridge\Twig\Form\TwigRenderer(
+				new \Symfony\Bridge\Twig\Form\TwigRendererEngine(
+					$c['form.templates.twig']
+				)
+			);
+		};
+
+		$serviceContainer['form.renderer.engine.twig'] = function($c) {
+			return new \Symfony\Bridge\Twig\Form\TwigRendererEngine($c['form.templates.twig']);
+		};
+
+		$serviceContainer['form.templates.twig'] = function($c) {
+			return array(
+				'@form.twig:form_div_layout',
+			);
+
+		};
+
+		$serviceContainer['form.twig_form_extension'] = function($c) {
+			return new \Symfony\Bridge\Twig\Extension\FormExtension($c['form.renderer.twig']);
+		};
+
 		// Validator
 		$serviceContainer['validator'] = function($c) {
 			return new \Message\Cog\Validation\Validator(
@@ -316,7 +392,7 @@ class Services implements ServicesInterface
 					array(
 						new \Message\Cog\Validation\Rule\Date,
 						new \Message\Cog\Validation\Rule\Number,
-//						new \Message\Cog\Validation\Rule\Iterable, - not working yet
+						new \Message\Cog\Validation\Rule\Iterable,
 						new \Message\Cog\Validation\Rule\Text,
 						new \Message\Cog\Validation\Rule\Other,
 						new \Message\Cog\Validation\Filter\Text,
@@ -335,6 +411,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
 		});
 
+
 		// Hardcode to en_GB for the moment. In the future this can be determined
 		// from properties on the route or the session object
 		$serviceContainer['locale'] = $serviceContainer->share(function($c) {
@@ -348,14 +425,54 @@ class Services implements ServicesInterface
 			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
 			$translator->setFallbackLocale($c['locale']->getFallback());
 
-			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader);
+			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader(
+				new \Symfony\Component\Yaml\Parser
+			));
 
-			$dir = $c['app.loader']->getBaseDir().'/translations';
-			foreach($c['filesystem.finder']->in($dir) as $file) {
+			// Load translation files from modules
+			foreach ($c['module.loader']->getModules() as $moduleName) {
+				$moduleName = str_replace('\\', $c['reference_parser']::SEPARATOR, $moduleName);
+				$dir        = 'cog://@' . $moduleName . $c['reference_parser']::MODULE_SEPARATOR . 'translations';
+
+				if (file_exists($dir)) {
+					foreach ($c['filesystem.finder']->in($dir) as $file) {
+						$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+					}
+				}
+			}
+
+			// Load application translation files
+			$dir = $c['app.loader']->getBaseDir().'translations';
+			foreach ($c['filesystem.finder']->in($dir) as $file) {
 				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
 			}
-			
+
 			return $translator;
+		});
+
+
+
+
+		$serviceContainer['asset.manager'] = $serviceContainer->share(function($c) {
+			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
+				'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig.environment']),
+			));
+
+			$c['asset.factory']->setAssetManager($manager);
+
+			return $manager;
+		});
+
+		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
+			$factory = new \Message\Cog\AssetManagement\Factory($c['app.loader']->getBaseDir());
+
+			$factory->setReferenceParser($c['reference_parser']);
+
+			return $factory;
+		});
+
+		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
+			return new \Assetic\AssetWriter('cog://public');
 		});
 	}
 }
