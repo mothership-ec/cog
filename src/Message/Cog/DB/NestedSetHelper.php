@@ -167,6 +167,48 @@ class NestedSetHelper
 		return $this->_trans;
 	}
 
+	public function moveToTop($nodeID, $currentTop)
+	{
+		$node = $this->_getNode($nodeID);
+		$currentTop = $this->_getNode($currentTop);
+
+		$difference = 2;
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '`  = (`' . $this->_left . '` - :difference?i),
+				`' . $this->_right . '`  = (`' . $this->_right . '` - :difference?i)
+			WHERE
+				`' . $this->_right . '` <= :curright?i
+			AND
+				`' . $this->_left . '`  >= :nodeleft?i
+			', array(
+				'difference' => $difference,
+				'curright'	=>  $currentTop[$this->_right],
+				'nodeleft'	=> $node[$this->_left],
+			)
+		);
+
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '`  = ?i,
+				`' . $this->_right . '`  = ?i
+			WHERE
+				`' . $this->_pk . '` = ?i
+			', array(
+				$currentTop[$this->_left],
+				$currentTop[$this->_right],
+				$nodeID,
+			)
+		);
+
+		return $this->_trans;
+
+	}
+
 	/**
 	 * Move a node left in the tree.
 	 *
@@ -175,52 +217,104 @@ class NestedSetHelper
 	 * @return Transaction|false The transaction instance with the queries added,
 	 *                           or false if the node could not be moved left
 	 */
-	public function moveLeft($nodeID)
+	public function moveLeft($nodeID, $nextToID)
 	{
 		$this->_checkTableInfoSet();
 
 		$node   = $this->_getNode($nodeID);
-		$parent = $this->_getParentNode($node);
+		$parent = $this->_getNode($nextToID);
 
 		// We can't move any further left if this node's left edge is directly
 		// after its parent's left edge.
-		if ($node[$this->_left] === $parent[$this->_left] - 1) {
+		if ($node[$this->_left] === $parent[$this->_left] - 1 || $node[$this->_left] == 1) {
 			return false;
 		}
 
-		// Take the element directly to the left and move it right one place
-		$this->_trans->add('
-			SET @LEFT_NODE = (
-				SELECT
-					`' . $this->_left . '`
-				FROM
-					`' . $this->_table . '`
-				WHERE
-					`' . $this->_right . '` = ?i
-			)
-		', $node[$this->_left] - 1);
+
+		if ($parent) {
+			$this->_trans->add('
+				SET @MOVE_AMOUNT_RIGHT = ?i
+			', array(
+				abs($parent[$this->_right] - $node[$this->_right]),
+			));
+
+			$this->_trans->add('
+				SET @MOVE_AMOUNT_LEFT = ?i
+			', 	array(
+					abs($parent[$this->_left] - $node[$this->_left]),
+				)
+			);
+		} else {
+			// Get the difference of the right node from the current node we are moving
+			$this->_trans->add('
+				SET @MOVE_AMOUNT_RIGHT = (
+					SELECT
+						ABS(`' . $this->_right . '` - ?i )
+					FROM
+						`' . $this->_table . '`
+					WHERE
+						`' . $this->_right . '` =   ?i
+					AND
+						`' . $this->_depth . '` = ?i
+				)
+			', array(
+				$node[$this->_right],
+				$node[$this->_left] - 1,
+				$node[$this->_depth],
+			));
+
+			// Work out the difference of the left position as above
+			$this->_trans->add('
+				SET @MOVE_AMOUNT_LEFT = (
+					SELECT
+						ABS(`' . $this->_left . '` - ?i )
+					FROM
+						page
+					WHERE
+						`' . $this->_right . '` =   ?i
+					AND
+						position_depth = ?i
+				)
+			', array(
+					$node[$this->_left],
+					$node[$this->_left] - 1,
+					$node[$this->_depth],
+				)
+			);
+		}
+
+		// Get the children node ids of our node
+		$childrenPageIDs = $this->_getNodeChildrenIDs($node);
 
 		$this->_trans->add('
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` + 2,
-				`' . $this->_right . '` = `' . $this->_right . '` + 2
+				`' . $this->_left . '`  = `' . $this->_left . '` + @MOVE_AMOUNT_RIGHT,
+				`' . $this->_right . '` = `' . $this->_right . '` + @MOVE_AMOUNT_RIGHT
 			WHERE
-				`' . $this->_left . '` >= @LEFT_NODE
-			AND `' . $this->_right . '` < ?i
-		', $node[$this->_left]);
+				`' . $this->_left . '` <= ?i
+			AND
+				`' . $this->_left . '` >= (?i - @MOVE_AMOUNT_LEFT)
+		', array(
+				$node[$this->_left] - 1,
+				$node[$this->_left],
+			)
+		);
 
 		// Move the target element
 		$this->_trans->add('
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` - 2,
-				`' . $this->_right . '` = `' . $this->_right . '` - 2
+				`' . $this->_left . '`  = `' . $this->_left . '` - @MOVE_AMOUNT_LEFT,
+				`' . $this->_right . '` = `' . $this->_right . '` - @MOVE_AMOUNT_LEFT
 			WHERE
-				`' . $this->_pk . '` = ?i
-		', $nodeID);
+				`' . $this->_pk . '` IN (?ij)
+			', array(
+				(array) $childrenPageIDs,
+			)
+		);
 
 		return $this->_trans;
 	}
@@ -246,39 +340,75 @@ class NestedSetHelper
 			return false;
 		}
 
-		// Take the element directly to the left and move it right one place
+		// Get the difference of the right node from the current node we are moving
 		$this->_trans->add('
-			SET @LEFT_NODE = (
+			SET @MOVE_AMOUNT_RIGHT = (
 				SELECT
-					`' . $this->_left . '`
+					ABS(`' . $this->_right . '` - ?i )
 				FROM
-					`' . $this->_table . '`
+					page
 				WHERE
-					`' . $this->_right . '` = ?i
+					`' . $this->_left . '` =   ?i
+				AND
+					position_depth = ?i
 			)
-		', $node[$this->_left] - 1);
+		', array(
+			$node[$this->_right],
+			$node[$this->_right] + 1,
+			$node[$this->_depth],
+		));
 
+		// Work out the difference of the left position as above
+		$this->_trans->add('
+			SET @MOVE_AMOUNT_LEFT = (
+				SELECT
+					ABS(`' . $this->_left . '` - ?i )
+				FROM
+					page
+				WHERE
+					`' . $this->_left . '` =   ?i
+				AND
+					position_depth = ?i
+			)
+		', array(
+				$node[$this->_left],
+				$node[$this->_right] + 1,
+				$node[$this->_depth],
+			)
+		);
+
+		// Get the children node ids of our node
+		$childrenPageIDs = $this->_getNodeChildrenIDs($node);
+
+		// Chnage the position of all the nodes which are children of the next node
 		$this->_trans->add('
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` + 2,
-				`' . $this->_right . '` = `' . $this->_right . '` + 2
+				`' . $this->_right . '`  = `' . $this->_right . '` -  @MOVE_AMOUNT_LEFT,
+				`' . $this->_left . '` = `' . $this->_left . '` - @MOVE_AMOUNT_LEFT
 			WHERE
-				`' . $this->_left . '` >= @LEFT_NODE
-			AND `' . $this->_right . '` < ?i
-		', $node[$this->_left]);
+				`' . $this->_right . '` <= (?i + @MOVE_AMOUNT_RIGHT)
+			AND `' . $this->_left . '` > ?i
+		', array(
+				$node[$this->_right],
+				$node[$this->_right],
+			)
+		);
 
-		// Move the target element
+		// Move the target element and it's children
 		$this->_trans->add('
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` - 2,
-				`' . $this->_right . '` = `' . $this->_right . '` - 2
+				`' . $this->_right . '`  = `' . $this->_right . '` + @MOVE_AMOUNT_RIGHT,
+				`' . $this->_left . '` = `' . $this->_left . '` + @MOVE_AMOUNT_RIGHT
 			WHERE
-				`' . $this->_pk . '` = ?i
-		', $nodeID);
+				`' . $this->_pk . '` IN (?ij)
+			', array(
+				(array) $childrenPageIDs,
+			)
+		);
 
 		return $this->_trans;
 	}
@@ -544,7 +674,7 @@ class NestedSetHelper
 		return (array) $result->first();
 	}
 
-	public function moveNodeLeft($nodeID, $parentID, $adjacent = false)
+	public function moveNodeLeftOld($nodeID, $parentID)
 	{
 		var_dump('left');
 		$node = $this->_getNode($nodeID, true);
@@ -572,10 +702,10 @@ class NestedSetHelper
 		 *	Getting the difference between the depths of nodeID #9 and nodeID #8
 		 *	We would build this in the PHP I think
 		 */
-		if ($parent[$this->_depth] > $node[$this->_depth] && !$adjacent) {
+		if ($parent[$this->_depth] >= $node[$this->_depth]) {
 			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
 			$direction = 'down';
-		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth] || $adjacent) {
+		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth]) {
 			// The depth doesn't need to chnage here so a depth change of 0
 			// will be added
 			$depth = 0;
@@ -584,6 +714,7 @@ class NestedSetHelper
 			$depth = $parent[$this->_depth] - 1;
 			$direction = 'up';
 		}
+
 		$this->_trans->add('SET @NODE_DEPTH = ?i',
 			array(
 				$depth,
@@ -651,7 +782,7 @@ class NestedSetHelper
 		return $this->_trans;
 	}
 
-	public function moveNodeRight($nodeID, $parentID, $adjacent = false)
+	public function moveNodeRightOld($nodeID, $parentID)
 	{
 		var_dump('right');
 		$node = $this->_getNode($nodeID, true);
@@ -678,10 +809,10 @@ class NestedSetHelper
 		 *	Getting the difference between the depths of nodeID #9 and nodeID #8
 		 *	We would build this in the PHP I think
 		 */
-		if ($parent[$this->_depth] > $node[$this->_depth] && !$adjacent) {
+		if ($parent[$this->_depth] >= $node[$this->_depth]) {
 			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
 			$direction = 'down';
-		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth] || $adjacent) {
+		} elseif ($parent[$this->_depth] + 1 == $node[$this->_depth]) {
 			// The depth doesn't need to chnage here so a depth change of 0
 			// will be added
 			$depth = 0;
@@ -795,7 +926,6 @@ class NestedSetHelper
 			', array(
 				$node[$this->_left],
 				$node[$this->_right],
-				$node[$this->_depth] - 1,
 		));
 
 		/**
@@ -810,5 +940,179 @@ class NestedSetHelper
 
 		return $childrenPageIDs;
 	}
+
+	public function _updateLeftPositions($direction, $start, $end, $plusMinus, array $children)
+	{
+		// Set the way the arrows need to point depending on the direction the
+		// node is moving
+		$direction = $direction == 'left' ? array('>','<=') : array('<','>=');
+
+		# Add a tranasaction to the list where we update all left poitions
+		# between the start and end numbers, either by adding or subtracting them
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '` = `' . $this->_left . '` '.$plusMinus.' @LEFTRIGHT_DIFFERENCE
+			WHERE
+				`' . $this->_left . '` '.$direction[0].' ?i
+			AND
+				`' . $this->_left . '` '.$direction[1].' ?i
+
+			'. ($children ? ' AND `'.$this->_pk.'` NOT IN (?ij) ' : ''). '
+		', 	array(
+				$start,
+				$end,
+				$children
+			)
+		);
+	}
+
+	public function _updateRightPositions($direction, $start, $end, $plusMinus, array $children)
+	{
+		// Set the way the arrows need to point depending on the direction the
+		// node is moving
+		$direction = $direction == 'left' ? array('>','<=') : array('<','>=');
+
+		# Add a tranasaction to the list where we update all left poitions
+		# between the start and end numbers, either by adding or subtracting them
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_right . '` = `' . $this->_right . '` '.$plusMinus.' @LEFTRIGHT_DIFFERENCE
+			WHERE
+				`' . $this->_right . '` '.$direction[0].' ?i
+			AND
+				`' . $this->_right . '` '.$direction[1].' ?i
+
+			'. ($children ? ' AND `'.$this->_pk.'` NOT IN (?ij) ' : '' ). '
+		', 	array(
+				$start,
+				$end,
+				(array) $children
+			)
+		);
+	}
+
+	public function _updateChildrenNodes($plusMinus, array $children)
+	{
+		# Update the nodes between the given left and right positions
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_right . '` = `' . $this->_right . '` '.$plusMinus.' @DIFFERENCE,
+				`' . $this->_left . '` = `' . $this->_left . '` '.$plusMinus.' @DIFFERENCE,
+				`' . $this->_depth . '` = `' . $this->_depth . '` '.$plusMinus.' @NODE_DEPTH
+			WHERE
+				`'.$this->_pk.'` IN (?ij)
+		', 	array(
+				(array) $children
+			)
+		);
+	}
+
+	public function _calculateLeftRightChange($node)
+	{
+		$this->_trans->add('
+			SET @LEFTRIGHT_DIFFERENCE = ?i
+			', array(
+				abs($node[$this->_left] - $node[$this->_right]) + 1,
+			)
+		);
+	}
+
+	public function _calculateDifferenceOfNodeAndChildren($direction, $node, $newPosition, $addAsChild)
+	{
+		$amount = $direction == 'right' ? $node[$this->_left] + ($addAsChild ? 1 : 0) : $node[$this->_right];
+		$this->_trans->add('
+			SET @DIFFERENCE = ABS(@LEFTRIGHT_DIFFERENCE - ?i)
+			', array(
+				abs($amount - $newPosition[$this->_right]),
+			)
+		);
+	}
+
+	public function _calculateDepth($node, $parent)
+	{
+		if ($node[$this->_depth] == $parent[$this->_depth]) {
+			$depth = 0;
+		} elseif ($node[$this->_depth] > $parent[$this->_depth]) {
+			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) - 1;
+		} else {
+			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
+		}
+
+		$this->_trans->add('SET @NODE_DEPTH = ?i',
+			array(
+				$depth,
+			)
+		);
+	}
+
+	public function moveNodeRight($nodeID, $newPosition, $addAsChild = false)
+	{
+		var_dump('right');
+		$node = $this->_getNode($nodeID);
+		$newPosition =  $this->_getNode($newPosition);
+
+		// Sets transaction for the left/right position changes
+		$this->_calculateLeftRightChange($node);
+		// Set the transaction for the difference that we need to update the
+		// left/right positions of the moving nodes
+		$this->_calculateDifferenceOfNodeAndChildren('right', $node, $newPosition, $addAsChild);
+		// Calculate the news depths
+		$this->_calculateDepth($node, $newPosition);
+		// Return an array of the ID's of the node and it's children
+		$children = $this->_getNodeChildrenIDs($node);
+
+		// Update the left positions
+		$this->_updateLeftPositions(
+			'right',
+			$addAsChild ? $newPosition[$this->_left] : $newPosition[$this->_right],
+			$node[$this->_left],
+			'-',
+			$children
+		);
+		// Update the right positions
+		$this->_updateRightPositions(
+			'right',
+			$addAsChild ? $newPosition[$this->_left] : $newPosition[$this->_right],
+			$node[$this->_right],
+			'-',
+			$children
+		);
+		// Update the node and it's children
+		$this->_updateChildrenNodes('+', $children);
+		// Return the transaction
+		return $this->_trans;
+	}
+
+	public function moveNodeLeft($nodeID, $newPosition, $addAsChild = false)
+	{
+		var_dump('left');
+		$node = $this->_getNode($nodeID);
+		$newPosition =  $this->_getNode($newPosition);
+
+		// Sets transaction for the left/right position changes
+		$this->_calculateLeftRightChange($node);
+		// Set the transaction for the difference that we need to update the
+		// left/right positions of the moving nodes
+		$this->_calculateDifferenceOfNodeAndChildren('left', $node, $newPosition, $addAsChild);
+		// Calculate the news depths
+		$this->_calculateDepth($node, $newPosition);
+		// Return an array of the ID's of the node and it's children
+		$children = $this->_getNodeChildrenIDs($node);
+		// Update the left positions
+		$this->_updateLeftPositions('left', $newPosition[$this->_right], $node[$this->_right], '+', $children);
+		// Update the right positions
+		$this->_updateRightPositions('left', $newPosition[$this->_right], $node[$this->_left],'+', $children);
+		// Update the node and it's children
+		$this->_updateChildrenNodes('-', $children);
+		// Return the transaction
+		return $this->_trans;
+	}
+
 }
 
