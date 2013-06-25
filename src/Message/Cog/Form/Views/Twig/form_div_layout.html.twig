@@ -396,7 +396,11 @@
 		<section class="help">
 			<div class="short">
 				{% for key in attr['data-help-key']|split(':') %}
-				{{ (key ~ '.short')|trans }}
+				{% set key        = key ~ '.short' %}
+				{% set translated = key|trans %}
+				{% if key != translated %}
+				{{ translated }}
+				{% endif %}
 				{% endfor %}
 			</div>
 			<div class="long">
