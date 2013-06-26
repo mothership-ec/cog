@@ -1004,7 +1004,7 @@ class NestedSetHelper
 			SET
 				`' . $this->_right . '` = `' . $this->_right . '` '.$plusMinus.' @DIFFERENCE,
 				`' . $this->_left . '` = `' . $this->_left . '` '.$plusMinus.' @DIFFERENCE,
-				`' . $this->_depth . '` = `' . $this->_depth . '` '.$plusMinus.' @NODE_DEPTH
+				`' . $this->_depth . '` = `' . $this->_depth . '` + @NODE_DEPTH
 			WHERE
 				`'.$this->_pk.'` IN (?ij)
 		', 	array(
@@ -1036,12 +1036,12 @@ class NestedSetHelper
 
 	public function _calculateDepth($node, $parent)
 	{
-		if ($node[$this->_depth] == $parent[$this->_depth]) {
+		if ($parent[$this->_depth] == $node[$this->_depth]) {
 			$depth = 0;
-		} elseif ($node[$this->_depth] > $parent[$this->_depth]) {
-			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) - 1;
+		} elseif ($parent[$this->_depth] < $node[$this->_depth]) {
+			$depth = $parent[$this->_depth] + $node[$this->_depth];
 		} else {
-			$depth = abs($node[$this->_depth] - $parent[$this->_depth]) + 1;
+			$depth = $parent[$this->_depth] - $node[$this->_depth];
 		}
 
 		$this->_trans->add('SET @NODE_DEPTH = ?i',
