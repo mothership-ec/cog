@@ -390,9 +390,36 @@
 	{% endspaceless %}
 {% endblock button_attributes %}
 
-{# Custom blocks defined by message #}
+{# Custom blocks defined by Message #}
 {% block help_widget %}
 	{% if attr['data-help-key'] is defined %}
-		{{ attr['data-help-key']|trans }}
+		<section class="help">
+			<div class="short">
+				{% for key in attr['data-help-key']|split(':') %}
+				{% set key        = key ~ '.short' %}
+				{% set translated = key|trans %}
+				{% if key != translated %}
+				{{ translated }}
+				{% endif %}
+				{% endfor %}
+			</div>
+			<div class="long">
+				{% for key in attr['data-help-key']|split(':') %}
+					{% set key        = key ~ '.long' %}
+					{% set translated = key|trans %}
+					{% if key != translated %}
+					{{ translated }}
+					{% endif %}
+
+					<div class="examples">
+						{% set key        = key ~ '.example' %}
+						{% set translated = key|trans %}
+						{% if key != translated %}
+						{{ translated }}
+						{% endif %}
+					</div>
+				{% endfor %}
+			</div>
+		</section>
 	{% endif %}
 {% endblock help_widget %}

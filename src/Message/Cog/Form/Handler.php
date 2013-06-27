@@ -48,6 +48,8 @@ class Handler
 		'required' => false,
 	);
 
+	protected $_repeatable = false;
+
 
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
@@ -146,6 +148,21 @@ class Handler
 	}
 
 	/**
+	 * Set whether the fields generated should be repeatable fields (called
+	 * 'collections' within Symfony).
+	 *
+	 * This is disabled by default.
+	 *
+	 * @param boolean $bool True to enable, false to disable
+	 */
+	public function setRepeatable($bool = true)
+	{
+		$this->_repeatable = (bool) $bool;
+
+		return $this;
+	}
+
+	/**
 	 * Replaces instances of form and validator with fresh ones
 	 */
 	public function clear()
@@ -173,13 +190,24 @@ class Handler
 			);
 		}
 
+		$options = array_merge($this->_options, $options);
+
 		if ($label) {
 			$options = array_merge(array('label' => $label), $options);
 		}
 
-		$options = array_merge($this->_options, $options);
-
-		$this->getForm()->add($child, $type, $options);
+		if ($this->_repeatable) {
+			$this->getForm()->add($child, 'collection', array(
+				'type'         => $type,
+				'allow_add'    => true,
+				'allow_delete' => true,
+				'prototype'    => true,
+				'options'      => $options,
+			));
+		}
+		else {
+			$this->getForm()->add($child, $type, $options);
+		}
 
 		// Get the field we just added and add it to the validator
 		$field = $this->field($this->_getChildName($child));
