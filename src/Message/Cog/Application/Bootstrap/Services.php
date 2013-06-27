@@ -319,10 +319,11 @@ class Services implements ServicesInterface
 
 		// Forms
 		$serviceContainer['form'] = function($c) {
-			return $c['form.handler'];
+			return new \Message\Cog\Form\Handler($c);
 		};
 
 		$serviceContainer['form.handler'] = function($c) {
+
 			return new \Message\Cog\Form\Handler($c);
 		};
 
