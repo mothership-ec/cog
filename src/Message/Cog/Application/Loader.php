@@ -5,6 +5,8 @@ namespace Message\Cog\Application;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\Container as ServiceContainer;
 
+use Composer\Autoload\ClassLoader;
+
 use RuntimeException;
 use LogicException;
 
@@ -24,8 +26,9 @@ use LogicException;
  */
 abstract class Loader
 {
-	protected $_context;
+	protected $_autoloader;
 	protected $_baseDir;
+	protected $_context;
 	protected $_services;
 
 	/**
@@ -34,11 +37,14 @@ abstract class Loader
 	 * Sets the application base directory, ensuring it ends with a trailing
 	 * slash.
 	 *
-	 * @param string $baseDir Absolute path to the installation base directory
+	 * @param ClassLoader $autoloader Composer autoloader
+	 * @param string      $baseDir    Absolute path to the installation base
+	 *                                directory
 	 */
-	public function __construct($baseDir)
+	public function __construct(ClassLoader $autoloader, $baseDir)
 	{
-		$this->_baseDir = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$this->_autoloader = $autoloader;
+		$this->_baseDir    = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -120,36 +126,25 @@ abstract class Loader
 
 	/**
 	 * Initialises the application & sets up a service definition for the
-	 * Composer autoloader class.
-	 *
-	 * To find the instance of the Composer autoloader class without having to
-	 * instantiate a new one, we have to search through all declared classes and
-	 * find one that starts with 'ComposerAutoloaderInit' and define it as the
-	 * `class.loader` service.
+	 * autoloader class.
 	 *
 	 * @see _setDefaults
-	 * @see _includeAutoloader
 	 *
 	 * @return Loader Returns $this for chainability
 	 */
 	public function initialise()
 	{
 		$this->_setDefaults();
-		$this->_includeAutoloader();
 
 		// Create the service container if not already created
 		if (!isset($this->_services)) {
 			$this->setServiceContainer(ServiceContainer::instance());
 		}
 
-		// Set up service definition for Composer autoloader class
-		$this->_services['class.loader'] = $this->_services->share(function() {
-			// Bit hacky but the only clean way to do this at the moment
-			foreach (get_declared_classes() as $className) {
-				if ('ComposerAutoloaderInit' === substr($className, 0, 22)) {
-					return $className::getLoader();
-				}
-			}
+		// Set up service definition for the autoloader
+		$autoloader = $this->_autoloader;
+		$this->_services['class.loader'] = $this->_services->share(function() use ($autoloader) {
+			return $autoloader;
 		});
 
 		return $this;
@@ -252,30 +247,6 @@ abstract class Loader
 		);
 
 		return $return;
-	}
-
-	/**
-	 * Include the Composer autoloader.
-	 *
-	 * This is determined by looking for the `vendor` directory within the
-	 * defined base directory, and the file `autoload.php` within that.
-	 *
-	 * @throws RuntimeException If the autoloader file can't be found
-	 * @throws RuntimeException If the autoloader file is not readable
-	 */
-	protected function _includeAutoloader()
-	{
-		$autoloadPath = $this->_baseDir . 'vendor/autoload.php';
-
-		if (!file_exists($autoloadPath)) {
-			throw new RuntimeException(sprintf('Autoloader file at `%s` does not exist. Is the base directory set correctly?', $autoloadPath));
-		}
-
-		if (!is_readable($autoloadPath)) {
-			throw new RuntimeException(sprintf('Autoloader file at `%s` is not readable.', $autoloadPath));
-		}
-
-		require_once $this->_baseDir . 'vendor/autoload.php';
 	}
 
 	/**
