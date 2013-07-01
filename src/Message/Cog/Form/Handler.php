@@ -20,6 +20,9 @@ use Message\Cog\Service\Container;
  */
 class Handler
 {
+	// Constant is hard coded in form_start twig method, if you edit this you will need to edit that as well
+	const CSRF_ATTRIBUTE_NAME = '_csrf_form';
+
 	/**
 	 * @var \Message\Cog\Service\Container
 	 */
@@ -35,6 +38,8 @@ class Handler
 	 */
 	protected $_validator;
 
+	protected $_builder;
+
 	/**
 	 * @var string
 	 */
@@ -46,6 +51,9 @@ class Handler
 
 	protected $_options = array(
 		'required' => false,
+		'csrf_protection' => true,
+		'csrf_field_name' => self::CSRF_ATTRIBUTE_NAME,
+		'intention' => 'form'
 	);
 
 	protected $_repeatable = false;
@@ -84,6 +92,7 @@ class Handler
 	public function setName($name)
 	{
 		$this->_name = $name;
+		$this->_options['intention'] = $name;
 
 		return $this;
 	}
@@ -295,7 +304,9 @@ class Handler
 
 	protected function _initialiseForm()
 	{
-		return $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_options);
+		$form = $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_options);
+
+		return $form;
 	}
 
 	public function getBuilder()
@@ -323,8 +334,8 @@ class Handler
 	public function isValid()
 	{
 		// try and bind it to a request if it's been posted.
-		if(!$this->getForm()->isBound() && $data = $this->getPost()) {
-			$this->getForm()->bind($data);
+		if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
+			$this->getForm()->submit($data);
 		}
 
 		if(!$this->getPost()) {
@@ -332,11 +343,12 @@ class Handler
 		}
 
 		$valid = $this->_validator->validate($this->getForm()->getData());
+		$valid = ($valid) ? $this->getForm()->isValid() : $valid;
 
-		foreach($this->_validator->getMessages() as $fields) {
-			foreach($fields as $message) {
-				$this->_container['http.session']->getFlashBag()->add('error', $message);
-			}
+		$messages = $this->getMessages();
+
+		foreach($messages as $message) {
+			$this->_container['http.session']->getFlashBag()->add('error', $message);
 		}
 
 		return $valid && $this->getForm()->isValid();
@@ -367,7 +379,7 @@ class Handler
 	 */
 	public function getData()
 	{
-		if ($this->getForm()->isBound()) {
+		if ($this->getForm()->isSubmitted()) {
 			return $this->getForm()->getData();
 		}
 
@@ -397,13 +409,24 @@ class Handler
 	}
 
 	/**
-	 * Get error messages from validator
+	 * Get error messages from validator and form
+	 * Note: Most of the messages will come from the form, but some validation is handled by the form, specifically
+	 * the CSRF token
 	 *
 	 * @return array        Returns array of error messages, or an empty array if no validator is set
 	 */
 	public function getMessages()
 	{
-		return $this->_validator->getMessages();
+		$messages = array();
+
+		foreach($this->_validator->getMessages() as $field) {
+			foreach($field as $message) {
+				$messages[] = $message;
+			}
+		}
+
+		return array_merge($messages, $this->_getFormErrors());
+
 	}
 
 	/**
@@ -420,6 +443,22 @@ class Handler
 		}
 
 		return (string) $child;
+	}
+
+	/**
+	 * Retrieve error messages caused by the form
+	 *
+	 * @return array
+	 */
+	protected function _getFormErrors()
+	{
+		$errors = $this->getForm()->getErrors();
+
+		foreach ($errors as $key => &$error) {
+			$errors[$key] = $error->getMessage();
+		}
+
+		return $errors;
 	}
 
 }

@@ -5,7 +5,6 @@ namespace Message\Cog\Application\Bootstrap;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Bootstrap\EventsInterface;
-use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
 /**
  * Cog event listener bootstrap.
@@ -81,5 +80,6 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Asset Management
 		$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
+
 	}
 }
