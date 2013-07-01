@@ -69,6 +69,12 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 
 			// Loop through requested content types
 			foreach ($requestedContentTypes as $mimeType) {
+				// If the request allows any content type, and hasn't defined any
+				// preferences, skip this (the system will fall back on the
+				// requested content types)
+				if ('*/*' === $mimeType && empty($allowedContentTypes)) {
+					return true;
+				}
 				// Get format from the mime type
 				$formatType = $event->getRequest()->getFormat($mimeType);
 				// If this content type is available, add the mimetype to the accepted list
