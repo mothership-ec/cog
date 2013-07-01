@@ -142,13 +142,17 @@ You can then follow the documentation on the Symfony site for how to render it i
 #### Numbers
 
 **min($min)** - Check that a value is at least a certain number
+
 **max($max)** - Check that a value is no greater than a certain number
+
 **between($max, $min)** - Check that a value is between two numbers
+
 **multipleOf($number)** - Check that a value is a multiple of a certain number
 
 #### Dates
 
 **before($datetime)** - Check that a value is before a certain DateTime
+
 **after($datetime)** - Check that a value is after a certain DateTime
 
 #### Other
