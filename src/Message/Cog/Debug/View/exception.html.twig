@@ -1,0 +1,95 @@
+{% macro exception(exception, statusTexts) %}
+	<section class="exception">
+		<hgroup>
+			<h1>
+				{% if exception.getCode() %}
+				[{{ exception.getCode() }}]
+				{% endif %}
+				{% if not exception.getMessage() %}
+				<em>No message</em>
+				{% else %}
+				{{ exception.getMessage() }}
+				{% endif %}
+			</h1>
+			<div class="container">
+				<h2>{{ exception.getClass() }}</h2>
+				{% if exception.getStatusCode() %}
+				<p class="status"><strong>{{ exception.getStatusCode() }}</strong> {{ statusTexts[exception.getStatusCode()] }}</p>
+				{% endif %}
+			</div>
+		</hgroup>
+
+		<div class="container">
+			<ol class="trace">
+				{% for trace in exception.getTrace() %}
+				<li>
+					{% if loop.first %}
+					thrown
+					{% else %}
+					at {% if trace.class %}
+					<span class="code">
+						<abbr class="class" title="{{ trace.class }}">{{ trace.short_class }}</abbr>->{% endif %}<span class="method">{{ trace.function }}</span>{{ _self.args(trace.args) }}
+					</span>
+					{% endif %}
+					in <span class="file">{{ trace.file }}</span> line <span class="line">{{ trace.line }}</span>
+
+					{{ render(controller('Message:Cog:Debug::Controller:Exception#filePeek', {file: trace.file, line: trace.line})) }}
+				</li>
+				{% endfor %}
+			</ol>
+		</div>
+	</section>
+{% endmacro %}
+{% macro args(args) %}
+	<span class="args">
+		(
+		{% for arg in args %}
+		<span class="arg">
+			<span class="type">{{ arg[0] }}</span>
+			(<span class="value">{% if arg[1][0] is defined %}{{_self.args(arg[1])}}{% else %}{{ arg[1] }}{% endif %}</span>)
+		</span>{% if not loop.last %},{% endif %}
+		{% endfor %}
+		)
+	</span>
+{% endmacro %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title>Cog Exception</title>
+
+		{% stylesheets
+			'Message:Cog:Debug::_assets/css/shCoreRDark.css'
+			'Message:Cog:Debug::_assets/css/exception.css'
+			output='/assets/css/exception.css' %}
+			<link href="{{ asset_url }}" rel="stylesheet">
+		{% endstylesheets %}
+
+		<link rel="stylesheet" href="//fast.fonts.com/cssapi/97534885-97aa-4253-9892-b983a466ab47.css"/>
+
+		{% javascripts
+			'Message:Cog:Debug::_assets/js/shCore.js'
+			'Message:Cog:Debug::_assets/js/shBrushPhp.js'
+			'Message:Cog:Debug::_assets/js/shBrushSql.js'
+			output='/assets/js/exception.js' %}
+			<script src="{{ asset_url }}"></script>
+		{% endjavascripts %}
+
+		<script>
+			SyntaxHighlighter.all();
+		</script>
+
+	</head>
+	<body>
+		{{ _self.exception(exception, statusTexts) }}
+
+		<section class="previous">
+			<h1>Previous exceptions</h1>
+
+			{% for previous in exception.getAllPrevious() %}
+			{{ _self.exception(previous, statusTexts) }}
+			{% endfor %}
+		</section>
+	</body>
+</html>
