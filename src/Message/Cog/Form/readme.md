@@ -122,13 +122,21 @@ You can then follow the documentation on the Symfony site for how to render it i
 #### Text
 
 **alnum()** - Check value is alphanumeric
+
 **alpha()** - Check that value is alphabetical
+
 **digit()** - Check that value contains only digits
+
 **length($min, $max)** - Check that value is between two lengths
+
 **minLength($min)** - Check that value is no shorter than a certain length
+
 **maxLength($max)** - Check that value is no longer than a certain length
+
 **email()** - Check that a value is a valid email address
+
 **url()** - Check that a value is a valid URL
+
 **match($regex)** - Check that a value matches a regular expression
 
 #### Numbers
