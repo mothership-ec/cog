@@ -112,3 +112,39 @@ To pass the form to the view, you need to give it an instance of the `FormView` 
     		));
 
 You can then follow the documentation on the Symfony site for how to render it in the view (http://symfony.com/doc/current/cookbook/form/form_customization.html)
+
+## Cheat sheet
+
+### Field types
+
+### Validation rules
+
+#### Text
+
+**alnum()** - Check value is alphanumeric
+**alpha()** - Check that value is alphabetical
+**digit()** - Check that value contains only digits
+**length($min, $max)** - Check that value is between two lengths
+**minLength($min)** - Check that value is no shorter than a certain length
+**maxLength($max)** - Check that value is no longer than a certain length
+**email()** - Check that a value is a valid email address
+**url()** - Check that a value is a valid URL
+**match($regex)** - Check that a value matches a regular expression
+
+#### Numbers
+
+**min($min)** - Check that a value is at least a certain number
+**max($max)** - Check that a value is no greater than a certain number
+**between($max, $min)** - Check that a value is between two numbers
+**multipleOf($number)** - Check that a value is a multiple of a certain number
+
+#### Dates
+
+**before($datetime)** - Check that a value is before a certain DateTime
+**after($datetime)** - Check that a value is after a certain DateTime
+
+#### Other
+
+**rule($callback)** - Check value using a callback
+
+### Validation filters
