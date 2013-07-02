@@ -2,8 +2,8 @@
 
 namespace Message\Cog\Validation\Rule;
 
-use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
+use Message\Cog\Validation\CollectionInterface;
 
 /**
  * Other rule
@@ -17,6 +17,10 @@ use Message\Cog\Validation\Loader;
 class Other implements CollectionInterface
 {
 	/**
+	 * @var Loader
+	 */
+	protected $_loader;
+	/**
 	 * Register rules to loader
 	 *
 	 * @param Loader $loader
@@ -26,6 +30,7 @@ class Other implements CollectionInterface
 	public function register(Loader $loader)
 	{
 		$loader->registerRule('rule', array($this, 'rule'), '%s must%s pass a custom rule.');
+		$this->_loader = $loader;
 	}
 
 	/**
@@ -37,8 +42,10 @@ class Other implements CollectionInterface
 	 */
 	public function rule($var, $func)
 	{
+		$data = $this->_loader->getValidator()->getData();
+
 		if (is_callable($func)) {
-			return call_user_func($func, $var);
+			return call_user_func($func, $var, $data);
 		}
 		else {
 			throw new \Exception (__CLASS__ . '::' . __METHOD__ . ' - $func must be callable');

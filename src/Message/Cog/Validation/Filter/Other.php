@@ -38,7 +38,7 @@ class Other implements CollectionInterface
 	public function filter($var, $func)
 	{
 		if (is_callable($func)) {
-			return call_user_func($func, $var);
+			return call_user_func($func, $var, $this->_getSubmittedData());
 		}
 		else {
 			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $func must be callable');

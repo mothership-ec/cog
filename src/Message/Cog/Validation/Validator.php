@@ -35,6 +35,7 @@ class Validator
 	{
 		$this->_loader = $loader;
 		$this->_messages = $this->_loader->getMessages();
+		$this->_loader->setValidator($this);
 	}
 
 	public function __clone()
