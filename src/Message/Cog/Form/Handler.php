@@ -121,6 +121,13 @@ class Handler
 		return $this;
 	}
 
+	/**
+	 * Add default options
+	 *
+	 * @param array $options
+	 *
+	 * @return Handler
+	 */
 	public function addOptions(array $options)
 	{
 		$this->_options = array_merge($this->_options, $options);
@@ -197,13 +204,7 @@ class Handler
 		}
 
 		if ($this->_repeatable) {
-			$this->getForm()->add($child, 'collection', array(
-				'type'         => $type,
-				'allow_add'    => true,
-				'allow_delete' => true,
-				'prototype'    => true,
-				'options'      => $options,
-			));
+			$this->_addCollection($child, $type, $options);
 		}
 		else {
 			$this->getForm()->add($child, $type, $options);
@@ -215,6 +216,26 @@ class Handler
 
 		return $this;
 
+	}
+
+	/**
+	 * @param $child
+	 * @param $type
+	 * @param $options
+	 *
+	 * @return Handler
+	 */
+	protected function _addCollection($child, $type, $options)
+	{
+		$this->getForm()->add($child, 'collection', array(
+			'type'         => $type,
+			'allow_add'    => true,
+			'allow_delete' => true,
+			'prototype'    => true,
+			'options'      => $options,
+		));
+
+		return $this;
 	}
 
 	/**
