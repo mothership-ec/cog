@@ -145,7 +145,7 @@ You can then follow the documentation on the Symfony site for how to render it i
 
 **max($max)** - Check that a value is no greater than a certain number
 
-**between($max, $min)** - Check that a value is between two numbers
+**between($min, $max)** - Check that a value is between two numbers
 
 **multipleOf($number)** - Check that a value is a multiple of a certain number
 
