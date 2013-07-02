@@ -160,3 +160,29 @@ You can then follow the documentation on the Symfony site for how to render it i
 **rule($callback)** - Check value using a callback
 
 ### Validation filters
+
+#### Text
+
+**uppercase()** - Make uppercase
+
+**lowercase()** - Make lowercase
+
+**titlecase($maintainCase = false)** - Convert to title case (with minor words non capitalized), use the `$maintainCase` parameter to determine whether to reset the case before filtering
+
+**capitalize($maintainCase = false)** - Capitalize each word in a string, use the `$maintainCase` parameter to determine whether to reset the case before filtering
+
+**prefix($prefix, $delim = '')** - Add text to the start of a string. Use the `$delim` parameter to add a delimeter between the string and the prefix
+
+**suffix($suffix, $delim = '')** - Add text to the end of a string. Use the `$delim` parameter to add a delimeter between the string and the suffix
+
+**trim($chars = null)** - Trim unwanted characters off a string, works the same as the native `trim()` function
+
+**rtrim($chars = null)** - Trim unwanted characters off the end of a string, works the same as the native `rtrim()` function
+
+**ltrim($chars = null)** - Trim unwanted characters off the beginning of a string, works the same as the native `ltrim()` function
+
+**replace($search, $replace)** - Replace instances of `$search` with `$replace`
+
+**toUrl($protocol = 'http', $replaceExisting = false)** - Prepend protocol to string to make it a valid URL. `$protocol` sets the protocol, i.e. https, ftp etc, and `$replaceExisting` determines whether to replace an existing protocol in the submitted string
+
+**slug()** - Convert string to a slug (lowercase and hyphens)
