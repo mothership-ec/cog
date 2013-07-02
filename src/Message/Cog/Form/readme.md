@@ -186,3 +186,41 @@ You can then follow the documentation on the Symfony site for how to render it i
 **toUrl($protocol = 'http', $replaceExisting = false)** - Prepend protocol to string to make it a valid URL. `$protocol` sets the protocol, i.e. https, ftp etc, and `$replaceExisting` determines whether to replace an existing protocol in the submitted string
 
 **slug()** - Convert string to a slug (lowercase and hyphens)
+
+#### Type
+
+**string()** - Convert to string
+
+**int()** - Convert to integer
+
+**integer()** - Convert to integer
+
+**float()** - Convert to float
+
+**bool()** - Convert to boolean
+
+**boolean()** - Convert to boolean
+
+**array()** - Convert to array
+
+**object()** - Convert to instance of stdObject
+
+**date()** - Convert to DateTime
+
+**null()** - Convert to null, if you can find an occasion where you would ever want to do that!
+
+#### Number
+
+**add($value)** - Add `$value` to number
+
+**subtract($value)** - Subtract `$value` from number
+
+**multiple($value)** - Multiply `$value` by number
+
+**divide($value)** - Divide number by `$value`
+
+**percentage($value)** - Get the percentage of submitted value of `$value`
+
+#### Other
+
+**filter($callback)** - Filter the value using a callback
