@@ -577,10 +577,10 @@ class NestedSetHelper
 		// as we store it in the actuall values too
 		$newTree = array();
 		foreach ($tree as $key => $values) {
-			array_push($newTree ,$values);
 			if ($key == $idToAppend) {
 				$newTree = array_merge($newTree,$nodesToMove);
 			}
+			array_push($newTree ,$values);
 		}
 		// We now need to build the array into the right way to recalculate the tree
 		// before we save it to the DB
