@@ -543,5 +543,108 @@ class NestedSetHelper
 
 		return (array) $result->first();
 	}
+
+	public function move($nodeID = 5, $afterID= 4)
+	{
+		$node = $this->_getNode($nodeID);
+		$tree = $this->_loadTree();
+		$tree = $this->_buildTree($tree);
+		if (!isset($tree[$nodeID])) {
+			throw new Exception('Node not found');
+		}
+
+		// save the node
+		$node = $tree[$nodeID];
+		// remove it from the array
+		unset($tree[$nodeID]);
+
+		$newTree = array();
+
+		foreach ($tree as $key => $values) {
+			$newTree[$key] = $values;
+
+			if ($key == $afterID) {
+				$newTree[$nodeID] = $node;
+			}
+		}
+
+		var_dump($newTree); exit;
+
+
+	}
+
+	protected function _loadTree()
+	{
+		$result = $this->_query->run('
+			SELECT
+				`' . $this->_pk . '`,
+				`' . $this->_depth . '`
+			FROM
+				`' . $this->_table . '`
+			ORDER BY
+				`' . $this->_left . '` ASC
+		');
+		$return = array();
+		foreach ($result as $values) {
+			$return[$values->{$this->_pk}] = $values->{$this->_depth};
+		}
+		return $return;
+	}
+
+	protected function _buildTree(array $data)
+	{
+		$lines = $data;
+		$rows = array();
+		$stack = array();
+
+		$lft = 0;   // Left value
+		$rgt = 0;   // Right value
+		$plvl = -1; // Previous node level
+
+		foreach($lines as $id => $lvl) {
+
+			// Skip empty/faulty lines
+			if (trim($id) == '') {
+				continue;
+			}
+
+			if ($lvl > $plvl) {
+		    	$lft++;
+		    	$rgt = 0;
+		    	array_push($stack, $id);
+			} elseif ($lvl == $plvl) {
+		    	$pid = array_pop($stack);
+		    	$rows[$pid][2] = $rows[$pid][1] + 1;
+		    	$lft = $lft + 2;
+		    	$rgt = 0;
+		    	array_push($stack, $id);
+		    } else {
+		    	$lft = $lft + ($plvl - $lvl) + 2;
+
+		    	$diff = $plvl - $lvl + 1;
+		    	for($n = 0; $n < $diff; $n++) {
+					$pid = array_pop($stack);
+					$rows[$pid][2] = $lft - $diff + $n;
+				}
+				array_push($stack, $id);
+		    }
+
+			$rows[$id] = array($id, $lft, $rgt, $lvl);
+			$plvl = $lvl;
+		}
+
+		$plvl++;
+		$cnt = count($rows) * 2;
+		$leftovers = count($stack);
+
+		for($n = 0; $n < $leftovers; $n++) {
+			$pid = array_pop($stack);
+			$plvl--;
+			$rows[$pid][2] = $cnt - $plvl + $n;
+			$cnt--;
+		}
+
+		return $rows;
+	}
 }
 
