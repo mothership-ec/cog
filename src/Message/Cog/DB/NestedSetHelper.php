@@ -553,24 +553,66 @@ class NestedSetHelper
 			throw new Exception('Node not found');
 		}
 
-		// save the node
-		$node = $tree[$nodeID];
-		// remove it from the array
-		unset($tree[$nodeID]);
+		// Get the children and loop through and build an array (maintaining their order)
+		// And then removing them from the original tree
+		$children = $this->_getNodeChildrenIDs($node);
+		$nodesToMove = array();
+		foreach ($children as $childID) {
+			if (!isset($tree[$childID])) {
+				throw new Exception('Node not found');
+			}
+			// save the node
+			$nodesToMove[$childID] = $tree[$childID];
+			// remove it from the tree
+			unset($tree[$childID]);
 
+		}
+
+		// Build a new tree and insert the node and the children into the right
+		// position of the tree. The tree keys get reset here, but thats ok
+		// as we store it in the actuall values too
 		$newTree = array();
-
 		foreach ($tree as $key => $values) {
 			$newTree[$key] = $values;
 
 			if ($key == $afterID) {
-				$newTree[$nodeID] = $node;
+				$newTree = array_merge($newTree,$nodesToMove);
 			}
 		}
 
-		var_dump($newTree); exit;
+		// We now need to build the array into the right way to recalculate the tree
+		// before we save it to the DB
+		$rebuild = array();
+		foreach ($newTree as $values) {
+			// Set the id as the key and the depth as the value
+			$rebuild[$values[0]] = $values[3];
+		}
 
+		$tree = $this->_buildTree($rebuild);
+		$this->_saveTree($tree);
 
+	}
+
+	protected function _saveTree(array $data)
+	{
+		foreach ($data as $values) {
+			$inserts[] = '(?i,?i,?i,?i)';
+			foreach ($values as $value) {
+				$insertValues[] = $value;
+			}
+		}
+
+		// Don't do this :(
+		// $result = $this->_query->run('
+		// 	REPLACE INTO
+		// 		`' . $this->_table . '`
+		// 	( `' . $this->_pk . '`, `' . $this->_left . '`,`' . $this->_right . '`, `' . $this->_depth . '` )
+		// 	VALUES
+		// 		'.implode(',',$inserts),
+		// 	$insertValues
+		// );
+
+		var_dump($result); exit;
 	}
 
 	protected function _loadTree()
@@ -645,6 +687,38 @@ class NestedSetHelper
 		}
 
 		return $rows;
+	}
+
+	protected function _getNodeChildrenIDs($node)
+	{
+
+		$result = $this->_query->run('
+			SELECT
+				`' . $this->_pk . '`
+			FROM
+				`' . $this->_table . '`
+			WHERE
+				`' . $this->_left . '` >= ?i
+			AND
+				`' . $this->_right . '` <= ?i
+			ORDER BY
+				`' . $this->_left . '` ASC',
+			array(
+				$node[$this->_left],
+				$node[$this->_right],
+		));
+
+		/**
+		 * Build an array of the children as we will need to update these using
+		 * there ID's as things would have already moved and wtheir position may
+		 * not be unique anymore
+		 */
+		$childrenPageIDs = array();
+		foreach($result as $value) {
+			$childrenPageIDs[] = $value->{$this->_pk};
+		}
+
+		return $childrenPageIDs;
 	}
 }
 
