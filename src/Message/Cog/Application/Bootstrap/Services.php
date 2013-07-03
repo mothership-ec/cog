@@ -162,7 +162,7 @@ class Services implements ServicesInterface
 		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
-				new \Symfony\Component\Templating\Loader\FilesystemLoader(
+				new \Message\Cog\Templating\FilesystemLoader(
 					array(
 						$c['app.loader']->getBaseDir(),
 						__DIR__ . '/../../Form/Views/Php',
