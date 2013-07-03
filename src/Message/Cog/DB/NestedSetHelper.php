@@ -544,7 +544,7 @@ class NestedSetHelper
 		return (array) $result->first();
 	}
 
-	public function move($nodeID = 5, $afterID= 4)
+	public function move($nodeID = 5, $afterID= 2)
 	{
 		$node = $this->_getNode($nodeID);
 		$tree = $this->_loadTree();
@@ -568,18 +568,20 @@ class NestedSetHelper
 
 		}
 
+		$newPosition = $this->_getNode($afterID);
+		$getNewChildren = $this->_getNodeChildrenIDs($newPosition);
+		$idToAppend = array_pop($getNewChildren);
+
 		// Build a new tree and insert the node and the children into the right
 		// position of the tree. The tree keys get reset here, but thats ok
 		// as we store it in the actuall values too
 		$newTree = array();
 		foreach ($tree as $key => $values) {
-			$newTree[$key] = $values;
-
-			if ($key == $afterID) {
+			array_push($newTree ,$values);
+			if ($key == $idToAppend) {
 				$newTree = array_merge($newTree,$nodesToMove);
 			}
 		}
-
 		// We now need to build the array into the right way to recalculate the tree
 		// before we save it to the DB
 		$rebuild = array();
@@ -589,30 +591,32 @@ class NestedSetHelper
 		}
 
 		$tree = $this->_buildTree($rebuild);
-		$this->_saveTree($tree);
+		return $this->_saveTree($tree);
 
 	}
 
 	protected function _saveTree(array $data)
 	{
 		foreach ($data as $values) {
-			$inserts[] = '(?i,?i,?i,?i)';
-			foreach ($values as $value) {
-				$insertValues[] = $value;
-			}
+			$this->_trans->add('
+				UPDATE
+					`' . $this->_table . '`
+				SET
+					`' . $this->_left . '` = ?i ,
+					`' . $this->_right . '` = ?i,
+					`' . $this->_depth . '` = ?i
+				WHERE
+					`' . $this->_pk . '` = ?i',
+				array(
+					$values[1],
+					$values[2],
+					$values[3],
+					$values[0],
+				)
+			);
 		}
 
-		// Don't do this :(
-		// $result = $this->_query->run('
-		// 	REPLACE INTO
-		// 		`' . $this->_table . '`
-		// 	( `' . $this->_pk . '`, `' . $this->_left . '`,`' . $this->_right . '`, `' . $this->_depth . '` )
-		// 	VALUES
-		// 		'.implode(',',$inserts),
-		// 	$insertValues
-		// );
-
-		var_dump($result); exit;
+		return $this->_trans;
 	}
 
 	protected function _loadTree()
