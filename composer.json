@@ -19,7 +19,6 @@
 			"Message\\Cog\\Test": "tests"
 		}
 	},
-	"minimum-stability": "stable",
 	"require": {
 		"php"          : ">=5.3.0",
 		"ext-simplexml": "*",
@@ -28,6 +27,7 @@
 		"ext-json"     : "*",
 		"ext-mysqli"   : "*",
 		"ext-intl"     : "*",
+
 		"symfony/console"              : "2.1.*",
 		"symfony/event-dispatcher"     : "2.1.*",
 		"symfony/form"                 : "2.3.*",
@@ -39,9 +39,9 @@
 		"symfony/twig-bridge"          : "2.3.*",
 		"symfony/twig-bundle"          : "2.3.*",
 		"symfony/yaml"                 : "2.1.*",
-		"twig/twig"                    : "1.13.*",
 		"symfony/filesystem"           : "2.2.*",
 		"symfony/finder"               : "2.2.*",
+		"twig/twig"                    : "1.13.*",
 		"pimple/pimple"                : "1.0.1",
 		"mtdowling/cron-expression"    : "1.0.*",
 		"treasure-chest/treasure-chest": "0.1.*",
@@ -57,6 +57,11 @@
 
 		"message/cog-maintenance": "A cog module that provides maintenance mode functionality",
 		"message/cog-raven"      : "A cog module that logs errors, exceptions and messages to Sentry"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
 	},
 	"bin": [
 		"bin/cog",
