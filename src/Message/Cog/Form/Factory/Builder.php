@@ -22,39 +22,8 @@ use Message\Cog\Service\ContainerInterface;
  */
 class Builder extends SymfonyBuilder
 {
-
-	protected $_container;
-	protected $_request;
-	protected $_user;
-
-	public function __construct(ContainerInterface $container)
+	public function __construct(array $extensions)
 	{
-		$this->_container = $container;
-		$this->_request = $this->_container['request'];
-		$this->_user = $this->_container['user.current'];
-
-		$this->addExtension(new CoreExtension)
-			->addExtension(new CsrfExtension(
-				new DefaultCsrfProvider($this->_getSecret())
-			))
-		;
-	}
-
-	/**
-	 * Generate secret key to parse into Symfony's CSRF provider, where it will be hashed with the session and
-	 * form
-	 *
-	 * @return string
-	 */
-	protected function _getSecret()
-	{
-		$parts = array(
-			$this->_request->headers->get('host'),
-			$this->_user->email,
-			$this->_user->id,
-			$this->_user->lastLoginAt,
-		);
-
-		return serialize($parts);
+		$this->addExtensions($extensions);
 	}
 }
