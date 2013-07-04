@@ -319,6 +319,7 @@
 		{% if form_method != method %}
 			<input type="hidden" name="_method" value="{{ method }}" />
 		{% endif %}
+		{{ form_widget(form._csrf_form) }}
 	{% endspaceless %}
 {% endblock form_start %}
 
