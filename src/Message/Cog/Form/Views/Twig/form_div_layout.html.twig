@@ -399,7 +399,7 @@
 				{% set key        = key ~ '.short' %}
 				{% set translated = key|trans %}
 				{% if key != translated %}
-				{{ translated }}
+				<p>{{ translated|raw }}</p>
 				{% endif %}
 				{% endfor %}
 			</div>
@@ -408,14 +408,14 @@
 					{% set key        = key ~ '.long' %}
 					{% set translated = key|trans %}
 					{% if key != translated %}
-					{{ translated }}
+					<p>{{ translated|raw }}</p>
 					{% endif %}
 
 					<div class="examples">
 						{% set key        = key ~ '.example' %}
 						{% set translated = key|trans %}
 						{% if key != translated %}
-						{{ translated }}
+						<p>{{ translated|raw }}</p>
 						{% endif %}
 					</div>
 				{% endfor %}
