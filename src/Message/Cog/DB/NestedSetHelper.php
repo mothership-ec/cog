@@ -544,11 +544,28 @@ class NestedSetHelper
 		return (array) $result->first();
 	}
 
-	public function move($nodeID = 5, $afterID= 2)
+	/**
+	 * Method to move a given node to another position in the tree
+	 * Node will always be added *AFTER* the $newPosition unless $addBefore is true
+	 *
+	 * @param  int  	$nodeID       ID of the node to move
+	 * @param  int  	$newPosition  ID of the node to move behind
+	 * @param  boolean 	$changeParent Toggle to recalculate the depth
+	 * @param  boolean 	$addBefore    Toggle to add the $node before the $newPosition
+	 *
+	 * @return Transaction            The transaction to update all the nodes
+	 */
+	public function move($nodeID, $newPosition, $changeParent = false, $addBefore = false)
 	{
+		// Build the node information
 		$node = $this->_getNode($nodeID);
-		$tree = $this->_loadTree();
+		// Load all the nodes in the tree
+		$tree = $this->_getAllNodesDepths();
+		// Build the tree
 		$tree = $this->_buildTree($tree);
+		// Load the node for the new position
+		$newPosition = $this->_getNode($newPosition, true);
+
 		if (!isset($tree[$nodeID])) {
 			throw new Exception('Node not found');
 		}
@@ -561,26 +578,51 @@ class NestedSetHelper
 			if (!isset($tree[$childID])) {
 				throw new Exception('Node not found');
 			}
-			// save the node
+
+			// If changing the parent then we need to recalculate the depth for each
+			// of the new children
+			if ($changeParent) {
+				$parentDepth = $newPosition[$this->_depth];
+				if ($childID == $nodeID) {
+					$tree[$childID][3] = $parentDepth + 1;
+				} else {
+					$change = ($tree[$childID][3] + 1) + ($parentDepth - $node[$this->_depth]);
+					$tree[$childID][3] = $change;
+				}
+			}
+			// Save the node
 			$nodesToMove[$childID] = $tree[$childID];
-			// remove it from the tree
+			// Remove it from the tree
 			unset($tree[$childID]);
 
 		}
-
-		$newPosition = $this->_getNode($afterID);
-		$getNewChildren = $this->_getNodeChildrenIDs($newPosition);
+		// Even though we want to move the $node after the $newPosition we need to
+		// actually move after all the children of $newPosition
+		$exclude = array_keys($nodesToMove);
+		$getNewChildren = $this->_getNodeChildrenIDs($newPosition, $exclude);
+		// Get the last ID of the children, this is what we will add $node
+		// (and it's children) after
 		$idToAppend = array_pop($getNewChildren);
-
 		// Build a new tree and insert the node and the children into the right
 		// position of the tree. The tree keys get reset here, but thats ok
-		// as we store it in the actuall values too
+		// as we store it in the actual values too
 		$newTree = array();
 		foreach ($tree as $key => $values) {
-			if ($key == $idToAppend) {
-				$newTree = array_merge($newTree,$nodesToMove);
+			// If $node needs to be added at the top, then we do something a
+			// little different and push the new tree after we have looked for
+			// new position to add in our node and it's children
+			// Otherwise add it after the new positions last child
+			if ($addBefore) {
+				if ($key == $newPosition['page_id']) {
+					$newTree = array_merge($newTree,$nodesToMove);
+				}
+				array_push($newTree, $values);
+			} else {
+				array_push($newTree, $values);
+				if ($key == $idToAppend) {
+					$newTree = array_merge($newTree,$nodesToMove);
+				}
 			}
-			array_push($newTree ,$values);
 		}
 		// We now need to build the array into the right way to recalculate the tree
 		// before we save it to the DB
@@ -589,12 +631,20 @@ class NestedSetHelper
 			// Set the id as the key and the depth as the value
 			$rebuild[$values[0]] = $values[3];
 		}
-
+		// Build the tree based on the new positions, ready for saving to the DB
 		$tree = $this->_buildTree($rebuild);
+		// Return the Transaction
 		return $this->_saveTree($tree);
 
 	}
 
+	/**
+	 * Save the given tree to the database
+	 *
+	 * @param  array  $data 	the updated tree ready to save
+	 *
+	 * @return Transaction  	the transaction ready to run
+	 */
 	protected function _saveTree(array $data)
 	{
 		foreach ($data as $values) {
@@ -608,10 +658,10 @@ class NestedSetHelper
 				WHERE
 					`' . $this->_pk . '` = ?i',
 				array(
-					$values[1],
-					$values[2],
-					$values[3],
-					$values[0],
+					$values[1], // left position
+					$values[2], // right position
+					$values[3], // depth
+					$values[0], // primary key
 				)
 			);
 		}
@@ -619,7 +669,12 @@ class NestedSetHelper
 		return $this->_trans;
 	}
 
-	protected function _loadTree()
+	/**
+	 * Return an array of the nodeID and it's depth
+	 *
+	 * @return array 	array of nodeID as key and depth as value
+	 */
+	protected function _getAllNodesDepths()
 	{
 		$result = $this->_query->run('
 			SELECT
@@ -637,6 +692,17 @@ class NestedSetHelper
 		return $return;
 	}
 
+	/**
+	 * Method to calculate the nested set values by the the order given and
+	 * the depth of the node
+	 *
+	 * @todo  Comment this method better
+	 *
+	 * @param  array  $data array of node and depth
+	 *
+	 * @return array 		the built tree with the left, right and depth
+	 *                     	position
+	 */
 	protected function _buildTree(array $data)
 	{
 		$lines = $data;
@@ -693,8 +759,11 @@ class NestedSetHelper
 		return $rows;
 	}
 
-	protected function _getNodeChildrenIDs($node)
+	protected function _getNodeChildrenIDs($node, $exclude = array())
 	{
+		if (!$exclude) {
+			$exclude = '';
+		}
 
 		$result = $this->_query->run('
 			SELECT
@@ -705,11 +774,14 @@ class NestedSetHelper
 				`' . $this->_left . '` >= ?i
 			AND
 				`' . $this->_right . '` <= ?i
+			AND
+				`' . $this->_pk . '` NOT IN (?ij)
 			ORDER BY
 				`' . $this->_left . '` ASC',
 			array(
 				$node[$this->_left],
 				$node[$this->_right],
+				(array) $exclude,
 		));
 
 		/**
