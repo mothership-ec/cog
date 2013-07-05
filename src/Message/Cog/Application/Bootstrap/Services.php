@@ -162,18 +162,22 @@ class Services implements ServicesInterface
 		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
-				new \Message\Cog\Templating\FilesystemLoader(
-					array(
-						$c['app.loader']->getBaseDir(),
-						__DIR__ . '/../../Form/Views/Php',
-						__DIR__ . '/../../Form/Views/Twig'
-					)
-				),
+				$c['templating.filesystem.loader'],
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
 					$c['templating.actions_helper'],
 					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
 					new \Message\Cog\Templating\Helper\Translation($c['translator']),
+				)
+			);
+		});
+
+		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\FilesystemLoader(
+				array(
+					$c['app.loader']->getBaseDir(),
+					'cog://Message:Cog::Form:Views:Php',
+					'cog://Message:Cog::Form:Views:Twig',
 				)
 			);
 		});
