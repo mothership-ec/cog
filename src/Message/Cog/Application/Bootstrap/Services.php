@@ -331,12 +331,33 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Form\Handler($c);
 		};
 
-		$serviceContainer['form.builder'] = function($c) {
+		$serviceContainer['form.builder'] = $serviceContainer->share(function($c) {
 			return $c['form.factory']->getFormFactory()->createBuilder();
+		});
+
+		$serviceContainer['form.factory'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Form\Factory\Builder($c['form.extensions']);
+		});
+
+		$serviceContainer['form.extensions'] = function($c) {
+			return array(
+				new \Symfony\Component\Form\Extension\Core\CoreExtension,
+				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
+					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($c['form.csrf_secret'])
+				),
+			);
 		};
 
-		$serviceContainer['form.factory'] = function($c) {
-			return new \Message\Cog\Form\Factory\Builder($c);
+		$serviceContainer['form.csrf_secret'] = function($c) {
+			$parts = array(
+				$c['request']->headers->get('host'),
+				$c['user.current']->email,
+				$c['user.current']->id,
+				$c['user.current']->lastLoginAt,
+				$c['environment'],
+			);
+
+			return serialize($parts);
 		};
 
 		$serviceContainer['form.helper.php'] = function($c) {
@@ -454,9 +475,6 @@ class Services implements ServicesInterface
 
 			return $translator;
 		});
-
-
-
 
 		$serviceContainer['asset.manager'] = $serviceContainer->share(function($c) {
 			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
