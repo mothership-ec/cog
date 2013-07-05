@@ -176,8 +176,8 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Templating\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
-					'cog://Message:Cog::Form:Views:Php',
-					'cog://Message:Cog::Form:Views:Twig',
+					'cog://Message:Cog::Form:View:Php',
+					'cog://Message:Cog::Form:View:Twig',
 				)
 			);
 		});
@@ -367,7 +367,7 @@ class Services implements ServicesInterface
 				new \Symfony\Component\Form\FormRenderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
 						$engine,
-						array('@form.php')
+						$c['form.templates.php']
 					),
 					null
 				)
@@ -401,9 +401,14 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.templates.twig'] = function($c) {
 			return array(
-				'@form.twig:form_div_layout',
+				'Message:Cog:Form::Twig:form_div_layout',
 			);
+		};
 
+		$serviceContainer['form.templates.php'] = function($c) {
+			return array(
+				'Message:Cog:Form::Php',
+			);
 		};
 
 		$serviceContainer['form.twig_form_extension'] = function($c) {
