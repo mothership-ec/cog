@@ -156,6 +156,8 @@ class Dumper
 	{
 		$this->_origlength = ini_get(self::LENGTH_VAR);
 		$this->_length     = (int) $length;
+
+		return $this;
 	}
 
 	/**
