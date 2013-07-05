@@ -548,14 +548,17 @@ class NestedSetHelper
 	 * Method to move a given node to another position in the tree
 	 * Node will always be added *AFTER* the $newPosition unless $addBefore is true
 	 *
-	 * @param  int  	$nodeID       ID of the node to move
-	 * @param  int  	$newPosition  ID of the node to move behind
-	 * @param  boolean 	$changeParent Toggle to recalculate the depth
-	 * @param  boolean 	$addBefore    Toggle to add the $node before the $newPosition
+	 * @param  int  	$nodeID       		ID of the node to move
+	 * @param  int  	$newPositionNodeID  ID of the node which is our reference
+	 *                                   	point of where we will move $nodeID to
+	 * @param  boolean 	$changeParent 		Toggle to recalculate the depth this
+	 *                                  	is used when adding new children and
+	 *                                  	moving the node into a new tree
+	 * @param  boolean 	$addBefore    		Toggle to add the $node before the $newPosition
 	 *
-	 * @return Transaction            The transaction to update all the nodes
+	 * @return Transaction            		The transaction to update all the nodes
 	 */
-	public function move($nodeID, $newPosition, $changeParent = false, $addBefore = false)
+	public function move($nodeID, $newPositionNodeID, $changeParent = false, $addBefore = false)
 	{
 		// Build the node information
 		$node = $this->_getNode($nodeID);
@@ -564,7 +567,7 @@ class NestedSetHelper
 		// Build the tree
 		$tree = $this->_buildTree($tree);
 		// Load the node for the new position
-		$newPosition = $this->_getNode($newPosition, true);
+		$newPosition = $this->_getNode($newPositionNodeID, true);
 
 		if (!isset($tree[$nodeID])) {
 			throw new Exception('Node not found');
@@ -697,6 +700,7 @@ class NestedSetHelper
 	 * the depth of the node
 	 *
 	 * @todo  Comment this method better
+	 * @link  http://www.dotvoid.com/2007/09/reordering-nested-sets-using-php-and-javascript/
 	 *
 	 * @param  array  $data array of node and depth
 	 *
