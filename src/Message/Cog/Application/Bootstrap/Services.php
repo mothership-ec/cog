@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Application\Bootstrap;
 
+use Message\Cog;
+
 use Message\Cog\Bootstrap\ServicesInterface;
 use Message\Cog\Application\Environment;
 use Message\Cog\Routing\RouteCollection;
@@ -153,14 +155,15 @@ class Services implements ServicesInterface
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
-
 			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
+
+			$twigEnvironment->addGlobal('app', $c['templating.globals']);
 
 			return $twigEnvironment;
 		});
 
 		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\PhpEngine(
+			$engine = new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
 				new \Symfony\Component\Templating\Loader\FilesystemLoader(
 					array(
@@ -176,6 +179,10 @@ class Services implements ServicesInterface
 					new \Message\Cog\Templating\Helper\Translation($c['translator']),
 				)
 			);
+
+			$engine->addGlobal('app', $c['templating.globals']);
+
+			return $engine;
 		});
 
 		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
@@ -183,6 +190,24 @@ class Services implements ServicesInterface
 				$c['templating.twig.environment'],
 				$c['templating.view_name_parser']
 			);
+		});
+
+		$serviceContainer['templating.globals'] = $serviceContainer->share(function($c) {
+			$globals = new Cog\Templating\GlobalVariables($c);
+
+			$globals->set('session', function($services) {
+				return $services['http.session'];
+			});
+
+			$globals->set('cfg', function($services) {
+				return $services['cfg'];
+			});
+
+			$globals->set('environment', function($services) {
+				return $services['environment'];
+			});
+
+			return $globals;
 		});
 
 		$serviceContainer['http.kernel'] = function($c) {
