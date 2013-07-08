@@ -183,8 +183,6 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Templating\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
-					'cog://Message:Cog::Form:View:Php',
-					'cog://Message:Cog::Form:View:Twig',
 				)
 			);
 		});
