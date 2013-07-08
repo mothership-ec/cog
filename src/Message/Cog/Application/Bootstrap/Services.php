@@ -183,6 +183,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Templating\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
+					'cog://Message:Cog::Form:View:Php',
 				)
 			);
 		});
@@ -350,7 +351,6 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.handler'] = function($c) {
-
 			return new \Message\Cog\Form\Handler($c);
 		};
 
@@ -401,13 +401,11 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.helper.twig'] = $serviceContainer->share(function($c) {
-
 			$formHelper = new \Message\Cog\Form\Template\Helper(
 				$c['form.renderer.twig']
 			);
 
 			return $formHelper;
-
 		});
 
 		$serviceContainer['form.renderer.twig'] = function($c) {
