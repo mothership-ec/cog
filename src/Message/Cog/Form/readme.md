@@ -113,6 +113,68 @@ To pass the form to the view, you need to give it an instance of the `FormView` 
 
 You can then follow the documentation on the Symfony site for how to render it in the view (http://symfony.com/doc/current/cookbook/form/form_customization.html)
 
+## Adding custom extensions
+
+There are three main stages to adding a custom extension.
+
+### Creating the custom field types
+
+For each new field type, you will need to create a new class extending the `\Symfony\Component\Form\AbstractType` class. You will need to add a `getName()` method which returns a string containing only lowercase letters, numbers and underscores. This is how the field will be referred to when using the form's `add()` method.
+
+You can also extend existing field types by adding a `getParent()` method. This should return a string containing the name of the field type you want to extend.
+
+### Creating the form extension class
+
+The first is to create a class that extends the `\Symfony\Component\Form\AbstractExtension` class, and add a `loadTypes()` protected method. This method should return an array of instances of each field type within your extension.
+
+You will then need to add this to the form factory builder. You do this via the service container within the module, by extending `form.factory` shared service:
+
+		$serviceContainer['form.factory'] = $serviceContainer->share(
+			$serviceContainer->extend('form.factory', function($factory, $c) {
+				$factory->addExtensions(array(
+					new MyFormExtension // Your new form extension class
+				));
+
+				return $factory;
+			})
+		);
+
+### Creating the view files
+
+For each new field type, you will need to create a view. Within Twig these are all defined in one file (preferably called 'form_div_layout.html.twig'). For PHP, these need to be in separate files, called '[field type name]_widget.html.php'.
+
+You should create a separate directory for each, somewhere within the View folder. You should then extend the `templating.filesystem.loader` shared service within the service container, and add these paths using the `addTemplatePathPatterns` method:
+
+		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(
+			$serviceContainer->extend('templating.filesystem.loader', function($loader, $c) {
+				$loader->addTemplatePathPatterns(array(
+					'cog://Message:Module:Namespace::View:Form:Php',
+					'cog://Message:Module:Namespace::View:Form:Twig',
+				));
+
+				return $loader;
+			})
+		);
+
+Once the template files have been created, you need to register the references to these by extending 'form.templates.twig' and 'form.templates.php' services in the service container.
+
+		$serviceContainer['form.templates.twig'] = $serviceContainer->extend(
+			'form.templates.twig', function($templates, $c) {
+			$templates[] = 'Message:Module:Namespace::Form:Twig:form_div_layout';
+
+			return $templates;
+		});
+
+		$serviceContainer['form.templates.php'] = $serviceContainer->extend(
+			'form.templates.php', function($templates, $c) {
+				$templates[] = 'Message:Module:Namespace::Form:Php';
+
+				return $templates;
+			}
+		);
+
+Note that with Twig you need to reference the file name, but with PHP you need to reference the directory. It's also worth noting that you do not need to reference the View directory.
+
 ## Cheat sheet
 
 ### Field types

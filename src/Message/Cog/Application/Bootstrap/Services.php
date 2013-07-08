@@ -165,13 +165,7 @@ class Services implements ServicesInterface
 		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
 			$engine = new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
-				new \Symfony\Component\Templating\Loader\FilesystemLoader(
-					array(
-						$c['app.loader']->getBaseDir(),
-						__DIR__ . '/../../Form/Views/Php',
-						__DIR__ . '/../../Form/Views/Twig'
-					)
-				),
+				$c['templating.filesystem.loader'],
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
 					$c['templating.actions_helper'],
@@ -183,6 +177,16 @@ class Services implements ServicesInterface
 			$engine->addGlobal('app', $c['templating.globals']);
 
 			return $engine;
+		});
+
+		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Templating\FilesystemLoader(
+				array(
+					$c['app.loader']->getBaseDir(),
+					'cog://Message:Cog::Form:View:Php',
+					'cog://Message:Cog::Form:View:Twig',
+				)
+			);
 		});
 
 		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
@@ -388,7 +392,7 @@ class Services implements ServicesInterface
 				new \Symfony\Component\Form\FormRenderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
 						$engine,
-						array('@form.php')
+						$c['form.templates.php']
 					),
 					null
 				)
@@ -422,9 +426,14 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.templates.twig'] = function($c) {
 			return array(
-				'@form.twig:form_div_layout',
+				'Message:Cog:Form::Twig:form_div_layout',
 			);
+		};
 
+		$serviceContainer['form.templates.php'] = function($c) {
+			return array(
+				'Message:Cog:Form::Php',
+			);
 		};
 
 		$serviceContainer['form.twig_form_extension'] = function($c) {
