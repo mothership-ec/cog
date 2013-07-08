@@ -51,12 +51,6 @@ class ViewNameParser extends TemplateNameParser
 	 */
 	public function parse($reference)
 	{
-
-		// If a form template is being rendered, get the appropriate template
-		if (preg_match('/^@form/', $reference)) {
-			return $this->_formTemplate($reference);
-		}
-
 		// Get the current HTTP request
 		$request = $this->_services['request'];
 		$parsed  = $this->_parser->parse($reference);
@@ -98,44 +92,5 @@ class ViewNameParser extends TemplateNameParser
 			'View format could not be determined for reference `%s`',
 			$reference
 		));
-	}
-
-	/**
-	 * Parses reference as defined by service container.
-	 *
-	 * @param string $reference             Reference to parse
-	 * @throws NotAcceptableHttpException   Throws exception if twig template file cannot be found
-	 *
-	 * @return TemplateReference            Returns reference to view file
-	 */
-	protected function _formTemplate($reference) {
-
-		/**
-		 * A php reference, it could be directly referencing a template file, i.e. '@form.php:field_row.html.php', or
-		 * be generated depending on the field name like '@form.php:_form_fieldName_widget.html.php'
-		 */
-		if (preg_match("/^@form.php:_?(.*)\\..*\\..*$/u", $reference, $matches)) {
-			$baseFileName = __DIR__ . '/../Form/Views/Php/'.$matches[1].'.html.php';
-			$engine = 'php';
-		}
-
-		/**
-		 * A twig reference should always be '@form.twig:form_div_layout'
-		 * @todo direct to file in twig bundle and remove Form/Views/Twig directory
-		 */
-		elseif (preg_match("/^@form.twig:_?(.*)/u", $reference, $matches)){
-			$baseFileName = __DIR__ . '/../Form/Views/Twig/'.$matches[1] . '.html.twig';
-			$engine = 'twig';
-
-			if (!file_exists($baseFileName)) {
-				throw new NotAcceptableHttpException(sprintf(
-					'View format could not be determined for reference `%s`',
-					$reference
-				));
-			}
-		}
-
-		return new TemplateReference($baseFileName, $engine);
-
 	}
 }
