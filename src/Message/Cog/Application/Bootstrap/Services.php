@@ -180,7 +180,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\FilesystemLoader(
+			return new \Symfony\Component\Templating\Loader\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
 					'cog://Message:Cog::Form:View:Php',

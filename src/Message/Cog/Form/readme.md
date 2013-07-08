@@ -143,18 +143,7 @@ You will then need to add this to the form factory builder. You do this via the 
 
 For each new field type, you will need to create a view. Within Twig these are all defined in one file (preferably called 'form_div_layout.html.twig'). For PHP, these need to be in separate files, called '[field type name]_widget.html.php'.
 
-You should create a separate directory for each, somewhere within the View folder. You should then extend the `templating.filesystem.loader` shared service within the service container, and add these paths using the `addTemplatePathPatterns` method:
-
-		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(
-			$serviceContainer->extend('templating.filesystem.loader', function($loader, $c) {
-				$loader->addTemplatePathPatterns(array(
-					'cog://Message:Module:Namespace::View:Form:Php',
-					'cog://Message:Module:Namespace::View:Form:Twig',
-				));
-
-				return $loader;
-			})
-		);
+You should create a separate directory for each, somewhere within the View folder.
 
 Once the template files have been created, you need to register the references to these by extending 'form.templates.twig' and 'form.templates.php' services in the service container.
 
