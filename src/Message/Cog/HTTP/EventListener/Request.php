@@ -22,7 +22,8 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 	static public function getSubscribedEvents()
 	{
 		return array(KernelEvents::REQUEST => array(
-			array('addRequestToServices', 9999),
+			array('prepareRequest', 9999),
+			array('addRequestToServices', 9998),
 			array('validateRequestedFormats'),
 		));
 	}
@@ -33,6 +34,17 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 	public function setContainer(ContainerInterface $services)
 	{
 		$this->_services = $services;
+	}
+
+	/**
+	 * Prepare the request and give it anything it needs. This currently just
+	 * sets the session on the request.
+	 *
+	 * @param GetResponseEvent $event     The HttpKernel request event instance
+	 */
+	public function prepareRequest(GetResponseEvent $event)
+	{
+		$event->getRequest()->setSession($this->_services['http.session']);
 	}
 
 	/**

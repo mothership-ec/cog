@@ -84,6 +84,7 @@
 	<body>
 		{{ _self.exception(exception, statusTexts) }}
 
+		{% if exception.getAllPrevious() %}
 		<section class="previous">
 			<h1>Previous exceptions</h1>
 
@@ -91,5 +92,6 @@
 			{{ _self.exception(previous, statusTexts) }}
 			{% endfor %}
 		</section>
+		{% endif %}
 	</body>
 </html>
