@@ -352,7 +352,7 @@ class Handler
 	 *
 	 * @return bool                 Returns true if data is valid
 	 */
-	public function isValid()
+	public function isValid($addToFlash = true)
 	{
 		// try and bind it to a request if it's been posted.
 		if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
@@ -366,13 +366,27 @@ class Handler
 		$valid = $this->_validator->validate($this->getForm()->getData());
 		$valid = ($valid) ? $this->getForm()->isValid() : $valid;
 
+		if ($addToFlash) {
+			$this->addMessagesToFlash();
+		}
+
+		return $valid && $this->getForm()->isValid();
+	}
+
+	/**
+	 * Add error messages to flash bag
+	 *
+	 * @return Handler
+	 */
+	public function addMessagesToFlash()
+	{
 		$messages = $this->getMessages();
 
 		foreach($messages as $message) {
 			$this->_container['http.session']->getFlashBag()->add('error', $message);
 		}
 
-		return $valid && $this->getForm()->isValid();
+		return $this;
 	}
 
 	/**
