@@ -38,6 +38,9 @@ class Handler
 	 */
 	protected $_validator;
 
+	/**
+	 * @var \Symfony\Component\Form\FormBuilder
+	 */
 	protected $_builder;
 
 	/**
@@ -45,10 +48,19 @@ class Handler
 	 */
 	protected $_type;
 
+	/**
+	 * @var array
+	 */
 	protected $_defaultValues = array();
 
+	/**
+	 * @var string
+	 */
 	protected $_name = 'form';
 
+	/**
+	 * @var array
+	 */
 	protected $_options = array(
 		'required' => false,
 		'csrf_protection' => true,
@@ -56,7 +68,15 @@ class Handler
 		'intention' => 'form'
 	);
 
+	/**
+	 * @var bool
+	 */
 	protected $_repeatable = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $_addedToFlash = false;
 
 
 	/**
@@ -67,7 +87,6 @@ class Handler
 	 */
 	public function __construct(Container $container)
 	{
-//		$this->_type        = $type;
 		$this->_container   = $container;
 
 		$this->_factory     = $this->_container['form.factory']->getFormFactory();
@@ -352,7 +371,7 @@ class Handler
 	 *
 	 * @return bool                 Returns true if data is valid
 	 */
-	public function isValid()
+	public function isValid($addToFlash = true)
 	{
 		// try and bind it to a request if it's been posted.
 		if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
@@ -366,13 +385,29 @@ class Handler
 		$valid = $this->_validator->validate($this->getForm()->getData());
 		$valid = ($valid) ? $this->getForm()->isValid() : $valid;
 
+		if ($addToFlash) {
+			$this->addMessagesToFlash();
+		}
+
+		return $valid && $this->getForm()->isValid();
+	}
+
+	/**
+	 * Add error messages to flash bag
+	 *
+	 * @return Handler
+	 */
+	public function addMessagesToFlash()
+	{
 		$messages = $this->getMessages();
 
 		foreach($messages as $message) {
 			$this->_container['http.session']->getFlashBag()->add('error', $message);
 		}
 
-		return $valid && $this->getForm()->isValid();
+		$this->_addedToFlash = true;
+
+		return $this;
 	}
 
 	/**
@@ -382,13 +417,17 @@ class Handler
 	 *
 	 * @return array            Returns filtered data
 	 */
-	public function getFilteredData(array $data = null)
+	public function getFilteredData(array $data = null, $addToFlash = true)
 	{
 		if (!$data) {
 			$data = $this->getData();
 		}
 
 		$this->_validator->validate($data);
+
+		if ($addToFlash) {
+			$this->addMessagesToFlash();
+		}
 
 		return $this->_validator->getData();
 	}

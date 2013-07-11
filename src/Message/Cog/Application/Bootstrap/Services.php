@@ -146,8 +146,10 @@ class Services implements ServicesInterface
 			$twigEnvironment = new \Twig_Environment(
 				$c['templating.twig.loader'],
 				array(
-					'cache' => 'cog://tmp',
+					'cache'       => 'cog://tmp',
 					'auto_reload' => true,
+					'debug'       => 'live' !== $c['env'],
+
 				)
 			);
 
@@ -156,7 +158,9 @@ class Services implements ServicesInterface
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
 			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
-
+			if ('live' !== $c['env']) {
+				$twigEnvironment->addExtension(new \Twig_Extension_Debug);
+			}
 			$twigEnvironment->addGlobal('app', $c['templating.globals']);
 
 			return $twigEnvironment;
@@ -180,7 +184,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\FilesystemLoader(
+			return new \Symfony\Component\Templating\Loader\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
 					'cog://Message:Cog::Form:View:Php',
