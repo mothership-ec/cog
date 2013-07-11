@@ -385,7 +385,7 @@ class Handler
 		$valid = $this->_validator->validate($this->getForm()->getData());
 		$valid = ($valid) ? $this->getForm()->isValid() : $valid;
 
-		if ($addToFlash) {
+		if ($addToFlash && !$this->_addedToFlash) {
 			$this->addMessagesToFlash();
 		}
 
