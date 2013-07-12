@@ -78,6 +78,11 @@ class Handler
 	 */
 	protected $_addedToFlash = false;
 
+	/**
+	 * @var bool | null
+	 */
+	protected $_valid = null;
+
 
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
@@ -202,8 +207,10 @@ class Handler
 	 */
 	public function clear()
 	{
-		$this->_form        = $this->_container['form.builder']->getForm();
-		$this->_validator   = $this->_container['validator'];
+		$this->_form            = $this->_container['form.builder']->getForm();
+		$this->_validator       = $this->_container['validator'];
+		$this->_addedToFlash    = false;
+		$this->_valid           = null;
 	}
 
 	/**
@@ -373,23 +380,30 @@ class Handler
 	 */
 	public function isValid($addToFlash = true)
 	{
-		// try and bind it to a request if it's been posted.
-		if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
-			$this->getForm()->submit($data);
+		/**
+		 * Ensure validation is not run twice as this can cause field data to go missing second time round
+		 */
+		if ($this->_valid === null) {
+			// try and bind it to a request if it's been posted.
+			if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
+				$this->getForm()->submit($data);
+			}
+
+			if(!$this->getPost()) {
+				return false;
+			}
+
+			$valid = $this->_validator->validate($this->getForm()->getData());
+			$valid = ($valid) ? $this->getForm()->isValid() : $valid;
+
+			if ($addToFlash && !$this->_addedToFlash) {
+				$this->addMessagesToFlash();
+			}
+
+			$this->_valid = $valid && $this->getForm()->isValid();
 		}
 
-		if(!$this->getPost()) {
-			return false;
-		}
-
-		$valid = $this->_validator->validate($this->getForm()->getData());
-		$valid = ($valid) ? $this->getForm()->isValid() : $valid;
-
-		if ($addToFlash && !$this->_addedToFlash) {
-			$this->addMessagesToFlash();
-		}
-
-		return $valid && $this->getForm()->isValid();
+		return $this->_valid;
 	}
 
 	/**
@@ -423,7 +437,7 @@ class Handler
 			$data = $this->getData();
 		}
 
-		$this->_validator->validate($data);
+		$this->_valid = $this->_validator->validate($data);
 
 		if ($addToFlash) {
 			$this->addMessagesToFlash();
