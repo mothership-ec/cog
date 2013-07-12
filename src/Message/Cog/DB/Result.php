@@ -184,18 +184,19 @@ class Result extends ResultArrayAccess
 	}
 
 	/**
-	 * Instatiates an objects for each row of the resultset and sets the 
+	 * Instatiates an objects for each row of the resultset and sets the
 	 * properties of it based on the keys/values.
 	 *
 	 * @see bind
 	 *
 	 * @param  string $subject The fully qualified name of a class you wish to
 	 *                         instantiate and bind data to.
+	 * @param  array  $args    Array of arguments to pass to the constructor
 	 * @param  bool   $force   True to bind properties even if they don't exist
 	 *
 	 * @return object          The updated object(s) with data bound to them.
 	 */
-	public function bindTo($className, $force = false)
+	public function bindTo($className, array $args = array(), $force = false)
 	{
 		// Only strings can be passed in
 		if(!is_string($className)) {
@@ -211,7 +212,14 @@ class Result extends ResultArrayAccess
 
 		$result = array();
 		while($row = $this->_result->fetchObject()) {
-			$obj = new $className;
+			if ($args) {
+				$obj = new \ReflectionClass($className);
+				$obj = $obj->newInstanceArgs($args);
+			}
+			else {
+				$obj = new $className;
+			}
+
 			$this->_bindPropertiesToObject($obj, $row, $force);
 			$result[] = $obj;
 		}
