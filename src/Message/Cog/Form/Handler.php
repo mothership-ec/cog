@@ -384,16 +384,15 @@ class Handler
 		 * Ensure validation is not run twice as this can cause field data to go missing second time round
 		 */
 		if ($this->_valid === null) {
-			// try and bind it to a request if it's been posted.
-			if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
-				$this->getForm()->submit($data);
-			}
+
+			$this->submitForm();
+			de($this->_form->getExtraData());
 
 			if(!$this->getPost()) {
 				return false;
 			}
 
-			$valid = $this->_validator->validate($this->getForm()->getData());
+			$valid = $this->_validator->validate($this->getData());
 			$valid = ($valid) ? $this->getForm()->isValid() : $valid;
 
 			if ($addToFlash && !$this->_addedToFlash) {
@@ -424,24 +423,40 @@ class Handler
 		return $this;
 	}
 
+	public function submitForm()
+	{
+		// try and bind it to a request if it's been posted.
+		if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
+			$this->getForm()->submit($data);
+		}
+
+		return $this;
+	}
+
 	/**
 	 * Method to return data once it has been filtered through the validator
 	 *
 	 * @param array $data       Data to be validated, defaults to form's data
+	 * @param bool $addToFlash  Have flash messages already been added to the flash bag???
 	 *
 	 * @return array            Returns filtered data
 	 */
-	public function getFilteredData(array $data = null, $addToFlash = true)
+	public function getFilteredData($addToFlash = true)
 	{
-		if (!$data) {
-			$data = $this->getData();
-		}
+//		$this->submitForm();
+//
+//		if (!$data) {
+//			$data = $this->getData();
+//		}
+//
+//		$this->_validator->validate($data);
+//		$this->isValid();
+//
+//		if ($addToFlash) {
+//			$this->addMessagesToFlash();
+//		}
 
-		$this->_valid = $this->_validator->validate($data);
-
-		if ($addToFlash) {
-			$this->addMessagesToFlash();
-		}
+		$this->isValid($addToFlash);
 
 		return $this->_validator->getData();
 	}
@@ -479,6 +494,11 @@ class Handler
 	public function getPost()
 	{
 		$post = $this->_request->get($this->getForm()->getName());
+		foreach ($post as &$p) {
+			if (is_array($p)) {
+				$p = implode($p, '/');
+			}
+		}
 		return ($post) ? $post : array();
 	}
 
