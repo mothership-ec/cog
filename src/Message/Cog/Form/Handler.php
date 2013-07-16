@@ -386,7 +386,6 @@ class Handler
 		if ($this->_valid === null) {
 
 			$this->submitForm();
-			de($this->_form->getExtraData());
 
 			if(!$this->getPost()) {
 				return false;
@@ -423,6 +422,11 @@ class Handler
 		return $this;
 	}
 
+	/**
+	 * Binds posted data to form
+	 *
+	 * @return Handler      Returns $this for chainability
+	 */
 	public function submitForm()
 	{
 		// try and bind it to a request if it's been posted.
@@ -443,19 +447,6 @@ class Handler
 	 */
 	public function getFilteredData($addToFlash = true)
 	{
-//		$this->submitForm();
-//
-//		if (!$data) {
-//			$data = $this->getData();
-//		}
-//
-//		$this->_validator->validate($data);
-//		$this->isValid();
-//
-//		if ($addToFlash) {
-//			$this->addMessagesToFlash();
-//		}
-
 		$this->isValid($addToFlash);
 
 		return $this->_validator->getData();
@@ -494,11 +485,7 @@ class Handler
 	public function getPost()
 	{
 		$post = $this->_request->get($this->getForm()->getName());
-		foreach ($post as &$p) {
-			if (is_array($p)) {
-				$p = implode($p, '/');
-			}
-		}
+
 		return ($post) ? $post : array();
 	}
 
