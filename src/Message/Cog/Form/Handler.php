@@ -385,11 +385,13 @@ class Handler
 		 */
 		if ($this->_valid === null) {
 
-			$this->submitForm();
-
 			if(!$this->getPost()) {
-				return false;
+				$this->_valid = false;
+				
+				return $this->_valid;
 			}
+
+			$this->submitForm();
 
 			$valid = $this->_validator->validate($this->getData());
 			$valid = ($valid) ? $this->getForm()->isValid() : $valid;
