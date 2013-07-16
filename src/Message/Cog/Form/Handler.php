@@ -387,7 +387,7 @@ class Handler
 
 			if(!$this->getPost()) {
 				$this->_valid = false;
-				
+
 				return $this->_valid;
 			}
 

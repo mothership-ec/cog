@@ -331,7 +331,6 @@ class Validator
 	{
 		// Check if data has been submitted
 		$notSet = empty($this->_data[$name]);
-//		d($name, $this->_data[$name]);
 
 		if ($notSet && !$field['optional']) {
 			$this->_messages->addError($name, $field['readableName'].' is a required field.');
