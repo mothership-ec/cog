@@ -10,8 +10,12 @@
  *
  * The installation `bootstrap.php` file is then included, and the returned
  * instance of `Message\Cog\Application\Loader` is run.
+ *
+ * $_SERVER['SCRIPT_FILENAME'] is used here over __DIR__ to determine the location
+ * of the bootstrap as __DIR__ resolves paths to symlinked files which breaks things
+ * when in a Cog installation.
  */
 $baseDir = dirname(dirname($_SERVER['SCRIPT_FILENAME']));
-$app     = require_once $baseDir . '/bootstrap.php';
+$app     = require_once $baseDir . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
 $app->run();

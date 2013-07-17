@@ -38,8 +38,9 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 			->at(vfsStreamWrapper::getRoot());
 
 		// Define services normally defined in Application\Loader
-		$this->_container['app.loader'] = function($c) {
-			return new AppFauxLoader(vfsStream::url('root'));
+		$classLoaderMock = $this->getMock('Composer\\Autoload\\ClassLoader');
+		$this->_container['app.loader'] = function($c) use ($classLoaderMock) {
+			return new AppFauxLoader(vfsStream::url('root'), $classLoaderMock);
 		};
 
 		$this->_container['class.loader'] = function($c) {
