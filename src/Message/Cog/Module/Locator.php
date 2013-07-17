@@ -32,28 +32,38 @@ class Locator implements LocatorInterface
 	 *
 	 * @throws \InvalidArgumentException If the module could not be loaded
 	 */
-	public function getPath($moduleName)
+	public function getPath($moduleName, $inLibrary = true)
 	{
+		$key = $moduleName . '-' . (int) $inLibrary;
+
 		// If we haven't been asked for this module's directory before
-		if (!isset($this->_paths[$moduleName])) {
+		if (!isset($this->_paths[$key])) {
 			$namespaceToFind = $moduleName;
 			// Initiate infinite loop
 			while (1) {
 				if (isset($this->_namespaces[$namespaceToFind])) {
 					// Get first path in the list for this namespace
-					$directory = array_shift($this->_namespaces[$namespaceToFind]);
+					$directory = reset($this->_namespaces[$namespaceToFind]);
 					// Ensure directory ends with directory separator
-					if (substr($directory, -1) !== DIRECTORY_SEPARATOR) {
-						$directory .= DIRECTORY_SEPARATOR;
+					$directory = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+					if ($inLibrary) {
+						// Add PSR-0 namespace
+						$this->_paths[$key] = $directory . str_replace('\\', DIRECTORY_SEPARATOR, $moduleName) . DIRECTORY_SEPARATOR;
 					}
-					// Add PSR-0 namespace
-					$this->_paths[$moduleName] = $directory . str_replace('\\', DIRECTORY_SEPARATOR, $moduleName) . DIRECTORY_SEPARATOR;
+					else {
+						// Remove source directory
+						if ('src/' === substr($directory, -4)) {
+							$directory = substr($directory, 0, -4);
+						}
+
+						$this->_paths[$key] = $directory;
+					}
 
 					// Quit the loop
 					break;
 				}
 				else {
-					// Quit the loop & throw exceptiob if we can't remove any more namespaces
+					// Quit the loop & throw exception if we can't remove any more namespaces
 					if (!strpos($namespaceToFind, '\\')) {
 						throw new \InvalidArgumentException(sprintf('Module `%s` could not be located.', $moduleName));
 					}
@@ -64,6 +74,6 @@ class Locator implements LocatorInterface
 			}
 		}
 
-		return $this->_paths[$moduleName];
+		return $this->_paths[$key];
 	}
 }

@@ -1,0 +1,9 @@
+{% if lines %}
+<pre class="brush: php; first-line: {{ startLine }}; highlight: [{{ highlight }}];">
+	{%- for number, line in lines -%}
+		{{- line -}}
+	{%- endfor -%}
+</pre>
+{% else %}
+<p class="notice">Could not read file.</p>
+{% endif %}

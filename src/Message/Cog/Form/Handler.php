@@ -20,6 +20,9 @@ use Message\Cog\Service\Container;
  */
 class Handler
 {
+	// Constant is hard coded in form_start twig method, if you edit this you will need to edit that as well
+	const CSRF_ATTRIBUTE_NAME = '_csrf_form';
+
 	/**
 	 * @var \Message\Cog\Service\Container
 	 */
@@ -36,28 +39,162 @@ class Handler
 	protected $_validator;
 
 	/**
+	 * @var \Symfony\Component\Form\FormBuilder
+	 */
+	protected $_builder;
+
+	/**
 	 * @var string
 	 */
 	protected $_type;
 
-	protected $_defaults = array(
+	/**
+	 * @var array
+	 */
+	protected $_defaultValues = array();
+
+	/**
+	 * @var string
+	 */
+	protected $_name = 'form';
+
+	/**
+	 * @var array
+	 */
+	protected $_options = array(
 		'required' => false,
+		'csrf_protection' => true,
+		'csrf_field_name' => self::CSRF_ATTRIBUTE_NAME,
+		'intention' => 'form'
 	);
+
+	/**
+	 * @var bool
+	 */
+	protected $_repeatable = false;
+
+	/**
+	 * @var bool
+	 */
+	protected $_addedToFlash = false;
 
 
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
 	 *
-	 * @param Container $container      Service container for getting instance of form builder and validation
-	 * @param string $type              Type of rendering engine to use, i.e. php or twig
+	 * @param Container $container      Service container for getting instance of form builder and
+	 *                                  validation
 	 */
 	public function __construct(Container $container)
 	{
-//		$this->_type        = $type;
 		$this->_container   = $container;
-		$this->_form        = $this->_container['form.builder']->getForm();
+
+		$this->_factory     = $this->_container['form.factory']->getFormFactory();
+		$this->_builder     = $this->_container['form.builder'];
 		$this->_validator   = $this->_container['validator'];
 		$this->_request     = $this->_container['request'];
+
+		$this->_container['templating.engine.php']
+			->addHelpers(array(
+				$this->_container['form.helper.twig'],
+				$this->_container['form.helper.php'],
+			));
+	}
+
+	/**
+	 * Set the name of the form
+	 *
+	 * @param string $name      Name of form
+	 *
+	 * @return Handler          Return $this for chainability
+	 */
+	public function setName($name)
+	{
+		$this->_name = $name;
+		$this->_options['intention'] = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Set the default values for the form
+	 *
+	 * @param array $values     Set default values for form
+	 *
+	 * @return Handler          Returns $this for chainability
+	 */
+	public function setDefaultValues($values)
+	{
+		$this->_defaultValues = (array)$values;
+
+		return $this;
+	}
+
+	/**
+	 * Set the method for the form
+	 *
+	 * @param string $method        Method for form
+	 * @throws \LogicException      Throws exception if form has already been instanciated
+	 *
+	 * @return Handler              Returns $this for chainability
+	 */
+	public function setMethod($method)
+	{
+		if ($this->_form) {
+			throw new \LogicException('You cannot set the method for a form that has already been instanciated');
+		}
+
+		$this->_options['method'] = $method;
+
+		return $this;
+	}
+
+	/**
+	 * Add default options
+	 *
+	 * @param array $options
+	 *
+	 * @return Handler
+	 */
+	public function addOptions(array $options)
+	{
+		$this->_options = array_merge($this->_options, $options);
+
+		return $this;
+	}
+
+	/**
+	 * Set the action for the form
+	 *
+	 * @param string $action        Action for form
+	 * @throws \LogicException      Throws exception if form has already been instanciated
+	 *
+	 * @return Handler              Return $this for chainability
+	 */
+	public function setAction($action)
+	{
+		if ($this->_form) {
+			throw new \LogicException('You cannot set the action for a form that has already been instanciated');
+		}
+
+		$this->_options['action'] = $action;
+
+		return $this;
+	}
+
+	/**
+	 * Set whether the fields generated should be repeatable fields (called
+	 * 'collections' within Symfony).
+	 *
+	 * This is disabled by default.
+	 *
+	 * @param boolean $bool True to enable, false to disable
+	 */
+	public function setRepeatable($bool = true)
+	{
+		$this->_repeatable = (bool) $bool;
+
+		return $this;
 	}
 
 	/**
@@ -74,12 +211,13 @@ class Handler
 	 *
 	 * @param string | SymfonyForm $child       Name or instance of field, e.g. 'First name'
 	 * @param null $type                        Type of field, defaults to text
+	 * @param string $label                     Label for the field, if null it's auto generated from the name
 	 * @param array $options                    Options for field, see Symfony Form documentation
 	 * @throws \InvalidArgumentException        Throws exception if $child is not a string or Form object
 	 *
 	 * @return Handler                          Returns $this for chainability
 	 */
-	public function add($child, $type = null, array $options = array())
+	public function add($child, $type = null, $label = null, array $options = array())
 	{
 		if(!is_string($child) && (!$child instanceof SymfonyForm)) {
 			throw new \InvalidArgumentException(
@@ -87,13 +225,45 @@ class Handler
 			);
 		}
 
-		$options = array_merge($this->_defaults, $options);
+		$options = array_merge($this->_options, $options);
 
-		$this->_form->add($child, $type, $options);
-		$this->_validator->field($this->_getChildName($child));
+		if ($label) {
+			$options = array_merge(array('label' => $label), $options);
+		}
+
+		if ($this->_repeatable) {
+			$this->_addCollection($child, $type, $options);
+		}
+		else {
+			$this->getForm()->add($child, $type, $options);
+		}
+
+		// Get the field we just added and add it to the validator
+		$field = $this->field($this->_getChildName($child));
+		$this->getValidator()->field($field->getName(), $field->getConfig()->getOption('label') ?: false);
 
 		return $this;
 
+	}
+
+	/**
+	 * @param $child
+	 * @param $type
+	 * @param $options
+	 *
+	 * @return Handler
+	 */
+	protected function _addCollection($child, $type, $options)
+	{
+		$this->getForm()->add($child, 'collection', array(
+			'type'         => $type,
+			'allow_add'    => true,
+			'allow_delete' => true,
+			'prototype'    => true,
+			'options'      => $options,
+		));
+
+		return $this;
 	}
 
 	/**
@@ -165,13 +335,23 @@ class Handler
 	 */
 	public function getForm()
 	{
-		$this->_container['templating.php.engine']
-			->addHelpers(array(
-				$this->_container['form.helper.twig'],
-				$this->_container['form.helper.php'],
-			));
+		if(!$this->_form) {
+			$this->_form = $this->_initialiseForm();
+		}
 
 		return $this->_form;
+	}
+
+	protected function _initialiseForm()
+	{
+		$form = $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_options);
+
+		return $form;
+	}
+
+	public function getBuilder()
+	{
+		return $this->_builder;
 	}
 
 	/**
@@ -189,24 +369,45 @@ class Handler
 	 * it is posted. You can also submit your own array of data, although this will be overwritten if $fromPost
 	 * is set to to true
 	 *
-	 * @param bool $fromPost        If set to true, data is taken from posted form data, instead of bound data
-	 * @param array $data           Data to be validated, defaults to form's data
-	 * @throws \LogicException      Throws exception if method is called before form data has been set
-	 *
 	 * @return bool                 Returns true if data is valid
 	 */
-	public function isValid($fromPost = false, array $data = null)
+	public function isValid($addToFlash = true)
 	{
-		if (!$this->_form->isBound() && !$data && !$fromPost) {
-			throw new \LogicException(
-				'You cannot call isValid() on a form that is not bound, unless $fromPost is set to true, or $data is set'
-			);
-		}
-		elseif ($fromPost) {
-			$data = $this->getPost();
+		// try and bind it to a request if it's been posted.
+		if(!$this->getForm()->isSubmitted() && $data = $this->getPost()) {
+			$this->getForm()->submit($data);
 		}
 
-		return ($data) ? $this->_validator->validate($data) : $this->_validator->validate($this->_form->getData());
+		if(!$this->getPost()) {
+			return false;
+		}
+
+		$valid = $this->_validator->validate($this->getForm()->getData());
+		$valid = ($valid) ? $this->getForm()->isValid() : $valid;
+
+		if ($addToFlash) {
+			$this->addMessagesToFlash();
+		}
+
+		return $valid && $this->getForm()->isValid();
+	}
+
+	/**
+	 * Add error messages to flash bag
+	 *
+	 * @return Handler
+	 */
+	public function addMessagesToFlash()
+	{
+		$messages = $this->getMessages();
+
+		foreach($messages as $message) {
+			$this->_container['http.session']->getFlashBag()->add('error', $message);
+		}
+
+		$this->_addedToFlash = true;
+
+		return $this;
 	}
 
 	/**
@@ -216,13 +417,17 @@ class Handler
 	 *
 	 * @return array            Returns filtered data
 	 */
-	public function getFilteredData(array $data = null)
+	public function getFilteredData(array $data = null, $addToFlash = true)
 	{
 		if (!$data) {
 			$data = $this->getData();
 		}
 
 		$this->_validator->validate($data);
+
+		if ($addToFlash) {
+			$this->addMessagesToFlash();
+		}
 
 		return $this->_validator->getData();
 	}
@@ -234,8 +439,8 @@ class Handler
 	 */
 	public function getData()
 	{
-		if ($this->_form->isBound()) {
-			return $this->_form->getData();
+		if ($this->getForm()->isSubmitted()) {
+			return $this->getForm()->getData();
 		}
 
 		return $this->getPost();
@@ -248,7 +453,7 @@ class Handler
 	 */
 	public function isPost()
 	{
-		$post = $this->_request->get($this->_form->getName());
+		$post = $this->_request->get($this->getForm()->getName());
 		return (!empty($post)) ? true : false;
 	}
 
@@ -259,18 +464,29 @@ class Handler
 	 */
 	public function getPost()
 	{
-		$post = $this->_request->get($this->_form->getName());
+		$post = $this->_request->get($this->getForm()->getName());
 		return ($post) ? $post : array();
 	}
 
 	/**
-	 * Get error messages from validator
+	 * Get error messages from validator and form
+	 * Note: Most of the messages will come from the form, but some validation is handled by the form, specifically
+	 * the CSRF token
 	 *
 	 * @return array        Returns array of error messages, or an empty array if no validator is set
 	 */
 	public function getMessages()
 	{
-		return $this->_validator->getMessages();
+		$messages = array();
+
+		foreach($this->_validator->getMessages() as $field) {
+			foreach($field as $message) {
+				$messages[] = $message;
+			}
+		}
+
+		return array_merge($messages, $this->_getFormErrors());
+
 	}
 
 	/**
@@ -287,6 +503,22 @@ class Handler
 		}
 
 		return (string) $child;
+	}
+
+	/**
+	 * Retrieve error messages caused by the form
+	 *
+	 * @return array
+	 */
+	protected function _getFormErrors()
+	{
+		$errors = $this->getForm()->getErrors();
+
+		foreach ($errors as $key => &$error) {
+			$errors[$key] = $error->getMessage();
+		}
+
+		return $errors;
 	}
 
 }

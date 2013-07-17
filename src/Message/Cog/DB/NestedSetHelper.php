@@ -133,10 +133,18 @@ class NestedSetHelper
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` + 2,
 				`' . $this->_right . '` = `' . $this->_right . '` + 2
 			WHERE
 				`' . $this->_right . '` > ?i
+		', $targetNode[$this->_right]);
+
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '`  = `' . $this->_left . '` + 2
+			WHERE
+				`' . $this->_left . '` > ?i
 		', $targetNode[$this->_right]);
 
 		// Add the node into the tree
@@ -395,6 +403,7 @@ class NestedSetHelper
 	 */
 	public function remove($nodeID)
 	{
+
 		$this->_checkTableInfoSet();
 
 		$node = $this->_getNode($nodeID);
@@ -403,10 +412,18 @@ class NestedSetHelper
 			UPDATE
 				`' . $this->_table . '`
 			SET
-				`' . $this->_left . '`  = `' . $this->_left . '` - 2,
 				`' . $this->_right . '` = `' . $this->_right . '` - 2
 			WHERE
 				`' . $this->_right . '` > ?i
+		', $node[$this->_right]);
+
+		$this->_trans->add('
+			UPDATE
+				`' . $this->_table . '`
+			SET
+				`' . $this->_left . '` = `' . $this->_left . '` - 2
+			WHERE
+				`' . $this->_left . '` > ?i
 		', $node[$this->_right]);
 
 		$this->_trans->add('
@@ -525,6 +542,263 @@ class NestedSetHelper
 		}
 
 		return (array) $result->first();
+	}
+
+	/**
+	 * Method to move a given node to another position in the tree
+	 * Node will always be added *AFTER* the $newPosition unless $addBefore is true
+	 *
+	 * @param  int  	$nodeID       		ID of the node to move
+	 * @param  int  	$newPositionNodeID  ID of the node which is our reference
+	 *                                   	point of where we will move $nodeID to
+	 * @param  boolean 	$changeParent 		Toggle to recalculate the depth this
+	 *                                  	is used when adding new children and
+	 *                                  	moving the node into a new tree
+	 * @param  boolean 	$addBefore    		Toggle to add the $node before the $newPosition
+	 *
+	 * @return Transaction            		The transaction to update all the nodes
+	 */
+	public function move($nodeID, $newPositionNodeID, $changeParent = false, $addBefore = false)
+	{
+		// Build the node information
+		$node = $this->_getNode($nodeID);
+		// Load all the nodes in the tree
+		$tree = $this->_getAllNodesDepths();
+		// Build the tree
+		$tree = $this->_buildTree($tree);
+		// Load the node for the new position
+		$newPosition = $this->_getNode($newPositionNodeID, true);
+
+		if (!isset($tree[$nodeID])) {
+			throw new Exception('Node not found');
+		}
+
+		// Get the children and loop through and build an array (maintaining their order)
+		// And then removing them from the original tree
+		$children = $this->_getNodeChildrenIDs($node);
+		$nodesToMove = array();
+		foreach ($children as $childID) {
+			if (!isset($tree[$childID])) {
+				throw new Exception('Node not found');
+			}
+
+			// If changing the parent then we need to recalculate the depth for each
+			// of the new children
+			if ($changeParent) {
+				$parentDepth = $newPosition[$this->_depth];
+				if ($childID == $nodeID) {
+					$tree[$childID][3] = $parentDepth + 1;
+				} else {
+					$change = ($tree[$childID][3] + 1) + ($parentDepth - $node[$this->_depth]);
+					$tree[$childID][3] = $change;
+				}
+			}
+			// Save the node
+			$nodesToMove[$childID] = $tree[$childID];
+			// Remove it from the tree
+			unset($tree[$childID]);
+
+		}
+		// Even though we want to move the $node after the $newPosition we need to
+		// actually move after all the children of $newPosition
+		$exclude = array_keys($nodesToMove);
+		$getNewChildren = $this->_getNodeChildrenIDs($newPosition, $exclude);
+		// Get the last ID of the children, this is what we will add $node
+		// (and it's children) after
+		$idToAppend = array_pop($getNewChildren);
+		// Build a new tree and insert the node and the children into the right
+		// position of the tree. The tree keys get reset here, but thats ok
+		// as we store it in the actual values too
+		$newTree = array();
+		foreach ($tree as $key => $values) {
+			// If $node needs to be added at the top, then we do something a
+			// little different and push the new tree after we have looked for
+			// new position to add in our node and it's children
+			// Otherwise add it after the new positions last child
+			if ($addBefore) {
+				if ($key == $newPosition['page_id']) {
+					$newTree = array_merge($newTree,$nodesToMove);
+				}
+				array_push($newTree, $values);
+			} else {
+				array_push($newTree, $values);
+				if ($key == $idToAppend) {
+					$newTree = array_merge($newTree,$nodesToMove);
+				}
+			}
+		}
+		// We now need to build the array into the right way to recalculate the tree
+		// before we save it to the DB
+		$rebuild = array();
+		foreach ($newTree as $values) {
+			// Set the id as the key and the depth as the value
+			$rebuild[$values[0]] = $values[3];
+		}
+		// Build the tree based on the new positions, ready for saving to the DB
+		$tree = $this->_buildTree($rebuild);
+		// Return the Transaction
+		return $this->_saveTree($tree);
+
+	}
+
+	/**
+	 * Save the given tree to the database
+	 *
+	 * @param  array  $data 	the updated tree ready to save
+	 *
+	 * @return Transaction  	the transaction ready to run
+	 */
+	protected function _saveTree(array $data)
+	{
+		foreach ($data as $values) {
+			$this->_trans->add('
+				UPDATE
+					`' . $this->_table . '`
+				SET
+					`' . $this->_left . '` = ?i ,
+					`' . $this->_right . '` = ?i,
+					`' . $this->_depth . '` = ?i
+				WHERE
+					`' . $this->_pk . '` = ?i',
+				array(
+					$values[1], // left position
+					$values[2], // right position
+					$values[3], // depth
+					$values[0], // primary key
+				)
+			);
+		}
+
+		return $this->_trans;
+	}
+
+	/**
+	 * Return an array of the nodeID and it's depth
+	 *
+	 * @return array 	array of nodeID as key and depth as value
+	 */
+	protected function _getAllNodesDepths()
+	{
+		$result = $this->_query->run('
+			SELECT
+				`' . $this->_pk . '`,
+				`' . $this->_depth . '`
+			FROM
+				`' . $this->_table . '`
+			ORDER BY
+				`' . $this->_left . '` ASC
+		');
+		$return = array();
+		foreach ($result as $values) {
+			$return[$values->{$this->_pk}] = $values->{$this->_depth};
+		}
+		return $return;
+	}
+
+	/**
+	 * Method to calculate the nested set values by the the order given and
+	 * the depth of the node
+	 *
+	 * @todo  Comment this method better
+	 * @link  http://www.dotvoid.com/2007/09/reordering-nested-sets-using-php-and-javascript/
+	 *
+	 * @param  array  $data array of node and depth
+	 *
+	 * @return array 		the built tree with the left, right and depth
+	 *                     	position
+	 */
+	protected function _buildTree(array $data)
+	{
+		$lines = $data;
+		$rows = array();
+		$stack = array();
+
+		$lft = 0;   // Left value
+		$rgt = 0;   // Right value
+		$plvl = -1; // Previous node level
+
+		foreach($lines as $id => $lvl) {
+
+			// Skip empty/faulty lines
+			if (trim($id) == '') {
+				continue;
+			}
+
+			if ($lvl > $plvl) {
+		    	$lft++;
+		    	$rgt = 0;
+		    	array_push($stack, $id);
+			} elseif ($lvl == $plvl) {
+		    	$pid = array_pop($stack);
+		    	$rows[$pid][2] = $rows[$pid][1] + 1;
+		    	$lft = $lft + 2;
+		    	$rgt = 0;
+		    	array_push($stack, $id);
+		    } else {
+		    	$lft = $lft + ($plvl - $lvl) + 2;
+
+		    	$diff = $plvl - $lvl + 1;
+		    	for($n = 0; $n < $diff; $n++) {
+					$pid = array_pop($stack);
+					$rows[$pid][2] = $lft - $diff + $n;
+				}
+				array_push($stack, $id);
+		    }
+
+			$rows[$id] = array($id, $lft, $rgt, $lvl);
+			$plvl = $lvl;
+		}
+
+		$plvl++;
+		$cnt = count($rows) * 2;
+		$leftovers = count($stack);
+
+		for($n = 0; $n < $leftovers; $n++) {
+			$pid = array_pop($stack);
+			$plvl--;
+			$rows[$pid][2] = $cnt - $plvl + $n;
+			$cnt--;
+		}
+
+		return $rows;
+	}
+
+	protected function _getNodeChildrenIDs($node, $exclude = array())
+	{
+		if (!$exclude) {
+			$exclude = '';
+		}
+
+		$result = $this->_query->run('
+			SELECT
+				`' . $this->_pk . '`
+			FROM
+				`' . $this->_table . '`
+			WHERE
+				`' . $this->_left . '` >= ?i
+			AND
+				`' . $this->_right . '` <= ?i
+			AND
+				`' . $this->_pk . '` NOT IN (?ij)
+			ORDER BY
+				`' . $this->_left . '` ASC',
+			array(
+				$node[$this->_left],
+				$node[$this->_right],
+				(array) $exclude,
+		));
+
+		/**
+		 * Build an array of the children as we will need to update these using
+		 * there ID's as things would have already moved and wtheir position may
+		 * not be unique anymore
+		 */
+		$childrenPageIDs = array();
+		foreach($result as $value) {
+			$childrenPageIDs[] = $value->{$this->_pk};
+		}
+
+		return $childrenPageIDs;
 	}
 }
 

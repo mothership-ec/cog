@@ -5,7 +5,6 @@ namespace Message\Cog\Application\Bootstrap;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Bootstrap\EventsInterface;
-use Message\Cog\HTTP\Event\Event as HTTPEvent;
 
 /**
  * Cog event listener bootstrap.
@@ -49,6 +48,13 @@ class Events implements EventsInterface, ContainerAwareInterface
 			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
 		);
 
+		// Symfony's HTTP Exception Listener
+		if (in_array($this->_services['env'], array('local', 'dev'))) {
+			$eventDispatcher->addSubscriber(
+				new \Symfony\Component\HttpKernel\EventListener\ExceptionListener('Message\\Cog\\Debug\\Controller\\Exception::viewException')
+			);
+		}
+
 		// Symfony's HTTP Fragment Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
@@ -76,9 +82,6 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
 
-		//Templating
-		$eventDispatcher->addSubscriber(new \Message\Cog\Templating\EventListener);
-
 		// Status check
 		$appLoader = $this->_services['app.loader'];
 		$eventDispatcher->addListener('console.status.check', function($event) use ($appLoader) {
@@ -102,14 +105,14 @@ class Events implements EventsInterface, ContainerAwareInterface
 					->check('intl extension loaded', function() {
 						return extension_loaded('intl');
 					})
-				
+
 				->header('Message\\Cog')
 					->report('Installation directory', $appLoader->getBaseDir())
 					->checkPath('Temp directory', 'cog://tmp/')
 					->checkPath('Public directory', 'cog://public/')
 					->checkPath('Log directory', 'cog://logs/')
 			;
-		
+
 		}, 900);
 	}
 }

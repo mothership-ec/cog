@@ -31,6 +31,8 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 
 	protected $_dispatcher;
 
+	protected $_factory;
+
 	public function setUp()
 	{
 		// Instanciate container
@@ -48,13 +50,15 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 				$resolvedFormTypeFactory
 			));
 
-		$factory = $this->getMock(
+		$this->_factory = $this->getMock(
 			'\\Symfony\\Component\\Form\\FormFactory',
-			array(),
+			array('getFormFactory'),
 			array(
 				$registry,
 				$resolvedFormTypeFactory
 			));
+
+		$container['form.factory'] = $this->_factory;
 
 		// Add form builder mock to container
 		$this->_builder = $this->getMock(
@@ -64,7 +68,7 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 				'form',
 				'\\Symfony\\Component\\Form\\Extension\\Core\\DataMapper\\PropertyPathMapper',
 				$dispatcher,
-				$factory
+				$this->_factory
 			));
 
 		$container['form.builder'] = $this->_builder;
@@ -75,7 +79,7 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 			->setMethods(array('addHelpers'))
 			->getMock();
 
-		$container['templating.php.engine'] = $this->_engine;
+		$container['templating.engine.php'] = $this->_engine;
 
 		// Mock helpers
 		$this->_helper = $this->getMockBuilder('\\Message\\Cog\\Form\\Template\\Helper')
@@ -118,7 +122,10 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 
 		$this->_form = $this->getMockBuilder('\\Symfony\\Component\\Form\\Form')
 			->setConstructorArgs(array($this->_config))
-			->setMethods(array())
+			->setMethods(array(
+				'all',
+				'add',
+			))
 			->getMock();
 
 		// Construct tests
@@ -147,8 +154,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => $this->_form)
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add('test');
 		$this->assertSame($handler, $this->_handler);
@@ -159,8 +174,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => $this->_form)
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add($this->_form);
 		$this->assertSame($handler, $this->_handler);
@@ -171,8 +194,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => $this->_form)
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add('test', 'select');
 		$this->assertSame($handler, $this->_handler);
@@ -183,8 +214,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => $this->_form)
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add($this->_form, 'select');
 		$this->assertSame($handler, $this->_handler);
@@ -195,8 +234,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => $this->_form)
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add('test', 'select', array('option' => true));
 		$this->assertSame($handler, $this->_handler);
@@ -207,8 +254,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => $this->_form)
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add($this->_form, 'select', array('option' => true));
 		$this->assertSame($handler, $this->_handler);
@@ -219,8 +274,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => 'child')
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add('test', null, array('option' => true));
 		$this->assertSame($handler, $this->_handler);
@@ -231,8 +294,16 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->once())
 			->method('add');
 
+		$this->_form->expects($this->any())
+			->method('all')
+			->will($this->returnValue(
+				array('test' => 'child')
+			));
+
 		$this->_validator->expects($this->once())
-			->method('field');
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$handler = $this->_handler->add($this->_form, null, array('option' => true));
 		$this->assertSame($handler, $this->_handler);
@@ -246,8 +317,10 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 		$this->_form->expects($this->never())
 			->method('add');
 
-		$this->_validator->expects($this->never())
-			->method('field');
+		$this->_validator->expects($this->once())
+			->method('field')
+			->will($this->returnValue($this->_form))
+		;
 
 		$this->_handler->add(null);
 	}

@@ -18,6 +18,22 @@ namespace Message\Cog\Module;
  * * Bespoke:Wishlist::FolderName:ViewName
  * * ::DirectoryName:ViewName
  *
+ * If the reference is prepended with the "root modifier" (@), the reference
+ * will not look in the module's library directory, but in the root directory.
+ *
+ * For example, consider the following module directory:
+ *
+ * /mymodule
+ *    /src
+ *       /Message
+ *          /MyModule
+ *             MyClass.php
+ *    /translations
+ *       /en.yml
+ *
+ * The reference 'Message:MyModule::MyClass' would find MyClass.php, but the
+ * reference '@Message:MyModule::translations:en.yml' would find en.yml.
+ *
  * @author Joe Holdcroft <joe@message.uk.com>
  */
 class ReferenceParser implements ReferenceParserInterface
@@ -26,6 +42,7 @@ class ReferenceParser implements ReferenceParserInterface
 	const METHOD_SEPARATOR = '#';
 	const MODULE_SEPARATOR = '::';
 	const RELATIVE_MARKER  = '::';
+	const ROOT_MODIFIER    = '@';
 
 	protected $_moduleLocator;
 	protected $_fnsUtility;
@@ -36,6 +53,7 @@ class ReferenceParser implements ReferenceParserInterface
 	protected $_module;
 	protected $_path;
 	protected $_method;
+	protected $_inLibrary = true;
 
 	/**
 	 * Constructor.
@@ -81,7 +99,7 @@ class ReferenceParser implements ReferenceParserInterface
 
 		// Build and return the full path
 		return implode(DIRECTORY_SEPARATOR, array_filter(array(
-			rtrim($this->_moduleLocator->getPath($this->getModuleName()), '/'),
+			rtrim($this->_moduleLocator->getPath($this->getModuleName(), $this->_inLibrary), '/'),
 			$this->getPath($pathNamespace, DIRECTORY_SEPARATOR)
 		)));
 	}
@@ -199,6 +217,13 @@ class ReferenceParser implements ReferenceParserInterface
 		$this->clear();
 		// Save original reference
 		$this->_reference = $reference;
+
+		// Detect the root modifier
+		if (self::ROOT_MODIFIER === substr($this->_reference, 0, strlen(self::ROOT_MODIFIER))) {
+			$this->_reference = ltrim($this->_reference, self::ROOT_MODIFIER);
+			$this->_inLibrary = false;
+		}
+
 		// Parse the method
 		$this->_parseMethod();
 		// Parse the vendor and module name
@@ -219,6 +244,7 @@ class ReferenceParser implements ReferenceParserInterface
 		$this->_module    = null;
 		$this->_path      = null;
 		$this->_method    = null;
+		$this->_inLibrary = true;
 	}
 
 	/**

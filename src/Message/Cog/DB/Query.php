@@ -146,9 +146,13 @@ class Query
 			return 'NULL';
 		}
 
+		if ($value instanceof \DateTime) {
+			$value = $value->getTimestamp();
+		}
+
 		// If a type is set to date then cast it to an int
 		if ($type == 'd') {
-		    $safe = (int) ($value instanceof \DateTime) ? $value->getTimestamp() : $value;
+		    $safe = (int) $value;
 		} else {
 			// sanitize
 			settype($value, $this->_typeTokens[$type]);

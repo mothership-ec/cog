@@ -11,6 +11,7 @@ use Message\Cog\Service\ContainerAwareInterface;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 use LogicException;
 
@@ -55,7 +56,24 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Sets the service container.
+	 * Run a string through the translation engine.
+	 *
+	 * @see Message\Cog\Localisation\Translator::trans
+	 *
+	 * @param  string      $message Message or message ID
+	 * @param  array       $params  Array of parameters
+	 * @param  string|null $domain  Message domain
+	 * @param  string|null $locale  Override of locale to use
+	 *
+	 * @return string               Translated string
+	 */
+	public function trans($message, array $params = array(), $domain = null, $locale = null)
+	{
+		return $this->get('translator')->trans($message, $params, $domain, $locale);
+	}
+
+	/**
+	 * {@inheritdoc}
 	 *
 	 * @param ContainerInterface $container The service container instance
 	 */
@@ -65,7 +83,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Set the current HTTP request on this controller.
+	 * {@inheritdoc}
 	 *
 	 * This is used by `ResponseBuilder` to help determine the response format
 	 * type.
@@ -105,6 +123,33 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	public function redirect($url, $status = 302)
 	{
 		return new RedirectResponse($url, $status);
+	}
+
+	/**
+	 * Returns a RedirectResponse instance for redirection to the given route name.
+	 *
+	 * @param  string $routeName Name of the route to redirect to
+	 * @param  array  $params    Parameters to use in the route
+	 * @param  int    $status    HTTP status code to use when redirecting
+	 *
+	 * @return RedirectResponse
+	 */
+	public function redirectToRoute($routeName, $params = array(), $status = 302)
+	{
+		return $this->redirect($this->generateUrl($routeName, $params), $status);
+	}
+
+	/**
+	 * Returns a RedirectResponse instance for redirection to the request
+	 * referer.
+	 *
+	 * @param  int $status HTTP status code to use when redirecting
+	 *
+	 * @return RedirectResponse
+	 */
+	public function redirectToReferer($status = 302)
+	{
+		return $this->redirect($this->get('request')->headers->get('referer'), $status);
 	}
 
 	/**
@@ -157,18 +202,41 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
-	 * Returns a NotFoundHttpException.
+	 * Returns a `NotFoundHttpException`.
 	 *
 	 * This will result in a 404 response code. Usage example:
 	 *
+	 * <code>
 	 *     throw $this->createNotFoundException('Page not found!');
+	 * </code>
 	 *
-	 * @param string    $message  A message
+	 * @param string     $message  The exception message
 	 * @param \Exception $previous The previous exception
+	 * @param int        $code     The exception code
 	 *
 	 * @return NotFoundHttpException
 	 */
-	public function createNotFoundException($message = 'Not Found', \Exception $previous = null)
+	public function createNotFoundException($message = 'Not Found', \Exception $previous = null, $code = 0)
+	{
+	    return new NotFoundHttpException($message, $previous);
+	}
+
+	/**
+	 * Returns a `AccessDeniedHttpException`.
+	 *
+	 * This will result in a 403 response code. Usage example:
+	 *
+	 * <code>
+	 *     throw $this->createAccessDeniedException('Page not found!');
+	 * </code>
+	 *
+	 * @param string     $message  The exception message
+	 * @param \Exception $previous The previous exception
+	 * @param int        $code     The exception code
+	 *
+	 * @return AccessDeniedHttpException
+	 */
+	public function createAccessDeniedException($message = 'Access Denied', \Exception $previous = null, $code = 0)
 	{
 	    return new NotFoundHttpException($message, $previous);
 	}

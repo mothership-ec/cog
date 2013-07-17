@@ -18,7 +18,7 @@ class FileIterator extends \IteratorIterator
 	public function current()
 	{
 		$file = parent::current();
-		
-		return new File($file->getRealPath());
+
+		return new File((string) $file);
 	}
 }

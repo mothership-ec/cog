@@ -35,6 +35,8 @@ namespace Message\Cog\Test\Application {
 			'Message/NotModuleName',
 		);
 
+		protected $_autoloader;
+
 		public function setUp()
 		{
 			// Set the command-line arguments (override the phpunit ones)
@@ -58,9 +60,11 @@ namespace Message\Cog\Test\Application {
 		 */
 		public function getLoader($baseDir, array $methodsToMock = array())
 		{
+			$this->_autoloader = $this->getMock('Composer\Autoload\ClassLoader');
+
 			$loader = $this->getMockForAbstractClass(
 				'Message\\Cog\\Application\\Loader',
-				array($baseDir, $this->getMock('Composer\\Autoload\\ClassLoader')),
+				array($this->_autoloader, $baseDir),
 				'',
 				true,
 				true,
@@ -74,21 +78,6 @@ namespace Message\Cog\Test\Application {
 				->will($this->returnValue($this->_moduleList));
 
 			return $loader;
-		}
-
-		/**
-		 * Use the `vfsStream` library to create the expected autoload file as
-		 * `vendor/autoload.php`.
-		 *
-		 * @param integer $permission Octal permission level for the file
-		 */
-		public function createAutoloadFile($permission = 0755)
-		{
-			vfsStream::setup(self::VFS_ROOT_DIR);
-			vfsStream::newDirectory('vendor')
-				->at(vfsStreamWrapper::getRoot());
-			vfsStream::newFile('autoload.php', $permission)
-				->at(vfsStreamWrapper::getRoot()->getChild('vendor'));
 		}
 
 		/**
@@ -122,10 +111,7 @@ namespace Message\Cog\Test\Application {
 
 		public function testGetAppName()
 		{
-			$loader = new \MyTestApp\MyInitialisationModule\AppLoader(
-				'/', 
-				$this->getMock('Composer\\Autoload\\ClassLoader')
-			);
+			$loader = new \MyTestApp\MyInitialisationModule\AppLoader($this->getMock('Composer\Autoload\ClassLoader'), '/');
 
 			$this->assertEquals('MyTestApp', $loader->getAppName());
 		}
@@ -144,9 +130,7 @@ namespace Message\Cog\Test\Application {
 		 */
 		public function testSetContextWorks($contextName)
 		{
-			$this->createAutoloadFile();
-
-			$loader      = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
+			$loader      = $this->getLoader('/');
 			$container   = new FauxContainer;
 			$serviceName = 'app.context.' . $contextName;
 
@@ -174,8 +158,6 @@ namespace Message\Cog\Test\Application {
 		 */
 		public function testContextClassNotFoundException()
 		{
-			$this->createAutoloadFile();
-
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 			$container = new FauxContainer;
 
@@ -196,8 +178,6 @@ namespace Message\Cog\Test\Application {
 		 */
 		public function testContextClassDoesNotImplementInterfaceException()
 		{
-			$this->createAutoloadFile();
-
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 			$container = new FauxContainer;
 
@@ -219,8 +199,6 @@ namespace Message\Cog\Test\Application {
 
 		public function testRunInvokesCorrectMethods()
 		{
-			$this->createAutoloadFile();
-
 			$loader = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array(
 				'initialise',
 				'loadCog',
@@ -256,35 +234,8 @@ namespace Message\Cog\Test\Application {
 			$loader->run();
 		}
 
-		public function testInitialiseSetsAutoloader()
-		{
-			$this->createAutoloadFile();
-
-			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-			$container = new FauxContainer;
-
-			$loader->setServiceContainer($container)->initialise();
-
-			foreach (spl_autoload_functions() as $function) {
-				if ($function instanceof ComposerAutoloader) {
-					return true;
-				}
-				elseif (is_array($function)) {
-					foreach ($function as $fn) {
-						if ($fn instanceof ComposerAutoloader) {
-							return true;
-						}
-					}
-				}
-			}
-
-			$this->fail('Calling `initialise()` did not register the Composer SPL autoloader');
-		}
-
 		public function testInitialiseGetsDefaultServiceContainerInstance()
 		{
-			$this->createAutoloadFile();
-
 			$container = ServiceContainer::instance();
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 
@@ -295,8 +246,6 @@ namespace Message\Cog\Test\Application {
 
 		public function testInitialiseDefinesAutoloaderService()
 		{
-			$this->createAutoloadFile();
-
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 			$container = new FauxContainer;
 
@@ -304,13 +253,11 @@ namespace Message\Cog\Test\Application {
 
 			$this->assertTrue($container->isShared('class.loader'));
 
-			$this->assertInstanceOf('Composer\Autoload\ClassLoader', $container['class.loader']);
+			$this->assertSame($this->_autoloader, $container['class.loader']);
 		}
 
 		public function testLoadCogDefinesBaseServices()
 		{
-			$this->createAutoloadFile();
-
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 			$container = new FauxContainer;
 
@@ -324,8 +271,6 @@ namespace Message\Cog\Test\Application {
 
 		public function testLoadModules()
 		{
-			$this->createAutoloadFile();
-
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array('loadCog'));
 			$container = new FauxContainer;
 
@@ -344,8 +289,6 @@ namespace Message\Cog\Test\Application {
 
 		public function testExecution()
 		{
-			$this->createAutoloadFile();
-
 			$loader      = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 			$container   = new FauxContainer;
 			$dispatcher  = new FauxDispatcher;
@@ -392,8 +335,6 @@ namespace Message\Cog\Test\Application {
 
 		public function testChainability()
 		{
-			$this->createAutoloadFile();
-
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
 			$container = new FauxContainer;
 

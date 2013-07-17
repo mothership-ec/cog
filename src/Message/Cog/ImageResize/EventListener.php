@@ -29,7 +29,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 	public function loadTemplatingHelpers()
 	{
-		$this->_services['templating.php.engine']->addHelpers(array(
+		$this->_services['templating.engine.php']->addHelpers(array(
 			new Templating\PhpHelper($this->_services['image.resize'])
 		));
 
