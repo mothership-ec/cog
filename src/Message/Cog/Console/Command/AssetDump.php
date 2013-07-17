@@ -4,7 +4,6 @@
 
 	use Message\Cog\Console\Command;
 	use Message\Cog\Filesystem\File;
-	use Message\Cog\Filesystem\Filesystem;
 
 	use Symfony\Component\Console\Input\InputArgument;
 	use Symfony\Component\Console\Input\InputInterface;
@@ -18,12 +17,17 @@
 	 */
 	class AssetDump extends Command
 	{
+		const USE_SYMLINKS = 'symlink';
+
 		protected function configure()
 		{
 			$this
 				->setName('asset:dump')
 				->setDescription('Move module assets to public folder.')
 			;
+
+			// Whether to use symlinks to copy assets across
+			$this->addOption('--' . self::USE_SYMLINKS);
 		}
 
 		protected function execute(InputInterface $input, OutputInterface $output)
@@ -43,6 +47,8 @@
 
 			$output->writeln('<info>Moving public assets for ' . count($modules) . ' modules.</info>');
 
+			$useSymlinks = $input->getOption('symlink');
+
 			foreach($modules as $module) {
 				$moduleName = str_replace("\\", ':', $module);
 
@@ -60,8 +66,19 @@
 				$output->writeln("Copying {$originDir} to {$targetDir}");
 				$output->writeln('');
 
-				// Copy files across to public folder
-				$fileSystem->mirror($originDir, $targetDir);
+				/*
+				 * Copy files across to public folder
+				 *
+				 * Either create a symlink, or copy files across.
+				 */
+				if($useSymlinks)
+				{
+					$fileSystem->symlink($originDir, $targetDir);
+				}
+				else
+				{
+					$fileSystem->mirror($originDir, $targetDir);
+				}
 			}
 		}
 	}
