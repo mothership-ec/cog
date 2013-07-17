@@ -400,7 +400,7 @@ class Handler
 				$this->addMessagesToFlash();
 			}
 
-			$this->_valid = $valid && $this->getForm()->isValid();
+			$this->_valid = $valid;
 		}
 
 		return $this->_valid;
