@@ -82,7 +82,37 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
 
-		// Asset Management
-		$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
+		// Status check
+		$appLoader = $this->_services['app.loader'];
+		$eventDispatcher->addListener('console.status.check', function($event) use ($appLoader) {
+
+			$event
+				->header('PHP Environment')
+					->report('PHP version', PHP_VERSION)
+					->report('Default timezone', date_default_timezone_get())
+
+					// Needed for running scheduled tasks
+					->check('proc_open() exists', function() {
+						return function_exists('proc_open');
+					})
+
+					// Needed for stream wrappers
+					->check('eval() available', function() {
+						return strtolower(ini_get('suhosin.executor.disable_eval')) !== 'Off';
+					})
+
+					// Needed for localisation / forms
+					->check('intl extension loaded', function() {
+						return extension_loaded('intl');
+					})
+
+				->header('Message\\Cog')
+					->report('Installation directory', $appLoader->getBaseDir())
+					->checkPath('Temp directory', 'cog://tmp/')
+					->checkPath('Public directory', 'cog://public/')
+					->checkPath('Log directory', 'cog://logs/')
+			;
+
+		}, 900);
 	}
 }

@@ -2,14 +2,11 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Service\Container as ServiceContainer;
-
-use Symfony\Component\Console\Command\Command;
+use Message\Cog\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Process\Process;
 
 
@@ -24,7 +21,9 @@ use Symfony\Component\Process\Process;
  * asynchronously launched as seperate processes which run independantly.
  *
  * The entry in the crontab file needs to look something like this:
+ * 
  * 		* * * * * /path/to/site/bin/cog --env=live task:run_scheduled > /dev/null 2>&1
+ * 		
  */
 class TaskRunScheduled extends Command
 {
@@ -39,9 +38,9 @@ class TaskRunScheduled extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$path = $_SERVER['argv'][0];
-		$env  = ' --env='.ServiceContainer::get('env');
-		foreach(ServiceContainer::get('task.collection')->all() as $task) {
-			if($task[2]->isDue(time(), ServiceContainer::get('env'))) {
+		$env  = ' --env='.$this->get('env');
+		foreach($this->get('task.collection')->all() as $task) {
+			if($this->_isDue($task[2], time(), $this->get('env'))) {
 				$output->writeln('Running ' . $task[2]->getName());
 				try {
 					$process = new Process($path . $env . ' task:run ' . $task[2]->getName());
@@ -51,5 +50,20 @@ class TaskRunScheduled extends Command
 				}
 			}
 		}
+	}
+
+	protected function _isDue($task, $time, $env)
+	{
+		if(!$task->getCronExpression()) {
+			return false;
+		}
+		if(!$task->getCronExpression()->isDue($time)) {
+			return false;
+		}
+		if(count($this->getCronEnvironments()) && !in_array($env, $this->getCronEnvironments())) {
+			return false;
+		}
+
+		return true;
 	}
 }

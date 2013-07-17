@@ -43,6 +43,16 @@ class Resize
 	}
 
 	/**
+	 * Gets the directory where resized images get stored
+	 *
+	 * @return string The path to the resize directory.
+	 */
+	public function getCachePath()
+	{
+		return $this->_cachePath;
+	}
+
+	/**
 	 * Resize a public image based on it's URL
 	 *
 	 * @param  string $url The image to resize

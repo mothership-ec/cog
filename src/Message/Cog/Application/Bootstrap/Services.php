@@ -289,7 +289,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['task.collection'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Console\TaskCollection;
+			return new \Message\Cog\Console\Task\Collection;
 		});
 
 		// Functions
@@ -324,7 +324,8 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us" 	  => $baseDir.'tmp/$1',
+				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
+				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 			);
 

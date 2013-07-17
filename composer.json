@@ -28,7 +28,7 @@
 		"ext-mysqli"   : "*",
 		"ext-intl"     : "*",
 
-		"symfony/console"              : "2.1.*",
+		"symfony/console"              : "2.3.*",
 		"symfony/event-dispatcher"     : "2.1.*",
 		"symfony/form"                 : "2.3.*",
 		"symfony/http-kernel"          : "2.3.*",

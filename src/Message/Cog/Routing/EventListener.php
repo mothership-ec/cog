@@ -26,7 +26,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 				array('mountRoutes'),
 			),
 			KernelEvents::REQUEST => array(
-				array('checkCsrf'),
+				array('checkCsrf', 500),
 			),
 		);
 	}
