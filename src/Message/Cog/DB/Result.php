@@ -64,6 +64,16 @@ class Result extends ResultArrayAccess
 	}
 
 	/**
+	 * Return the first row in the dataset.
+	 *
+	 * @return stdClass The first row.
+	 */
+	public function last()
+	{
+		return array_pop(iterator_to_array($this));
+	}
+
+	/**
 	 * Returns a copy of the dataset as a hash where one field is used as the
 	 * key and another as the value.
 	 *
