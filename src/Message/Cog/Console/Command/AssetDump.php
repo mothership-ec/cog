@@ -3,6 +3,8 @@
 	namespace Message\Cog\Console\Command;
 
 	use Message\Cog\Console\Command;
+	use Message\Cog\Filesystem\File;
+	use Message\Cog\Filesystem\Filesystem;
 
 	use Symfony\Component\Console\Input\InputArgument;
 	use Symfony\Component\Console\Input\InputInterface;
@@ -26,17 +28,40 @@
 
 		protected function execute(InputInterface $input, OutputInterface $output)
 		{
+			// Service to work with files
+			$fileSystem = $this->get('filesystem');
+
+			// Base Location for Public Assets
+			$filePath = 'cog://public/cogules/';
+			$resourcesDir = 'resources/public/';
+
+			// Get List of Loaded Modules
 			$modules = $this->get('module.loader')->getModules();
 
-			$output->writeln('<info>Found ' . count($modules) . ' registered modules.</info>');
+			// Service to locate module paths
+			$moduleLocator = $this->get('module.locator');
 
-			$table = $this->getHelperSet()->get('table')
-				->setHeaders(array('Name'));
+			$output->writeln('<info>Moving public assets for ' . count($modules) . ' modules.</info>');
 
 			foreach($modules as $module) {
-				$table->addRow(array($module));
-			}
+				$moduleName = str_replace("\\", ':', $module);
 
-			$table->render($output);
+				// Directory locations
+				$originDir = $moduleLocator->getPath($module) . $resourcesDir;
+				$targetDir = $filePath . $moduleName;
+
+				// Move on to next module if there are no public resources.
+				if(!$fileSystem->exists($originDir))
+				{
+					$output->writeln("No resources for {$module}");
+					continue;
+				}
+
+				$output->writeln("Copying {$originDir} to {$targetDir}");
+				$output->writeln('');
+
+				// Copy files across to public folder
+				$fileSystem->mirror($originDir, $targetDir);
+			}
 		}
 	}
