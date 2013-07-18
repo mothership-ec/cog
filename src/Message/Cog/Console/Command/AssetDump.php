@@ -9,6 +9,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Filesystem\Exception\IOException;
+
 /**
  * AssetDump
  *
@@ -37,7 +39,7 @@ class AssetDump extends Command
 
 		// Base Location for Public Assets
 		$basePath = 'cog://';
-		$cogulePath = 'public/cogules/';
+		$cogulePath = $basePath . 'public/cogules/';
 
 		$filePath = $basePath . $cogulePath;
 		$resourcesDir = 'resources/public/';
@@ -61,31 +63,24 @@ class AssetDump extends Command
 			$targetDir = $filePath . $moduleName;
 
 			// Move on to next module if there are no public resources.
-			if(!$fileSystem->exists($originDir))
-			{
+			if(!$fileSystem->exists($originDir)) {
 				$output->writeln("<info>No resources for {$module}</info>");
 				continue;
 			}
 
 			$output->writeln("Copying {$originDir} to {$targetDir}");
-			$output->writeln('');
 
-			/*
-			 * Copy files across to public folder
-			 *
-			 * Either create a symlink, or copy files across.
-			 */
-			if($useSymlinks)
-			{
-				// Symlink needs to be a relative path to project root
+			// Either Symlink the directory, or copy the files across.
+			if($useSymlinks) {
+				// Path needs to be relative in order to symlink.
 				$symlinkDir = $cogulePath . $moduleName;
 
 				$fileSystem->symlink($originDir, $symlinkDir);
-			}
-			else
-			{
+			} else {
 				$fileSystem->mirror($originDir, $targetDir);
 			}
+
+			$output->writeln('');
 		}
 	}
 }
