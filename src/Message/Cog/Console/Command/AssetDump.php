@@ -39,7 +39,7 @@ class AssetDump extends Command
 
 		// Base Location for Public Assets
 		$basePath = 'cog://';
-		$cogulePath = $basePath . 'public/cogules/';
+		$cogulePath =  'public/cogules/';
 
 		$filePath = $basePath . $cogulePath;
 		$resourcesDir = 'resources/public/';
