@@ -39,7 +39,7 @@ class RouteList extends Command
 				$name,
 				$route->getPath(),
 				$route->getMethods() ? implode('|', $route->getMethods()) : 'ANY',
-				$defaults['_format'] ? implode('|', $defaults['_format']) : 'ANY',
+				$defaults['_format'] ? $defaults['_format'] : 'ANY',
 				$defaults['_controller']
 			));
 		}

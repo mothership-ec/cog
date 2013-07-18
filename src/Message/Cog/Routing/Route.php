@@ -34,8 +34,6 @@ class Route extends \Symfony\Component\Routing\Route
 
 	public function setFormat($format)
 	{
-		$format = (array) $format;
-
 		return $this->setDefault('_format', $format);
 	}
 
