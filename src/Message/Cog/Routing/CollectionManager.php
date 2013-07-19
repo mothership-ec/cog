@@ -4,6 +4,7 @@ namespace Message\Cog\Routing;
 
 use Message\Cog\Module\ReferenceParserInterface;
 
+
 use Message\Cog\Functions\Iterable;
 
 /**
@@ -11,7 +12,7 @@ use Message\Cog\Functions\Iterable;
  * RouteCollections, this in turn is a decorator for Symfony's RouteCollection
  * class.
  *
- * This class is also capabale of compiling all the separate RouteCollections
+ * This class is also capable of compiling all the separate RouteCollections
  * into a single one which can be passed to the Router.
  */
 class CollectionManager implements \ArrayAccess, \IteratorAggregate

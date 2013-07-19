@@ -10,6 +10,10 @@ class Route extends \Symfony\Component\Routing\Route
 
 	public function __construct($pattern, array $defaults = array(), array $requirements = array(), array $options = array())
 	{
+		if (!isset($defaults['_route_collections'])) {
+			$defaults['_route_collections'] = array();
+		}
+
 		parent::__construct($pattern, $defaults, $requirements, $options);
 
 		// Set default format to HTML if none is explicitly set
