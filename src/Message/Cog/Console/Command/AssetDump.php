@@ -9,8 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Symfony\Component\Filesystem\Exception\IOException;
-
 /**
  * AssetDump
  *
@@ -38,10 +36,9 @@ class AssetDump extends Command
 		$fileSystem = $this->get('filesystem');
 
 		// Base Location for Public Assets
-		$basePath = 'cog://';
 		$cogulePath =  'public/cogules/';
 
-		$filePath = $basePath . $cogulePath;
+		// Location for module resources.
 		$resourcesDir = 'resources/public/';
 
 		// Get List of Loaded Modules
@@ -60,32 +57,37 @@ class AssetDump extends Command
 
 			// Directory locations
 			$originDir = $moduleLocator->getPath($module, false) . $resourcesDir;
-			$targetDir = $filePath . $moduleName;
+			$targetDir = $cogulePath . $moduleName;
 
 			// Move on to next module if there are no public resources.
 			if(!$fileSystem->exists($originDir)) {
-				$output->writeln("<comment>No resources for {$module}</comment>");
+				$output->writeln("<comment>No assets for {$module}.</comment>");
 				continue;
 			}
 
+			// Remove existing assets if we want the target to be a symlink and it isn't
+			// and vice versa.
+			if(file_exists($targetDir)) {
+				if($useSymlinks && !is_link($targetDir)) {
+					$output->writeln("<info>Removing non symbolic assets for {$module}.</info>");
+					$fileSystem->remove($targetDir);
+				}
+				elseif(!$useSymlinks && is_link($targetDir)) {
+					$output->writeln("<info>Removing symbolic assets for {$module}.</info>");
+					unlink($targetDir);
+				}
+			}
+
+			$output->writeln("<info>Copying {$originDir} to {$targetDir}.</info>");
+
 			// Either Symlink the directory, or copy the files across.
 			if($useSymlinks) {
-				// Path needs to be relative in order to symlink.
-				$symlinkDir = $cogulePath . $moduleName;
-
-				// If we generated assets without symlinks, we need to remove the directory
-				// so that symlink doesn't throw an exception.
-				if(file_exists($symlinkDir) && !is_link($symlinkDir)) {
-					$output->writeln("<info>Removing non symbolic resources for {$module}</info>");
-					$fileSystem->remove($symlinkDir);
-				}
-
-				$fileSystem->symlink($originDir, $symlinkDir);
+				$fileSystem->symlink($originDir, $targetDir);
 			} else {
 				$fileSystem->mirror($originDir, $targetDir);
 			}
-
-			$output->writeln("<info>Copying {$originDir} to {$targetDir}</info>");
 		}
+
+		$output->writeln("<info>Finished dumping module assets.</info>");
 	}
 }
