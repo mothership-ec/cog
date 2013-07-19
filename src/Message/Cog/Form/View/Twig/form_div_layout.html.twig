@@ -285,6 +285,18 @@
 	{% endspaceless %}
 {% endblock form_row %}
 
+
+{% block checkbox_row %}
+	{% spaceless %}
+		<div class="field inline">
+			{{ form_widget(form) }}
+			{{ form_label(form) }}
+			{{ form_errors(form) }}
+			{{ block('help_widget') }}
+		</div>
+	{% endspaceless %}
+{% endblock checkbox_row %}
+
 {% block button_row %}
 	{% spaceless %}
 		<div>
