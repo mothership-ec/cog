@@ -37,6 +37,7 @@ class Factory
 		$app->add(new Command\TaskList);
 		$app->add(new Command\TaskRun);
 		$app->add(new Command\TaskRunScheduled);
+		$app->add(new Command\AssetGenerator);
 
 		return $app;
 	}
