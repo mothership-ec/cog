@@ -51,7 +51,7 @@ class AssetDump extends Command
 		$moduleLocator = $this->get('module.locator');
 
 		// Determine whether to use symlinks to map resources.
-		$useSymlinks = $input->getOption('symlink');
+		$useSymlinks = $input->getOption(self::USE_SYMLINKS);
 
 		$output->writeln('<info>Moving public assets for ' . count($modules) . ' modules.</info>');
 
@@ -59,7 +59,7 @@ class AssetDump extends Command
 			$moduleName = str_replace("\\", ':', $module);
 
 			// Directory locations
-			$originDir = $moduleLocator->getPath($module) . $resourcesDir;
+			$originDir = $moduleLocator->getPath($module, false) . $resourcesDir;
 			$targetDir = $filePath . $moduleName;
 
 			// Move on to next module if there are no public resources.
@@ -67,8 +67,6 @@ class AssetDump extends Command
 				$output->writeln("<info>No resources for {$module}</info>");
 				continue;
 			}
-
-			$output->writeln("Copying {$originDir} to {$targetDir}");
 
 			// Either Symlink the directory, or copy the files across.
 			if($useSymlinks) {
@@ -80,7 +78,7 @@ class AssetDump extends Command
 				$fileSystem->mirror($originDir, $targetDir);
 			}
 
-			$output->writeln('');
+			$output->writeln("<info>Copying {$originDir} to {$targetDir}</info>");
 		}
 	}
 }
