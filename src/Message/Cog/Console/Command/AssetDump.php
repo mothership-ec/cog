@@ -64,7 +64,7 @@ class AssetDump extends Command
 
 			// Move on to next module if there are no public resources.
 			if(!$fileSystem->exists($originDir)) {
-				$output->writeln("<info>No resources for {$module}</info>");
+				$output->writeln("<comment>No resources for {$module}</comment>");
 				continue;
 			}
 
