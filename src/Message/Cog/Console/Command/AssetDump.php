@@ -73,6 +73,13 @@ class AssetDump extends Command
 				// Path needs to be relative in order to symlink.
 				$symlinkDir = $cogulePath . $moduleName;
 
+				// If we generated assets without symlinks, we need to remove the directory
+				// so that symlink doesn't throw an exception.
+				if(file_exists($symlinkDir) && !is_link($symlinkDir)) {
+					$output->writeln("<info>Removing non symbolic resources for {$module}</info>");
+					$fileSystem->remove($symlinkDir);
+				}
+
 				$fileSystem->symlink($originDir, $symlinkDir);
 			} else {
 				$fileSystem->mirror($originDir, $targetDir);
