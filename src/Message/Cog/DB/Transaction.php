@@ -7,7 +7,7 @@ use Message\Cog\DB\Adapter\ConnectionInterface;
 /**
 *
 */
-class Transaction
+class Transaction implements QueryableInterface
 {
 	protected $_query;
 	protected $_connection;
@@ -25,6 +25,11 @@ class Transaction
 		$this->_queries[] = array($query, $params);
 
 		return $this;
+	}
+
+	public function run($query, $params = array())
+	{
+		return $this->add($query, $params);
 	}
 
 	public function rollback()
@@ -47,13 +52,18 @@ class Transaction
 		return $this->_query->run($this->_connection->getTransactionEnd());
 	}
 
-	public function setID($name)
+	public function setIDVariable($name)
 	{
-		return $this->add("SET @".$name." = ".$this->_result->getLastInsertIdFunc());
+		return $this->add("SET @".$name." = ".$this->_connection->getLastInsertIdFunc());
+	}
+
+	public function getIDVariable($name)
+	{
+		return $this->_query->run("SELECT @".$name);
 	}
 
 	public function getID()
 	{
-		return $this->add("SELECT ".$this->_result->getLastInsertIdFunc());
+		return $this->_query->run("SELECT ".$this->_connection->getLastInsertIdFunc());
 	}
 }
