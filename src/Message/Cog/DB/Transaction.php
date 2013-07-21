@@ -59,11 +59,11 @@ class Transaction implements QueryableInterface
 
 	public function getIDVariable($name)
 	{
-		return $this->_query->run("SELECT @".$name);
+		return $this->_query->run("SELECT @".$name)->value();
 	}
 
 	public function getID()
 	{
-		return $this->_query->run("SELECT ".$this->_connection->getLastInsertIdFunc());
+		return $this->_query->run("SELECT ".$this->_connection->getLastInsertIdFunc())->value();
 	}
 }
