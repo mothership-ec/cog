@@ -39,14 +39,13 @@ You can check that the form has been submitted using the `isPost()` method, and 
 		return $handler->getData();
 	}
 
-This will return data in an associative array, for instance, a valid form would return something like:
+This will bind the data to the form and then return it in an associative array, for instance, a valid form would return something like:
 
 	array (
 		'name' => string 'biggie'
 		'email' => string 'biggie.smalls@aol.com'
 		'url' => 'notorious.com'
 	);
-
 
 ## Validation
 
@@ -55,32 +54,19 @@ To validate the form, call the `isValid()` method on the handler:
 	// returns boolean
 	$handler->isValid();
 
-This will parse the data through the validator, and return true if it passes. If the form is not valid, you can access the error messages using the `getMessages()` method:
+This will return a boolean determining whether or not the form is valid. It will also add any error messages to the flash bag, unless you give it a parameter of false.
 
-	// returns array
-	if (!$handler->isValid()) {
-		return $handler->getMessages();
+It is also possible to get the data once it has been filtered through the validator, using the `getFilteredData()` method. This method also validates the form and adds messages to the flash bag, unless given a parameter of false.
+
+It is important to note that you must run the `isValid()` method to check that the form is valid, as `getFilteredData()` will always return an array.
+
+The best practice for validating the form is to include both the definition of the filtered data and the validation check within the same if statement like so:
+
+	if ($form->isValid() && $data = $form->getFilteredData()) {
+		// your code
 	}
 
-This will return an associative array of fields and error messages, if any exist, so using the example above, we could potentially get something like this:
-
-	array(
-		'name' => array(
-			'Name is a required field.'
-		),
-		'email' => array(
-			'Email must be a valid email address.'
-		)
-	);
-
-It is also possible to get the data once it has been filtered through the validator, using the `getFilteredData()` method:
-
-	// returns array
-	if ($handler->isPost()) {
-		return $handler->getFilteredData();
-	}
-
-So the data above would return something like this:
+`$data` will look like this:
 
 	array(
 		'name' => 'Biggie', // First letter capitalized as was defined by validator
