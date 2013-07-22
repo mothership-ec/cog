@@ -10,9 +10,9 @@ To a build a form, we must first call the form handler from the service containe
 
 	$form = $this->_services['form'];
 
-We can now add our fields using the same syntax as Symfony Form, only on the handler instead of directly on the form:
+We can now add our fields using the similar syntax to Symfony Form, except with the label as the third parameter, and the array of options as the forth:
 
-	$form->add('name', 'text');
+	$form->add('name', 'text', 'Name', array());
 
 Calling the `add()` method automatically adds the field to both the form and the validator, and all fields are required by default. To add further validation, call the `val()` method to call the Validator instance and add more rules:
 
