@@ -3,7 +3,8 @@
 namespace Message\Cog\Application\Context;
 
 use Message\Cog\Service\ContainerInterface;
-use Message\Cog\Console\Factory;
+use Message\Cog\Console\Application;
+use Message\Cog\Console\Command;
 
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,17 +34,38 @@ class Console implements ContextInterface
 	{
 		$this->_services = $container;
 
-		$console = Factory::create($container);
-		$this->_services['app.console'] = $this->_services->share(function() use ($console) {
-			return $console;
+		$this->_services['app.console'] = $this->_services->share(function($c) {
+			$app = new Application;
+			$app->setContainer($c);
+
+			$app->getDefinition()->addOption(
+				new InputOption('--' . $app::ENV_OPT_NAME, '', InputOption::VALUE_OPTIONAL, 'The Environment name.')
+			);
+
+			// Setup the default commands
+			$app->add(new Command\EventList);
+			$app->add(new Command\ModuleGenerate);
+			$app->add(new Command\ModuleList);
+			$app->add(new Command\RouteList);
+			$app->add(new Command\RouteCollectionTree);
+			$app->add(new Command\ServiceList);
+			$app->add(new Command\Setup);
+			$app->add(new Command\Status);
+			$app->add(new Command\TaskGenerate);
+			$app->add(new Command\TaskList);
+			$app->add(new Command\TaskRun);
+			$app->add(new Command\TaskRunScheduled);
+			$app->add(new Command\AssetDump);
+
+			return $app;
 		});
 
-		if(null === $arguments) {
+		if (null === $arguments) {
 			$arguments = $_SERVER['argv'];
 		}
 
 		$input = new ArgvInput($arguments);
-		if($env   = $input->getParameterOption(array('--env'), '')) {
+		if ($env = $input->getParameterOption(array('--env'), '')) {
 			$this->_services['environment']->set($env);
 		}
 
