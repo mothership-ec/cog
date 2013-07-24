@@ -3,6 +3,7 @@
 namespace Message\Cog\Application\Context;
 
 use Message\Cog\Service\ContainerInterface;
+use Message\Cog\Console\CommandCollection;
 use Message\Cog\Console\Application;
 use Message\Cog\Console\Command;
 
@@ -34,7 +35,25 @@ class Console implements ContextInterface
 	{
 		$this->_services = $container;
 
-		$this->_services['app.console'] = $this->_services->share(function($c) {
+		$this->_services['console.commands'] = $this->_services->share(function() {
+			return new CommandCollection(array(
+				new Command\EventList,
+				new Command\ModuleGenerate,
+				new Command\ModuleList,
+				new Command\RouteList,
+				new Command\RouteCollectionTree,
+				new Command\ServiceList,
+				new Command\Setup,
+				new Command\Status,
+				new Command\TaskGenerate,
+				new Command\TaskList,
+				new Command\TaskRun,
+				new Command\TaskRunScheduled,
+				new Command\AssetDump,
+			));
+		});
+
+		$this->_services['console.app'] = $this->_services->share(function($c) {
 			$app = new Application;
 			$app->setContainer($c);
 
@@ -42,20 +61,10 @@ class Console implements ContextInterface
 				new InputOption('--' . $app::ENV_OPT_NAME, '', InputOption::VALUE_OPTIONAL, 'The Environment name.')
 			);
 
-			// Setup the default commands
-			$app->add(new Command\EventList);
-			$app->add(new Command\ModuleGenerate);
-			$app->add(new Command\ModuleList);
-			$app->add(new Command\RouteList);
-			$app->add(new Command\RouteCollectionTree);
-			$app->add(new Command\ServiceList);
-			$app->add(new Command\Setup);
-			$app->add(new Command\Status);
-			$app->add(new Command\TaskGenerate);
-			$app->add(new Command\TaskList);
-			$app->add(new Command\TaskRun);
-			$app->add(new Command\TaskRunScheduled);
-			$app->add(new Command\AssetDump);
+			// Add the commands
+			foreach ($c['console.commands'] as $command) {
+				$app->add($command);
+			}
 
 			return $app;
 		});
@@ -87,7 +96,7 @@ class Console implements ContextInterface
 	 */
 	public function run()
 	{
-		$console = $this->_services['app.console'];
+		$console = $this->_services['console.app'];
 		$console->setName('Cog Console');
 		//$console->setVersion(1);
 		$console->run();
