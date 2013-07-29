@@ -540,5 +540,15 @@ class Services implements ServicesInterface
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
 			return new \Assetic\AssetWriter('cog://public');
 		});
+
+		$serviceContainer['mailer'] = $serviceContainer->share(function($c) {
+
+			$mailer = new Swift_Preferences;
+			return $mailer;
+
+			$engine = new \Message\Cog\Mailer\Engines\SwiftMailer\SwiftMailer($mailer);
+
+			return new \Message\Cog\Mailer\Mailer($engine);
+		});
 	}
 }
