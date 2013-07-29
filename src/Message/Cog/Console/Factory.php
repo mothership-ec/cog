@@ -38,6 +38,7 @@ class Factory
 		$app->add(new Command\TaskRun);
 		$app->add(new Command\TaskRunScheduled);
 		$app->add(new Command\AssetDump);
+		$app->add(new Command\Mailer);
 
 		return $app;
 	}
