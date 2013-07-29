@@ -580,5 +580,15 @@ class Services implements ServicesInterface
 		$serviceContainer['helper.prorate'] = function() {
 			return new \Message\Cog\Helper\ProrateHelper;
 		};
+
+		$serviceContainer['mailer'] = $serviceContainer->share(function($c) {
+
+			$mailer = new Swift_Preferences;
+			return $mailer;
+
+			$engine = new \Message\Cog\Mailer\Engines\SwiftMailer\SwiftMailer($mailer);
+
+			return new \Message\Cog\Mailer\Mailer($engine);
+		});
 	}
 }
