@@ -531,9 +531,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['mailer'] = $serviceContainer->share(function($c) {
 
-			$mailer = new Swift_Preferences;
-			return $mailer;
-
+			$mailer = \Swift_Message::newInstance();
 			$engine = new \Message\Cog\Mailer\Engines\SwiftMailer\SwiftMailer($mailer);
 
 			return new \Message\Cog\Mailer\Mailer($engine);
