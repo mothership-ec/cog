@@ -588,5 +588,15 @@ class Services implements ServicesInterface
 
 			return new \Message\Cog\Mailer\Mailer($engine);
 		});
+
+		$serviceContainer['mailer'] = $serviceContainer->share(function($c) {
+
+			$mailer = new Swift_Preferences;
+			return $mailer;
+
+			$engine = new \Message\Cog\Mailer\Engines\SwiftMailer\SwiftMailer($mailer);
+
+			return new \Message\Cog\Mailer\Mailer($engine);
+		});
 	}
 }
