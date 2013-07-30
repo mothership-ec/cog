@@ -589,12 +589,26 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Mailer\Mailer($engine);
 		});
 
-		$serviceContainer['mailer'] = $serviceContainer->share(function($c) {
+		$serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
+			$transport = new \Message\Cog\Mail\Transport\SMTP('mail.message.co.uk', 25);
 
-			$mailer = \Swift_Message::newInstance();
-			$engine = new \Message\Cog\Mailer\Engines\SwiftMailer\SwiftMailer($mailer);
+			$transport->setUsername('test');
+			$transport->setPassword('testpw');
 
-			return new \Message\Cog\Mailer\Mailer($engine);
+			return $transport;
+		});
+
+		$serviceContainer['mail.dispatcher'] = $serviceContainer->share(function($c) {
+
+			$transport = $c['mailer.transport'];
+			$dispatcher = new \Message\Cog\Mail\Mailer($transport);
+
+			return $dispatcher;
+		});
+
+		$serviceContainer['mail.message'] = $serviceContainer->share(function($c) {
+			$engine = $c['templating'];
+			return new \Message\Cog\Mail\Message($engine);
 		});
 	}
 }
