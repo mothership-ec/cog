@@ -14,10 +14,20 @@ class Authorship
 
 	protected $_createdAt;
 	protected $_createdBy;
+
 	protected $_updatedAt;
 	protected $_updatedBy;
+	protected $_updatable;
+
 	protected $_deletedAt;
 	protected $_deletedBy;
+	protected $_deletable;
+
+	public function __construct()
+	{
+		$this->setUpdatable(true);
+		$this->setDeletable(true);
+	}
 
 	/**
 	 * Get the date & time of creation.
@@ -60,6 +70,36 @@ class Authorship
 	}
 
 	/**
+	 * Sets updatable to $bool
+	 *
+	 * @param  boolean $bool    Boolean updatable is set to
+	 * @return Authorship       Returns $this for chainability
+	 */
+	private function setUpdatable($bool)
+	{
+		$this->_updatable = $bool;
+
+		return $this;
+	}
+
+	/**
+	 * Enables updating
+	 */
+	public function enableUpdate()
+	{
+		return $this->setUpdatable(true);
+	}
+
+	/**
+	 * Disables updating
+	 */
+	public function disableUpdate()
+	{
+		return $this->setUpdatable(false);
+	}
+
+
+	/**
 	 * Get the date & time of deletion.
 	 *
 	 * @return DateTime|null The date & time of deletion, null if not set
@@ -87,6 +127,35 @@ class Authorship
 	public function isDeleted()
 	{
 		return !is_null($this->_deletedAt);
+	}
+
+	/**
+	 * Sets deletable to $bool
+	 *
+	 * @param  boolean $bool    Boolean deletable is set to
+	 * @return Authorship       Returns $this for chainability
+	 */
+	private function setDeletable($bool)
+	{
+		$this->_deletable = $bool;
+
+		return $this;
+	}
+
+	/**
+	 * Enables deleting and restoring
+	 */
+	public function enableDelete()
+	{
+		return $this->setDeletable(true);
+	}
+
+	/**
+	 * Disables deleting and restoring
+	 */
+	public function disableDelete()
+	{
+		return $this->setDeletable(false);
 	}
 
 	/**
@@ -120,9 +189,14 @@ class Authorship
 	 * @param  mixed $user                      The user responsible
 	 *
 	 * @return Authorship                       Returns $this for chainability
+	 *
+	 * @throws \LogicException If updatable is false
 	 */
 	public function update(DateTimeImmutable $datetime = null, $user = null)
 	{
+		if(!$this->_updatable) {
+			throw new \LogicException('Cannot set created metadata: updating is disabled');
+		}
 		$this->_updatedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_updatedBy = $user;
 
@@ -139,11 +213,17 @@ class Authorship
 	 * @return Authorship                       Returns $this for chainability
 	 *
 	 * @throws \LogicException If the deleted metadata already exists
+	 *
+	 * @throws \LogicException If deletable is false
 	 */
 	public function delete(DateTimeImmutable $datetime = null, $user = null)
 	{
 		if (!is_null($this->_deletedAt)) {
 			throw new \LogicException('Cannot set deleted metadata: it has already been set');
+		}
+
+		if(!$this->_deletable) {
+			throw new \LogicException('Cannot set created metadata: deleting is disabled');
 		}
 
 		$this->_deletedAt = $datetime ?: new DateTimeImmutable('now');
@@ -160,12 +240,19 @@ class Authorship
 	 * @return Authorship      Returns $this for chainability
 	 *
 	 * @throws \LogicException If the model hasn't been deleted yet
+	 *
+	 * @throws \LogicException If deletable is false
 	 */
 	public function restore()
 	{
 		if (is_null($this->_deletedAt)) {
 			throw new \LogicException('Cannot restore an entity that has not been deleted');
 		}
+
+		if(!$this->_deletable) {
+			throw new \LogicException('Cannot restore entity: deleting and restoring is disabled');
+		}
+
 
 		$this->_deletedAt = null;
 		$this->_deletedBy = null;
