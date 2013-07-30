@@ -29,9 +29,12 @@ class Mailer extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		// Service to work with files
-		$mailer = $this->get('mailer');
+		$mail = $this->get('mail.message');
 
-		print_r($mailer);		
+		$mail->setTo('joe@message.co.uk');
+		$mail->setFrom('test@message.co.uk');
+		$mail->setView('UniformWares:CMS::PageType:home');
+
+		print_r($mail);
 	}
 }
