@@ -25,6 +25,7 @@ class ViewNameParser extends TemplateNameParser
 	 * @param ContainerInterface       $services  The service container
 	 * @param ReferenceParserInterface $parser    Reference parser class
 	 * @param array                    $fileTypes Array of filetypes to support, in order of preference
+	 * @param array                    $contentTypes Array of content types to support, in order of preference
 	 */
 	public function __construct(ContainerInterface $services, ReferenceParserInterface $parser, array $fileTypes, array $contentTypes)
 	{
