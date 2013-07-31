@@ -124,7 +124,7 @@ class Services implements ServicesInterface
 
 			// Get available content types for request.
 			$request = $c['request'];
-			$contentTypes = $request->getAllowedContentTypes();
+			$mimeTypes = $request->getAllowedMimeTypes();
 
 			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
@@ -133,7 +133,7 @@ class Services implements ServicesInterface
 					'twig',
 					'php',
 				),
-				$contentTypes
+				$mimeTypes
 			);
 		});
 

@@ -76,8 +76,7 @@ class ViewNameParser extends TemplateNameParser
 		$baseFileName = $parsed->getFullPath('View');
 
 		// Loop through each content type
-		foreach ($this->_contentTypes as $mimeType) {
-			$format = $request->getFormat($mimeType);
+		foreach ($this->_contentTypes as $format) {
 
 			// Loop through the engines in order of preference
 			foreach ($this->_fileTypes as $engine) {
