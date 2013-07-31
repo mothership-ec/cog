@@ -11,6 +11,8 @@ namespace Message\Cog\HTTP;
  */
 class Request extends \Symfony\Component\HttpFoundation\Request
 {
+	private $mimeTypes = array();
+
 	/**
 	 * Constructor.
 	 *
@@ -43,5 +45,27 @@ class Request extends \Symfony\Component\HttpFoundation\Request
 		}
 
 		return $this->getAcceptableContentTypes();
+	}
+
+	/**
+	 * Get the allowed mime types for this request
+	 * @return array
+	 */
+	public function getAllowedMimeTypes()
+	{
+		// Mime Types have already been set.
+		if($this->mimeTypes)
+		{
+			return $this->mimeTypes;
+		}
+
+		$contentTypes = $this->getAllowedMimeTypes();
+
+		foreach($contentTypes $as $mimeType)
+		{
+			$this->mimeTypes[] = $this->getFormat($mimeType);
+		}
+
+		return $this->mimeTypes;
 	}
 }

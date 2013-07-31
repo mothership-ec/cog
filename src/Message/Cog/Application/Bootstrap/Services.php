@@ -121,13 +121,19 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
+
+			// Get available content types for request.
+			$request = $c['request'];
+			$mimeTypes = $request->getAllowedMimeTypes();
+
 			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
 				$c['reference_parser'],
 				array(
 					'twig',
 					'php',
-				)
+				),
+				$mimeTypes
 			);
 		});
 
