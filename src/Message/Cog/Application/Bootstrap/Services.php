@@ -552,7 +552,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['mail.dispatcher'] = $serviceContainer->share(function($c) {
 
-			$transport = $c['mailer.transport'];
+			$transport = $c['mail.transport'];
 			$dispatcher = new \Message\Cog\Mail\Mailer($transport);
 
 			return $dispatcher;
@@ -560,7 +560,9 @@ class Services implements ServicesInterface
 
 		$serviceContainer['mail.message'] = $serviceContainer->share(function($c) {
 			$engine = $c['templating'];
-			return new \Message\Cog\Mail\Message($engine);
+			$parser = $c['templating.view_name_parser'];
+
+			return new \Message\Cog\Mail\Message($engine, $parser);
 		});
 	}
 }

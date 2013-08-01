@@ -5,28 +5,66 @@ namespace Message\Cog\Mail;
 class Message extends  \Swift_Message
 {
 	private $view = '';
-	protected $_engine;
+	private $templateContentTypes = array(
+			'html' => 'text/html',
+			'txt' => 'text/plain'
+		);
 
-	public function __construct($engine)
+	protected $_engine;
+	protected $_parser;
+
+	public function __construct($engine, $parser)
 	{
 		$this->_engine = $engine;
+		$this->_parser = $parser;
+
 		parent::__construct();
 	}
 
+	/**
+	 * Set which template engine to use.
+	 *
+	 * @param $engine
+	 */
 	public function setEngine($engine)
 	{
 		$this->_engine = $engine;
 	}
 
+	/**
+	 * Set which View should be used for the body of the email.
+	 *
+	 * Example: UniformWares:CMS::Mail:order_dispatched
+	 *
+	 * You can create both .html and .txt versions
+	 *
+	 * @param $view
+	 * @param array $params
+	 * @return $this
+	 */
 	public function setView($view, $params = array())
 	{
 		$this->view = $view;
 
-		// Parse the view and get result as a string.
-		$html = $this->_engine->render($view, $params);
+		// Get list of templates to render
+		$templates = $this->_parser->parse($view, $batch = true);
 
-		// Set the body of the email.
-		$this->setBody($html, 'text/html');
+		// Get the format for each template, render it and add it to
+		foreach($templates as $format => $template) {
+			$contentType = $this->getTemplateContentType($format);
+
+			// Render the template as a string.
+			$body = $this->_engine->render($template, $params);
+
+			// Only set the body once.
+			if(!$this->getBody()) {
+				$this->setBody($body, $contentType);
+			}
+			else {
+				// Add alternative body.
+				$this->addPart($body, $contentType);
+			}
+		}
 
 		return $this;
 	}
@@ -34,5 +72,16 @@ class Message extends  \Swift_Message
 	public function getView()
 	{
 		return $this->view;
+	}
+
+	/**
+	 * Determines what content type to set based on the template format.
+	 *
+	 * @param $format
+	 * @return string
+	 */
+	public function getTemplateContentType($format)
+	{
+		return (isset($this->templateContentTypes[$format])) ? $this->templateContentTypes[$format] : '';
 	}
 }

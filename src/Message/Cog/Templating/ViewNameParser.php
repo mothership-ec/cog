@@ -44,6 +44,7 @@ class ViewNameParser extends TemplateNameParser
 	 * exists, it returns this.
 	 *
 	 * @param string $reference  The view reference (without the format)
+	 * @param string $batch      Return a batch of templates
 	 *
 	 * @return string            The view file path
 	 *
@@ -52,10 +53,13 @@ class ViewNameParser extends TemplateNameParser
 	 * @todo What if there's no request object?
 	 * @todo Notify the response of the chosen response type
 	 */
-	public function parse($reference)
+	public function parse($reference, $batch = false)
 	{
-		// Get the current HTTP request
-		$request = $this->_services['request'];
+		// No need to parse multiple times.
+		if($reference instanceof TemplateReference) {
+			return $reference;
+		}
+
 		$parsed  = $this->_parser->parse($reference);
 
 		// If it is relative and an absolute path was used previously, make the
@@ -77,6 +81,9 @@ class ViewNameParser extends TemplateNameParser
 		// Get the base file name from the reference parser
 		$baseFileName = $parsed->getFullPath('View');
 
+		// If parsing a batch, return an array of templates
+		$templates = array();
+
 		// Loop through each content type
 		foreach ($this->_formats as $format) {
 
@@ -85,9 +92,20 @@ class ViewNameParser extends TemplateNameParser
 				// Check if a view file exists for this format and this engine
 				$fileName = $baseFileName . '.' . $format . '.' . $engine;
 				if (file_exists($fileName)) {
-					return new TemplateReference($fileName, $engine);
+
+					$template = new TemplateReference($fileName, $engine);
+
+					if(!$batch) {
+						return $template;
+					}
+
+					$templates[$format] = $template;
 				}
 			}
+		}
+
+		if($templates) {
+			return $templates;
 		}
 
 		throw new NotAcceptableHttpException(sprintf(
