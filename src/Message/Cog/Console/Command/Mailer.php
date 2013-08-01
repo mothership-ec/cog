@@ -31,10 +31,10 @@ class Mailer extends Command
 	{
 		$mail = $this->get('mail.message');
 
-		$mail->setTo('joe@message.co.uk');
+		$mail->setTo('joe@message.co.uk', 'Joe Holdcroft');
 		$mail->setFrom('test@message.co.uk');
-		$mail->setView('UniformWares:CMS::PageType:home');
+		$mail->setView('UniformWares:CMS::Mail:sendmail');
 
-		print_r($mail);
+		print_r($mail->getBody());
 	}
 }
