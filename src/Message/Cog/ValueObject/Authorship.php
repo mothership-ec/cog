@@ -17,17 +17,11 @@ class Authorship
 
 	protected $_updatedAt;
 	protected $_updatedBy;
-	protected $_updatable;
+	protected $_updatable = true;
 
 	protected $_deletedAt;
 	protected $_deletedBy;
-	protected $_deletable;
-
-	public function __construct()
-	{
-		$this->setUpdatable(true);
-		$this->setDeletable(true);
-	}
+	protected $_deletable = true;
 
 	/**
 	 * Get the date & time of creation.
@@ -77,7 +71,7 @@ class Authorship
 	 */
 	private function setUpdatable($bool)
 	{
-		$this->_updatable = $bool;
+		$this->_updatable = (bool)$bool;
 
 		return $this;
 	}
@@ -96,6 +90,16 @@ class Authorship
 	public function disableUpdate()
 	{
 		return $this->setUpdatable(false);
+	}
+
+	/**
+	 * Check whether the model is updatable
+	 *
+	 * @return boolean True if the model can be updated
+	 */
+	public function isUpdatable()
+	{
+		return $this->_updatable;
 	}
 
 
@@ -137,7 +141,7 @@ class Authorship
 	 */
 	private function setDeletable($bool)
 	{
-		$this->_deletable = $bool;
+		$this->_deletable = (bool)$bool;
 
 		return $this;
 	}
@@ -156,6 +160,16 @@ class Authorship
 	public function disableDelete()
 	{
 		return $this->setDeletable(false);
+	}
+
+	/**
+	 * Check whether the model is deletable
+	 *
+	 * @return boolean True if the model can be deleted
+	 */
+	public function isDeletable()
+	{
+		return $this->_deletable;
 	}
 
 	/**
@@ -194,8 +208,8 @@ class Authorship
 	 */
 	public function update(DateTimeImmutable $datetime = null, $user = null)
 	{
-		if(!$this->_updatable) {
-			throw new \LogicException('Cannot set created metadata: updating is disabled');
+		if(!$this->isUpdatable()) {
+			throw new \LogicException('Cannot set updated metadata: updating is disabled');
 		}
 		$this->_updatedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_updatedBy = $user;
@@ -218,12 +232,12 @@ class Authorship
 	 */
 	public function delete(DateTimeImmutable $datetime = null, $user = null)
 	{
-		if (!is_null($this->_deletedAt)) {
-			throw new \LogicException('Cannot set deleted metadata: it has already been set');
+		if(!$this->isDeletable()) {
+			throw new \LogicException('Cannot set deleted metadata: deleting is disabled');
 		}
 
-		if(!$this->_deletable) {
-			throw new \LogicException('Cannot set created metadata: deleting is disabled');
+		if (!is_null($this->_deletedAt)) {
+			throw new \LogicException('Cannot set deleted metadata: it has already been set');
 		}
 
 		$this->_deletedAt = $datetime ?: new DateTimeImmutable('now');
@@ -245,14 +259,13 @@ class Authorship
 	 */
 	public function restore()
 	{
-		if (is_null($this->_deletedAt)) {
-			throw new \LogicException('Cannot restore an entity that has not been deleted');
-		}
-
-		if(!$this->_deletable) {
+		if(!$this->isDeletable()) {
 			throw new \LogicException('Cannot restore entity: deleting and restoring is disabled');
 		}
 
+		if (is_null($this->_deletedAt)) {
+			throw new \LogicException('Cannot restore an entity that has not been deleted');
+		}
 
 		$this->_deletedAt = null;
 		$this->_deletedBy = null;

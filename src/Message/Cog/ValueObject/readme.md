@@ -13,12 +13,16 @@ The following methods can be used to add this metadata:
 * `delete`
 
 If "created" metadata already exists, it cannot be set again. The same restriction exists for "deleted" metadata.
-Moreover you can disable and enable deleting and updating by calling these methods:
+Moreover you can disable and enable deleting and updating by calling:
 
 * `disableUpdate` and `enableUpdate`
 * `disableDelete` and `enableDelete`
 
 When deleting is disabled, restoring also isn't possible. Disabling update only affects the update-method, you will still be able to delete the entity.
+You can check whether updating and deleting is enabled by using:
+
+* `isUpdatable`
+* `isDeletable`
 
 
 The following methods should be used to access the metadata:

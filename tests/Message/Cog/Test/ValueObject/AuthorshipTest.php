@@ -71,6 +71,19 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($author, $authorship->updatedBy());
 	}
 
+	public function testIsUpdatable()
+	{
+		$authorship = new Authorship;
+
+		$this->assertTrue($authorship->isUpdatable());
+
+		$authorship->disableUpdate();
+		$this->assertFalse($authorship->isUpdatable());
+
+		$authorship->enableUpdate();
+		$this->assertTrue($authorship->isUpdatable());
+	}
+
 	public function testDeleteAndRestoreWhenUpdateDisabled()
 	{
 		$authorship = new Authorship;
@@ -118,7 +131,19 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$authorship->delete(new DateTimeImmutable('now'), 'Iris Schaffer');
 		$authorship->disableDelete();
 		$authorship->restore();
+	}
 
+	public function testIsDeletable()
+	{
+		$authorship = new Authorship;
+
+		$this->assertTrue($authorship->isDeletable());
+
+		$authorship->disableDelete();
+		$this->assertFalse($authorship->isDeletable());
+
+		$authorship->enableDelete();
+		$this->assertTrue($authorship->isDeletable());
 	}
 
 	public function testUpdating()
