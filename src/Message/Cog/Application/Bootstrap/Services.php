@@ -168,6 +168,7 @@ class Services implements ServicesInterface
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\PriceTwigExtension());
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
 			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
 			if ('live' !== $c['env']) {
