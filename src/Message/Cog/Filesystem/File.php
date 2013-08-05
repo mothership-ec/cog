@@ -5,11 +5,11 @@ namespace Message\Cog\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as BaseFile;
 
 /**
-* An extension of SplFileInfo that enables us to add our own customisations.
+* An extension of SplFileObject that enables us to add our own customisations.
 *
 * @author  James Moss <james@message.co.uk>
 */
-class File extends \SplFileInfo
+class File extends \SplFileObject
 {
 	const PUBLIC_DIR = 'public/';
 	const COG_PREFIX = 'cog';

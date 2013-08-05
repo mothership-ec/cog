@@ -4,7 +4,7 @@ namespace Message\Cog\Filesystem;
 
 /**
 * An iterator that injects Message\Cog\Filesystem\File into Symfony's finder component and replaces
-* SplFileInfo with our own class.
+* SplFileObject with our own class.
 *
 * @author  James Moss <james@message.co.uk>
 */

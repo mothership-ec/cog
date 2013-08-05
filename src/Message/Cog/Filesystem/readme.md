@@ -2,14 +2,14 @@
 
 This component provides four features for Cog:
 
-1. A `File` object which extends `SplFileInfo` and allows us to add our own custom methods and features.
+1. A `File` object which extends `SplFileObject` and allows us to add our own custom methods and features.
 2. A wrapper around Symfony's Finder component which makes finding files in the filesystem easier and ensures that instances of `File` are always returned.
 3. A wrapper around Symfony's Filesystem class which makes filesystem based operations testable.
 4. A StreamWrapper which allows us to map file paths such as `cog://images/bob.jpg` into real paths on a filesystem (such as `/var/www/example.org/public/images/bob.jpg`).
 
 ## `File` object
 
-This is currently a simple class which extends SplFileInfo.  The only additional method is `getChecksum()` which returns the MD5 hash of the file.
+This is currently a simple class which extends SplFileObject.  The only additional method is `getChecksum()` which returns the MD5 hash of the file.
 
 ## Finder wrapper
 
