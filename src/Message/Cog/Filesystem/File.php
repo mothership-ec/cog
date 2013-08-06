@@ -93,4 +93,50 @@ class File extends \SplFileObject
 	{
 		return $this->getBasename('.' . $this->getExtension());
 	}
+
+	/**
+	 * Replacement for PHP 5.4 $file->fputcsv().
+	 *
+	 * @param array $fields
+	 * @param string $delimiter
+	 * @param string $enclosure
+	 * @return bool
+	 */
+	public function fputcsv($fields, $delimiter = ',', $enclosure = '"')
+	{
+		// Check if the parent class has defined this function
+		if (method_exists(get_parent_class($this), __FUNCTION__))
+		{
+			return parent::fputcsv($fields, $delimiter, $enclosure);
+		}
+
+		array_walk($fields, function(&$value, $key, $enclosure) {
+			$value = $enclosure . $value . $enclosure;
+		}, $enclosure);
+
+		return $this->fwrite(utf8_encode(implode($delimiter, $fields)) . "\n");
+	}
+
+	/**
+	 * Read lines from the file.
+	 *
+	 * @param int $from
+	 * @param int $count
+	 */
+	public function read($from = 0, $count = null)
+	{
+		$contents = '';
+
+		$i = 0;
+		while (! $this->eof())
+		{
+			if ($i >= $from and ($count === null or $i <= $from + $count))
+			{
+				$contents .= $this->fgets();
+			}
+			$i++;
+		}
+
+		return $contents;
+	}
 }
