@@ -20,7 +20,7 @@ class Factory extends AssetFactory
         }
 
         foreach ($inputs as $key => $input) {
-        	$inputs[$key] = $this->_referenceParser->parse($input)->getFullPath('View');
+        	// $inputs[$key] = $this->_referenceParser->parse($input)->getFullPath('View');
         	$inputs[$key] = $this->_referenceParser->parse($input)->getFullPath();
         }
 

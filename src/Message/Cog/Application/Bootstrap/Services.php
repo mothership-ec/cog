@@ -535,6 +535,7 @@ class Services implements ServicesInterface
 			$manager = new \Assetic\FilterManager;
 
 			$manager->set('cssrewrite', new \Assetic\Filter\CssRewriteFilter);
+			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
 
 			return $manager;
 		});
