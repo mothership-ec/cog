@@ -121,13 +121,25 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
+
+			// Get available content types for request.
+			$request = $c['request'];
+			$formats = array();
+
+			$contentTypes = $request->getAllowedContentTypes();
+
+			foreach($contentTypes as $key => $mimeType) {
+				$formats[$key] = $request->getFormat($mimeType);
+			}
+
 			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
 				$c['reference_parser'],
 				array(
 					'twig',
 					'php',
-				)
+				),
+				$formats
 			);
 		});
 
@@ -146,17 +158,22 @@ class Services implements ServicesInterface
 			$twigEnvironment = new \Twig_Environment(
 				$c['templating.twig.loader'],
 				array(
-					'cache' => 'cog://tmp',
+					'cache'       => 'cog://tmp',
 					'auto_reload' => true,
+					'debug'       => 'live' !== $c['env'],
+
 				)
 			);
 
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\PriceTwigExtension());
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
 			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
-
+			if ('live' !== $c['env']) {
+				$twigEnvironment->addExtension(new \Twig_Extension_Debug);
+			}
 			$twigEnvironment->addGlobal('app', $c['templating.globals']);
 
 			return $twigEnvironment;
@@ -165,13 +182,7 @@ class Services implements ServicesInterface
 		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
 			$engine = new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
-				new \Symfony\Component\Templating\Loader\FilesystemLoader(
-					array(
-						$c['app.loader']->getBaseDir(),
-						__DIR__ . '/../../Form/Views/Php',
-						__DIR__ . '/../../Form/Views/Twig'
-					)
-				),
+				$c['templating.filesystem.loader'],
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
 					$c['templating.actions_helper'],
@@ -183,6 +194,15 @@ class Services implements ServicesInterface
 			$engine->addGlobal('app', $c['templating.globals']);
 
 			return $engine;
+		});
+
+		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(function($c) {
+			return new \Symfony\Component\Templating\Loader\FilesystemLoader(
+				array(
+					$c['app.loader']->getBaseDir(),
+					'cog://Message:Cog::Form:View:Php',
+				)
+			);
 		});
 
 		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
@@ -282,7 +302,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['task.collection'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Console\TaskCollection;
+			return new \Message\Cog\Console\Task\Collection;
 		});
 
 		// Functions
@@ -317,7 +337,8 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us" 	  => $baseDir.'tmp/$1',
+				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
+				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 			);
 
@@ -348,7 +369,6 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.handler'] = function($c) {
-
 			return new \Message\Cog\Form\Handler($c);
 		};
 
@@ -388,7 +408,7 @@ class Services implements ServicesInterface
 				new \Symfony\Component\Form\FormRenderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
 						$engine,
-						array('@form.php')
+						$c['form.templates.php']
 					),
 					null
 				)
@@ -399,13 +419,11 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.helper.twig'] = $serviceContainer->share(function($c) {
-
 			$formHelper = new \Message\Cog\Form\Template\Helper(
 				$c['form.renderer.twig']
 			);
 
 			return $formHelper;
-
 		});
 
 		$serviceContainer['form.renderer.twig'] = function($c) {
@@ -422,9 +440,14 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.templates.twig'] = function($c) {
 			return array(
-				'@form.twig:form_div_layout',
+				'Message:Cog:Form::Twig:form_div_layout',
 			);
+		};
 
+		$serviceContainer['form.templates.php'] = function($c) {
+			return array(
+				'Message:Cog:Form::Php',
+			);
 		};
 
 		$serviceContainer['form.twig_form_extension'] = function($c) {

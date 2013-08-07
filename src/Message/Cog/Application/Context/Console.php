@@ -3,7 +3,9 @@
 namespace Message\Cog\Application\Context;
 
 use Message\Cog\Service\ContainerInterface;
-use Message\Cog\Console\Factory;
+use Message\Cog\Console\CommandCollection;
+use Message\Cog\Console\Application;
+use Message\Cog\Console\Command;
 
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,24 +26,64 @@ class Console implements ContextInterface
 	 * initialise the console here.
 	 *
 	 * @param ContainerInterface $container The service container
+	 * @param array|null 		 $arguments Arguments to pass into the Console component
 	 *
 	 * @todo Change the environment earlier if possible. Can we make the context
 	 * run something before even Cog is bootstrapped?
 	 */
-	public function __construct(ContainerInterface $container)
+	public function __construct(ContainerInterface $container, array $arguments = null)
 	{
 		$this->_services = $container;
 
-		$console = Factory::create();
-		$this->_services['app.console'] = $this->_services->share(function() use ($console) {
-			return $console;
+		$this->_services['console.commands'] = $this->_services->share(function() {
+			return new CommandCollection(array(
+				new Command\EventList,
+				new Command\ModuleGenerate,
+				new Command\ModuleList,
+				new Command\RouteList,
+				new Command\RouteCollectionTree,
+				new Command\ServiceList,
+				new Command\Setup,
+				new Command\Status,
+				new Command\TaskGenerate,
+				new Command\TaskList,
+				new Command\TaskRun,
+				new Command\TaskRunScheduled,
+				new Command\AssetDump,
+			));
 		});
 
-		// Set the environment from the CLI option, if defined
-		$input = new ArgvInput(null, $console->getDefinition());
-		if($env = $input->getOption(Factory::ENV_OPT_NAME)) {
-			$this->_services['environment']->set(trim($env));
+		$this->_services['console.app'] = $this->_services->share(function($c) {
+			$app = new Application;
+			$app->setContainer($c);
+
+			$app->getDefinition()->addOption(
+				new InputOption('--' . $app::ENV_OPT_NAME, '', InputOption::VALUE_OPTIONAL, 'The Environment name.')
+			);
+
+			// Add the commands
+			foreach ($c['console.commands'] as $command) {
+				$app->add($command);
+			}
+
+			return $app;
+		});
+
+		if (null === $arguments) {
+			$arguments = $_SERVER['argv'];
 		}
+
+		$input = new ArgvInput($arguments);
+		if ($env = $input->getParameterOption(array('--env'), '')) {
+			$this->_services['environment']->set($env);
+		}
+
+		// Setup a fake request context
+		$this->_services['http.request.context'] = function($c) {
+			$context = new \Message\Cog\Routing\RequestContext;
+
+			return $context;
+		};
 	}
 
 	/**
@@ -54,7 +96,7 @@ class Console implements ContextInterface
 	 */
 	public function run()
 	{
-		$console = $this->_services['app.console'];
+		$console = $this->_services['console.app'];
 		$console->setName('Cog Console');
 		//$console->setVersion(1);
 		$console->run();

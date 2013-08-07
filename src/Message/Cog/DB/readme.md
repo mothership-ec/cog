@@ -11,25 +11,25 @@
 		'password' => 'cheese',
 		'db'	=> 'test',
 	));
-	
+
 ### Run a query
-	
+
 	$query = new DB\Query($connection);
-	
+
 	$result = $query->run("SELECT iso_code, name, population, gdp FROM countries");
-	
-	
+
+
 ### Work with the results
 
 Calling `DB\Query::run` returns an instance of the `DB\Result` class. This class is flexible; it's an object and has methods to get at result datasets but it can also be accessed and iterated over like an array:
 
 	var_dump($result->hash());
 	var_dump($result->transpose());
-	
+
 	foreach($result as $row) {
 		var_dump($row->iso_code, $row->name, $row->population, $row->gdp);
 	}
-	
+
 	var_dump($result[2]);
 	var_dump(count($result));
 
@@ -51,11 +51,11 @@ The `DB\Result` object has a few methods to make manipulating result data easier
 Notice how there's no `numRows()` method? Because the result acts like an array, instead you can do `count($result)`.
 
 
-	
+
 ### Transactions
 
 	$trans = new DB\Transaction($connection);
-	
+
 	$trans
 		->add("INSERT INTO products VALUES ('SRF002', 'Winter Scarf', 2.00)")
 		->add("SET @PROD_ID = LAST_INSERT_ID()")
@@ -64,12 +64,12 @@ Notice how there's no `numRows()` method? Because the result acts like an array,
 		->add("INSERT INTO gallery_image VALUES (@GALLERY_ID, ?s)", 'scarf.jpg')
 		->getID()
 	;
-	
+
 	$result = $trans->commit();
-	
+
 	var_dump($result->value()); // 6
 	var_dump($result->isFromTransaction()); // true
-	
+
 ## Query parameters
 
 For security and to prevent SQL inject attacks **developers must never directly insert variables into query strings**. The following example shows how to do things the bad way:
@@ -90,13 +90,14 @@ The `DB\Query` features a parameter parser which lets you specify placeholders i
 		WHERE
 			user_id = ?i
 	", $_GET['user_id']);
-	
+
 The `?i` indicates a placeholder that must be an integer. `$_GET['user_id']` is converted to an integer and the `?i` placeholder is replaced with it. There are a few different types you can cast to:
 
 - `?i` Integer
 - `?s` String (Strings are automatically wrapped with single quotes).
 - `?f` Float.
 - `?d` Datetime. Presumed to be an instance of the `DateTime` object. The unix timestamp representation will be used in the query. If you're dealing with SQL's `date time` fields you should instead treat it like a string.
+- `?b` Boolean
 
 All the placeholders can optionally have `n` added to the end e.g `?in` or `?sn`. The `n` stands for null. In this instance if the parameter passed in return `true` from the `is_null()` function then the placeholder will instead be replaced in the query as `NULL` rather being cast to the desired type.
 
@@ -127,14 +128,14 @@ You can also specify key names explicitly in your placeholders. This is useful i
 		'unit_stock' => 4,
 		'unit_price' => 69.99,
 	);
-	
+
 	$result = $query->run("
 		INSERT INTO
 			stock_snapshot (unit_id, stock_level)
 		VALUES
 			(:unit_id?i, :unit_stock?i)
 	", $data);
-	
+
 Key names can only contain a-z, A-Z, 0-9, _ and -.
 
 
@@ -182,13 +183,13 @@ For unit testing it's possible to create a connection that always returns a user
 			'forename' => 'Danny',
 			'surname' => 'Hannah',
 			'age'	=> 25,
-		),		
+		),
 	));
 	$query = new DB\Query($connection);
 	$result = $query->run("SELECT * FROM products");
-	
+
 	var_dump($result[1]->surname); // Holdcroft
-	
+
 It's also possible to set a series of arrays to be returned for each subsequent query:
 
 	$connection = new DB\Adapter\Faux\Connection;
@@ -201,7 +202,7 @@ It's also possible to set a series of arrays to be returned for each subsequent 
 			array(
 				'id' => 6,
 				'title' => 'Heading 3',
-			),		
+			),
 		),
 		array(
 			array(
@@ -216,16 +217,16 @@ It's also possible to set a series of arrays to be returned for each subsequent 
 			array(
 				'created_at' => 10734222683,
 			),
-		),	
+		),
 	));
 	$query = new DB\Query($connection);
-	
+
 	$result = $query->run("SELECT * FROM page");
 	var_dump(count($result)); // 2
-	
+
 	$result = $query->run("SELECT * FROM blog");
 	var_dump(count($result)); // 4
-	
+
 Often, you will want to return specific data for a certain query. You can use the `setPattern` method to only return data for queries which match a regular expression
 
 	$connection = new DB\Adapter\Faux\Connection;
@@ -238,13 +239,13 @@ Often, you will want to return specific data for a certain query. You can use th
 		),
 	));
 	$query = new DB\Query($connection);
-	
+
 	$result = $query->run("SELECT * FROM product WHERE product.id = 11");
 	var_dump($result[0]->title); // Socks
-	
+
 	$result = $query->run("SELECT * FROM product WHERE product.id = 13");
 	var_dump($result); // false
-	
+
 Using array literals works fine when you only have a few rows to return but when using large datasets it soons become unwieldy. Instead, you can use the `ConnectionCsv` class to load data from csv files. Instead of passing arrays to the `setSequence`, `setResult` and `setPattern` methods, you instead pass the file path to a CSV file. Something important to note is that **the first row in the CSV must always contain the column headings**, these will be turned into the keys used for the resulting data rows.
 
 	$connection = new DB\Adapter\Faux\ConnectionCsv;
@@ -252,7 +253,7 @@ Using array literals works fine when you only have a few rows to return but when
 	$query = new DB\Query($connection);
 	$result = $query->run("SELECT * FROM staff");
 	var_dump($result[1]->surname); // Freeman
-	
+
 You can use a series of CSV files with `setSequence` too
 
 	$connection = new DB\Adapter\Faux\ConnectionCsv;
