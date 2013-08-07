@@ -19,11 +19,11 @@ class Services implements ServicesInterface
 			}
 
 			if(extension_loaded('gmagick')) {
-				return new \Imagine\Gmagick\Imagine(); 
+				return new \Imagine\Gmagick\Imagine();
 			}
 
 			if(extension_loaded('gd')) {
-				return new \Imagine\Gd\Imagine(); 
+				return new \Imagine\Gd\Imagine();
 			}
 
 			throw new \Exception('No image processing libraries available for Imagine.');
@@ -40,5 +40,18 @@ class Services implements ServicesInterface
 
 			return $resize;
 		});
+
+
+		$container['templating.engine.php'] = $container->share($container->extend('templating.engine.php', function($c) {
+			$c['templating.engine.php']->addHelpers(array(
+				new Templating\PhpHelper($c['image.resize'])
+			));
+		}));
+
+		$container['templating.twig.environment'] = $container->share($container->extend('templating.twig.environment', function($c) {
+			$c['templating.engine.php']->addExtension(
+				new Templating\TwigExtension($c['image.resize'])
+			);
+		}));
 	}
 }
