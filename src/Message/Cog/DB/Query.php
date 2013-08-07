@@ -21,6 +21,7 @@ class Query implements QueryableInterface
 		'i'	=> 'integer',
 		'f' => 'float',
 		'd'	=> 'datetime',
+		'b'	=> 'boolean',
 	);
 
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)\??([a-z]*)?)|(\?([a-z]*))/us';
@@ -164,6 +165,10 @@ class Query implements QueryableInterface
 		// See: http://stackoverflow.com/questions/2030684/which-mysql-data-types-should-i-not-be-quoting-during-an-insert"
 		if ($type == 's' || $type == 'f') {
 			$safe = "'".$safe."'";
+		}
+
+		if ('b' === $type) {
+			$safe = $value ? 1 : 0;
 		}
 
 		return $safe;

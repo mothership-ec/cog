@@ -6,37 +6,36 @@ Due to the complexity of the Symfony Form component, and the fact that many of t
 
 ## Building a form
 
-To a build a form, we must first call the form handler from the service container in your controller, defining how you want to render it:
+To a build a form, we must first call the form handler from the service container in your controller:
 
-	$handler = $this->_services['form.handler.php']; // call this to render in php
-	$handler = $this->_services['form.handler.twig']; // call this to render in twig
+	$form = $this->_services['form'];
 
-We can now add our fields using the same syntax as Symfony Form, only on the handler instead of directly on the form:
+We can now add our fields using the similar syntax to Symfony Form, except with the label as the third parameter, and the array of options as the forth:
 
-	$handler->add('name', 'text');
+	$form->add('name', 'text', 'Name', array());
 
 Calling the `add()` method automatically adds the field to both the form and the validator, and all fields are required by default. To add further validation, call the `val()` method to call the Validator instance and add more rules:
 
-	$handler->add('name', 'text')
+	$form->add('name', 'text')
 		->val() // call validator
 		->capitalize(); // capitalize first letter of each word
-	$handler->add('email', 'text')
+	$form->add('email', 'text')
 		->val() // call validator
 		->optional() // set field to not required
 		->email(); // check that input is a valid email address
-	$handler->add('url', 'text')
+	$form->add('url', 'text')
 		->val() // call validator
 		->optional() // set field to optional
 		->toUrl(); // append 'http://' protocol if not already set
 
 Once we have added all the fields to our form, we can get the completed form using the `getForm()` method:
 
-	$form = $handler->getForm();
+	$form = $form->getForm();
 
 You can check that the form has been submitted using the `isPost()` method, and then return it using the `getData()` method like so:
 
-	if ($handler->isPost()) {
-		return $handler->getData();
+	if ($form->isPost()) {
+		return $form->getData();
 	}
 
 This will bind the data to the form and then return it in an associative array, for instance, a valid form would return something like:
@@ -52,7 +51,7 @@ This will bind the data to the form and then return it in an associative array, 
 To validate the form, call the `isValid()` method on the handler:
 
 	// returns boolean
-	$handler->isValid();
+	$form->isValid();
 
 This will return a boolean determining whether or not the form is valid. It will also add any error messages to the flash bag, unless you give it a parameter of false.
 
@@ -78,7 +77,7 @@ The best practice for validating the form is to include both the definition of t
 
 The form component makes use of Symfony's CSRF extension. These can be customised on a form to form basis in the options of a field. This is the third parameter when creating a new field, e.g.
 
-	$handler->add(
+	$form->add(
 		'name',
 		'text',
 		array(

@@ -121,13 +121,25 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
+
+			// Get available content types for request.
+			$request = $c['request'];
+			$formats = array();
+
+			$contentTypes = $request->getAllowedContentTypes();
+
+			foreach($contentTypes as $key => $mimeType) {
+				$formats[$key] = $request->getFormat($mimeType);
+			}
+
 			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
 				$c['reference_parser'],
 				array(
 					'twig',
 					'php',
-				)
+				),
+				$formats
 			);
 		});
 
@@ -158,6 +170,7 @@ class Services implements ServicesInterface
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\PriceTwigExtension());
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
 			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
 			if ('live' !== $c['env']) {

@@ -413,10 +413,11 @@
 				{% set translated = key|trans %}
 				{% if key != translated %}
 				<p>{{ translated|raw }}</p>
+				<a href="#{{ id }}_long_help" data-show>{{ 'See more'|trans }}</a>
 				{% endif %}
 				{% endfor %}
 			</div>
-			<div class="long">
+			<div class="long" id="{{ id }}_long_help">
 				{% for key in attr['data-help-key']|split(':') %}
 					{% set key        = key ~ '.long' %}
 					{% set translated = key|trans %}

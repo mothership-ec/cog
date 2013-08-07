@@ -74,6 +74,12 @@ class Compiler
 				), null, $e);
 			}
 
+			// Yaml::parse returns null if the file has nothing to parse in it
+			// (e.g. empty file or just comments etc.)
+			if(is_null($parsed)) {
+				continue;
+			}
+
 			if (!is_array($parsed)) {
 				throw new Exception(sprintf(
 					'Cannot compile configuration: parsed result was not an array for YAML `%s`',

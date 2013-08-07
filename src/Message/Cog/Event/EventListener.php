@@ -21,4 +21,9 @@ abstract class EventListener implements ContainerAwareInterface
 	{
 		$this->_services = $services;
 	}
+
+	public function get($service)
+	{
+		return $this->_services[$service];
+	}
 }

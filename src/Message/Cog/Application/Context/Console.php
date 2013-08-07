@@ -3,7 +3,9 @@
 namespace Message\Cog\Application\Context;
 
 use Message\Cog\Service\ContainerInterface;
-use Message\Cog\Console\Factory;
+use Message\Cog\Console\CommandCollection;
+use Message\Cog\Console\Application;
+use Message\Cog\Console\Command;
 
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,17 +35,46 @@ class Console implements ContextInterface
 	{
 		$this->_services = $container;
 
-		$console = Factory::create($container);
-		$this->_services['app.console'] = $this->_services->share(function() use ($console) {
-			return $console;
+		$this->_services['console.commands'] = $this->_services->share(function() {
+			return new CommandCollection(array(
+				new Command\EventList,
+				new Command\ModuleGenerate,
+				new Command\ModuleList,
+				new Command\RouteList,
+				new Command\RouteCollectionTree,
+				new Command\ServiceList,
+				new Command\Setup,
+				new Command\Status,
+				new Command\TaskGenerate,
+				new Command\TaskList,
+				new Command\TaskRun,
+				new Command\TaskRunScheduled,
+				new Command\AssetDump,
+			));
 		});
 
-		if(null === $arguments) {
+		$this->_services['console.app'] = $this->_services->share(function($c) {
+			$app = new Application;
+			$app->setContainer($c);
+
+			$app->getDefinition()->addOption(
+				new InputOption('--' . $app::ENV_OPT_NAME, '', InputOption::VALUE_OPTIONAL, 'The Environment name.')
+			);
+
+			// Add the commands
+			foreach ($c['console.commands'] as $command) {
+				$app->add($command);
+			}
+
+			return $app;
+		});
+
+		if (null === $arguments) {
 			$arguments = $_SERVER['argv'];
 		}
 
 		$input = new ArgvInput($arguments);
-		if($env   = $input->getParameterOption(array('--env'), '')) {
+		if ($env = $input->getParameterOption(array('--env'), '')) {
 			$this->_services['environment']->set($env);
 		}
 
@@ -65,7 +96,7 @@ class Console implements ContextInterface
 	 */
 	public function run()
 	{
-		$console = $this->_services['app.console'];
+		$console = $this->_services['console.app'];
 		$console->setName('Cog Console');
 		//$console->setVersion(1);
 		$console->run();
