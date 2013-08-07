@@ -2,6 +2,8 @@
 
 namespace Message\Cog\ImageResize\Bootstrap;
 
+use Message\Cog\ImageResize\Templating;
+
 use Message\Cog\ImageResize\Resize\TwigExtension;
 
 use Message\Cog\Bootstrap\ServicesInterface;
@@ -42,16 +44,18 @@ class Services implements ServicesInterface
 		});
 
 
-		$container['templating.engine.php'] = $container->share($container->extend('templating.engine.php', function($c) {
-			$c['templating.engine.php']->addHelpers(array(
+		$container['templating.engine.php'] = $container->share($container->extend('templating.engine.php', function($engine, $c) {
+			$engine->addHelpers(array(
 				new Templating\PhpHelper($c['image.resize'])
 			));
+			return $engine;
 		}));
 
-		$container['templating.twig.environment'] = $container->share($container->extend('templating.twig.environment', function($c) {
-			$c['templating.engine.php']->addExtension(
+		$container['templating.twig.environment'] = $container->share($container->extend('templating.twig.environment', function($twig, $c) {
+			$twig->addExtension(
 				new Templating\TwigExtension($c['image.resize'])
 			);
+			return $twig;
 		}));
 	}
 }
