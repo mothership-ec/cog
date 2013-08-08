@@ -27,6 +27,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			),
 			KernelEvents::REQUEST => array(
 				array('checkCsrf', 500),
+				array('removeTrailingSlash'),
 			),
 		);
 	}
@@ -76,6 +77,33 @@ class EventListener extends BaseListener implements SubscriberInterface
 			if($attributes->get($csrfKey) !== $calculatedHash) {
 				throw new AccessDeniedHttpException('CSRF is invalid.');
 			}
+		}
+	}
+
+	public function removeTrailingSlash(GetResponseEvent $event)
+	{
+		$request = $event->getRequest();
+
+		// Get the uri path without the query string
+		$path = $request->getPathInfo();
+
+		// Don't do anything if on the root path
+		if ($path == '/') return;
+
+		// Check the path for a trailing slash
+		$trailing = ('/' == substr($path, -1)) ? true : false;
+
+		if ($trailing) {
+			// Build the new url, does not use the $request->getUri() method for easier trimming without
+			// affecting the query string.
+			if (null !== $qs = $request->getQueryString()) {
+	            $qs = '?'.$qs;
+	        }
+			$url = $request->getSchemeAndHttpHost() . $request->getBaseUrl() . rtrim($path, '/') . $qs;
+
+			// Redirect the request
+			header('Location: ' . $url); // this is a bit hacky
+			exit;
 		}
 	}
 }
