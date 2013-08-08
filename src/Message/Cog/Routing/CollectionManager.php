@@ -203,6 +203,10 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 			$this->_collections[$parent]->getRouteCollection()->addCollection($symfonyCollection);
 		}
 
+		uasort($baseCollections, function($a, $b) {
+			return $b->getPriority() - $a->getPriority();
+		});
+
 		// Create an empty route collection, all the others get added to this.
 		$root           = new RouteCollection($this->_referenceParser);
 		$rootCollection = $root->getRouteCollection();
