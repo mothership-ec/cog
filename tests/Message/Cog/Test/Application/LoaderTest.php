@@ -63,7 +63,7 @@ namespace Message\Cog\Test\Application {
 			$this->_autoloader = $this->getMock('Composer\Autoload\ClassLoader');
 
 			$loader = $this->getMockForAbstractClass(
-				'Message\Cog\Application\Loader',
+				'Message\\Cog\\Application\\Loader',
 				array($this->_autoloader, $baseDir),
 				'',
 				true,
@@ -266,7 +266,7 @@ namespace Message\Cog\Test\Application {
 			$this->assertEquals($loader, $container['app.loader']);
 			$this->assertTrue($container->isShared('app.loader'));
 
-			$this->assertInstanceOf('Message\Cog\Bootstrap\LoaderInterface', $container['bootstrap.loader']);
+			$this->assertInstanceOf('Message\\Cog\\Bootstrap\\LoaderInterface', $container['bootstrap.loader']);
 		}
 
 		public function testLoadModules()
@@ -313,7 +313,7 @@ namespace Message\Cog\Test\Application {
 			// Force the context to change
 			$container['environment']->setContext('web');
 
-			$contextMock = $this->getMock('Message\Cog\Test\Application\Context\FauxContext');
+			$contextMock = $this->getMock('Message\\Cog\\Test\\Application\\Context\\FauxContext');
 
 			$contextMock
 				->expects($this->exactly(1))
@@ -330,7 +330,7 @@ namespace Message\Cog\Test\Application {
 			$this->assertEquals($contextReturnVal, $returnVal);
 
 			// Assert 'terminate' event fired
-			$this->assertInstanceOf('Message\Cog\Event\Event', $dispatcher->getDispatchedEvent('terminate'));
+			$this->assertInstanceOf('Message\\Cog\\Event\\Event', $dispatcher->getDispatchedEvent('terminate'));
 		}
 
 		public function testChainability()

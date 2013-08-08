@@ -9,7 +9,7 @@ use Message\Cog\DB\Adapter\ConnectionInterface;
 *
 * Responsible for turning SQL queries into Result datasets.
 */
-class Query
+class Query implements QueryableInterface
 {
 	protected $_connection;
 	protected $_params;
@@ -21,6 +21,7 @@ class Query
 		'i'	=> 'integer',
 		'f' => 'float',
 		'd'	=> 'datetime',
+		'b'	=> 'boolean',
 	);
 
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)\??([a-z]*)?)|(\?([a-z]*))/us';
@@ -154,14 +155,20 @@ class Query
 		if ($type == 'd') {
 		    $safe = (int) $value;
 		} else {
-			// sanitize
-			settype($value, $this->_typeTokens[$type]);
+			// Don't cast type if type is integer and value starts with @ (as it is an ID variable)
+			if (!('i' === $type && '@' === substr($value, 0, 1))) {
+				settype($value, $this->_typeTokens[$type]);
+			}
 			$safe = $this->_connection->escape($value);
 		}
 		// Floats are quotes to support all locales.
 		// See: http://stackoverflow.com/questions/2030684/which-mysql-data-types-should-i-not-be-quoting-during-an-insert"
-		if($type == 's' || $type == 'f') {
+		if ($type == 's' || $type == 'f') {
 			$safe = "'".$safe."'";
+		}
+
+		if ('b' === $type) {
+			$safe = $value ? 1 : 0;
 		}
 
 		return $safe;

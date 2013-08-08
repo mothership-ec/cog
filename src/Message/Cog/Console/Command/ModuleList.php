@@ -2,13 +2,9 @@
 
 namespace Message\Cog\Console\Command;
 
-use Message\Cog\Console\TableFormatter;
-use Message\Cog\Service\Container as ServiceContainer;
+use Message\Cog\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -29,14 +25,17 @@ class ModuleList extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$modules = (array) ServiceContainer::get('config')->modules;
+		$modules = $this->get('module.loader')->getModules();
 
 		$output->writeln('<info>Found ' . count($modules) . ' registered modules.</info>');
 
-		$table = new TableFormatter(array('Name'));
+		$table = $this->getHelperSet()->get('table')
+			->setHeaders(array('Name'));
+
 		foreach($modules as $module) {
 			$table->addRow(array($module));
 		}
-		$table->write($output);
+
+		$table->render($output);
 	}
 }

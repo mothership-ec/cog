@@ -18,9 +18,10 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 		$this->_container = new FauxContainer;
 	}
 
-	public function setUpContextClass()
+	public function setUpContextClass($args = null)
 	{
-		$this->_context = new Console($this->_container);
+		//var_dump(__CLASS__, $_SERVER['argv']);
+		$this->_context = new Console($this->_container, $args);
 
 		$this->_container['app.console']->setAutoExit(false);
 		$this->_container['app.console']->add(new Foo1Command);
@@ -47,9 +48,7 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 			return $c['environment']->get();
 		};
 
-		$_SERVER['argv'][] = $option;
-
-		$this->setUpContextClass();
+		$this->setUpContextClass(array_merge(array('/usr/bin/php', 'foo:bar1'), $option));
 
 		$this->assertEquals($expectedEnvironment, $this->_container['environment']->get());
 		$this->assertEquals($expectedEnvironment, $this->_container['env']);
@@ -121,21 +120,11 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 	public function getEnvironmentOptions()
 	{
 		return array(
-			array('-e live', 'live'),
-			array('-elive', 'live'),
-			array('--env=live', 'live'),
-			array('-e test', 'test'),
-			array('-etest', 'test'),
-			array('--env=test', 'test'),
-			array('-e dev', 'dev'),
-			array('-edev', 'dev'),
-			array('--env=dev', 'dev'),
-			array('-e staging', 'staging'),
-			array('-estaging', 'staging'),
-			array('--env=staging', 'staging'),
-			array('-e local', 'local'),
-			array('-elocal', 'local'),
-			array('--env=local', 'local'),
+			array(array('--env=live'), 		'live'),
+			array(array('--env=test'), 		'test'),
+			array(array('--env=dev'), 		'dev'),
+			array(array('--env=staging'), 	'staging'),
+			array(array('--env=local'), 	'local'),
 		);
 	}
 }

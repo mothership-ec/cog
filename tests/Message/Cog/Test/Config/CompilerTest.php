@@ -59,6 +59,25 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @dataProvider getValidButEmptyYAML
+	 */
+	public function testCompilingValidButEmptyYAML($data) 
+	{
+		$validYAML = 'test: true';
+
+		$compiler = new Compiler;
+		$controlCompiler = new Compiler;
+
+		$compiler->add($data);
+		$compiler->add($validYAML);
+
+		$controlCompiler->add($validYAML);
+
+		$this->assertEquals($compiler->compile(), $controlCompiler->compile());
+		
+	}
+
+	/**
 	 * @dataProvider getValidYAMLButNotArray
 	 *
 	 * @expectedException        Message\Cog\Config\Exception
@@ -92,9 +111,22 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
 	{
 		return array(
 			array('this 	S IS N*%^$^%£@$&%^*$£OT YAML'),
-			array(false),
-			array(null),
+			array(true),
+			array('false'),
 			array('iamyaml'),
+		);
+	}
+
+	static public function getValidButEmptyYAML()
+	{
+		return array(
+			array(''),
+			array('   '),
+			array(null),
+			array(false),
+			array('# just a comment'),
+			array('
+'),
 		);
 	}
 
