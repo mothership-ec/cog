@@ -37,6 +37,13 @@ class Route extends \Symfony\Component\Routing\Route
 		return $this->setDefault('_format', $format);
 	}
 
+	public function setPath($pattern)
+	{
+		// Remove trailing slash from route
+		parent::setPath(rtrim($pattern, '/'));
+		return $this;
+	}
+
 	/**
 	 * Enables CSRF protection for this route. When enabled a hash must be passed
 	 * in as one of the parameters in the URL.
