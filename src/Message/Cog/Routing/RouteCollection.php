@@ -44,11 +44,16 @@ class RouteCollection
 	 */
 	public function add($name, $url, $controller)
 	{
-		$reference = $this->_referenceParser->parse($controller);
-		$defaults  = array(
-			'_controller'      => $reference->getSymfonyLogicalControllerName(),
+		if (!is_callable($controller)) {
+			$reference  = $this->_referenceParser->parse($controller);
+			$controller = $reference->getSymfonyLogicalControllerName();
+		}
+
+		$defaults = array(
+			'_controller' => $controller,
 		);
-		$route     = new Route($url, $defaults);
+		
+		$route = new Route($url, $defaults);
 
 		$this->_collection->add($name, $route);
 
