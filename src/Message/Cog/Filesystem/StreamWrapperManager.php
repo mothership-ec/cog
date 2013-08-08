@@ -100,6 +100,7 @@ class StreamWrapperManager
 		}
 
 		$handler = call_user_func(static::$handlers[$prefix]);
+		$handler->prefix = $prefix;
 		
 		if(!($handler instanceof StreamWrapperInterface)) {
 			throw new \LogicException(sprintf('StreamWrapper for `%s` must implement StreamWrapperInterface', $prefix));
