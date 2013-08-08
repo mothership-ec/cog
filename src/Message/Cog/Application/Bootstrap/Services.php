@@ -150,7 +150,9 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.twig.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']);
+			return new \Message\Cog\Templating\TwigFilesystemLoader(array(
+				'/'
+			), $c['templating.view_name_parser']);
 		});
 
 		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
@@ -530,16 +532,25 @@ class Services implements ServicesInterface
 			return $manager;
 		});
 
+		$serviceContainer['asset.filters'] = $serviceContainer->share(function($c) {
+			$manager = new \Assetic\FilterManager;
+			
+			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
+
+			return $manager;
+		});
+
 		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
-			$factory = new \Message\Cog\AssetManagement\Factory($c['app.loader']->getBaseDir());
+			$factory = new \Message\Cog\AssetManagement\Factory('cog://public/');
 
 			$factory->setReferenceParser($c['reference_parser']);
+			$factory->setFilterManager($c['asset.filters']);
 
 			return $factory;
 		});
 
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
-			return new \Assetic\AssetWriter('cog://public');
+			return new \Assetic\AssetWriter('cog://public/');
 		});
 	}
 }
