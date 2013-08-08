@@ -11,7 +11,7 @@ class Exception extends Controller
 {
 	public function viewException($exception)
 	{
-		return $this->render('Message:Cog:Debug::exception', array(
+		return $this->render('Message:Cog::Debug:exception', array(
 			'exception'   => $exception,
 			'statusTexts' => Response::$statusTexts,
 		));
@@ -38,7 +38,7 @@ class Exception extends Controller
 			}
 		}
 
-		return $this->render('Message:Cog:Debug::file_peek', array(
+		return $this->render('Message:Cog::Debug:file_peek', array(
 			'lines'     => $lines,
 			'startLine' => $startLine + 1,
 			'highlight' => $line,
