@@ -441,13 +441,13 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.templates.twig'] = function($c) {
 			return array(
-				'Message:Cog:Form::Twig:form_div_layout',
+				'Message:Cog::form:twig:form_div_layout',
 			);
 		};
 
 		$serviceContainer['form.templates.php'] = function($c) {
 			return array(
-				'Message:Cog:Form::Php',
+				'Message:Cog::form:php',
 			);
 		};
 
