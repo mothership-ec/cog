@@ -19,11 +19,19 @@ class Factory extends AssetFactory
             $inputs = array($inputs);
         }
 
+        list($cog, $resource) = explode('::', str_replace('@', '', $inputs[0]));
+
         foreach ($inputs as $key => $input) {
-        	// $inputs[$key] = $this->_referenceParser->parse($input)->getFullPath('View');
         	$inputs[$key] = $this->_referenceParser->parse($input)->getFullPath();
         }
 
-        return parent::createAsset($inputs, $filters, $options);
+        $collection = parent::createAsset($inputs, $filters, $options);
+
+        // Store the cog namespace against each asset for use in the cogule filter
+        foreach ($collection as $asset) {
+            $asset->cogNamespace = $cog;
+        }
+
+        return $collection;
     }
 }
