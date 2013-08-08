@@ -533,8 +533,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['asset.filters'] = $serviceContainer->share(function($c) {
 			$manager = new \Assetic\FilterManager;
-
-			$manager->set('cssrewrite', new \Assetic\Filter\CssRewriteFilter);
+			
 			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
 
 			return $manager;

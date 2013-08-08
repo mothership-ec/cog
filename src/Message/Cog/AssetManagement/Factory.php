@@ -19,17 +19,24 @@ class Factory extends AssetFactory
             $inputs = array($inputs);
         }
 
-        list($cog, $resource) = explode('::', str_replace('@', '', $inputs[0]));
+        $namespaces = array();
 
         foreach ($inputs as $key => $input) {
-        	$inputs[$key] = $this->_referenceParser->parse($input)->getFullPath();
+            // Parse the input
+            $parsed = $this->_referenceParser->parse($input);
+
+            // Update the input to the real full path
+        	$inputs[$key] = $parsed->getFullPath();
+
+            // Get the module name
+            $namespaces[$inputs[$key]] = str_replace('\\', ':', $parsed->getModuleName());
         }
 
         $collection = parent::createAsset($inputs, $filters, $options);
 
         // Store the cog namespace against each asset for use in the cogule filter
         foreach ($collection as $asset) {
-            $asset->cogNamespace = $cog;
+            $asset->cogNamespace = $namespaces[$asset->getSourceRoot() . '/' .$asset->getSourcePath()];
         }
 
         return $collection;
