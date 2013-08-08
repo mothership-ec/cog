@@ -2,6 +2,7 @@
 
 namespace Message\Cog\Routing;
 
+use Message\Cog\HTTP\RedirectResponse;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
@@ -99,11 +100,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 			if (null !== $qs = $request->getQueryString()) {
 	            $qs = '?'.$qs;
 	        }
-			$url = $request->getSchemeAndHttpHost() . $request->getBaseUrl() . rtrim($path, '/') . $qs;
+			$uri = rtrim($path, '/') . $qs;
 
 			// Redirect the request
-			header('Location: ' . $url); // this is a bit hacky
-			exit;
+			$event->setResponse(new RedirectResponse($uri, 301));
 		}
 	}
 }
