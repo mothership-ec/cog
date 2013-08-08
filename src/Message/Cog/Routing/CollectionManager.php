@@ -155,6 +155,11 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 
 		$baseCollections = array();
 		foreach($collections as $name => $collection) {
+			/*
+			* @TODO Due to the sorted of deep nested routes first, the CMS modules are no longer
+			* checked last, so we either need to handle CMS routes differently or determine a way
+			* so that they are always bottom of the route collection.
+			*/
 
 			// Save the parent route collection names onto the routes.
 			$this->_saveCollectionNameToRoutes($collection->getRouteCollection(), $hierarchy[$name]);
@@ -186,24 +191,15 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 				));
 			}
 
-
 			// Get prefix we want to use and the collection we need to add to
-			$prefix    = $collection->getPrefix();
-			$topParent = $parent;
-
-			while ($topParent) {
-				$parentCollection = $this->_collections[$topParent];
-
-				$prefix    = $parentCollection->getPrefix() . $prefix;
-				$topParent = $parentCollection->getParent();
-			}
-
+			$prefix           = $collection->getPrefix();
 			$parentCollection = $this->_collections[$parent]->getRouteCollection();
 
 			$symfonyCollection = $collection->getRouteCollection();
 			$symfonyCollection->addPrefix($prefix);
 
 			// Add it to Symfony's underlying RouteCollection
+			$parentCollection->addCollection($symfonyCollection);
 			$this->_collections[$parent]->getRouteCollection()->addCollection($symfonyCollection);
 		}
 
