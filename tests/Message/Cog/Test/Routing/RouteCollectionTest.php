@@ -71,5 +71,32 @@ class RouteCollectionTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('\\Message\\Cog\\Routing\\RouteCollection', $result);
 		$this->assertSame($this->collection->getParent(), 'orders');
 	}
+
+	public function testGettingSettingPriority()
+	{
+		$this->assertEquals($this->collection->getPriority(), \Message\Cog\Routing\RouteCollection::DEFAULT_PRIORITY);
+		$this->collection->setPriority(100);
+		$this->assertEquals($this->collection->getPriority(), 100);
+	}
+
+	/**
+	 * @expectedException \Exception
+	 * @expectedExceptionMessage cannot set a priority on a nested RouteCollection
+	 */
+	public function testSettingPriorityOnChildRouteCollection()
+	{
+		$this->collection->setParent('orders');
+		$this->collection->setPriority(100);
+	}
+
+	/**
+	 * @expectedException \Exception
+	 * @expectedExceptionMessage cannot have a priority
+	 */
+	public function testGettingPriorityOnChildRouteCollection()
+	{
+		$this->collection->setParent('orders');
+		$this->collection->getPriority();
+	}
 	
 }
