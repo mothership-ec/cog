@@ -155,12 +155,6 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 
 		$baseCollections = array();
 		foreach($collections as $name => $collection) {
-			/*
-			* @TODO Due to the sorted of deep nested routes first, the CMS modules are no longer
-			* checked last, so we either need to handle CMS routes differently or determine a way
-			* so that they are always bottom of the route collection.
-			*/
-
 			// Save the parent route collection names onto the routes.
 			$this->_saveCollectionNameToRoutes($collection->getRouteCollection(), $hierarchy[$name]);
 
@@ -203,6 +197,7 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 			$this->_collections[$parent]->getRouteCollection()->addCollection($symfonyCollection);
 		}
 
+		// sort all base collections according to their priority
 		uasort($baseCollections, function($a, $b) {
 			return $b->getPriority() - $a->getPriority();
 		});
