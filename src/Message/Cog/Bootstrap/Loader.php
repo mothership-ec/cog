@@ -119,6 +119,13 @@ class Loader implements LoaderInterface
 			}
 		}
 
+		// Register fallback routes
+		foreach ($this->_bootstraps as $bootstrap) {
+			if ($bootstrap instanceof FallbackRoutesInterface) {
+				$bootstrap->registerFallbackRoutes($this->_services['routes']);
+			}
+		}
+
 		// Register events and tasks last
 		foreach ($this->_bootstraps as $bootstrap) {
 			if ($bootstrap instanceof EventsInterface) {
@@ -137,6 +144,27 @@ class Loader implements LoaderInterface
 		// Clear the bootstrap list
 		$this->clear();
 	}
+
+	public function loadServices()
+	{
+
+	}
+
+	public function loadRoutes()
+	{
+
+	}
+
+	public function loadFallbackRoutes()
+	{
+
+	}
+
+	public function loadTasks()
+	{
+
+	}
+
 
 	/**
 	 * Get all bootstraps registered on this loader.
