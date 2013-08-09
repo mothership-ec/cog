@@ -121,7 +121,6 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
-
 			// Get available content types for request.
 			$request = $c['request'];
 			$formats = array();
@@ -151,7 +150,9 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.twig.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']);
+			return new \Message\Cog\Templating\TwigFilesystemLoader(array(
+				'/'
+			), $c['templating.view_name_parser']);
 		});
 
 		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
@@ -340,6 +341,7 @@ class Services implements ServicesInterface
 				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
 				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
+				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
 			);
 
 			return $mapping;
@@ -440,13 +442,13 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.templates.twig'] = function($c) {
 			return array(
-				'Message:Cog:Form::Twig:form_div_layout',
+				'Message:Cog::form:twig:form_div_layout',
 			);
 		};
 
 		$serviceContainer['form.templates.php'] = function($c) {
 			return array(
-				'Message:Cog:Form::Php',
+				'Message:Cog::form:php',
 			);
 		};
 
@@ -530,16 +532,25 @@ class Services implements ServicesInterface
 			return $manager;
 		});
 
+		$serviceContainer['asset.filters'] = $serviceContainer->share(function($c) {
+			$manager = new \Assetic\FilterManager;
+			
+			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
+
+			return $manager;
+		});
+
 		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
-			$factory = new \Message\Cog\AssetManagement\Factory($c['app.loader']->getBaseDir());
+			$factory = new \Message\Cog\AssetManagement\Factory('cog://public/');
 
 			$factory->setReferenceParser($c['reference_parser']);
+			$factory->setFilterManager($c['asset.filters']);
 
 			return $factory;
 		});
 
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
-			return new \Assetic\AssetWriter('cog://public');
+			return new \Assetic\AssetWriter('cog://public/');
 		});
 	}
 }

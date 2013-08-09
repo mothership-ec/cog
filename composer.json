@@ -39,7 +39,7 @@
 		"symfony/twig-bridge"          : "2.3.*",
 		"symfony/twig-bundle"          : "2.3.*",
 		"symfony/yaml"                 : "2.1.*",
-		"symfony/filesystem"           : "2.2.*",
+		"symfony/filesystem"           : "2.3.*",
 		"symfony/finder"               : "2.2.*",
 		"twig/twig"                    : "1.13.*",
 		"pimple/pimple"                : "1.0.1",
