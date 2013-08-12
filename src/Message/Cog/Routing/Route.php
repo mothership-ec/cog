@@ -40,8 +40,7 @@ class Route extends \Symfony\Component\Routing\Route
 	public function setPath($pattern)
 	{
 		// Remove trailing slash from route
-		parent::setPath(rtrim($pattern, '/'));
-		return $this;
+		return parent::setPath(rtrim($pattern, '/'));
 	}
 
 	/**
