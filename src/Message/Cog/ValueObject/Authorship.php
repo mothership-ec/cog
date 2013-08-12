@@ -66,10 +66,11 @@ class Authorship
 	/**
 	 * Sets updatable to $bool
 	 *
-	 * @param  boolean $bool    Boolean updatable is set to
-	 * @return Authorship       Returns $this for chainability
+	 * @param  boolean $bool Boolean updatable is set to
+	 *
+	 * @return Authorship    Returns $this for chainability
 	 */
-	private function setUpdatable($bool)
+	public function setUpdatable($bool)
 	{
 		$this->_updatable = (bool)$bool;
 
@@ -101,7 +102,6 @@ class Authorship
 	{
 		return $this->_updatable;
 	}
-
 
 	/**
 	 * Get the date & time of deletion.
@@ -136,12 +136,13 @@ class Authorship
 	/**
 	 * Sets deletable to $bool
 	 *
-	 * @param  boolean $bool    Boolean deletable is set to
-	 * @return Authorship       Returns $this for chainability
+	 * @param  boolean $bool Boolean deletable is set to
+	 *
+	 * @return Authorship    Returns $this for chainability
 	 */
-	private function setDeletable($bool)
+	public function setDeletable($bool)
 	{
-		$this->_deletable = (bool)$bool;
+		$this->_deletable = (bool) $bool;
 
 		return $this;
 	}
@@ -208,9 +209,10 @@ class Authorship
 	 */
 	public function update(DateTimeImmutable $datetime = null, $user = null)
 	{
-		if(!$this->isUpdatable()) {
+		if (!$this->isUpdatable()) {
 			throw new \LogicException('Cannot set updated metadata: updating is disabled');
 		}
+
 		$this->_updatedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_updatedBy = $user;
 
@@ -232,7 +234,7 @@ class Authorship
 	 */
 	public function delete(DateTimeImmutable $datetime = null, $user = null)
 	{
-		if(!$this->isDeletable()) {
+		if (!$this->isDeletable()) {
 			throw new \LogicException('Cannot set deleted metadata: deleting is disabled');
 		}
 
@@ -251,15 +253,13 @@ class Authorship
 	 *
 	 * @return Authorship      Returns $this for chainability
 	 *
-	 * @return Authorship      Returns $this for chainability
-	 *
 	 * @throws \LogicException If the model hasn't been deleted yet
 	 *
 	 * @throws \LogicException If deletable is false
 	 */
 	public function restore()
 	{
-		if(!$this->isDeletable()) {
+		if (!$this->isDeletable()) {
 			throw new \LogicException('Cannot restore entity: deleting and restoring is disabled');
 		}
 
