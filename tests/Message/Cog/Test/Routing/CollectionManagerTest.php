@@ -9,6 +9,8 @@ use Message\Cog\Routing\CollectionManager;
 use Message\Cog\Routing\Route;
 use Message\Cog\Routing\RouteCollection;
 
+use Message\Cog\Routing\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
 
 class CollectionManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -130,6 +132,27 @@ class CollectionManagerTest extends \PHPUnit_Framework_TestCase
 
 		$defaults = $route4->getDefaults();
 		$this->assertSame($defaults['_route_collections'], array('admin', 'orders', 'refunds', 'gifts'));
+	}
+
+	public function testUsingPriority()
+	{
+		$this->_collection['first']->add('first', '/', function() {
+			return true;
+		});
+		
+		$this->_collection['second']->add('second', '/', function() {
+			return false;
+		});
+
+		$matcher1 = new UrlMatcher($this->_collection->compileRoutes()->getRouteCollection(), new RequestContext());
+		$result = $matcher1->match('/');
+		$this->assertEquals($result['_route'], 'first');
+
+		$this->_collection['first']->setPriority(-900);
+
+		$matcher2 = new UrlMatcher($this->_collection->compileRoutes()->getRouteCollection(), new RequestContext());
+		$result = $matcher2->match('/');
+		$this->assertEquals($result['_route'], 'second');
 	}
 
 	/**

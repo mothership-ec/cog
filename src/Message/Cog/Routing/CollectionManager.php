@@ -140,11 +140,21 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	{
 		// Firstly, find collections that have a parent set and add them to that
 		// parent.
-		$hierarchy = $this->_getCollectionHierarchy();
+		$hierarchy   = $this->_getCollectionHierarchy();
+		$collections = array();
+
+		// Sort heirarchy by most deeply nested first
+		uasort($hierarchy, function($a, $b) {
+			return count($b) - count($a);
+		});
+
+		// Order the collections using the same ordering
+		foreach ($hierarchy as $name => $val) {
+			$collections[$name] = $this->_collections[$name];
+		}
 
 		$baseCollections = array();
-		foreach($this as $name => $collection) {
-
+		foreach($collections as $name => $collection) {
 			// Save the parent route collection names onto the routes.
 			$this->_saveCollectionNameToRoutes($collection->getRouteCollection(), $hierarchy[$name]);
 
@@ -184,7 +194,13 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 
 			// Add it to Symfony's underlying RouteCollection
 			$parentCollection->addCollection($symfonyCollection);
+			$this->_collections[$parent]->getRouteCollection()->addCollection($symfonyCollection);
 		}
+
+		// sort all base collections according to their priority
+		uasort($baseCollections, function($a, $b) {
+			return $b->getPriority() - $a->getPriority();
+		});
 
 		// Create an empty route collection, all the others get added to this.
 		$root           = new RouteCollection($this->_referenceParser);
@@ -233,14 +249,14 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 			if(!$route->hasDefault('_route_collections')) {
 				$route->setDefault('_route_collections', $parents);
 			}
-			
+
 		}
 	}
 
 	/**
 	 * Gets the parent collection names for each route collection.
 	 *
-	 * @return array An array where the key is the collection name and the 
+	 * @return array An array where the key is the collection name and the
 	 *               value is an array of the parent collection names.
 	 */
 	protected function _getCollectionHierarchy()
