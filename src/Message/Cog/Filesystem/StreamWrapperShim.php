@@ -27,7 +27,6 @@ abstract class StreamWrapperShim
 		// get the handler
 		$prefix = $this->getStreamWrapperPrefix();
 		$this->_handler = StreamWrapperManager::getHandler($prefix);
-		$this->_handler->prefix = $prefix;
 	}
 
 	/**

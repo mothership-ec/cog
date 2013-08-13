@@ -27,6 +27,8 @@ class StreamWrapper implements StreamWrapperInterface
 	*/
 	public $handle = NULL;
 
+	public $prefix;
+
 	/**
 	* Instance URI (stream).
 	*
