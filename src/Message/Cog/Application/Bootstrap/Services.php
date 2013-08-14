@@ -564,19 +564,16 @@ class Services implements ServicesInterface
 			return $logger;
 		});
 
-		$serviceContainer['log.exceptions'] = $serviceContainer->share(function($c) {
-			$logger = new \Monolog\Logger('exceptions');
+		$serviceContainer['whoops'] = $serviceContainer->share(function($c) {
+			$run = new \Whoops\Run;
+			$run->pushHandler(new \Whoops\Handler\PrettyPageHandler);
 
-			// Set up handler for logging to file (as default)
-			$logger->pushHandler(
-				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/exception.log')
-			);
-
-			return $logger;
+			return $run;
 		});
 
 		#log.errors
 
 		#log.db.queries
+		#
 	}
 }
