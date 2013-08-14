@@ -82,7 +82,6 @@ class ViewNameParser extends TemplateNameParser
 
 		// Loop through each content type
 		foreach ($this->_formats as $format) {
-
 			// Loop through the engines in order of preference
 			foreach ($this->_fileTypes as $engine) {
 				// Check if a view file exists for this format and this engine
