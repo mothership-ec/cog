@@ -553,12 +553,12 @@ class Services implements ServicesInterface
 			return new \Assetic\AssetWriter('cog://public/');
 		});
 
-		$serviceContainer['log.exceptions'] = $serviceContainer->share(function($c) {
-			$logger = new \Monolog\Logger('exceptions');
+		$serviceContainer['log.errors'] = $serviceContainer->share(function($c) {
+			$logger = new \Monolog\Logger('errors');
 
 			// Set up handler for logging to file (as default)
 			$logger->pushHandler(
-				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/exception.log')
+				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
 			);
 
 			return $logger;
@@ -566,14 +566,14 @@ class Services implements ServicesInterface
 
 		$serviceContainer['whoops'] = $serviceContainer->share(function($c) {
 			$run = new \Whoops\Run;
-			$run->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+			$run->allowQuit(false);
+			$run->pushHandler($c['whoops.page_handler']);
 
 			return $run;
 		});
 
-		#log.errors
-
-		#log.db.queries
-		#
+		$serviceContainer['whoops.page_handler'] = $serviceContainer->share(function($c) {
+			return new \Whoops\Handler\PrettyPageHandler;
+		});
 	}
 }

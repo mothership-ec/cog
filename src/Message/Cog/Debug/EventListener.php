@@ -27,7 +27,8 @@ class EventListener extends BaseListener implements SubscriberInterface
 				array('renderProfiler'),
 			),
 			'cog.load.success' => array(
-				array('registerWhoops'),
+				array('registerWhoopsHandlers'),
+				array('registerMonologHandlers'),
 			),
 		);
 	}
@@ -66,10 +67,20 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 *
 	 * @param  Event  $event The event object
 	 */
-	public function registerWhoops(Event $event)
+	public function registerWhoopsHandlers(Event $event)
 	{
 		if (!in_array($this->_environment->get(), array('live', 'staging'))) {
 			$this->_services['whoops']->register();
 		}
+	}
+
+	/**
+	 * Register the error/exception/shutdown handlers for Monolog.
+	 *
+	 * @param  Event  $event The event object
+	 */
+	public function registerMonologHandlers(Event $event)
+	{
+		\Monolog\ErrorHandler::register($this->_services['log.errors']);
 	}
 }
