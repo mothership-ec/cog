@@ -51,7 +51,10 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// Symfony's HTTP Exception Listener
 		if (in_array($this->_services['env'], array('local', 'dev'))) {
 			$eventDispatcher->addSubscriber(
-				new \Symfony\Component\HttpKernel\EventListener\ExceptionListener('Message\\Cog\\Debug\\Controller\\Exception::viewException')
+				new \Symfony\Component\HttpKernel\EventListener\ExceptionListener(
+					'Message\\Cog\\Debug\\Controller\\Exception::viewException',
+					$this->_services['log.exceptions']
+				)
 			);
 		}
 

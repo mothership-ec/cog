@@ -340,8 +340,8 @@ class Services implements ServicesInterface
 				// Maps cog://tmp/* to /tmp/* (in the installation)
 				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
 				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
+				"/^\/logs/us"         => $baseDir.'logs/',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
-				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
 			);
 
 			return $mapping;
@@ -534,7 +534,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['asset.filters'] = $serviceContainer->share(function($c) {
 			$manager = new \Assetic\FilterManager;
-			
+
 			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
 
 			return $manager;
@@ -552,5 +552,31 @@ class Services implements ServicesInterface
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
 			return new \Assetic\AssetWriter('cog://public/');
 		});
+
+		$serviceContainer['log.exceptions'] = $serviceContainer->share(function($c) {
+			$logger = new \Monolog\Logger('exceptions');
+
+			// Set up handler for logging to file (as default)
+			$logger->pushHandler(
+				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/exception.log')
+			);
+
+			return $logger;
+		});
+
+		$serviceContainer['log.exceptions'] = $serviceContainer->share(function($c) {
+			$logger = new \Monolog\Logger('exceptions');
+
+			// Set up handler for logging to file (as default)
+			$logger->pushHandler(
+				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/exception.log')
+			);
+
+			return $logger;
+		});
+
+		#log.errors
+
+		#log.db.queries
 	}
 }
