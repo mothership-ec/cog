@@ -342,6 +342,7 @@ class Services implements ServicesInterface
 				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
 				"/^\/logs/us"         => $baseDir.'logs/',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
+				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
 			);
 
 			return $mapping;
