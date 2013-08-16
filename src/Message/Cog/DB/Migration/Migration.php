@@ -1,0 +1,29 @@
+<?php
+
+namespace Message\Cog\DB\Migration;
+
+abstract class Migration {
+
+	private $query;
+
+	public function __construct($query)
+	{
+		$this->_query = $query;
+	}
+
+	public function run($sql)
+	{
+		$this->_query->run($sql);
+	}
+
+	public function up()
+	{
+
+	}
+
+	public function down()
+	{
+
+	}
+
+}
