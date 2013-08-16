@@ -16,6 +16,8 @@ class Query implements QueryableInterface
 	protected $_query;
 	protected $_parsedQuery;
 
+	protected static $_queryCount = 0;
+
 	protected $_typeTokens = array(
 		's'	=> 'string',
 		'i'	=> 'integer',
@@ -49,11 +51,23 @@ class Query implements QueryableInterface
 		$this->_parseParams();
 		$result = $this->_connection->query($this->_parsedQuery);
 
+		static::$_queryCount++;
+
 		if($result === false) {
 			throw new Exception($this->_connection->getLastError(), $this->_query);
 		}
 
 		return new Result($result, clone $this);
+	}
+
+	/**
+	 * Gets the static count of queries
+	 * 
+	 * @return int
+	 */
+	public function getQueryCount()
+	{
+		return static::$_queryCount;
 	}
 
 	/**
