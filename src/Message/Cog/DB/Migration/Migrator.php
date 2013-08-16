@@ -13,6 +13,8 @@ class Migrator {
 	protected $_editor;
 	protected $_collection;
 
+	protected $_notes;
+
 	public function __construct($query, $file, $loader, $creator, $deletor, $collection)
 	{
 		$this->_query      = $query;
@@ -54,7 +56,14 @@ class Migrator {
 	 */
 	public function runUp(Migration $migration, $batch)
 	{
-		$migration->up();
+		try {
+			$migration->up();
+			$this->_note('<info>\tRan up ' . $migration->path . '</info>');
+		}
+		catch (Exception $e) {
+			$this->_note('<error>\tFailed to run up ' . $migration->path . '</error>');
+			return;
+		}
 
 		$this->_creator->log($migration, $batch);
 	}
@@ -62,15 +71,67 @@ class Migrator {
 	/**
 	 * Run 'down' the last migration batch.
 	 * 
-	 * @return void
+	 * @return int
 	 */
 	public function rollback()
 	{
 		$migrations = $this->_loader->getLastBatch();
 
-		foreach ($migrations as $migration) {
-			$this->runDown($migration);
+		if (count($migrations) == 0) {
+			$this->_note('<info>Nothing to rollback</info>');
+
+			return count($migrations);
 		}
+
+		foreach ($migrations as $migration) {
+			$this->_runDown($migration);
+		}
+
+		return count($migrations);
+	}
+
+	/**
+	 * Reset the database to the point before any migrations were run.
+	 * 
+	 * @return void
+	 */
+	public function reset()
+	{
+		while (true) {
+			$count = $this->rollback();
+
+			if ($count == 0) {
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Refresh the database by resetting then running all migrations.
+	 * 
+	 * @return void
+	 */
+	public function refresh()
+	{
+		$migrations = $this->_loader->getAll();
+
+		$this->reset();
+
+		foreach ($migrations as $migration) {
+			$this->_collection->add($migration);
+		}
+
+		$this->_runCollection();
+	}
+
+	/**
+	 * Get the migration notes.
+	 * 
+	 * @return array
+	 */
+	public function getNotes()
+	{
+		return $this->_notes;
 	}
 
 	/**
@@ -107,7 +168,14 @@ class Migrator {
 	 */
 	protected function _runDown(Migration $migration)
 	{
-		$migration->down();
+		try {
+			$migration->down();
+			$this->_note('<info>\tRan down ' . $migration->path . '</info>');
+		}
+		catch (Exception $e) {
+			$this->_note('<error>\tFailed to run down ' . $migration->path . '</error>');
+			return;
+		}
 
 		$this->_deletor->delete($migration);
 	}
@@ -122,6 +190,11 @@ class Migrator {
 		$batch = $this->_loader->getLastBatchNumber() + 1;
 
 		return $batch;
+	}
+
+	protected function _note($note)
+	{
+		$this->_notes[] = $note;
 	}
 
 }

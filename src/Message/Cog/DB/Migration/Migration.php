@@ -4,7 +4,7 @@ namespace Message\Cog\DB\Migration;
 
 abstract class Migration {
 
-	private $query;
+	protected $query;
 
 	public function __construct($query)
 	{
