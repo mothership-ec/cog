@@ -42,7 +42,7 @@ class Migrator {
 		}
 
 		// Run the collection
-		$this->runCollection();
+		$this->_runCollection();
 	}
 
 	/**
@@ -78,13 +78,13 @@ class Migrator {
 	 * 
 	 * @return void
 	 */
-	protected function runCollection()
+	protected function _runCollection()
 	{
 		if (count($this->_collection) == 0) {
 			throw new Exception("Could not run migrations, migrator collection empty.");
 		}
 
-		$batch = $this->getNextBatchNumber();
+		$batch = $this->_getNextBatchNumber();
 
 		foreach ($this->_collection as $basename => $file)
 		{
@@ -105,7 +105,7 @@ class Migrator {
 	 * @param  Migration $migration
 	 * @return void
 	 */
-	protected function runDown(Migration $migration)
+	protected function _runDown(Migration $migration)
 	{
 		$migration->down();
 
@@ -117,7 +117,7 @@ class Migrator {
 	 * 
 	 * @return int
 	 */
-	protected function getNextBatchNumber()
+	protected function _getNextBatchNumber()
 	{
 		$batch = $this->_loader->getLastBatchNumber() + 1;
 
