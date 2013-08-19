@@ -45,6 +45,107 @@ class AuthorshipTest extends \PHPUnit_Framework_TestCase
 		$this->fail('No exception was thrown when trying to set create metadata twice');
 	}
 
+	/**
+	 * @expectedException        \LogicException
+	 * @expectedExceptionMessage updating is disabled
+	 */
+	public function testDisableUpdate()
+	{
+		$authorship = new Authorship;
+		$authorship->disableUpdate();
+		$authorship->update(new DateTimeImmutable('now'), 'Test McTester');
+	}
+
+	public function testEnableUpdate()
+	{
+		$authorship = new Authorship;
+		$timestamp  = new DateTimeImmutable('1 day ago');
+		$author     = 'Iris Schaffer';
+
+		$authorship->disableUpdate();
+		$authorship->enableUpdate();
+
+		$authorship->update($timestamp, $author);
+
+		$this->assertEquals($timestamp, $authorship->updatedAt());
+		$this->assertEquals($author, $authorship->updatedBy());
+	}
+
+	public function testIsUpdatable()
+	{
+		$authorship = new Authorship;
+
+		$this->assertTrue($authorship->isUpdatable());
+
+		$authorship->disableUpdate();
+		$this->assertFalse($authorship->isUpdatable());
+
+		$authorship->enableUpdate();
+		$this->assertTrue($authorship->isUpdatable());
+	}
+
+	public function testDeleteAndRestoreWhenUpdateDisabled()
+	{
+		$authorship = new Authorship;
+		$authorship->disableUpdate();
+		$authorship->delete(new DateTimeImmutable('now'), 'Iris Schaffer');
+		$authorship->restore();
+	}
+
+	/**
+	 * @expectedException        \LogicException
+	 * @expectedExceptionMessage deleting is disabled
+	 */
+	public function testDisableDeleteInDelete()
+	{
+		$authorship = new Authorship;
+		$authorship->disableDelete();
+		$authorship->delete(new DateTimeImmutable('now'), 'Iris Schaffer');
+	}
+
+	public function testEnableDelete()
+	{
+		$authorship = new Authorship;
+		$timestamp  = new DateTimeImmutable('1 day ago');
+		$author     = 'Iris Schaffer';
+
+		$authorship->disableDelete();
+		$authorship->enableDelete();
+
+		$authorship->delete($timestamp, $author);
+		$this->assertTrue($authorship->isDeleted());
+
+		$authorship->restore();
+		$this->assertFalse($authorship->isDeleted());
+	}
+
+	/**
+	 * @expectedException        \LogicException
+	 * @expectedExceptionMessage deleting and restoring is disabled
+	 */
+	public function testDisableDeleteInRestore()
+	{
+		$authorship = new Authorship;
+
+		// NOTE: an exception would get thrown here if 'delete' and 'restore' didn't work
+		$authorship->delete(new DateTimeImmutable('now'), 'Iris Schaffer');
+		$authorship->disableDelete();
+		$authorship->restore();
+	}
+
+	public function testIsDeletable()
+	{
+		$authorship = new Authorship;
+
+		$this->assertTrue($authorship->isDeletable());
+
+		$authorship->disableDelete();
+		$this->assertFalse($authorship->isDeletable());
+
+		$authorship->enableDelete();
+		$this->assertTrue($authorship->isDeletable());
+	}
+
 	public function testUpdating()
 	{
 		$authorship = new Authorship;

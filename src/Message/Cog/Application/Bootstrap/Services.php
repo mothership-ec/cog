@@ -340,6 +340,7 @@ class Services implements ServicesInterface
 				// Maps cog://tmp/* to /tmp/* (in the installation)
 				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
 				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
+				"/^\/logs/us"         => $baseDir.'logs/',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
 			);
@@ -534,7 +535,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['asset.filters'] = $serviceContainer->share(function($c) {
 			$manager = new \Assetic\FilterManager;
-			
+
 			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
 
 			return $manager;
@@ -553,6 +554,29 @@ class Services implements ServicesInterface
 			return new \Assetic\AssetWriter('cog://public/');
 		});
 
+		$serviceContainer['log.errors'] = $serviceContainer->share(function($c) {
+			$logger = new \Monolog\Logger('errors');
+
+			// Set up handler for logging to file (as default)
+			$logger->pushHandler(
+				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
+			);
+
+			return $logger;
+		});
+
+		$serviceContainer['whoops'] = $serviceContainer->share(function($c) {
+			$run = new \Whoops\Run;
+			$run->allowQuit(false);
+			$run->pushHandler($c['whoops.page_handler']);
+
+			return $run;
+		});
+
+		$serviceContainer['whoops.page_handler'] = $serviceContainer->share(function($c) {
+			return new \Whoops\Handler\PrettyPageHandler;
+		});
+		
 
 		/**
 		 * Migration Services

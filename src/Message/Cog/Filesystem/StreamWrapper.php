@@ -6,7 +6,7 @@ use Message\Cog\Module\ReferenceParserInterface;
 
 /**
  * A basic stream wrapper class that handles mapping cog:// style URLs to real
- * paths within the file system. You can use cog module references as well as 
+ * paths within the file system. You can use cog module references as well as
  * setting one-to-one mappings e.g resolving cog://tmp/* to /tmp/*
  *
  * @author  James Moss <james@message.co.uk>
@@ -57,7 +57,7 @@ class StreamWrapper implements StreamWrapperInterface
 	 *
 	 * An important note: When matching cog:// style paths the prefix is removed. This means regexs should
 	 * match paths starting with /.
-	 * 
+	 *
 	 * For example the path cog://tmp/hello.txt would be sent into the regex replacement as /tmp/hello.txt
 	 *
 	 * @param array $mapping An array where the key is the key is the regex and the value is the replacement value
@@ -74,7 +74,7 @@ class StreamWrapper implements StreamWrapperInterface
 	 *
 	 * @param  string $uri 		The uri to be parsed
 	 *
-	 * @return string|boolean   If a valid URI is passed in, returns the full 
+	 * @return string|boolean   If a valid URI is passed in, returns the full
 	 *                          real path to the file, otherwise false.
 	 */
 	public function getLocalPath($uri, $prefix = false)
@@ -85,7 +85,7 @@ class StreamWrapper implements StreamWrapperInterface
 
 		// Try and match a mapping regex
 		foreach($this->_mapping as $regex => $mapping) {
-			$result = preg_replace($regex, $mapping, '/'.$path, -1, $count);
+			$result = preg_replace($regex, $mapping, '/'.ltrim($path, '/'), -1, $count);
 
 			if($count > 0) {
 				return $result;
@@ -133,7 +133,7 @@ class StreamWrapper implements StreamWrapperInterface
 	/**
 	* Support for flock().
 	*
-	* 
+	*
 	* @param int $operation One of the following:
 	*	                      - LOCK_SH to acquire a shared lock (reader).
 	*						  - LOCK_EX to acquire an exclusive lock (writer).
@@ -289,7 +289,7 @@ class StreamWrapper implements StreamWrapperInterface
 	public function unlink($uri)
 	{
 		$this->uri = $uri;
-		
+
 		return unlink($this->getLocalPath($uri));
 	}
 
@@ -348,7 +348,7 @@ class StreamWrapper implements StreamWrapperInterface
 		if ($options & STREAM_REPORT_ERRORS) {
 			return mkdir($localpath, $mode, $recursive);
 		}
-		
+
 		return mkdir($localpath, $mode, $recursive);
 	}
 
@@ -368,7 +368,7 @@ class StreamWrapper implements StreamWrapperInterface
 		if ($options & STREAM_REPORT_ERRORS) {
 			return rmdir($this->getLocalPath($uri));
 		}
-		
+
 		return rmdir($this->getLocalPath($uri));
 	}
 
@@ -393,7 +393,7 @@ class StreamWrapper implements StreamWrapperInterface
 		if ($flags & STREAM_URL_STAT_QUIET || !file_exists($path)) {
 			return @stat($path);
 		}
-		
+
 		return stat($path);
 	}
 
