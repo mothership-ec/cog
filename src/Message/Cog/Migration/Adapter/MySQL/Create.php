@@ -1,8 +1,10 @@
 <?php
 
-namespace Message\Cog\Migration;
+namespace Message\Cog\Migration\Adapter\MySQL;
 
-class Create {
+use Message\Cog\Migration\Adapter\CreateInterface;
+
+class Create implements CreateInterface {
 
 	protected $_query;
 

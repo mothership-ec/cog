@@ -552,5 +552,42 @@ class Services implements ServicesInterface
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
 			return new \Assetic\AssetWriter('cog://public/');
 		});
+
+
+		/**
+		 * Migration Services
+		 */
+		$serviceContainer['migration.mysql'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Migrator(
+				$c['migration.mysql.loader'],
+				$c['migration.collection'],
+				$c['migration.mysql.create'],
+				$c['migration.mysql.delete']
+			);
+		});
+
+		// Shortcut to mysql migration adapter
+		$serviceContainer['migration'] = $serviceContainer->share(function($c) {
+			return $c['migration.mysql'];
+		});
+
+		$serviceContainer['migration.mysql.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Loader(
+				$c['db'],
+				$c['filesystem?']
+			);
+		});
+
+		$serviceContainer['migration.mysql.create'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Create($c['db']);
+		});
+
+		$serviceContainer['migration.mysql.delete'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Delete($c['db']);
+		});
+
+		$serviceContainer['migration.collection'] = function($c) {
+			return new \Message\Cog\Migration\Collection\Collection();
+		};
 	}
 }
