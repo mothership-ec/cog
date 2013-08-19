@@ -31,7 +31,7 @@ use DirectoryIterator;
  */
 class FixtureManager
 {
-	const CONFIG_FIXTURE_PATH = 'fixtures/config/';
+	const CONFIG_FIXTURE_PATH = 'resources/fixtures/config/';
 
 	static protected $_updatedFixtures = array();
 
