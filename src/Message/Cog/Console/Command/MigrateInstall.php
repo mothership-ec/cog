@@ -9,25 +9,25 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * MigrateReset
+ * MigrateInstall
  *
  * Provides the migrate:run command. Runs new migrations at the path.
  */
-class MigrateReset extends Command
+class MigrateInstall extends Command
 {
 	protected function configure()
 	{
 		$this
-			->setName('migrate:reset')
-			->setDescription('Resets the database to the state before any migrations were run.')
+			->setName('migrate:install')
+			->setDescription('Installs the migration database table.')
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$output->writeln('<info>Resetting all migrations...</info>');
+		$output->writeln('<info>Installing migrations...</info>');
 
-		$this->get('migration')->reset();
+		$this->get('migration.mysql.loader')->install();
 
 		foreach ($this->get('migration')->getNotes() as $note) {
 			$output->writeln($note);

@@ -3,6 +3,7 @@
 namespace Message\Cog\Migration\Adapter\MySQL;
 
 use Message\Cog\Migration\Adapter\LoaderInterface;
+use Message\Cog\Filesystem\File;
 
 class Loader implements LoaderInterface {
 
@@ -19,9 +20,9 @@ class Loader implements LoaderInterface {
 	{
 		$results = $this->_connector->run('
 			SELECT
-				filename
+				path
 			FROM
-				migrations
+				migration
 		');
 
 		return $this->_getMigrations($results);
@@ -29,18 +30,28 @@ class Loader implements LoaderInterface {
 
 	public function getFromPath($path)
 	{
-		//
+		$files = $this->_filesystem->files()->in($path);
+
+		$migrations = array();
+
+		foreach ($files as $file) {
+			if ($file->isFile()) {
+				$migrations[] = $this->resolve($file);
+			}
+		}
+
+		return $migrations;
 	}
 
 	public function getLastBatch()
 	{
 		$results = $this->_connector->run('
 			SELECT
-				filename
+				path
 			FROM
-				migrations
+				migration
 			WHERE
-				batch = (SELECT batch FROM migrations ORDER BY batch DESC LIMIT 1)
+				batch = (SELECT batch FROM migration ORDER BY batch DESC LIMIT 1)
 			ORDER BY
 				run_at DESC
 		');
@@ -54,7 +65,7 @@ class Loader implements LoaderInterface {
 			SELECT
 				batch
 			FROM
-				migrations
+				migration
 			ORDER BY
 				batch DESC
 			LIMIT 1
@@ -63,15 +74,28 @@ class Loader implements LoaderInterface {
 		return $results[0]->batch;
 	}
 
-	public function resolve($file)
+	public function resolve(File $file)
 	{
 		// Load the migration class
-		include $file->getPath();
+		include $file->getRealpath();
 
 		// Get the class name
-		$classname = str_replace('.php', '', $basename);
+		$classname = str_replace('.php', '', $file->getBasename());
 
-		return new $classname($this->_connector);
+		return new $classname($file, $this->_connector);
+	}
+
+	public function install()
+	{
+		$this->_connector->run('
+			CREATE TABLE IF NOT EXISTS
+				migration (
+					path TEXT,
+					batch INT (11),
+					run_at INT (11),
+					PRIMARY KEY (migration_id)
+				)
+		');
 	}
 
 	protected function _getMigrations($results)
@@ -79,7 +103,7 @@ class Loader implements LoaderInterface {
 		$migrations = array();
 
 		foreach ($results as $row) {
-			$file = new File($row->filename);
+			$file = new File($row->path);
 			$migrations = $this->resolve($file);
 		}
 

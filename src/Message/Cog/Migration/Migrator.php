@@ -7,17 +7,16 @@ use Exception;
 class Migrator {
 
 	protected $_loader;
-	protected $_collection;
 	protected $_creator;
 	protected $_editor;
 
-	protected $_notes;
+	protected $_collection = array();
+	protected $_notes = array();
 
-	public function __construct($loader, $collection, $creator, $deletor)
+	public function __construct($loader, $creator, $deletor)
 	{
 		$this->_loader     = $loader;
-		$this->_collection = $collection;
-		$this->_creator    = $create;
+		$this->_creator    = $creator;
 		$this->_deletor    = $deletor;
 	}
 
@@ -35,8 +34,8 @@ class Migrator {
 		$migrations = array_diff($inPath, $run);
 
 		// Add the new migrations to the collection
-		foreach ($migrations as $name => $migration) {
-			$this->_collection->add($name, $migration);
+		foreach ($migrations as $migration) {
+			$this->_collection[$migration->getFile()->getRealpath()] = $migration;
 		}
 
 		// Run the collection
@@ -54,10 +53,10 @@ class Migrator {
 	{
 		try {
 			$migration->up();
-			$this->_note('<info>\tRan up ' . $migration->path . '</info>');
+			$this->_note('<comment>- Ran up ' . $migration->getFile()->getBasename() . '</comment>');
 		}
 		catch (Exception $e) {
-			$this->_note('<error>\tFailed to run up ' . $migration->path . '</error>');
+			$this->_note('<error>- Failed to run up ' . $migration->getFile()->getBasename() . '</error>');
 			return;
 		}
 
@@ -114,7 +113,7 @@ class Migrator {
 		$this->reset();
 
 		foreach ($migrations as $name => $migration) {
-			$this->_collection->add($name, $migration);
+			$this->_collection[$name] = $migration;
 		}
 
 		$this->_runCollection();
@@ -143,11 +142,10 @@ class Migrator {
 
 		$batch = $this->_getNextBatchNumber();
 
-		foreach ($this->_collection as $name => $migration)
-		{
+		foreach ($this->_collection as $name => $migration) {
 			try {
 				$this->runUp($migration, $batch);
-				$this->_collection->remove($name);
+				unset($this->_collection[$name]);
 			}
 			catch (Exception $e) {
 				// throw an exception saying the migration did not complete
@@ -165,10 +163,10 @@ class Migrator {
 	{
 		try {
 			$migration->down();
-			$this->_note('<info>\tRan down ' . $migration->path . '</info>');
+			$this->_note('<comment>- Ran down ' . $migration->getFile()->getBasename() . '</comment>');
 		}
 		catch (Exception $e) {
-			$this->_note('<error>\tFailed to run down ' . $migration->path . '</error>');
+			$this->_note('<error>- Failed to run down ' . $migration->getFile()->getBasename() . '</error>');
 			return;
 		}
 

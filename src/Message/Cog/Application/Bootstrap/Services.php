@@ -576,7 +576,7 @@ class Services implements ServicesInterface
 		$serviceContainer['whoops.page_handler'] = $serviceContainer->share(function($c) {
 			return new \Whoops\Handler\PrettyPageHandler;
 		});
-		
+
 
 		/**
 		 * Migration Services
@@ -584,7 +584,6 @@ class Services implements ServicesInterface
 		$serviceContainer['migration.mysql'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Migration\Migrator(
 				$c['migration.mysql.loader'],
-				$c['migration.collection'],
 				$c['migration.mysql.create'],
 				$c['migration.mysql.delete']
 			);
@@ -598,7 +597,7 @@ class Services implements ServicesInterface
 		$serviceContainer['migration.mysql.loader'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Migration\Adapter\MySQL\Loader(
 				$c['db'],
-				$c['filesystem?']
+				$c['filesystem.finder']
 			);
 		});
 

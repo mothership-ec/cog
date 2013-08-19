@@ -6,10 +6,12 @@ use Message\Cog\Migration\Adapter\MigrationInterface;
 
 abstract class Migration implements MigrationInterface {
 
-	protected $query;
+	protected $_query;
+	protected $_file;
 
-	public function __construct($query)
+	public function __construct($file, $query)
 	{
+		$this->_file = $file;
 		$this->_query = $query;
 	}
 
@@ -26,6 +28,11 @@ abstract class Migration implements MigrationInterface {
 	public function down()
 	{
 
+	}
+
+	public function getFile()
+	{
+		return $this->_file;
 	}
 
 }

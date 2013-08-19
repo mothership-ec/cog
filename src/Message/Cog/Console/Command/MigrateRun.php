@@ -21,19 +21,24 @@ class MigrateRun extends Command
 			->setName('migrate:run')
 			->setAliases('migrate')
 			->setDescription('Runs all migrations at the given path that have not yet been run.')
-			->addArgument('path', InputArgument::OPTIONAL, 'Path to search for migrations.', 'migrations/')
+			->addOption('path', null, InputArgument::OPTIONAL, 'Path to search for migrations.', './migrations/')
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$output->writeln('<info>Running migrations...</info>');
+		$path = $input->getOption('path');
 
-		$path = $input->getArgument('path');
+		$output->writeln('<info>Running migrations in ' . $path . '...</info>');
 
-		$this->get('db.migrate')->run($path);
+		try {
+			$this->get('migration')->run($path);
+		}
+		catch (\Message\Cog\DB\Exception $e) {
+			throw new \Exception("Migration error: Have you run `migrate:install`?", null, $e);
+		}
 
-		foreach ($this->get('db.migrate')->getNotes() as $note) {
+		foreach ($this->get('migration')->getNotes() as $note) {
 			$output->writeln($note);
 		}
 	}

@@ -15,7 +15,14 @@ class Delete implements DeleteInterface {
 
 	public function delete($migration)
 	{
-		
+		$this->_query->run('
+			DELETE FROM
+				migration
+			WHERE
+				path = ?s
+		', array(
+			$migration->path
+		));
 	}
 
 }

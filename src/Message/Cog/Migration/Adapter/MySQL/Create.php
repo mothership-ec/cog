@@ -15,7 +15,18 @@ class Create implements CreateInterface {
 
 	public function log($migration, $batch)
 	{
-		
+		$this->_query->run('
+			INSERT INTO
+				migration
+			SET
+				path = ?s,
+				batch = ?i,
+				run_at = ?
+		', array(
+			$migration->getFile()->getRealpath(),
+			$batch,
+			time()
+		));
 	}
 
 }
