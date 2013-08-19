@@ -1,28 +1,24 @@
 <?php
 
-namespace Message\Cog\DB\Migration;
+namespace Message\Cog\Migration;
 
 use Exception;
 
 class Migrator {
 
-	protected $_query;
-	protected $_file;
 	protected $_loader;
+	protected $_collection;
 	protected $_creator;
 	protected $_editor;
-	protected $_collection;
 
 	protected $_notes;
 
-	public function __construct($query, $file, $loader, $creator, $deletor, $collection)
+	public function __construct($loader, $collection, $creator, $deletor)
 	{
-		$this->_query      = $query;
-		$this->_file       = $file;
 		$this->_loader     = $loader;
+		$this->_collection = $collection;
 		$this->_creator    = $create;
 		$this->_deletor    = $deletor;
-		$this->_collection = $collection;
 	}
 
 	/**
@@ -39,8 +35,8 @@ class Migrator {
 		$migrations = array_diff($inPath, $run);
 
 		// Add the new migrations to the collection
-		foreach ($migrations as $migration) {
-			$this->_collection->add($migration);
+		foreach ($migrations as $name => $migration) {
+			$this->_collection->add($name, $migration);
 		}
 
 		// Run the collection
@@ -117,8 +113,8 @@ class Migrator {
 
 		$this->reset();
 
-		foreach ($migrations as $migration) {
-			$this->_collection->add($migration);
+		foreach ($migrations as $name => $migration) {
+			$this->_collection->add($name, $migration);
 		}
 
 		$this->_runCollection();
@@ -147,12 +143,11 @@ class Migrator {
 
 		$batch = $this->_getNextBatchNumber();
 
-		foreach ($this->_collection as $basename => $file)
+		foreach ($this->_collection as $name => $migration)
 		{
-			$migration = $this->_loader->resolve($file);
 			try {
 				$this->runUp($migration, $batch);
-				$this->_collection->remove($basename);
+				$this->_collection->remove($name);
 			}
 			catch (Exception $e) {
 				// throw an exception saying the migration did not complete
@@ -192,6 +187,12 @@ class Migrator {
 		return $batch;
 	}
 
+	/**
+	 * Add a note to the operation.
+	 * 
+	 * @param  string $note
+	 * @return void
+	 */
 	protected function _note($note)
 	{
 		$this->_notes[] = $note;

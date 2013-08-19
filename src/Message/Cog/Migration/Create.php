@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\DB\Migration;
+namespace Message\Cog\Migration;
 
 class Create {
 
