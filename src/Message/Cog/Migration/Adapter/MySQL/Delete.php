@@ -21,7 +21,7 @@ class Delete implements DeleteInterface {
 			WHERE
 				path = ?s
 		', array(
-			$migration->path
+			$migration->getFile()->getPath() . "/" . $migration->getFile()->getBasename()
 		));
 	}
 

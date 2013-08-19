@@ -29,9 +29,17 @@ class Migrator {
 	public function run($path)
 	{
 		// Find the migrations in the path that have not yet been run
-		$inPath = $this->_loader->getFromPath($path);
+		$migrations = $inPath = $this->_loader->getFromPath($path);
 		$run = $this->_loader->getAll();
-		$migrations = array_diff($inPath, $run);
+
+		// Diff the migrations in the path and those run to get new migrations
+		foreach ($migrations as $key => $migration) {
+			foreach ($run as $r) {
+				if (get_class($migration) === get_class($r)) {
+					unset($migrations[$key]);
+				}
+			}
+		}
 
 		// Add the new migrations to the collection
 		foreach ($migrations as $migration) {
@@ -57,6 +65,7 @@ class Migrator {
 		}
 		catch (Exception $e) {
 			$this->_note('<error>- Failed to run up ' . $migration->getFile()->getBasename() . '</error>');
+			$this->_note('<error>	with message: "' . $e->getMessage() . '"</error>');
 			return;
 		}
 
@@ -73,7 +82,7 @@ class Migrator {
 		$migrations = $this->_loader->getLastBatch();
 
 		if (count($migrations) == 0) {
-			$this->_note('<info>Nothing to rollback</info>');
+			$this->_note('<comment>Nothing to rollback</comment>');
 
 			return count($migrations);
 		}
@@ -137,7 +146,7 @@ class Migrator {
 	protected function _runCollection()
 	{
 		if (count($this->_collection) == 0) {
-			throw new Exception("Could not run migrations, migrator collection empty.");
+			$this->_note("<comment>No migrations to run</comment>");
 		}
 
 		$batch = $this->_getNextBatchNumber();

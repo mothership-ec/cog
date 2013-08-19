@@ -51,10 +51,12 @@ class Loader implements LoaderInterface {
 			FROM
 				migration
 			WHERE
-				batch = (SELECT batch FROM migration ORDER BY batch DESC LIMIT 1)
+				batch = ?i
 			ORDER BY
 				run_at DESC
-		');
+		', array(
+			$this->getLastBatchNumber()
+		));
 
 		return $this->_getMigrations($results);
 	}
@@ -77,7 +79,7 @@ class Loader implements LoaderInterface {
 	public function resolve(File $file)
 	{
 		// Load the migration class
-		include $file->getRealpath();
+		include_once $file->getRealpath();
 
 		// Get the class name
 		$classname = str_replace('.php', '', $file->getBasename());
@@ -104,7 +106,7 @@ class Loader implements LoaderInterface {
 
 		foreach ($results as $row) {
 			$file = new File($row->path);
-			$migrations = $this->resolve($file);
+			$migrations[] = $this->resolve($file);
 		}
 
 		return $migrations;

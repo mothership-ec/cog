@@ -23,7 +23,7 @@ class Create implements CreateInterface {
 				batch = ?i,
 				run_at = ?
 		', array(
-			$migration->getFile()->getRealpath(),
+			$migration->getFile()->getPath() . "/" . $migration->getFile()->getBasename(),
 			$batch,
 			time()
 		));

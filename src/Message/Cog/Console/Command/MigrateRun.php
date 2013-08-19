@@ -3,6 +3,7 @@
 namespace Message\Cog\Console\Command;
 
 use Message\Cog\Console\Command;
+use Message\Cog\Filesystem\File;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +22,7 @@ class MigrateRun extends Command
 			->setName('migrate:run')
 			->setAliases('migrate')
 			->setDescription('Runs all migrations at the given path that have not yet been run.')
-			->addOption('path', null, InputArgument::OPTIONAL, 'Path to search for migrations.', './migrations/')
+			->addOption('path', null, InputArgument::OPTIONAL, 'Path to search for migrations.', File::COG_PREFIX . '://migrations/')
 		;
 	}
 
