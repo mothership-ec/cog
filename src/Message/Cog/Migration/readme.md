@@ -166,3 +166,30 @@ class ###UpdateFooTable extends Migration {
 }
 ```
 -->
+
+
+## Non Database Migrations
+
+Migrations can be used for different situations, not just databases.
+
+
+### Adapters
+
+Create a new adapter as below:
+
+```
+Migration/
+	Adapter/
+		MyAdapter/
+			Create.php
+			Delete.php
+			Loader.php
+			Migration.php
+
+```
+
+`MyAdapter\Create` and `MyAdapter\Delete` handle logging migration operations in the database.
+
+`MyAdapter\Migration` should have a `run($command)` method that takes the single `$command` value and runs the operation.
+
+For example, you could write `FileCache\Migration` which takes `$command` as a string and stores it in a file, or `KVCache\Migration` which takes `$command` as an array and serializes it into a file.
