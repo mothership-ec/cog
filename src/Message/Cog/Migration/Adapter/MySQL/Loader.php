@@ -23,6 +23,8 @@ class Loader implements LoaderInterface {
 				path
 			FROM
 				migration
+			WHERE
+				adapter = "mysql"
 		');
 
 		return $this->_getMigrations($results);
@@ -51,7 +53,8 @@ class Loader implements LoaderInterface {
 			FROM
 				migration
 			WHERE
-				batch = ?i
+				batch = ?i AND
+				adapter = "mysql"
 			ORDER BY
 				run_at DESC
 		', array(
@@ -68,6 +71,8 @@ class Loader implements LoaderInterface {
 				batch
 			FROM
 				migration
+			WHERE
+				adapter = "mysql"
 			ORDER BY
 				batch DESC
 			LIMIT 1
@@ -92,6 +97,7 @@ class Loader implements LoaderInterface {
 		$this->_connector->run('
 			CREATE TABLE IF NOT EXISTS
 				migration (
+					adapter VARCHAR (255),
 					path TEXT,
 					batch INT (11),
 					run_at INT (11),

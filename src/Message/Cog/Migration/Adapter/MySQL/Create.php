@@ -19,6 +19,7 @@ class Create implements CreateInterface {
 			INSERT INTO
 				migration
 			SET
+				adapter = "mysql"
 				path = ?s,
 				batch = ?i,
 				run_at = ?

@@ -19,7 +19,8 @@ class Delete implements DeleteInterface {
 			DELETE FROM
 				migration
 			WHERE
-				path = ?s
+				path = ?s AND
+				adapter = "mysql"
 		', array(
 			$migration->getFile()->getPath() . "/" . $migration->getFile()->getBasename()
 		));
