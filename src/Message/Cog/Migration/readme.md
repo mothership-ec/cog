@@ -22,7 +22,7 @@ Options:
 
 ```
 Usage:
- bin/cog migrate
+ bin/cog migrate:run
 
 Options:
  --path="…"		Run the migrations in this path
