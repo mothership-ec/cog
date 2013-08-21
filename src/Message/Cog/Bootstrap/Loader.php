@@ -53,7 +53,7 @@ class Loader implements LoaderInterface
 
 		foreach ($finder as $file) {
 			// Skip non-php files
-			if (!$file->valid() || 'php' !== $file->getExtension()) {
+			if ('php' !== $file->getExtension()) {
 				continue;
 			}
 			// Determine class name
