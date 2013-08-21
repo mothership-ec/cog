@@ -57,7 +57,7 @@ class Loader implements LoaderInterface
 				continue;
 			}
 			// Determine class name
-			$className = $namespace . '\\' . $file->getBasename('.php');
+			$className = $namespace . str_replace('/', '\\', str_replace($path, '', $file->getPath())) . '\\' . $file->getBasename('.php');
 			// Check class can be loaded, skip if not
 			if (!class_exists($className)) {
 				continue;
