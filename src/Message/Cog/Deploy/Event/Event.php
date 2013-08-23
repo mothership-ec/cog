@@ -6,16 +6,16 @@ use Message\Cog\Event\Event as BaseEvent;
 
 class Event extends BaseEvent {
 
-	protected $_commands = array();
+	protected $_lines = array();
 
-	public function addCommand($command)
+	public function addLine($line)
 	{
-		$this->_commands[] = $command;
+		$this->_lines[] = $line;
 	}
 
-	public function getCommands()
+	public function getLines()
 	{
-		return $this->_commands;
+		return $this->_lines;
 	}
 
 }

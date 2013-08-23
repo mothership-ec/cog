@@ -30,8 +30,8 @@ class DeployPermissions extends Command
 		$event = new Deploy\Event\Event();
 		$this->get('event.dispatcher')->dispatch('cog.deploy.permissions', $event);
 
-		foreach ($event->getCommands() as $command) {
-			$output->writeln($command);
+		foreach ($event->getLines() as $line) {
+			$output->writeln($line);
 		}
 	}
 }
