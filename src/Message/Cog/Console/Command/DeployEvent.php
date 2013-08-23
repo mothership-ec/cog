@@ -6,6 +6,7 @@ use Message\Cog\Console\Command;
 use Message\Cog\Deploy;
 
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -23,8 +24,8 @@ class DeployEvent extends Command
 			->setName('deploy:event')
 			->setDescription('Runs event listeners for deployment events.')
 			->addArgument('task', InputArgument::REQUIRED, 'The task that is being run by capistrano.')
-			->addOption('before', null, InputArgument::VALUE_NONE, 'Flag for fired before the task.')
-			->addOption('after', null, InputArgument::VALUE_NONE, 'Flag for fired after the task.')
+			->addOption('before', null, InputOption::VALUE_NONE, 'Flag for fired before the task.')
+			->addOption('after', null, InputOption::VALUE_NONE, 'Flag for fired after the task.')
 		;
 	}
 
