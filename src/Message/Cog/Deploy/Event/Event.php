@@ -3,19 +3,20 @@
 namespace Message\Cog\Deploy\Event;
 
 use Message\Cog\Event\Event as BaseEvent;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Event extends BaseEvent {
 
-	protected $_lines = array();
+	protected $_output;
 
-	public function addLine($line)
+	public function setOutput(OutputInterface $output)
 	{
-		$this->_lines[] = $line;
+		$this->_output = $output;
 	}
 
-	public function getLines()
+	public function writeln($line)
 	{
-		return $this->_lines;
+		$this->_output->writeln($line);
 	}
 
 }

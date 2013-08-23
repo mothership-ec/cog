@@ -23,7 +23,7 @@ class DeployEvent extends Command
 		$this
 			->setName('deploy:event')
 			->setDescription('Runs event listeners for deployment events.')
-			->addArgument('task', InputArgument::REQUIRED, 'The task that is being run by capistrano.')
+			->addOption('task', null, InputOption::VALUE_REQUIRED, 'The task that is being run by capistrano.')
 			->addOption('before', null, InputOption::VALUE_NONE, 'Flag for fired before the task.')
 			->addOption('after', null, InputOption::VALUE_NONE, 'Flag for fired after the task.')
 		;
@@ -31,12 +31,16 @@ class DeployEvent extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$task = $input->getArgument('task');
+		$task = $input->getOption('task');
+
+		$event = new Deploy\Event\Event();
+
+		$event->setOutput($output);
 
 		if ($input->getOption('before')) {
-			$this->get('event.dispatcher')->dispatch('cog.deploy.before.' . $task, new Deploy\Event\Event());
+			$this->get('event.dispatcher')->dispatch('cog.deploy.before.' . $task, $event);
 		} else {
-			$this->get('event.dispatcher')->dispatch('cog.deploy.after.' . $task, new Deploy\Event\Event());
+			$this->get('event.dispatcher')->dispatch('cog.deploy.after.' . $task, $event);
 		}
 	}
 }
