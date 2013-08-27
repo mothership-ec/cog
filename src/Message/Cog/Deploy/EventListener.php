@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Application\Bootstrap\Deploy;
+namespace Message\Cog\Deploy;
 
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\Event\Event;
