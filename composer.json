@@ -26,6 +26,7 @@
 		"ext-gd"       : "*",
 		"ext-json"     : "*",
 		"ext-mysqli"   : "*",
+		"ext-intl"     : "*",
 
 		"symfony/console"              : "2.3.*",
 		"symfony/event-dispatcher"     : "2.1.*",
