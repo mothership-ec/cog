@@ -11,10 +11,13 @@ use Symfony\Component\Routing\RouteCollection as SFRouteCollection;
  */
 class RouteCollection
 {
+	const DEFAULT_PRIORITY = 0;
+
 	protected $_name;
 	protected $_collection;
 	protected $_prefix = '';
 	protected $_parent;
+	protected $_priority;
 
 	/**
 	 * Constructor.
@@ -41,11 +44,16 @@ class RouteCollection
 	 */
 	public function add($name, $url, $controller)
 	{
-		$reference = $this->_referenceParser->parse($controller);
-		$defaults  = array(
-			'_controller'      => $reference->getSymfonyLogicalControllerName(),
+		if (!is_callable($controller)) {
+			$reference  = $this->_referenceParser->parse($controller);
+			$controller = $reference->getSymfonyLogicalControllerName();
+		}
+
+		$defaults = array(
+			'_controller' => $controller,
 		);
-		$route     = new Route($url, $defaults);
+		
+		$route = new Route($url, $defaults);
 
 		$this->_collection->add($name, $route);
 
@@ -84,6 +92,42 @@ class RouteCollection
 	public function getPrefix()
 	{
 		return $this->_prefix;
+	}
+
+	/**
+	 * Set priority of a route collection.
+	 * A priority can only be set on a root route collection (without parent)
+	 *
+	 * @param 	int $priority 	The value the priority will be set to
+	 * @throws 	\Exception 		If somebody tries to set a priority on a nested
+	 *							route collection
+	 * @return 	RouteCollection
+	 */
+	public function setPriority($priority)
+	{
+		if(!is_null($this->getParent())) {
+			throw new \Exception('You cannot set a priority on a nested RouteCollection.');
+		}
+
+		$this->_priority = (int)$priority;
+
+		return $this;
+	}
+
+	/**
+	 * Get priority of a route collection.
+	 *
+	 * @return int|false 	The $_priority or, if not set, false
+	 * @throws \Exception 	If somebody tries to get a priority on a nested
+	 *						route collection
+	 */
+	public function getPriority()
+	{
+		if(!is_null($this->getParent())) {
+			throw new \Exception('Nested RouteCollections cannot have a priority.');
+		}
+
+		return (!is_null($this->_priority) ? $this->_priority : self::DEFAULT_PRIORITY);
 	}
 
 	/**

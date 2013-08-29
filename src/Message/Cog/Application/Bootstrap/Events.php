@@ -48,13 +48,6 @@ class Events implements EventsInterface, ContainerAwareInterface
 			new \Symfony\Component\HttpKernel\EventListener\ResponseListener('utf-8')
 		);
 
-		// Symfony's HTTP Exception Listener
-		if (in_array($this->_services['env'], array('local', 'dev'))) {
-			$eventDispatcher->addSubscriber(
-				new \Symfony\Component\HttpKernel\EventListener\ExceptionListener('Message\\Cog\\Debug\\Controller\\Exception::viewException')
-			);
-		}
-
 		// Symfony's HTTP Fragment Listener
 		$eventDispatcher->addSubscriber(
 			new \Symfony\Component\HttpKernel\EventListener\FragmentListener(
@@ -81,6 +74,9 @@ class Events implements EventsInterface, ContainerAwareInterface
 
 		// Controller
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
+
+		// Asset Management
+		$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
 
 		// Status check
 		$appLoader = $this->_services['app.loader'];

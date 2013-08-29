@@ -18,23 +18,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'modules.load.success' => array(
-				array('loadTemplatingHelpers'),
-			),
 			'console.status.check' => array(
 				array('checkStatus'),
 			),
-		);
-	}
-
-	public function loadTemplatingHelpers()
-	{
-		$this->_services['templating.engine.php']->addHelpers(array(
-			new Templating\PhpHelper($this->_services['image.resize'])
-		));
-
-		$this->_services['templating.twig.environment']->addExtension(
-			new Templating\TwigExtension($this->_services['image.resize'])
 		);
 	}
 

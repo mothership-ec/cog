@@ -346,7 +346,10 @@ class NestedSetHelper
 					`' . $this->_right . '` = `' . $this->_right . '` + 2
 				WHERE
 					`' . $this->_left . '` > ?i
-			', $parent[$this->_left]);
+			', array(
+				$parent[$this->_left]
+				)
+			);
 
 			$newLeft  = (int) $parent[$this->_left] + 1;
 			$newRight = (int) $parent[$this->_left] + 2;
@@ -359,7 +362,10 @@ class NestedSetHelper
 					`' . $this->_left . '` = `' . $this->_left . '` + 2
 				WHERE
 					`' . $this->_left . '` > ?i
-			', $parent[$this->_right]);
+			', array(
+				$parent[$this->_right]
+				)
+			);
 
 			$this->_trans->add('
 				UPDATE
@@ -368,7 +374,10 @@ class NestedSetHelper
 					`' . $this->_right . '` = `' . $this->_right . '` + 2
 				WHERE
 					`' . $this->_right . '` >= ?i
-			', $parent[$this->_right]);
+			', array(
+				$parent[$this->_right]
+				)
+			);
 
 			$newLeft  = (int) $parent[$this->_right];
 			$newRight = (int) $parent[$this->_right] + 1;

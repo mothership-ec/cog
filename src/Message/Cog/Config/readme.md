@@ -1,3 +1,5 @@
+
+.
 # Config Component
 
 This component is responsible for everything to do with application configurations. Loading them; parsing them; providing them and so on.

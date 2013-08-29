@@ -15,6 +15,7 @@ class ViewNameParser extends TemplateNameParser
 	protected $_services;
 	protected $_parser;
 	protected $_fileTypes;
+	protected $_formats;
 
 	protected $_lastAbsoluteModule;
 
@@ -24,12 +25,14 @@ class ViewNameParser extends TemplateNameParser
 	 * @param ContainerInterface       $services  The service container
 	 * @param ReferenceParserInterface $parser    Reference parser class
 	 * @param array                    $fileTypes Array of filetypes to support, in order of preference
+	 * @param array                    $fileTypes Array of formats to support, in order of preference
 	 */
-	public function __construct(ContainerInterface $services, ReferenceParserInterface $parser, array $fileTypes)
+	public function __construct(ContainerInterface $services, ReferenceParserInterface $parser, array $fileTypes, array $formats)
 	{
 		$this->_services  = $services;
 		$this->_parser    = $parser;
 		$this->_fileTypes = $fileTypes;
+		$this->_formats = $formats;
 	}
 
 	/**
@@ -71,13 +74,14 @@ class ViewNameParser extends TemplateNameParser
 			$this->_lastAbsoluteModule = $parsed->getModuleName();
 		}
 
+		// Force the parser to not look in the library
+		$parsed->setInLibrary(false);
+
 		// Get the base file name from the reference parser
-		$baseFileName = $parsed->getFullPath('View');
+		$baseFileName = $parsed->getFullPath('resources/view');
 
 		// Loop through each content type
-		foreach ($request->getAllowedContentTypes() as $mimeType) {
-			$format = $request->getFormat($mimeType);
-
+		foreach ($this->_formats as $format) {
 			// Loop through the engines in order of preference
 			foreach ($this->_fileTypes as $engine) {
 				// Check if a view file exists for this format and this engine

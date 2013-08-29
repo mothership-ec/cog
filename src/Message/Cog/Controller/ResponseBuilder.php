@@ -78,8 +78,9 @@ class ResponseBuilder implements RequestAwareInterface
 			// If not, throw an exception
 			throw new NotAcceptableHttpException(
 				sprintf(
-					'View could not be rendered or generated for reference `%s`',
-					$reference
+					'Exception thrown while rendering view `%s`: `%s`',
+					$reference,
+					$e->getMessage()
 				),
 				$e
 			);

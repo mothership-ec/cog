@@ -6,7 +6,7 @@ use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Service\ContainerInterface;
 
 use Symfony\Component\Console\Application as BaseApplication;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -18,6 +18,8 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
  */
 class Application extends BaseApplication implements ContainerAwareInterface
 {
+	const ENV_OPT_NAME = 'env';
+
 	protected $_container;
 
 	/**
@@ -31,10 +33,10 @@ class Application extends BaseApplication implements ContainerAwareInterface
 	/**
 	 * {inheritDoc}
 	 */
-	public function add(Command $command)
+	public function add(SymfonyCommand $command)
 	{
 		// Inject the service container if the command knows how to use it
-		if($command instanceof ContainerAwareInterface) {
+		if ($command instanceof ContainerAwareInterface) {
 			$command->setContainer($this->_container);
 		}
 

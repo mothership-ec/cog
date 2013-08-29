@@ -2,6 +2,8 @@
 
 namespace Message\Cog\ImageResize\Bootstrap;
 
+use Message\Cog\ImageResize\Templating;
+
 use Message\Cog\ImageResize\Resize\TwigExtension;
 
 use Message\Cog\Bootstrap\ServicesInterface;
@@ -19,11 +21,11 @@ class Services implements ServicesInterface
 			}
 
 			if(extension_loaded('gmagick')) {
-				return new \Imagine\Gmagick\Imagine(); 
+				return new \Imagine\Gmagick\Imagine();
 			}
 
 			if(extension_loaded('gd')) {
-				return new \Imagine\Gd\Imagine(); 
+				return new \Imagine\Gd\Imagine();
 			}
 
 			throw new \Exception('No image processing libraries available for Imagine.');
@@ -40,5 +42,20 @@ class Services implements ServicesInterface
 
 			return $resize;
 		});
+
+
+		$container['templating.engine.php'] = $container->share($container->extend('templating.engine.php', function($engine, $c) {
+			$engine->addHelpers(array(
+				new Templating\PhpHelper($c['image.resize'])
+			));
+			return $engine;
+		}));
+
+		$container['templating.twig.environment'] = $container->share($container->extend('templating.twig.environment', function($twig, $c) {
+			$twig->addExtension(
+				new Templating\TwigExtension($c['image.resize'])
+			);
+			return $twig;
+		}));
 	}
 }

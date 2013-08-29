@@ -119,20 +119,52 @@ class Loader implements LoaderInterface
 			}
 		}
 
+		// Register fallback routes
+		foreach ($this->_bootstraps as $bootstrap) {
+			if ($bootstrap instanceof FallbackRoutesInterface) {
+				$bootstrap->registerFallbackRoutes($this->_services['routes']);
+			}
+		}
+
 		// Register events and tasks last
 		foreach ($this->_bootstraps as $bootstrap) {
 			if ($bootstrap instanceof EventsInterface) {
 				$bootstrap->registerEvents($this->_services['event.dispatcher']);
 			}
-			if ('console' === $this->_services['environment']->context()
-			 && $bootstrap instanceof TasksInterface) {
-				$bootstrap->registerTasks($this->_services['task.collection']);
+			if ('console' === $this->_services['environment']->context()) {
+				if ($bootstrap instanceof CommandsInterface) {
+					$bootstrap->registerCommands($this->_services['console.commands']);
+				}
+				if ($bootstrap instanceof TasksInterface) {
+					$bootstrap->registerTasks($this->_services['task.collection']);
+				}
 			}
 		}
 
 		// Clear the bootstrap list
 		$this->clear();
 	}
+
+	public function loadServices()
+	{
+
+	}
+
+	public function loadRoutes()
+	{
+
+	}
+
+	public function loadFallbackRoutes()
+	{
+
+	}
+
+	public function loadTasks()
+	{
+
+	}
+
 
 	/**
 	 * Get all bootstraps registered on this loader.
