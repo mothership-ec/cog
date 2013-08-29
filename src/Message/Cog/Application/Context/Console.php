@@ -50,6 +50,7 @@ class Console implements ContextInterface
 				new Command\TaskRun,
 				new Command\TaskRunScheduled,
 				new Command\AssetDump,
+				new Command\AssetGenerator,
 			));
 		});
 
