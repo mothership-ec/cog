@@ -58,12 +58,7 @@ class ViewNameParser extends TemplateNameParser
 	{
 		$baseFileName = $this->getFileName($reference);
 
-		if (false === $template = $this->getTemplateReference($baseFileName)) {
-			throw new NotAcceptableHttpException(sprintf(
-				'View format could not be determined for reference `%s`',
-				$reference
-			));
-		}
+		$template = $this->getTemplateReference($reference, $baseFileName);
 
 		return $template;
 	}
@@ -96,7 +91,7 @@ class ViewNameParser extends TemplateNameParser
 		$request = $this->_services['request'];
 		$parsed  = $this->_parser->parse($reference);
 
-		$parsed = $this->getAbsolute($parsed);
+		$parsed = $this->getAbsolute($reference, $parsed);
 
 		// Force the parser to not look in the library
 		$parsed->setInLibrary(false);
@@ -113,7 +108,7 @@ class ViewNameParser extends TemplateNameParser
 	 * @param  string            $baseFileName The base file name
 	 * @return TemplateReference
 	 */
-	public function getTemplateReference($baseFileName)
+	public function getTemplateReference($reference, $baseFileName)
 	{
 		// Loop through each content type
 		foreach ($this->_formats as $format) {
@@ -127,7 +122,10 @@ class ViewNameParser extends TemplateNameParser
 			}
 		}
 
-		return false;
+		throw new NotAcceptableHttpException(sprintf(
+			'View format could not be determined for reference `%s`',
+			$reference
+		));
 	}
 
 	/**
@@ -136,7 +134,7 @@ class ViewNameParser extends TemplateNameParser
 	 * @param  ReferenceParser $parsed Parsed reference
 	 * @return ReferenceParser         Absolute parsed reference
 	 */
-	public function getAbsolute($parsed)
+	public function getAbsolute($reference, $parsed)
 	{
 		// If it is relative and an absolute path was used previously, make the
 		// reference absolute using the previous module name
