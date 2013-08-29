@@ -62,11 +62,19 @@ class FixtureManager
 			}
 
 			foreach ($fixtures as $fixture) {
-				copy($fixtureDir . $fixture, $workingDir . 'config/' . $fixture);
+				$file = $workingDir . 'config/' . $fixture;
+				$packageName = $event->getOperation()->getPackage()->getPrettyName();
+
+				if(file_exists($file)) {
+					$event->getIO()->write("<warning>Config Fixture already exists for {$packageName}</warning>");
+					continue;
+				}
+
+				copy($fixtureDir . $fixture, $file);
 
 				$event->getIO()->write(sprintf(
 					'<info>Moved package `%s` config fixture `%s` to application config directory.</info>',
-					$event->getOperation()->getPackage()->getPrettyName(),
+					$packageName,
 					$fixture
 				));
 			}
