@@ -2,6 +2,7 @@
 
 namespace Message\Cog\Bootstrap;
 
+use Message\Cog\Filesystem\Finder;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\HTTP\RequestAwareInterface;
@@ -15,6 +16,7 @@ use Message\Cog\HTTP\RequestAwareInterface;
 class Loader implements LoaderInterface
 {
 	protected $_services;
+	protected $_finder;
 	protected $_bootstraps = array();
 
 	/**
@@ -22,9 +24,10 @@ class Loader implements LoaderInterface
 	 *
 	 * @param ContainerInterface $container The service container
 	 */
-	public function __construct(ContainerInterface $container)
+	public function __construct(ContainerInterface $container, Finder $finder)
 	{
 		$this->_services = $container;
+		$this->_finder   = $finder;
 	}
 
 	/**
@@ -46,31 +49,31 @@ class Loader implements LoaderInterface
 			$namespace = '\\' . $namespace;
 		}
 
-		if (is_dir($path)) {
-			$dir = new \DirectoryIterator($path);
-			foreach ($dir as $file) {
-				// Skip non-php files
-				if (!$file->valid() || 'php' !== $file->getExtension()) {
-					continue;
-				}
-				// Determine class name
-				$className = $namespace . '\\' . $file->getBasename('.php');
-				// Check class can be loaded, skip if not
-				if (!class_exists($className)) {
-					continue;
-				}
-				// Load the bootstrap
-				$class = new $className;
-				if ($class instanceof ContainerAwareInterface) {
-					$class->setContainer($this->_services);
-				}
-				if ($class instanceof RequestAwareInterface) {
-					$class->setRequest($this->_services['request']);
-				}
-				// Add to the internal list if it implements `BootstrapInterface`
-				if ($class instanceof BootstrapInterface) {
-					$this->add($class);
-				}
+		// Find all files in the path recursively
+		$finder = $this->_finder->files()->in($path);
+
+		foreach ($finder as $file) {
+			// Skip non-php files
+			if ('php' !== $file->getExtension()) {
+				continue;
+			}
+			// Determine class name
+			$className = $namespace . str_replace('/', '\\', str_replace($path, '', $file->getPath())) . '\\' . $file->getBasename('.php');
+			// Check class can be loaded, skip if not
+			if (!class_exists($className)) {
+				continue;
+			}
+			// Load the bootstrap
+			$class = new $className;
+			if ($class instanceof ContainerAwareInterface) {
+				$class->setContainer($this->_services);
+			}
+			if ($class instanceof RequestAwareInterface) {
+				$class->setRequest($this->_services['request']);
+			}
+			// Add to the internal list if it implements `BootstrapInterface`
+			if ($class instanceof BootstrapInterface) {
+				$this->add($class);
 			}
 		}
 
