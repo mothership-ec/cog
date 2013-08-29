@@ -16,6 +16,7 @@ use Message\Cog\HTTP\RequestAwareInterface;
 class Loader implements LoaderInterface
 {
 	protected $_services;
+	protected $_finder;
 	protected $_bootstraps = array();
 
 	/**
@@ -23,9 +24,10 @@ class Loader implements LoaderInterface
 	 *
 	 * @param ContainerInterface $container The service container
 	 */
-	public function __construct(ContainerInterface $container)
+	public function __construct(ContainerInterface $container, Finder $finder)
 	{
 		$this->_services = $container;
+		$this->_finder   = $finder;
 	}
 
 	/**
@@ -48,8 +50,7 @@ class Loader implements LoaderInterface
 		}
 
 		// Find all files in the path recursively
-		$finder = new Finder();
-		$finder->files()->in($path);
+		$finder = $this->_finder->files()->in($path);
 
 		foreach ($finder as $file) {
 			// Skip non-php files
