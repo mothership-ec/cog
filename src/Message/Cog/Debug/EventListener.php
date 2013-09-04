@@ -3,26 +3,34 @@
 namespace Message\Cog\Debug;
 
 use Message\Cog\Event\SubscriberInterface;
+use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\Event;
 use Message\Cog\Application\Environment;
 
 /**
  * Event listener for the Debug component.
  *
- * Registers event listener(s) to render the Profiler.
+ * * Registers event listener(s) to render the Profiler.
+ * * Registers the "Whoops" error page.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class EventListener implements SubscriberInterface
+class EventListener extends BaseListener implements SubscriberInterface
 {
 	protected $_profiler;
 	protected $_environment;
 
 	static public function getSubscribedEvents()
 	{
-		return array('terminate' => array(
-			array('renderProfiler'),
-		));
+		return array(
+			'terminate' => array(
+				array('renderProfiler'),
+			),
+			'cog.load.success' => array(
+				array('registerWhoopsHandlers'),
+				array('registerMonologHandlers'),
+			),
+		);
 	}
 
 	/**
@@ -51,5 +59,28 @@ class EventListener implements SubscriberInterface
 		 && $this->_environment->context() != 'console') {
 			echo $this->_profiler->renderHtml();
 		}
+	}
+
+	/**
+	 * Register the "Whoops" error page when NOT in the live or staging
+	 * environment.
+	 *
+	 * @param  Event  $event The event object
+	 */
+	public function registerWhoopsHandlers(Event $event)
+	{
+		if (!in_array($this->_environment->get(), array('live', 'staging'))) {
+			$this->_services['whoops']->register();
+		}
+	}
+
+	/**
+	 * Register the error/exception/shutdown handlers for Monolog.
+	 *
+	 * @param  Event  $event The event object
+	 */
+	public function registerMonologHandlers(Event $event)
+	{
+		\Monolog\ErrorHandler::register($this->_services['log.errors']);
 	}
 }

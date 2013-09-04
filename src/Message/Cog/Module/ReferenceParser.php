@@ -234,6 +234,11 @@ class ReferenceParser implements ReferenceParserInterface
 		return $this;
 	}
 
+	public function setInLibrary($inLibrary = true)
+	{
+		$this->_inLibrary = $inLibrary;
+	}
+
 	/**
 	 * Clear this instance so a new reference can be parsed.
 	 */

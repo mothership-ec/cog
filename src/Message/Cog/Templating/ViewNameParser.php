@@ -78,15 +78,17 @@ class ViewNameParser extends TemplateNameParser
 			$this->_lastAbsoluteModule = $parsed->getModuleName();
 		}
 
+		// Force the parser to not look in the library
+		$parsed->setInLibrary(false);
+
 		// Get the base file name from the reference parser
-		$baseFileName = $parsed->getFullPath('View');
+		$baseFileName = $parsed->getFullPath('resources/view');
 
 		// If parsing a batch, return an array of templates
 		$templates = array();
 
 		// Loop through each content type
 		foreach ($this->_formats as $format) {
-
 			// Loop through the engines in order of preference
 			foreach ($this->_fileTypes as $engine) {
 				// Check if a view file exists for this format and this engine

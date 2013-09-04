@@ -121,7 +121,6 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
-
 			// Get available content types for request.
 			$request = $c['request'];
 			$formats = array();
@@ -151,7 +150,9 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['templating.twig.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Templating\TwigFilesystemLoader('/', $c['templating.view_name_parser']);
+			return new \Message\Cog\Templating\TwigFilesystemLoader(array(
+				'/'
+			), $c['templating.view_name_parser']);
 		});
 
 		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
@@ -168,6 +169,7 @@ class Services implements ServicesInterface
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
+			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\PriceTwigExtension());
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
 			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
 			if ('live' !== $c['env']) {
@@ -338,7 +340,9 @@ class Services implements ServicesInterface
 				// Maps cog://tmp/* to /tmp/* (in the installation)
 				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
 				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
+				"/^\/logs/us"         => $baseDir.'logs/',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
+				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
 			);
 
 			return $mapping;
@@ -439,13 +443,13 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.templates.twig'] = function($c) {
 			return array(
-				'Message:Cog:Form::Twig:form_div_layout',
+				'Message:Cog::form:twig:form_div_layout',
 			);
 		};
 
 		$serviceContainer['form.templates.php'] = function($c) {
 			return array(
-				'Message:Cog:Form::Php',
+				'Message:Cog::form:php',
 			);
 		};
 
@@ -529,16 +533,48 @@ class Services implements ServicesInterface
 			return $manager;
 		});
 
+		$serviceContainer['asset.filters'] = $serviceContainer->share(function($c) {
+			$manager = new \Assetic\FilterManager;
+
+			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
+
+			return $manager;
+		});
+
 		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
-			$factory = new \Message\Cog\AssetManagement\Factory($c['app.loader']->getBaseDir());
+			$factory = new \Message\Cog\AssetManagement\Factory('cog://public/');
 
 			$factory->setReferenceParser($c['reference_parser']);
+			$factory->setFilterManager($c['asset.filters']);
 
 			return $factory;
 		});
 
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
-			return new \Assetic\AssetWriter('cog://public');
+			return new \Assetic\AssetWriter('cog://public/');
+		});
+
+		$serviceContainer['log.errors'] = $serviceContainer->share(function($c) {
+			$logger = new \Monolog\Logger('errors');
+
+			// Set up handler for logging to file (as default)
+			$logger->pushHandler(
+				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
+			);
+
+			return $logger;
+		});
+
+		$serviceContainer['whoops'] = $serviceContainer->share(function($c) {
+			$run = new \Whoops\Run;
+			$run->allowQuit(false);
+			$run->pushHandler($c['whoops.page_handler']);
+
+			return $run;
+		});
+
+		$serviceContainer['whoops.page_handler'] = $serviceContainer->share(function($c) {
+			return new \Whoops\Handler\PrettyPageHandler;
 		});
 
 		$serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {

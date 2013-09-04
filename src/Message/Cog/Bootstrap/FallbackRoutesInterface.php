@@ -1,0 +1,26 @@
+<?php
+
+namespace Message\Cog\Bootstrap;
+
+/**
+ * Bootstrap interface for registering routes to the router after all other
+ * routes.
+ *
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
+interface FallbackRoutesInterface extends BootstrapInterface
+{
+	/**
+	 * Register routes to the given router.
+	 *
+	 * The router is not type hinted because this would mean we would have to
+	 * type hint it in every class that uses this interface which is
+	 * unmanageable.
+	 *
+	 * We can assume that `$router` is an instance of
+	 * `\Message\Cog\Routing\CollectionManager`.
+	 *
+	 * @param object $router The route collection manager
+	 */
+	public function registerFallbackRoutes($router);
+}

@@ -39,15 +39,16 @@
 		"symfony/twig-bridge"          : "2.3.*",
 		"symfony/twig-bundle"          : "2.3.*",
 		"symfony/yaml"                 : "2.1.*",
-		"symfony/filesystem"           : "2.2.*",
+		"symfony/filesystem"           : "2.3.*",
 		"symfony/finder"               : "2.2.*",
 		"twig/twig"                    : "1.13.*",
 		"pimple/pimple"                : "1.0.1",
+		"monolog/monolog"              : "1.6.*",
 		"mtdowling/cron-expression"    : "1.0.*",
 		"treasure-chest/treasure-chest": "0.1.*",
 		"kriswallsmith/assetic"        : "1.1.*",
-		"imagine/imagine"			   : "0.4.*",
-        "swiftmailer/swiftmailer"      : "5.1.*@dev"
+		"imagine/imagine"              : "0.4.*",
+		"filp/whoops"                  : "1.0.*"
 	},
 	"require-dev": {
 		"mikey179/vfsStream": "1.1.*"

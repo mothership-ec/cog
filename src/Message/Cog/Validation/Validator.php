@@ -330,13 +330,32 @@ class Validator
 	protected function _setRequiredError($name, $field)
 	{
 		// Check if data has been submitted
-		$notSet = empty($this->_data[$name]);
+		$data = $this->_data[$name];
+		
+		$notSet = $this->_checkRequired($data);
 
 		if ($notSet && !$field['optional']) {
 			$this->_messages->addError($name, $field['readableName'].' is a required field.');
 		}
 
 		return $this;
+	}
+
+	protected function _checkRequired($data)
+	{
+		if($data === false) {
+			return true;
+		}
+
+		if(is_null($data)) {
+			return true;
+		}
+
+		if(is_string($data) && trim($data) === '') {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
