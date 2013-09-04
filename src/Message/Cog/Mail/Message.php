@@ -4,8 +4,8 @@ namespace Message\Cog\Mail;
 
 class Message extends  \Swift_Message
 {
-	private $view = '';
-	private $templateContentTypes = array(
+	protected $_view = '';
+	protected $_templateContentTypes = array(
 			'html' => 'text/html',
 			'txt' => 'text/plain'
 		);
@@ -40,11 +40,12 @@ class Message extends  \Swift_Message
 	 *
 	 * @param $view
 	 * @param array $params
+	 *
 	 * @return $this
 	 */
 	public function setView($view, $params = array())
 	{
-		$this->view = $view;
+		$this->_view = $view;
 
 		// Get list of templates to render
 		$templates = $this->_parser->parse($view, $batch = true);
@@ -71,17 +72,18 @@ class Message extends  \Swift_Message
 
 	public function getView()
 	{
-		return $this->view;
+		return $this->_view;
 	}
 
 	/**
 	 * Determines what content type to set based on the template format.
 	 *
 	 * @param $format
+	 *
 	 * @return string
 	 */
 	public function getTemplateContentType($format)
 	{
-		return (isset($this->templateContentTypes[$format])) ? $this->templateContentTypes[$format] : '';
+		return (isset($this->_templateContentTypes[$format])) ? $this->_templateContentTypes[$format] : '';
 	}
 }
