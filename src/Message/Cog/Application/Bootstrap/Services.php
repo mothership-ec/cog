@@ -576,5 +576,9 @@ class Services implements ServicesInterface
 		$serviceContainer['whoops.page_handler'] = $serviceContainer->share(function($c) {
 			return new \Whoops\Handler\PrettyPageHandler;
 		});
+
+		$serviceContainer['helper.prorate'] = function() {
+			return new \Message\Cog\Helper\ProrateHelper;
+		};
 	}
 }
