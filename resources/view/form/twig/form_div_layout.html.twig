@@ -58,8 +58,7 @@
 	{% spaceless %}
 		<div {{ block('widget_container_attributes') }}>
 			{% for child in form %}
-				{{ form_widget(child) }}
-				{{ form_label(child) }}
+				{{ form_row(child) }}
 			{% endfor %}
 		</div>
 	{% endspaceless %}
