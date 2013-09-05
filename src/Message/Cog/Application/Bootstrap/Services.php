@@ -578,12 +578,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
-			$transport = new \Message\Cog\Mail\Transport\SMTP('mail.message.co.uk', 25);
-
-			$transport->setUsername('test');
-			$transport->setPassword('testpw');
-
-			return $transport;
+			return new \Message\Cog\Mail\Transport\Mail();
 		});
 
 		$serviceContainer['mail.dispatcher'] = $serviceContainer->share(function($c) {

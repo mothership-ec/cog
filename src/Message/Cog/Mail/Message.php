@@ -70,6 +70,11 @@ class Message extends  \Swift_Message
 		return $this;
 	}
 
+	/**
+	 * Get the current view used for the email
+	 *
+	 * @return string
+	 */
 	public function getView()
 	{
 		return $this->_view;
@@ -77,6 +82,10 @@ class Message extends  \Swift_Message
 
 	/**
 	 * Determines what content type to set based on the template format.
+	 *
+	 * This is to match the file extension with the required content type for the email
+	 * as defined in $_templateContentTypes.
+	 *
 	 *
 	 * @param $format
 	 *
