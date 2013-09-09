@@ -55,8 +55,7 @@ class ViewNameParser extends TemplateNameParser
 	public function parse($reference)
 	{
 		// Get the current HTTP request
-		$request = $this->_services['request'];
-		$parsed  = $this->_parser->parse($reference);
+		$parsed = $this->_parser->parse($reference);
 
 		// If it is relative and an absolute path was used previously, make the
 		// reference absolute using the previous module name
