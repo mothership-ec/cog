@@ -57,13 +57,14 @@ class ViewNameParser extends TemplateNameParser
 		// Get the current HTTP request
 		$parsed = $this->_parser->parse($reference);
 
+		$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
+
 		// If it is relative and an absolute path was used previously, make the
 		// reference absolute using the previous module name
 		// This is a fix for https://github.com/messagedigital/cog/issues/40
 		// which should be improved/refactored at a later date
 		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
 			// If it is relative, make it absolute with the last module name
-			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
 			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
 
 			// Parse the new reference
@@ -76,17 +77,30 @@ class ViewNameParser extends TemplateNameParser
 		// Force the parser to not look in the library
 		$parsed->setInLibrary(false);
 
-		// Get the base file name from the reference parser
-		$baseFileName = $parsed->getFullPath('resources/view');
+		$checkPaths = array(
+			// Get the base directory view override folder
+			$this->_services['app.loader']->getBaseDir() .
+				'view/' .
+				str_replace('\\', $referenceSeparator, $parsed->getModuleName()) .
+				'/' .
+				$parsed->getPath()
+			,
 
-		// Loop through each content type
-		foreach ($this->_formats as $format) {
-			// Loop through the engines in order of preference
-			foreach ($this->_fileTypes as $engine) {
-				// Check if a view file exists for this format and this engine
-				$fileName = $baseFileName . '.' . $format . '.' . $engine;
-				if (file_exists($fileName)) {
-					return new TemplateReference($fileName, $engine);
+			// Get the base file name from the reference parser
+			$parsed->getFullPath('resources/view'),
+		);
+
+		// Loop paths to check, returning on the first one to match
+		foreach ($checkPaths as $baseFileName) {
+			// Loop through each content type
+			foreach ($this->_formats as $format) {
+				// Loop through the engines in order of preference
+				foreach ($this->_fileTypes as $engine) {
+					// Check if a view file exists for this format and this engine
+					$fileName = $baseFileName . '.' . $format . '.' . $engine;
+					if (file_exists($fileName)) {
+						return new TemplateReference($fileName, $engine);
+					}
 				}
 			}
 		}
