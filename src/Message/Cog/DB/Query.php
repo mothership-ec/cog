@@ -68,7 +68,7 @@ class Query implements QueryableInterface
 	}
 
 	/**
-	 * Get the query. If it has been parsed, return that, else return the query given to the Query object
+	 * Get the parsed query in its current state
 	 *
 	 * @return string       The query
 	 */
