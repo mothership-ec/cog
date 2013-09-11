@@ -68,6 +68,16 @@ class Query implements QueryableInterface
 	}
 
 	/**
+	 * Get the parsed query in its current state
+	 *
+	 * @return string       The query
+	 */
+	public function getParsedQuery()
+	{
+		return $this->_parsedQuery;
+	}
+
+	/**
 	 * Replaces placeholders in the query with safe, escaped parameters. Used
 	 * to prevent SQL injection attacks.
 	 *
