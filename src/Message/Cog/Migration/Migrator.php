@@ -52,7 +52,7 @@ class Migrator {
 
 	/**
 	 * Run 'up' a migration.
-	 * 
+	 *
 	 * @param  Migration $migration
 	 * @param  int       $batch
 	 * @return void
@@ -74,7 +74,7 @@ class Migrator {
 
 	/**
 	 * Run 'down' the last migration batch.
-	 * 
+	 *
 	 * @return int
 	 */
 	public function rollback()
@@ -96,7 +96,7 @@ class Migrator {
 
 	/**
 	 * Reset the database to the point before any migrations were run.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function reset()
@@ -112,7 +112,7 @@ class Migrator {
 
 	/**
 	 * Refresh the database by resetting then running all migrations.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function refresh()
@@ -130,7 +130,7 @@ class Migrator {
 
 	/**
 	 * Get the migration notes.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getNotes()
@@ -138,9 +138,14 @@ class Migrator {
 		return $this->_notes;
 	}
 
+	public function clearNotes()
+	{
+		$this->_notes = array();
+	}
+
 	/**
 	 * Run 'up' a collection.
-	 * 
+	 *
 	 * @return void
 	 */
 	protected function _runCollection()
@@ -164,7 +169,7 @@ class Migrator {
 
 	/**
 	 * Run 'down' a migration.
-	 * 
+	 *
 	 * @param  Migration $migration
 	 * @return void
 	 */
@@ -184,7 +189,7 @@ class Migrator {
 
 	/**
 	 * Get the next batch number.
-	 * 
+	 *
 	 * @return int
 	 */
 	protected function _getNextBatchNumber()
@@ -196,7 +201,7 @@ class Migrator {
 
 	/**
 	 * Add a note to the operation.
-	 * 
+	 *
 	 * @param  string $note
 	 * @return void
 	 */

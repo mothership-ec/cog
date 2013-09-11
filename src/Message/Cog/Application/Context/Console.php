@@ -55,6 +55,7 @@ class Console implements ContextInterface
 				new Command\MigrateRollback,
 				new Command\MigrateReset,
 				new Command\MigrateRefresh,
+				new Command\MigrateModules,
 			));
 		});
 
