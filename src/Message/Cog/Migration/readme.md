@@ -18,6 +18,13 @@ Options:
 ```
 -->
 
+**Run module migrations**
+
+```
+Usage:
+ bin/cog migrate:modules
+```
+
 **Run migrations**
 
 ```
@@ -107,12 +114,12 @@ class ###Foo extends Migration {
 	{
 		$this->run('');
 	}
-	
+
 	public function down()
 	{
 		$this->run('');
 	}
-	
+
 }
 ```
 
@@ -131,9 +138,9 @@ class ###CreateFooTable extends Migration {
 				PRIMARY KEY (id)
 			)
 		');
-		
+
 	}
-	
+
 	public function down()
 	{
 		$this->run('DROP TABLE foo');
@@ -148,21 +155,21 @@ class ###CreateFooTable extends Migration {
 
 ```
 class ###UpdateFooTable extends Migration {
-	
+
 	public function up()
 	{
 		$this->run('
 			ALTER TABLE foo
 		');
 	}
-	
+
 	public function down()
 	{
 		$this->run('
 			ALTER TABLE foo
 		');
 	}
-	
+
 }
 ```
 -->
