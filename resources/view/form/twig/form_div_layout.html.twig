@@ -171,13 +171,7 @@
 
 {% block money_widget %}
 	{% spaceless %}
-		<div class="slug">
-			{# get currency-part out of the money_pattern created by the MoneyType #}
-			{% set currency = money_pattern|split('{{ widget }}')[0]|trim %}
-
-			{# replace {{ widget }} with the actual widget and add <p></p> around the currency-sign #}
-			{{ money_pattern|replace({ '{{ widget }}': block('form_widget_simple'), (currency): "<p>%s</p>"|format(currency) })|raw }}
-		</div>
+		{{ money_pattern|replace({ '{{ widget }}': block('form_widget_simple') })|raw }}
 	{% endspaceless %}
 {% endblock money_widget %}
 
@@ -197,12 +191,10 @@
 
 {% block percent_widget %}
 	{% spaceless %}
-		{% set type = type|default('text') %}
-
-		<div class="slug">
-	        <p>%</p>
-			{{ block('form_widget_simple') }}
-	     </div>
+		<div class="add-on">
+        	<p>%</p>
+      		{{ block('form_widget_simple') }}
+    	</div>
 	{% endspaceless %}
 {% endblock percent_widget %}
 
@@ -411,16 +403,3 @@
 		{% for attrname, attrvalue in attr %}{{ attrname }}="{{ attrvalue }}" {% endfor %}
 	{% endspaceless %}
 {% endblock button_attributes %}
-
-{# Custom blocks defined by Message #}
-{% block help_widget %}
-	{% if attr['data-help-key'] is defined %}
-		<section class="help">
-			{% set key        = attr['data-help-key'] %}
-			{% set translated = key|trans %}
-			{% if key != translated %}
-			<p>{{ translated|raw }}</p>
-			{% endif %}
-		</section>
-	{% endif %}
-{% endblock help_widget %}

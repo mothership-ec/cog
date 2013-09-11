@@ -32,7 +32,7 @@ class ViewNameParser extends TemplateNameParser
 		$this->_services  = $services;
 		$this->_parser    = $parser;
 		$this->_fileTypes = $fileTypes;
-		$this->_formats = $formats;
+		$this->_formats   = $formats;
 	}
 
 	/**
