@@ -198,7 +198,8 @@ namespace Message\Cog\Application {
 
 			// Register the service for the bootstrap loader
 			$this->_services['bootstrap.loader'] = function($c) {
-				return new \Message\Cog\Bootstrap\Loader($c);
+				// Can not call $this->_services['filesystem.finder'] as it has not yet been created.
+				return new \Message\Cog\Bootstrap\Loader($c, new \Message\Cog\Filesystem\Finder());
 			};
 
 			// Load the Cog bootstraps
