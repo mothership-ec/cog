@@ -26,8 +26,10 @@ class Services implements ServicesInterface
 	 */
 	public function registerServices($serviceContainer)
 	{
-		$serviceContainer['profiler'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Debug\Profiler(null, null, false);
+		$serviceContainer['profiler'] = $serviceContainer->share(function($s) {
+			return new \Message\Cog\Debug\Profiler(null, function() use ($s) {
+				return $s['db']->getQueryCount();
+			}, false);
 		});
 
 		$env = new Environment;
