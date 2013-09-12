@@ -191,8 +191,10 @@
 
 {% block percent_widget %}
 	{% spaceless %}
-		{% set type = type|default('text') %}
-		{{ block('form_widget_simple') }} %
+		<div class="add-on">
+        	<p>%</p>
+      		{{ block('form_widget_simple') }}
+    	</div>
 	{% endspaceless %}
 {% endblock percent_widget %}
 
@@ -275,7 +277,7 @@
 
 {% block form_row %}
 	{% spaceless %}
-		<div class="field">
+		<div class="{{ compound ? 'field-wrap' : 'field' }}">
 			{{ form_label(form) }}
 			{{ form_errors(form) }}
 			{{ form_widget(form) }}
@@ -401,38 +403,3 @@
 		{% for attrname, attrvalue in attr %}{{ attrname }}="{{ attrvalue }}" {% endfor %}
 	{% endspaceless %}
 {% endblock button_attributes %}
-
-{# Custom blocks defined by Message #}
-{% block help_widget %}
-	{% if attr['data-help-key'] is defined %}
-		<section class="help">
-			<div class="short">
-				{% for key in attr['data-help-key']|split(':') %}
-				{% set key        = key ~ '.short' %}
-				{% set translated = key|trans %}
-				{% if key != translated %}
-				<p>{{ translated|raw }}</p>
-				<a href="#{{ id }}_long_help" data-show>{{ 'See more'|trans }}</a>
-				{% endif %}
-				{% endfor %}
-			</div>
-			<div class="long" id="{{ id }}_long_help">
-				{% for key in attr['data-help-key']|split(':') %}
-					{% set key        = key ~ '.long' %}
-					{% set translated = key|trans %}
-					{% if key != translated %}
-					<p>{{ translated|raw }}</p>
-					{% endif %}
-
-					<div class="examples">
-						{% set key        = key ~ '.example' %}
-						{% set translated = key|trans %}
-						{% if key != translated %}
-						<p>{{ translated|raw }}</p>
-						{% endif %}
-					</div>
-				{% endfor %}
-			</div>
-		</section>
-	{% endif %}
-{% endblock help_widget %}
