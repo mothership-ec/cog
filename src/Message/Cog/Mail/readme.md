@@ -36,7 +36,7 @@ See Swiftmailer docs here:
 
 # Transports
 
-    You can set up different transports within the Bootstrapped Services
+    You can set up different transports within the services bootstrap.
 
     Currently Mail and SMTP are available
 
