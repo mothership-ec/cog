@@ -112,7 +112,7 @@ class Services implements ServicesInterface
 		};
 
 		// Service for the templating delegation engine
-		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating'] = function($c) {
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
 					// Twig templating engine
@@ -120,9 +120,9 @@ class Services implements ServicesInterface
 					$c['templating.engine.php'],
 				)
 			);
-		});
+		};
 
-		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.view_name_parser'] = function($c) {
 			// Get available content types for request.
 			$request = $c['request'];
 			$formats = array();
@@ -142,22 +142,22 @@ class Services implements ServicesInterface
 				),
 				$formats
 			);
-		});
+		};
 
-		$serviceContainer['templating.actions_helper'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.actions_helper'] = function($c) {
 			return new \Message\Cog\Templating\Helper\Actions(
 				$c['http.fragment_handler'],
 				$c['reference_parser']
 			);
-		});
+		};
 
-		$serviceContainer['templating.twig.loader'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.twig.loader'] = function($c) {
 			return new \Message\Cog\Templating\TwigFilesystemLoader(array(
 				'/'
 			), $c['templating.view_name_parser']);
-		});
+		};
 
-		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.twig.environment'] = function($c) {
 			$twigEnvironment = new \Twig_Environment(
 				$c['templating.twig.loader'],
 				array(
@@ -180,9 +180,9 @@ class Services implements ServicesInterface
 			$twigEnvironment->addGlobal('app', $c['templating.globals']);
 
 			return $twigEnvironment;
-		});
+		};
 
-		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.engine.php'] = function($c) {
 			$engine = new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
 				$c['templating.filesystem.loader'],
@@ -197,25 +197,25 @@ class Services implements ServicesInterface
 			$engine->addGlobal('app', $c['templating.globals']);
 
 			return $engine;
-		});
+		};
 
-		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.filesystem.loader'] = function($c) {
 			return new \Symfony\Component\Templating\Loader\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
 					'cog://Message:Cog::Form:View:Php',
 				)
 			);
-		});
+		};
 
-		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.engine.twig'] = function($c) {
 			return new \Message\Cog\Templating\TwigEngine(
 				$c['templating.twig.environment'],
 				$c['templating.view_name_parser']
 			);
-		});
+		};
 
-		$serviceContainer['templating.globals'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.globals'] = function($c) {
 			$globals = new Cog\Templating\GlobalVariables($c);
 
 			$globals->set('session', function($services) {
@@ -231,7 +231,7 @@ class Services implements ServicesInterface
 			});
 
 			return $globals;
-		});
+		};
 
 		$serviceContainer['http.kernel'] = function($c) {
 			return new \Message\Cog\HTTP\Kernel(
@@ -597,7 +597,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['mail.message'] = $serviceContainer->share(function($c) {
-			$engine = $c['templating'];
+			$engine = $c['mail.templating'];
 			$parser = $c['templating.view_name_parser'];
 
 			return new \Message\Cog\Mail\Message($engine, $parser);
