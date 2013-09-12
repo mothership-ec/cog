@@ -113,7 +113,10 @@ class ViewNameParser extends TemplateNameParser
 							return $template;
 						}
 
-						$templates[$format] = $template;
+						// If override doesn't exist, set the original view
+						if (!array_key_exists($format, $templates)) {
+							$templates[$format] = $template;
+						}
 					}
 				}
 			}
