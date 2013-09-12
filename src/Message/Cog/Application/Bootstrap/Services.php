@@ -26,8 +26,10 @@ class Services implements ServicesInterface
 	 */
 	public function registerServices($serviceContainer)
 	{
-		$serviceContainer['profiler'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Debug\Profiler(null, null, false);
+		$serviceContainer['profiler'] = $serviceContainer->share(function($s) {
+			return new \Message\Cog\Debug\Profiler(null, function() use ($s) {
+				return $s['db']->getQueryCount();
+			}, false);
 		});
 
 		$env = new Environment;
@@ -385,6 +387,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.extensions'] = function($c) {
 			return array(
+				new \Message\Cog\Form\Extension\Extension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($c['form.csrf_secret'])

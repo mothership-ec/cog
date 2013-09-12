@@ -32,7 +32,7 @@ class ViewNameParser extends TemplateNameParser
 		$this->_services  = $services;
 		$this->_parser    = $parser;
 		$this->_fileTypes = $fileTypes;
-		$this->_formats = $formats;
+		$this->_formats   = $formats;
 	}
 
 	/**
@@ -44,7 +44,7 @@ class ViewNameParser extends TemplateNameParser
 	 * exists, it returns this.
 	 *
 	 * @param string $reference  The view reference (without the format)
-	 * @param string $batch      Return a batch of templates
+	 * @param bool   $batch      Return a batch of templates
 	 *
 	 * @return string            The view file path
 	 *
@@ -55,12 +55,14 @@ class ViewNameParser extends TemplateNameParser
 	 */
 	public function parse($reference, $batch = false)
 	{
-		// No need to parse multiple times.
-		if($reference instanceof TemplateReference) {
+		// Return if it's already been parsed
+		if ($reference instanceof TemplateReference) {
 			return $reference;
 		}
 
-		$parsed  = $this->_parser->parse($reference);
+		$parsed = $this->_parser->parse($reference);
+
+		$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
 
 		// If it is relative and an absolute path was used previously, make the
 		// reference absolute using the previous module name
@@ -68,7 +70,6 @@ class ViewNameParser extends TemplateNameParser
 		// which should be improved/refactored at a later date
 		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
 			// If it is relative, make it absolute with the last module name
-			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
 			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
 
 			// Parse the new reference
@@ -81,32 +82,44 @@ class ViewNameParser extends TemplateNameParser
 		// Force the parser to not look in the library
 		$parsed->setInLibrary(false);
 
-		// Get the base file name from the reference parser
-		$baseFileName = $parsed->getFullPath('resources/view');
-
 		// If parsing a batch, return an array of templates
 		$templates = array();
 
-		// Loop through each content type
-		foreach ($this->_formats as $format) {
-			// Loop through the engines in order of preference
-			foreach ($this->_fileTypes as $engine) {
-				// Check if a view file exists for this format and this engine
-				$fileName = $baseFileName . '.' . $format . '.' . $engine;
-				if (file_exists($fileName)) {
+		$checkPaths = array(
+			// Get the base directory view override folder
+			$this->_services['app.loader']->getBaseDir() .
+				'view/' .
+				str_replace('\\', $referenceSeparator, $parsed->getModuleName()) .
+				'/' .
+				$parsed->getPath()
+			,
 
-					$template = new TemplateReference($fileName, $engine);
+			// Get the base file name from the reference parser
+			$parsed->getFullPath('resources/view'),
+		);
 
-					if(!$batch) {
-						return $template;
+		// Loop paths to check, returning on the first one to match
+		foreach ($checkPaths as $baseFileName) {
+			// Loop through each content type
+			foreach ($this->_formats as $format) {
+				// Loop through the engines in order of preference
+				foreach ($this->_fileTypes as $engine) {
+					// Check if a view file exists for this format and this engine
+					$fileName = $baseFileName . '.' . $format . '.' . $engine;
+					if (file_exists($fileName)) {
+						$template = new TemplateReference($fileName, $engine);
+
+						if (!$batch) {
+							return $template;
+						}
+
+						$templates[$format] = $template;
 					}
-
-					$templates[$format] = $template;
 				}
 			}
 		}
 
-		if($templates) {
+		if (count($templates) > 0) {
 			return $templates;
 		}
 

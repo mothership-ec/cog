@@ -7,6 +7,10 @@ use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\Event;
 use Message\Cog\Application\Environment;
 
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+
 /**
  * Event listener for the Debug component.
  *
@@ -23,8 +27,8 @@ class EventListener extends BaseListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'terminate' => array(
-				array('renderProfiler'),
+			KernelEvents::RESPONSE => array(
+				array('renderProfiler', 1000),
 			),
 			'cog.load.success' => array(
 				array('registerWhoopsHandlers'),
@@ -53,11 +57,20 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 * @todo Ideally this would just append the HTML to the response content rather than just echo it out?
 	 * @todo This should only append the HTML if the response type is actually HTML. Sort this out once we are setting response type on the response.
 	 */
-	public function renderProfiler(Event $event)
+	public function renderProfiler(FilterResponseEvent $event)
 	{
+		// Ignore for subrequests
+		if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+			return false;
+		}
+
+		$contentType = $event->getResponse()->headers->get('Content-Type');
+
 		if ($this->_environment->isLocal()
-		 && $this->_environment->context() != 'console') {
-			echo $this->_profiler->renderHtml();
+		 && $this->_environment->context() != 'console'
+		 && (is_null($contentType) || 'text/html' === $contentType)) {
+			$html = $this->get('profiler')->renderHtml();
+			$event->getResponse()->setContent($event->getResponse()->getContent() . $html);
 		}
 	}
 
