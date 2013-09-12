@@ -84,18 +84,6 @@ class Console implements ContextInterface
 
 			return $context;
 		};
-
-		$this->_services['http.request.master'] = $this->_services->share(function() {
-			$request = new \Message\Cog\HTTP\Request;
-
-			$request->attributes->set('_allowedContentTypes', array('text/plain', 'text/html'));
-
-			return $request;
-		});
-
-		$this->_services['request'] = $this->_services->share(function($c) {
-			return $c['http.request.master'];
-		});
 	}
 
 	/**
