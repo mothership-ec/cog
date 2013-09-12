@@ -122,16 +122,21 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$serviceContainer['templating.view_name_parser'] = function($c) {
-			// Get available content types for request.
+		$serviceContainer['templating.formats'] = function($c) {
+			// Get available content types for request
 			$request = $c['request'];
 			$formats = array();
 
 			$contentTypes = $request->getAllowedContentTypes();
 
-			foreach($contentTypes as $key => $mimeType) {
+			foreach ($contentTypes as $key => $mimeType) {
 				$formats[$key] = $request->getFormat($mimeType);
 			}
+
+			return $formats;
+		};
+
+		$serviceContainer['templating.view_name_parser'] = function($c) {
 
 			return new \Message\Cog\Templating\ViewNameParser(
 				$c,
@@ -140,7 +145,7 @@ class Services implements ServicesInterface
 					'twig',
 					'php',
 				),
-				$formats
+				$c['templating.formats']
 			);
 		};
 
@@ -597,10 +602,24 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['mail.message'] = $serviceContainer->share(function($c) {
-			$engine = $c['mail.templating'];
-			$parser = $c['templating.view_name_parser'];
+			// This is all a bit hacky, but the only easy way I can think of
+			// First, change the formats allowed in templating for views
+			$origFormats = $c->raw('templating.formats');
+			$c['templating.formats'] = array(
+				'html',
+				'txt',
+			);
 
-			return new \Message\Cog\Mail\Message($engine, $parser);
+			// Now get a new instance of the templating engine (which will now be using these formats)
+			$engine = $c['templating'];
+
+			// Get an instance of Message
+			$message = new \Message\Cog\Mail\Message($engine, $c['templating.view_name_parser']);
+
+			// Now replace the old templating formats
+			$c['templating.formats'] = $origFormats;
+
+			return $message;
 		});
 	}
 }
