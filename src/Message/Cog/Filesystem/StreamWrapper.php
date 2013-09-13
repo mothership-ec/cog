@@ -459,4 +459,14 @@ class StreamWrapper implements StreamWrapperInterface
 		// have a return value.
 		return true;
 	}
+
+	/**
+	 * @see http://php.net/manual/en/streamwrapper.stream-metadata.php
+	 *
+	 * @todo Implement this. But how?!
+	 */
+	public function stream_metadata($path, $option, $value)
+	{
+
+	}
 }
