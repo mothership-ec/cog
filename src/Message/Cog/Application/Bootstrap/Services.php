@@ -352,13 +352,15 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
-				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
-				"/^\/logs/us"         => $baseDir.'logs/',
-				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
-				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
-				"/^\/view\/(.*)/us"   => $baseDir.'view/$1',
-				"/^\/view/us"         => $baseDir.'view/',
+				"/^\/tmp\/(.*)/us"        => $baseDir.'tmp/$1',
+				"/^\/logs\/(.*)/us"       => $baseDir.'logs/$1',
+				"/^\/logs/us"             => $baseDir.'logs/',
+				"/^\/public\/(.*)/us"     => $baseDir.'public/$1',
+				"/^\/data\/(.*)/us"       => $baseDir.'data/$1',
+				"/^\/view\/(.*)/us"       => $baseDir.'view/$1',
+				"/^\/view/us"             => $baseDir.'view/',
+				"/^\/migrations\/(.*)/us" => $baseDir.'migrations/$1',
+				"/^\/migrations/us"       => $baseDir.'migrations/',
 			);
 
 			return $mapping;
@@ -593,6 +595,38 @@ class Services implements ServicesInterface
 		$serviceContainer['whoops.page_handler'] = $serviceContainer->share(function($c) {
 			return new \Whoops\Handler\PrettyPageHandler;
 		});
+
+		$serviceContainer['migration.mysql'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Migrator(
+				$c['migration.mysql.loader'],
+				$c['migration.mysql.create'],
+				$c['migration.mysql.delete']
+			);
+		});
+
+		// Shortcut to mysql migration adapter
+		$serviceContainer['migration'] = $serviceContainer->share(function($c) {
+			return $c['migration.mysql'];
+		});
+
+		$serviceContainer['migration.mysql.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Loader(
+				$c['db'],
+				$c['filesystem.finder']
+			);
+		});
+
+		$serviceContainer['migration.mysql.create'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Create($c['db']);
+		});
+
+		$serviceContainer['migration.mysql.delete'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Delete($c['db']);
+		});
+
+		$serviceContainer['migration.collection'] = function($c) {
+			return new \Message\Cog\Migration\Collection\Collection();
+		};
 
 		$serviceContainer['helper.prorate'] = function() {
 			return new \Message\Cog\Helper\ProrateHelper;
