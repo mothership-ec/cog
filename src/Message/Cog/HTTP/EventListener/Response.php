@@ -22,7 +22,7 @@ class Response implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(KernelEvents::RESPONSE => array(
-			array('setCookies'),
+			array('setCookies', -100),
 		));
 	}
 
