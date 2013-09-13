@@ -464,6 +464,7 @@ class Services implements ServicesInterface
 				new \Message\Cog\Validation\Loader(
 					new \Message\Cog\Validation\Messages,
 					array(
+						new \Message\Cog\Validation\Rule\Type,
 						new \Message\Cog\Validation\Rule\Date,
 						new \Message\Cog\Validation\Rule\Number,
 						new \Message\Cog\Validation\Rule\Iterable,

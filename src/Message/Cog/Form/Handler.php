@@ -226,9 +226,15 @@ class Handler
 	 */
 	public function add($child, $type = null, $label = null, array $options = array())
 	{
+		$handler = null;
+		if($child instanceof Handler) {
+			$handler = $child;
+			$child = $handler->getForm();
+		}
+
 		if(!is_string($child) && (!$child instanceof SymfonyForm)) {
 			throw new \InvalidArgumentException(
-				'$child must be either a string or instance of Symfony\Component\Form\Form'
+				'You child you tried to add to the form doesn\'t have the right type!'
 			);
 		}
 
@@ -245,10 +251,16 @@ class Handler
 			$this->getForm()->add($child, $type, $options);
 		}
 
-		// Get the field we just added and add it to the validator
-		$field = $this->field($this->_getChildName($child));
-		$this->getValidator()->field($field->getName(), $field->getConfig()->getOption('label') ?: false);
+		if($handler) {
+			$this->getValidator()->nestForm($handler);
+		} else {
+			// Get the field we just added and add it to the validator
+			$field = $this->field($this->_getChildName($child));
 
+			$this->getValidator()->field($field->getName(), $field->getConfig()->getOption('label') ?: false);
+		}
+
+		// d($this->getValidator());
 		return $this;
 
 	}
@@ -393,7 +405,14 @@ class Handler
 
 			$this->submitForm();
 
-			$valid = $this->_validator->validate($this->getData());
+			$children = $this->getForm()->all();
+
+			// because symfony removes invalid data, but we actually need this data for the validator
+			// to display the right error messages, we need to give the validator an array with both the
+			// new symfony-form-data and the post-data
+			$data = array_replace_recursive($this->getPost(), $this->getForm()->getData());
+
+			$valid = $this->_validator->validate($data);
 			$valid = ($valid) ? $this->getForm()->isValid() : $valid;
 
 			if ($addToFlash && !$this->_addedToFlash) {
@@ -451,6 +470,8 @@ class Handler
 	{
 		$this->isValid($addToFlash);
 
+		// here we want the filtered data from the validator but don't need to include the
+		// data symfony removed because it doesn't match the type
 		return $this->_validator->getData();
 	}
 
