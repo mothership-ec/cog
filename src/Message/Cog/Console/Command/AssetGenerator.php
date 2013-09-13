@@ -1,0 +1,93 @@
+<?php
+
+namespace Message\Cog\Console\Command;
+
+use Message\Cog\Console\Command;
+use Message\Cog\Filesystem\File;
+
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+use Assetic\Extension\Twig\TwigResource;
+
+/**
+ * AssetGenerator
+ *
+ * Provides the asset:generate command.
+ * Move module assets to public folder.
+ */
+class AssetGenerator extends Command
+{
+	protected $_fileExtensions = array();
+
+	protected function configure()
+	{
+		$this
+			->setName('asset:generate')
+			->setDescription('Compile assets for modules.')
+		;
+
+		// Set file extension used for templates
+		$this->_fileExtensions = array('twig');
+	}
+
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
+		// Service to work with files
+		$fileSystem = $this->get('filesystem.finder');
+
+		// Get list of loaded codules
+		$modules = $this->get('module.loader')->getModules();
+
+		// Service to locate module paths
+		$moduleLocator = $this->get('module.locator');
+
+		$output->writeln('<info>Generating public assets for ' . count($modules) . ' modules.</info>');
+
+		// Compile assets for all cogules
+		foreach ($modules as $module) {
+			$moduleName = str_replace("\\", ':', $module);
+
+			// Path for codules' view directory
+			$originDir = $moduleLocator->getPath($module, false) . 'resources/view';
+
+			// If there are no views for a module, no need to check for templates
+			if (!file_exists($originDir)) {
+				$output->writeln("<comment>No views found for module {$moduleName}</comment>");
+
+				continue;
+			}
+
+			foreach ($fileSystem->in($originDir) as $file) {
+				// Check that the file is one that we need to combine.
+				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
+					continue;
+				}
+
+				$this->_services['asset.manager']->addResource(new TwigResource(
+					new \Twig_Loader_Filesystem('/'),
+					$file->getPathname()
+				), 'twig');
+			}
+		}
+
+		// Compile assets for view overrides
+		foreach ($fileSystem->in('cog://view') as $file) {
+			// Check that the file is one that we need to combine.
+			if (!in_array($file->getExtension(), $this->_fileExtensions)) {
+				continue;
+			}
+
+			$this->_services['asset.manager']->addResource(new TwigResource(
+				new \Twig_Loader_Filesystem('/'),
+				$file->getPathname()
+			), 'twig');
+		}
+
+		// Compile the assets
+		$this->_services['asset.writer']->writeManagerAssets($this->_services['asset.manager']);
+
+		$output->writeln("<info>Compiled assets for all views</info>");
+	}
+}

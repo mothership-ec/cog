@@ -123,14 +123,18 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['templating.formats'] = function($c) {
-			// Get available content types for request
-			$request = $c['request'];
 			$formats = array();
 
-			$contentTypes = $request->getAllowedContentTypes();
+			// If there is a request available
+			if (isset($c['request'])) {
+				// Get available content types for request.
+				$request = $c['request'];
 
-			foreach ($contentTypes as $key => $mimeType) {
-				$formats[$key] = $request->getFormat($mimeType);
+				$contentTypes = $request->getAllowedContentTypes();
+
+				foreach($contentTypes as $key => $mimeType) {
+					$formats[$key] = $request->getFormat($mimeType);
+				}
 			}
 
 			return $formats;
@@ -139,6 +143,7 @@ class Services implements ServicesInterface
 		$serviceContainer['templating.view_name_parser'] = function($c) {
 			$parser = new \Message\Cog\Templating\ViewNameParser(
 				$c['reference_parser'],
+				$c['filesystem.finder'],
 				array(
 					'twig',
 					'php',
@@ -352,6 +357,8 @@ class Services implements ServicesInterface
 				"/^\/logs/us"         => $baseDir.'logs/',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
+				"/^\/view\/(.*)/us"   => $baseDir.'view/$1',
+				"/^\/view/us"         => $baseDir.'view/',
 			);
 
 			return $mapping;
@@ -561,7 +568,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
-			return new \Assetic\AssetWriter('cog://public/');
+			return new \Assetic\AssetWriter('cog://public');
 		});
 
 		$serviceContainer['log.errors'] = $serviceContainer->share(function($c) {
