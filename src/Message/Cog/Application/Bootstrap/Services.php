@@ -137,9 +137,7 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['templating.view_name_parser'] = function($c) {
-
-			return new \Message\Cog\Templating\ViewNameParser(
-				$c,
+			$parser = new \Message\Cog\Templating\ViewNameParser(
 				$c['reference_parser'],
 				array(
 					'twig',
@@ -147,6 +145,10 @@ class Services implements ServicesInterface
 				),
 				$c['templating.formats']
 			);
+
+			$parser->addDefaultDirectory($c['app.loader']->getBaseDir() . 'view/');
+
+			return $parser;
 		};
 
 		$serviceContainer['templating.actions_helper'] = function($c) {

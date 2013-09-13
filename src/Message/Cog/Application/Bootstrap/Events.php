@@ -78,6 +78,9 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// Asset Management
 		$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
 
+		// Deploy
+		$eventDispatcher->addSubscriber(new \Message\Cog\Deploy\EventListener);
+
 		// Status check
 		$appLoader = $this->_services['app.loader'];
 		$eventDispatcher->addListener('console.status.check', function($event) use ($appLoader) {

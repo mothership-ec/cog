@@ -36,7 +36,7 @@ class DateTimeImmutable extends DateTime
 			return false;
 		}
 
-		return new static($date->format('@' . $date->getTimestamp()), $timezone);
+		return new static($date->format(date('c', $date->getTimestamp())), $timezone);
 	}
 
 	/**
