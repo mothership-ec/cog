@@ -5,6 +5,8 @@ namespace Message\Cog\AssetManagement;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
+use Message\Cog\Deploy\Event\Event as DeployEvent;
+
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -23,23 +25,31 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	static public function getSubscribedEvents()
 	{
-		return array(KernelEvents::RESPONSE => array(
-			array('generateAssets'),
-		));
+		return array(
+			KernelEvents::RESPONSE => array(
+				array('generateAssetsOnRequest'),
+			),
+			'cog.deploy.after.update_code' => array(
+				'generateAssetsOnDeploy'
+			)
+		);
 	}
 
 	/**
-	 * Generate the assets defined in the Twig view.
+	 * Generate the assets defined in the Twig view. This is only used when
+	 * working locally.
 	 *
 	 * This only fires for the master request.
 	 *
 	 * @param FilterResponseEvent $response The event
-	 *
-	 * @todo Make this only happen when in the local environment
 	 */
-	public function generateAssets(FilterResponseEvent $response)
+	public function generateAssetsOnRequest(FilterResponseEvent $response)
 	{
 		if (HttpKernelInterface::MASTER_REQUEST !== $response->getRequestType()) {
+			return;
+		}
+
+		if ('local' !== $this->_services['env']) {
 			return;
 		}
 
@@ -51,5 +61,15 @@ class EventListener extends BaseListener implements SubscriberInterface
 		}
 
 		$this->_services['asset.writer']->writeManagerAssets($this->_services['asset.manager']);
+	}
+
+	/**
+	 * Dump and generate the assets on deploy.
+	 *
+	 * @param  DeployEvent $event
+	 */
+	public function generateAssetsOnDeploy(DeployEvent $event)
+	{
+		$event->writeln('bin/cog asset:dump');
 	}
 }
