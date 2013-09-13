@@ -44,6 +44,7 @@ class ViewNameParser extends TemplateNameParser
 	 * exists, it returns this.
 	 *
 	 * @param string $reference  The view reference (without the format)
+	 * @param bool   $batch      Return a batch of templates
 	 *
 	 * @return string            The view file path
 	 *
@@ -52,9 +53,13 @@ class ViewNameParser extends TemplateNameParser
 	 * @todo What if there's no request object?
 	 * @todo Notify the response of the chosen response type
 	 */
-	public function parse($reference)
+	public function parse($reference, $batch = false)
 	{
-		// Get the current HTTP request
+		// Return if it's already been parsed
+		if ($reference instanceof TemplateReference) {
+			return $reference;
+		}
+
 		$parsed = $this->_parser->parse($reference);
 
 		$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
@@ -76,6 +81,9 @@ class ViewNameParser extends TemplateNameParser
 
 		// Force the parser to not look in the library
 		$parsed->setInLibrary(false);
+
+		// If parsing a batch, return an array of templates
+		$templates = array();
 
 		$checkPaths = array(
 			// Get the base directory view override folder
@@ -99,10 +107,23 @@ class ViewNameParser extends TemplateNameParser
 					// Check if a view file exists for this format and this engine
 					$fileName = $baseFileName . '.' . $format . '.' . $engine;
 					if (file_exists($fileName)) {
-						return new TemplateReference($fileName, $engine);
+						$template = new TemplateReference($fileName, $engine);
+
+						if (!$batch) {
+							return $template;
+						}
+
+						// If override doesn't exist, set the original view
+						if (!array_key_exists($format, $templates)) {
+							$templates[$format] = $template;
+						}
 					}
 				}
 			}
+		}
+
+		if (count($templates) > 0) {
+			return $templates;
 		}
 
 		throw new NotAcceptableHttpException(sprintf(
