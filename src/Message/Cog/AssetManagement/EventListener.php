@@ -71,5 +71,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 	public function generateAssetsOnDeploy(DeployEvent $event)
 	{
 		$event->writeln('bin/cog asset:dump');
+		$event->writeln('bin/cog asset:generate');
 	}
 }
