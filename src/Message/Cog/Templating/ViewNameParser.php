@@ -4,6 +4,7 @@ namespace Message\Cog\Templating;
 
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Module\ReferenceParserInterface;
+use Message\Cog\Filesystem\Finder;
 
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParser;
@@ -12,7 +13,6 @@ use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class ViewNameParser extends TemplateNameParser
 {
-	protected $_services;
 	protected $_parser;
 	protected $_fileTypes;
 	protected $_formats;
@@ -27,9 +27,10 @@ class ViewNameParser extends TemplateNameParser
 	 * @param array                    $fileTypes Array of filetypes to support, in order of preference
 	 * @param array                    $fileTypes Array of formats to support, in order of preference
 	 */
-	public function __construct(ReferenceParserInterface $parser, array $fileTypes, array $formats)
+	public function __construct(ReferenceParserInterface $parser, Finder $finder, array $fileTypes, array $formats)
 	{
 		$this->_parser    = $parser;
+		$this->_finder    = $finder;
 		$this->_fileTypes = $fileTypes;
 		$this->_formats   = $formats;
 	}
@@ -130,6 +131,7 @@ class ViewNameParser extends TemplateNameParser
 							$templates[$format] = $template;
 						}
 					}
+
 				}
 			}
 		}
@@ -143,4 +145,33 @@ class ViewNameParser extends TemplateNameParser
 			$reference
 		));
 	}
+
+	/**
+	 * Get the absolute path for a parsed reference.
+	 *
+	 * @param  ReferenceParser $parsed Parsed reference
+	 * @return ReferenceParser         Absolute parsed reference
+	 */
+	public function getAbsolute($reference, $parsed)
+	{
+		// If it is relative and an absolute path was used previously, make the
+		// reference absolute using the previous module name
+		// This is a fix for https://github.com/messagedigital/cog/issues/40
+		// which should be improved/refactored at a later date
+		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
+			// If it is relative, make it absolute with the last module name
+			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
+			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
+
+			// Parse the new reference
+			$parsed = $this->_parser->parse($newReference);
+		}
+		else if (!$parsed->isRelative()) {
+			$this->_lastAbsoluteModule = $parsed->getModuleName();
+		}
+
+		return $parsed;
+	}
+
+
 }
