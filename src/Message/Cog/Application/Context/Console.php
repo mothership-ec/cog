@@ -50,6 +50,14 @@ class Console implements ContextInterface
 				new Command\TaskRun,
 				new Command\TaskRunScheduled,
 				new Command\AssetDump,
+				new Command\AssetGenerator,
+				new Command\MigrateInstall,
+				new Command\MigrateRollback,
+				new Command\MigrateReset,
+				new Command\MigrateRefresh,
+				new Command\MigrateModules,
+				new Command\DeployEvent,
+				new Command\DeployPermissions,
 			));
 		});
 

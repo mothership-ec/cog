@@ -26,8 +26,10 @@ class Services implements ServicesInterface
 	 */
 	public function registerServices($serviceContainer)
 	{
-		$serviceContainer['profiler'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Debug\Profiler(null, null, false);
+		$serviceContainer['profiler'] = $serviceContainer->share(function($s) {
+			return new \Message\Cog\Debug\Profiler(null, function() use ($s) {
+				return $s['db']->getQueryCount();
+			}, false);
 		});
 
 		$env = new Environment;
@@ -110,7 +112,7 @@ class Services implements ServicesInterface
 		};
 
 		// Service for the templating delegation engine
-		$serviceContainer['templating'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating'] = function($c) {
 			return new \Message\Cog\Templating\DelegatingEngine(
 				array(
 					// Twig templating engine
@@ -118,44 +120,56 @@ class Services implements ServicesInterface
 					$c['templating.engine.php'],
 				)
 			);
-		});
+		};
 
-		$serviceContainer['templating.view_name_parser'] = $serviceContainer->share(function($c) {
-			// Get available content types for request.
-			$request = $c['request'];
+		$serviceContainer['templating.formats'] = function($c) {
 			$formats = array();
 
-			$contentTypes = $request->getAllowedContentTypes();
+			// If there is a request available
+			if (isset($c['request'])) {
+				// Get available content types for request.
+				$request = $c['request'];
 
-			foreach($contentTypes as $key => $mimeType) {
-				$formats[$key] = $request->getFormat($mimeType);
+				$contentTypes = $request->getAllowedContentTypes();
+
+				foreach($contentTypes as $key => $mimeType) {
+					$formats[$key] = $request->getFormat($mimeType);
+				}
 			}
 
-			return new \Message\Cog\Templating\ViewNameParser(
-				$c,
+			return $formats;
+		};
+
+		$serviceContainer['templating.view_name_parser'] = function($c) {
+			$parser = new \Message\Cog\Templating\ViewNameParser(
 				$c['reference_parser'],
+				$c['filesystem.finder'],
 				array(
 					'twig',
 					'php',
 				),
-				$formats
+				$c['templating.formats']
 			);
-		});
 
-		$serviceContainer['templating.actions_helper'] = $serviceContainer->share(function($c) {
+			$parser->addDefaultDirectory($c['app.loader']->getBaseDir() . 'view/');
+
+			return $parser;
+		};
+
+		$serviceContainer['templating.actions_helper'] = function($c) {
 			return new \Message\Cog\Templating\Helper\Actions(
 				$c['http.fragment_handler'],
 				$c['reference_parser']
 			);
-		});
+		};
 
-		$serviceContainer['templating.twig.loader'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.twig.loader'] = function($c) {
 			return new \Message\Cog\Templating\TwigFilesystemLoader(array(
 				'/'
 			), $c['templating.view_name_parser']);
-		});
+		};
 
-		$serviceContainer['templating.twig.environment'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.twig.environment'] = function($c) {
 			$twigEnvironment = new \Twig_Environment(
 				$c['templating.twig.loader'],
 				array(
@@ -178,9 +192,9 @@ class Services implements ServicesInterface
 			$twigEnvironment->addGlobal('app', $c['templating.globals']);
 
 			return $twigEnvironment;
-		});
+		};
 
-		$serviceContainer['templating.engine.php'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.engine.php'] = function($c) {
 			$engine = new \Message\Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
 				$c['templating.filesystem.loader'],
@@ -195,25 +209,25 @@ class Services implements ServicesInterface
 			$engine->addGlobal('app', $c['templating.globals']);
 
 			return $engine;
-		});
+		};
 
-		$serviceContainer['templating.filesystem.loader'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.filesystem.loader'] = function($c) {
 			return new \Symfony\Component\Templating\Loader\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
 					'cog://Message:Cog::Form:View:Php',
 				)
 			);
-		});
+		};
 
-		$serviceContainer['templating.engine.twig'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.engine.twig'] = function($c) {
 			return new \Message\Cog\Templating\TwigEngine(
 				$c['templating.twig.environment'],
 				$c['templating.view_name_parser']
 			);
-		});
+		};
 
-		$serviceContainer['templating.globals'] = $serviceContainer->share(function($c) {
+		$serviceContainer['templating.globals'] = function($c) {
 			$globals = new Cog\Templating\GlobalVariables($c);
 
 			$globals->set('session', function($services) {
@@ -229,7 +243,7 @@ class Services implements ServicesInterface
 			});
 
 			return $globals;
-		});
+		};
 
 		$serviceContainer['http.kernel'] = function($c) {
 			return new \Message\Cog\HTTP\Kernel(
@@ -338,11 +352,15 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us"    => $baseDir.'tmp/$1',
-				"/^\/logs\/(.*)/us"   => $baseDir.'logs/$1',
-				"/^\/logs/us"         => $baseDir.'logs/',
-				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
-				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
+				"/^\/tmp\/(.*)/us"        => $baseDir.'tmp/$1',
+				"/^\/logs\/(.*)/us"       => $baseDir.'logs/$1',
+				"/^\/logs/us"             => $baseDir.'logs/',
+				"/^\/public\/(.*)/us"     => $baseDir.'public/$1',
+				"/^\/data\/(.*)/us"       => $baseDir.'data/$1',
+				"/^\/view\/(.*)/us"       => $baseDir.'view/$1',
+				"/^\/view/us"             => $baseDir.'view/',
+				"/^\/migrations\/(.*)/us" => $baseDir.'migrations/$1',
+				"/^\/migrations/us"       => $baseDir.'migrations/',
 			);
 
 			return $mapping;
@@ -553,7 +571,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
-			return new \Assetic\AssetWriter('cog://public/');
+			return new \Assetic\AssetWriter('cog://public');
 		});
 
 		$serviceContainer['log.errors'] = $serviceContainer->share(function($c) {
@@ -579,8 +597,73 @@ class Services implements ServicesInterface
 			return new \Whoops\Handler\PrettyPageHandler;
 		});
 
+		$serviceContainer['migration.mysql'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Migrator(
+				$c['migration.mysql.loader'],
+				$c['migration.mysql.create'],
+				$c['migration.mysql.delete']
+			);
+		});
+
+		// Shortcut to mysql migration adapter
+		$serviceContainer['migration'] = $serviceContainer->share(function($c) {
+			return $c['migration.mysql'];
+		});
+
+		$serviceContainer['migration.mysql.loader'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Loader(
+				$c['db'],
+				$c['filesystem.finder']
+			);
+		});
+
+		$serviceContainer['migration.mysql.create'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Create($c['db']);
+		});
+
+		$serviceContainer['migration.mysql.delete'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Migration\Adapter\MySQL\Delete($c['db']);
+		});
+
+		$serviceContainer['migration.collection'] = function($c) {
+			return new \Message\Cog\Migration\Collection\Collection();
+		};
+
 		$serviceContainer['helper.prorate'] = function() {
 			return new \Message\Cog\Helper\ProrateHelper;
 		};
+
+		$serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Mail\Transport\Mail();
+		});
+
+		$serviceContainer['mail.dispatcher'] = $serviceContainer->share(function($c) {
+
+			$transport = $c['mail.transport'];
+			$dispatcher = new \Message\Cog\Mail\Mailer($transport);
+
+			return $dispatcher;
+		});
+
+		$serviceContainer['mail.message'] = $serviceContainer->share(function($c) {
+			// This is all a bit hacky, but the only easy way I can think of
+			// First, change the formats allowed in templating for views
+			$origFormats = $c->raw('templating.formats');
+			$c['templating.formats'] = array(
+				'html',
+				'txt',
+			);
+
+			// Now get a new instance of the templating engine (which will now be using these formats)
+			$engine = $c['templating'];
+
+			// Get an instance of Message
+			$message = new \Message\Cog\Mail\Message($engine, $c['templating.view_name_parser']);
+
+			// Now replace the old templating formats
+			$c['templating.formats'] = $origFormats;
+
+			return $message;
+		});
 	}
 }
