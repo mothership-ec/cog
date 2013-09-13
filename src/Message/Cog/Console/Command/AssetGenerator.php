@@ -34,36 +34,34 @@ class AssetGenerator extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		// Service to work with files.
+		// Service to work with files
 		$fileSystem = $this->get('filesystem.finder');
 
-		// Base location for Views.
-		$viewDir = 'View';
-
-		// Get list of loaded Modules.
+		// Get list of loaded codules
 		$modules = $this->get('module.loader')->getModules();
 
-		// Service to locate module paths.
+		// Service to locate module paths
 		$moduleLocator = $this->get('module.locator');
 
 		$output->writeln('<info>Generating public assets for ' . count($modules) . ' modules.</info>');
 
-		foreach($modules as $module) {
+		// Compile assets for all cogules
+		foreach ($modules as $module) {
 			$moduleName = str_replace("\\", ':', $module);
 
-			// Path for Modules' View directory.
-			$originDir = $moduleLocator->getPath($module) . $viewDir;
+			// Path for codules' view directory
+			$originDir = $moduleLocator->getPath($module, false) . 'resources/view';
 
-			// If there are no Views for a module, no need to check for templates.
-			if(!file_exists($originDir)) {
-				$output->writeln("<comment>No assets for {$moduleName}</comment>");
+			// If there are no views for a module, no need to check for templates
+			if (!file_exists($originDir)) {
+				$output->writeln("<comment>No views found for module {$moduleName}</comment>");
+
 				continue;
 			}
 
 			foreach ($fileSystem->in($originDir) as $file) {
-
 				// Check that the file is one that we need to combine.
-				if(!in_array($file->getExtension(), $this->_fileExtensions)) {
+				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
 					continue;
 				}
 
@@ -72,10 +70,24 @@ class AssetGenerator extends Command
 					$file->getPathname()
 				), 'twig');
 			}
-
-			$this->_services['asset.writer']->writeManagerAssets($this->_services['asset.manager']);
-
-			$output->writeln("<info>Compiled assets for {$moduleName}</info>");
 		}
+
+		// Compile assets for view overrides
+		foreach ($fileSystem->in('cog://view') as $file) {
+			// Check that the file is one that we need to combine.
+			if (!in_array($file->getExtension(), $this->_fileExtensions)) {
+				continue;
+			}
+
+			$this->_services['asset.manager']->addResource(new TwigResource(
+				new \Twig_Loader_Filesystem('/'),
+				$file->getPathname()
+			), 'twig');
+		}
+
+		// Compile the assets
+		$this->_services['asset.writer']->writeManagerAssets($this->_services['asset.manager']);
+
+		$output->writeln("<info>Compiled assets for all views</info>");
 	}
 }

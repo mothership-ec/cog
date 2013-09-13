@@ -357,6 +357,8 @@ class Services implements ServicesInterface
 				"/^\/logs/us"         => $baseDir.'logs/',
 				"/^\/public\/(.*)/us" => $baseDir.'public/$1',
 				"/^\/data\/(.*)/us"   => $baseDir.'data/$1',
+				"/^\/view\/(.*)/us"   => $baseDir.'view/$1',
+				"/^\/view/us"         => $baseDir.'view/',
 			);
 
 			return $mapping;
@@ -566,7 +568,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
-			return new \Assetic\AssetWriter('cog://public/');
+			return new \Assetic\AssetWriter('cog://public');
 		});
 
 		$serviceContainer['log.errors'] = $serviceContainer->share(function($c) {
