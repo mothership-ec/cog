@@ -28,10 +28,9 @@ class DeployPermissions extends Command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$event = new Deploy\Event\Event();
-		$event = $this->get('event.dispatcher')->dispatch('cog.deploy.permissions', $event);
 
-		foreach ($event->getLines() as $line) {
-			$output->writeln($line);
-		}
+		$event->setOutput($output);
+
+		$this->get('event.dispatcher')->dispatch('cog.deploy.permissions', $event);
 	}
 }
