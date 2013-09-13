@@ -73,16 +73,18 @@ class AssetGenerator extends Command
 		}
 
 		// Compile assets for view overrides
-		foreach ($fileSystem->in('cog://view') as $file) {
-			// Check that the file is one that we need to combine.
-			if (!in_array($file->getExtension(), $this->_fileExtensions)) {
-				continue;
-			}
+		if (file_exists('cog://view')) {
+			foreach ($fileSystem->in('cog://view') as $file) {
+				// Check that the file is one that we need to combine.
+				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
+					continue;
+				}
 
-			$this->_services['asset.manager']->addResource(new TwigResource(
-				new \Twig_Loader_Filesystem('/'),
-				$file->getPathname()
-			), 'twig');
+				$this->_services['asset.manager']->addResource(new TwigResource(
+					new \Twig_Loader_Filesystem('/'),
+					$file->getPathname()
+				), 'twig');
+			}
 		}
 
 		// Compile the assets
