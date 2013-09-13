@@ -18,21 +18,34 @@ class ViewNameParser extends TemplateNameParser
 	protected $_formats;
 
 	protected $_lastAbsoluteModule;
+	protected $_defaultDirs = array();
 
 	/**
 	 * Constructor.
 	 *
-	 * @param ContainerInterface       $services  The service container
 	 * @param ReferenceParserInterface $parser    Reference parser class
 	 * @param array                    $fileTypes Array of filetypes to support, in order of preference
 	 * @param array                    $fileTypes Array of formats to support, in order of preference
 	 */
-	public function __construct(ContainerInterface $services, ReferenceParserInterface $parser, array $fileTypes, array $formats)
+	public function __construct(ReferenceParserInterface $parser, array $fileTypes, array $formats)
 	{
-		$this->_services  = $services;
 		$this->_parser    = $parser;
 		$this->_fileTypes = $fileTypes;
 		$this->_formats   = $formats;
+	}
+
+	/**
+	 * Add a default directory to use for searching for view overrides before
+	 * looking in the parsed location.
+	 *
+	 * Given a view in cogule Message\Mothership\CMS, the search directory will
+	 * be set to: [defaultDir]/Message:Mothership:CMS/[parsedViewPath].
+	 *
+	 * @param string $dir The directory to look within
+	 */
+	public function addDefaultDirectory($dir)
+	{
+		$this->_defaultDirs[] = rtrim($dir, '/') . '/';
 	}
 
 	/**
@@ -85,18 +98,17 @@ class ViewNameParser extends TemplateNameParser
 		// If parsing a batch, return an array of templates
 		$templates = array();
 
-		$checkPaths = array(
-			// Get the base directory view override folder
-			$this->_services['app.loader']->getBaseDir() .
-				'view/' .
-				str_replace('\\', $referenceSeparator, $parsed->getModuleName()) .
-				'/' .
-				$parsed->getPath()
-			,
+		// Set default check paths
+		$checkPaths = array();
+		foreach ($this->_defaultDirs as $dir) {
+			$checkPaths[] = $dir
+				. str_replace('\\', $referenceSeparator, $parsed->getModuleName())
+				. '/'
+				. $parsed->getPath();
+		}
 
-			// Get the base file name from the reference parser
-			$parsed->getFullPath('resources/view'),
-		);
+		// Get the base file name from the reference parser
+		$checkPaths[] = $parsed->getFullPath('resources/view');
 
 		// Loop paths to check, returning on the first one to match
 		foreach ($checkPaths as $baseFileName) {
