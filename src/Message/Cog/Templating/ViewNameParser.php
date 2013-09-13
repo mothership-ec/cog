@@ -13,28 +13,40 @@ use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
 class ViewNameParser extends TemplateNameParser
 {
-	protected $_services;
 	protected $_parser;
 	protected $_fileTypes;
 	protected $_formats;
 
 	protected $_lastAbsoluteModule;
+	protected $_defaultDirs = array();
 
 	/**
 	 * Constructor.
 	 *
-	 * @param ContainerInterface       $services  The service container
 	 * @param ReferenceParserInterface $parser    Reference parser class
 	 * @param array                    $fileTypes Array of filetypes to support, in order of preference
 	 * @param array                    $fileTypes Array of formats to support, in order of preference
 	 */
-	public function __construct(ContainerInterface $services, ReferenceParserInterface $parser, Finder $finder, array $fileTypes, array $formats)
+	public function __construct(ReferenceParserInterface $parser, Finder $finder, array $fileTypes, array $formats)
 	{
-		$this->_services  = $services;
 		$this->_parser    = $parser;
 		$this->_finder    = $finder;
 		$this->_fileTypes = $fileTypes;
 		$this->_formats   = $formats;
+	}
+
+	/**
+	 * Add a default directory to use for searching for view overrides before
+	 * looking in the parsed location.
+	 *
+	 * Given a view in cogule Message\Mothership\CMS, the search directory will
+	 * be set to: [defaultDir]/Message:Mothership:CMS/[parsedViewPath].
+	 *
+	 * @param string $dir The directory to look within
+	 */
+	public function addDefaultDirectory($dir)
+	{
+		$this->_defaultDirs[] = rtrim($dir, '/') . '/';
 	}
 
 	/**
@@ -46,6 +58,7 @@ class ViewNameParser extends TemplateNameParser
 	 * exists, it returns this.
 	 *
 	 * @param string $reference  The view reference (without the format)
+	 * @param bool   $batch      Return a batch of templates
 	 *
 	 * @return string            The view file path
 	 *
@@ -54,72 +67,77 @@ class ViewNameParser extends TemplateNameParser
 	 * @todo What if there's no request object?
 	 * @todo Notify the response of the chosen response type
 	 */
-	public function parse($reference)
+	public function parse($reference, $batch = false)
 	{
-		$baseFileName = $this->getFileName($reference);
+		// Return if it's already been parsed
+		if ($reference instanceof TemplateReference) {
+			return $reference;
+		}
 
-		$template = $this->getTemplateReference($reference, $baseFileName);
+		$parsed = $this->_parser->parse($reference);
 
-		return $template;
-	}
+		$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
 
-	/**
-	 * Parse a view reference and find all views that match regardless of
-	 * format.
-	 * 
-	 * @param  string $reference The view reference (without the format)
-	 * @return Finder            A finder with the files
-	 */
-	public function all($reference)
-	{
-		$baseFileName = $this->getFileName($reference);
+		// If it is relative and an absolute path was used previously, make the
+		// reference absolute using the previous module name
+		// This is a fix for https://github.com/messagedigital/cog/issues/40
+		// which should be improved/refactored at a later date
+		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
+			// If it is relative, make it absolute with the last module name
+			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
 
-		$files = $this->_finder->files()->in(dirname($baseFileName));
-
-		return $files;
-	}
-
-	/**
-	 * Get the file name matching the reference.
-	 * 
-	 * @param  string $reference The view reference (without the format)
-	 * @return string            The base file name
-	 */
-	public function getFileName($reference)
-	{
-		// Get the current HTTP request
-		$request = $this->_services['request'];
-		$parsed  = $this->_parser->parse($reference);
-
-		$parsed = $this->getAbsolute($reference, $parsed);
+			// Parse the new reference
+			$parsed = $this->_parser->parse($newReference);
+		}
+		else if (!$parsed->isRelative()) {
+			$this->_lastAbsoluteModule = $parsed->getModuleName();
+		}
 
 		// Force the parser to not look in the library
 		$parsed->setInLibrary(false);
 
+		// If parsing a batch, return an array of templates
+		$templates = array();
+
+		// Set default check paths
+		$checkPaths = array();
+		foreach ($this->_defaultDirs as $dir) {
+			$checkPaths[] = $dir
+				. str_replace('\\', $referenceSeparator, $parsed->getModuleName())
+				. '/'
+				. $parsed->getPath();
+		}
+
 		// Get the base file name from the reference parser
-		$baseFileName = $parsed->getFullPath('resources/view');
+		$checkPaths[] = $parsed->getFullPath('resources/view');
 
-		return $baseFileName;
-	}
+		// Loop paths to check, returning on the first one to match
+		foreach ($checkPaths as $baseFileName) {
+			// Loop through each content type
+			foreach ($this->_formats as $format) {
+				// Loop through the engines in order of preference
+				foreach ($this->_fileTypes as $engine) {
+					// Check if a view file exists for this format and this engine
+					$fileName = $baseFileName . '.' . $format . '.' . $engine;
+					if (file_exists($fileName)) {
+						$template = new TemplateReference($fileName, $engine);
 
-	/**
-	 * Get the template reference for the file name that first matches theallowed formats & engine.
-	 * 
-	 * @param  string            $baseFileName The base file name
-	 * @return TemplateReference
-	 */
-	public function getTemplateReference($reference, $baseFileName)
-	{
-		// Loop through each content type
-		foreach ($this->_formats as $format) {
-			// Loop through the engines in order of preference
-			foreach ($this->_fileTypes as $engine) {
-				// Check if a view file exists for this format and this engine
-				$fileName = $baseFileName . '.' . $format . '.' . $engine;
-				if (file_exists($fileName)) {
-					return new TemplateReference($fileName, $engine);
+						if (!$batch) {
+							return $template;
+						}
+
+						// If override doesn't exist, set the original view
+						if (!array_key_exists($format, $templates)) {
+							$templates[$format] = $template;
+						}
+					}
+
 				}
 			}
+		}
+
+		if (count($templates) > 0) {
+			return $templates;
 		}
 
 		throw new NotAcceptableHttpException(sprintf(
@@ -130,7 +148,7 @@ class ViewNameParser extends TemplateNameParser
 
 	/**
 	 * Get the absolute path for a parsed reference.
-	 * 
+	 *
 	 * @param  ReferenceParser $parsed Parsed reference
 	 * @return ReferenceParser         Absolute parsed reference
 	 */

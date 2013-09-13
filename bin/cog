@@ -1,17 +1,4 @@
-# Looks backwards from the working directory for the cog-console binary
 FILE=bin/cog-console
 DIR=$PWD
-FOUND=false
-while [[ $DIR != '/' ]]; do
-    if [[ -e $DIR/$FILE ]]; then
-    	FOUND=true
-        php $DIR/$FILE "$@"
-        break;
-    else
-        DIR=`dirname $DIR`
-    fi
-done
 
-if [[ "$FOUND" == "false" ]]; then
-	echo 'bin/cog-console not found. Are you in a Cog directory?';
-fi
+php $DIR/$FILE "$@"
