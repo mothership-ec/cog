@@ -64,6 +64,8 @@ Your migration should have a unique file and class name representing what action
 
 The `down()` method should take the exact opposite action as the `up()` method to ensure when rolled back the database is reset to the state it was before the migration was run.
 
+The file & class name should be prepended with a UNIX timestamp for when the migration was created. This is so the migrations system knows what order to run the migrations in.
+
 **Example Migration**
 
 ```php
@@ -71,7 +73,7 @@ The `down()` method should take the exact opposite action as the `up()` method t
 
 use Message\Cog\Migration\Adapter\MySQL\Migration;
 
-class CreateUserTable extends Migration
+class 1379088290_CreateUserTable extends Migration
 {
 
 	public function up()
