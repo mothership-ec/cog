@@ -90,20 +90,14 @@ class Validator
 	 *
 	 * @return Validator            Returns $this for chainability
 	 */
-	public function field($name, $readableName = false)
+	public function field(Field $field)
 	{
-		if (!isset($this->_fields[$name])) {
-			$this->_fields[$name] = new Field($name, $readableName);
+		if (!isset($this->_fields[$field->name])) {
+			$this->_fields[$field->name] = $field;
 		}
-		$this->_fieldPointer = &$this->_fields[$name];
+		$this->_fieldPointer = &$this->_fields[$field->name];
 
 		return $this;
-	}
-
-	public function form($name, $children, $readableName = false)
-	{
-		$this->field($name, $readableName);
-		$this->_fields[$name]->children = $children;
 	}
 
 	/**
@@ -276,12 +270,15 @@ class Validator
 	}
 
 	/**
-	 * Parse data through filters
+	 * Recursive method to parse data through filters
+	 * Only applies filters to fields, not to forms!
 	 *
-	 * @param string $type      'Pre' or 'post' validation - Determines which set of data should be validated
-	 * @throws \Exception       Throws exception if $type is not set to 'pre' or 'post'
+	 * @param  string 	 $type  		'Pre' or 'post' validation -
+	 * 									Determines which set of data should be validated
+	 * @param  array 	 $fieldArray  	the current array of fields to iterate over
+	 * @param  array 	 $dataArray 	the current array of data to apply the rules to
 	 *
-	 * @return Validator        Returns $this for chainability
+	 * @return Validator 				Returns $this for chainability
 	 */
 	protected function _applyFilters($type, $fieldArray = null, &$dataArray = null)
 	{
@@ -317,9 +314,12 @@ class Validator
 	}
 
 	/**
-	 * Validate data with rules
+	 * Recursive method to apply rules to data.
+	 * Only applies rules to fields, not to forms!
 	 *
-	 * @return Validator        Returns $this for chainability
+	 * @param  fieldArray  array  the current array of fields to iterate over
+	 * @param  dataArray   array  the current array of data to apply the rules to
+	 * @return Validator   Returns $this for chainability
 	 */
 	protected function _applyRules($fieldArray = null, $dataArray = null)
 	{
@@ -359,7 +359,7 @@ class Validator
 		$notSet = $notSet ? $notSet : $this->_checkRequired($data[$field->name]);
 
 		if ($notSet && !$field->optional) {
-			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName);
+			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
 		}
 
 		return $this;
