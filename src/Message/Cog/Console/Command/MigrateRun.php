@@ -39,22 +39,14 @@ class MigrateRun extends Command
 			// Check if there is a migrations folder
 			if ($this->get('filesystem')->exists($path . 'resources/migrations')) {
 
-				// Find the migration classes
-				$finder = $this->get('filesystem.finder')->files()->in($location . 'resources/migrations')->name('*.php');
-
-				$output->writeln(sprintf('<comment>%n migrations found in %s</comment>', $module));
-
-				// Try to run each migration
-				foreach ($finder as $file) {
-					try {
-						$this->get('migration')->run($file->getRealPath());
-					}
-					catch (\Message\Cog\DB\Exception $e) {
-						throw new \Exception("Migration error: Have you run `migrate:install`?", null, $e);
-					}
+				try {
+					$this->get('migration')->run($path . 'resources/migrations');
+				}
+				catch (\Message\Cog\DB\Exception $e) {
+					throw new \Exception("Migration error: Have you run `migrate:install`?", null, $e);
 				}
 
-				// Output this migration's notes.
+				// Output this migration's notes
 				foreach ($this->get('migration')->getNotes() as $note) {
 					$output->writeln($note);
 				}

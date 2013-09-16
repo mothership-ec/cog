@@ -33,6 +33,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function runMigrations(DeployEvent $event)
 	{
+		$event->executeCommand('migrate:install'); // Ensure migrations are set up
 		$event->executeCommand('migrate:run');
 	}
 }
