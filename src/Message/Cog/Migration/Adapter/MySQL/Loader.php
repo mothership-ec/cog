@@ -97,6 +97,7 @@ class Loader implements LoaderInterface {
 		$this->_connector->run('
 			CREATE TABLE IF NOT EXISTS
 				migration (
+					migration_id INT (11) AUTO_INCREMENT,
 					adapter VARCHAR (255),
 					path TEXT,
 					batch INT (11),
