@@ -33,9 +33,9 @@ class Services implements ServicesInterface
 		});
 
 		$env = new Environment;
-		$serviceContainer['environment'] = function() use ($env) {
+		$serviceContainer['environment'] = $serviceContainer->share(function() use ($env) {
 			return $env;
-		};
+		});
 		$serviceContainer['env'] = function($c) {
 			return $c['environment']->get();
 		};
