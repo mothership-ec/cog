@@ -75,6 +75,15 @@ class Environment implements EnvironmentInterface
 		return $this->_name;
 	}
 
+	public function getWithInstallation()
+	{
+		if ($inst = $this->installation()) {
+			return $this->get() . '-' . $inst;
+		}
+
+		return $this->get();
+	}
+
 	/**
 	 * Sets the current environment, overriding the detected environment.
 	 *

@@ -36,6 +36,7 @@ class DeployEvent extends Command
 		$event = new Deploy\Event\Event();
 
 		$event->setOutput($output);
+		$event->setCommandCollection($this->_services['console.commands']);
 
 		if ($input->getOption('before')) {
 			$this->get('event.dispatcher')->dispatch('cog.deploy.before.' . $task, $event);
