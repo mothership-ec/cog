@@ -10,16 +10,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * MigrateModules
- *
- * Provides the migrate:run command. Runs new migrations at the path.
+ * Provides the migrate:run command. Runs new migrations for all registered
+ * modules.
  */
-class MigrateModules extends Command
+class MigrateRun extends Command
 {
 	protected function configure()
 	{
 		$this
-			->setName('migrate:modules')
+			->setName('migrate:run')
 			->setDescription('Runs all migrations for cogules that have not yet been run.')
 			// ->addOption('path', null, InputArgument::OPTIONAL, 'Path to search for migrations.', File::COG_PREFIX . '://migrations/')
 		;
@@ -35,7 +34,7 @@ class MigrateModules extends Command
 		foreach ($modules as $module) {
 
 			// Locate the module
-			$path = $this->get('module.locator')->getPath($module);
+			$path = $this->get('module.locator')->getPath($module, false);
 
 			// Check if there is a migrations folder
 			if ($this->get('filesystem')->exists($path . 'resources/migrations')) {

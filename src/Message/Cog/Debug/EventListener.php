@@ -30,7 +30,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			KernelEvents::RESPONSE => array(
 				array('renderProfiler', 1000),
 			),
-			'cog.load.success' => array(
+			'modules.load.success' => array(
 				array('registerWhoopsHandlers'),
 				array('registerMonologHandlers'),
 			),
