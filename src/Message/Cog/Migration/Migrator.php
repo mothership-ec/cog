@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Migration;
 
-use Adapter\MigrationInterface;
+use Message\Cog\Migration\Adapter\MigrationInterface;
 
 use Exception;
 
