@@ -263,7 +263,7 @@ class Handler
 			$field = new Field($handlerField->getName(), $handlerField->getConfig()->getOption('label') ? $handlerField->getConfig()->getOption('label'): false);
 		}
 
-		$this->getValidator()->field($field);
+		$this->getValidator()->addField($field);
 
 		return $this;
 

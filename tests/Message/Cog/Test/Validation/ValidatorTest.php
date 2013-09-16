@@ -39,8 +39,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testOptional()
 	{
 		$this->_validator
-			->field(new Field('last_name'))
-			->field(new Field('first_name'))
+			->addField(new Field('last_name'))
+			->addField(new Field('first_name'))
 				->optional()
 		;
 
@@ -63,8 +63,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testField()
 	{
-		$this->assertEquals($this->_validator, $this->_validator->field(new Field('test')));
-		$this->assertEquals($this->_validator, $this->_validator->field(new Field('another test', 'Test field')));
+		$this->assertEquals($this->_validator, $this->_validator->addField(new Field('test')));
+		$this->assertEquals($this->_validator, $this->_validator->addField(new Field('another test', 'Test field')));
 	}
 
 	/**
@@ -74,7 +74,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		try {
 			$this->_validator
-				->field('first_name')
+				->addField('first_name')
 					->khaskd();
 		}
 		catch (\Exception $e) {
@@ -89,7 +89,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testNotMethod()
 	{
 		$this->_validator
-			->field(new Field('test'))
+			->addField(new Field('test'))
 				->notTestRule()
 		;
 
@@ -109,7 +109,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testMissingData()
 	{
 		$this->_validator
-			->field(new Field('test'))
+			->addField(new Field('test'))
 				->testRule()
 		;
 
@@ -126,8 +126,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		$form->children = array('testNested' => new Field('testNested'));
 
 		$this->_validator
-			->field($form)
-			->field(new Field('test'));
+			->addField($form)
+			->addField(new Field('test'));
 
 		$this->_validator->validate(
 			array(
@@ -156,7 +156,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testBeforeFilter()
 	{
 		$this->_validator
-			->field(new Field('field'))
+			->addField(new Field('field'))
 				->isTest()
 				->testFilterBefore();
 
@@ -176,7 +176,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testAfterFilter()
 	{
 		$this->_validator
-			->field(new Field('field'))
+			->addField(new Field('field'))
 				->testFilterAfter()
 				->isTest();
 
@@ -197,16 +197,16 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$validator2 = new Validator($this->_loader);
 		$validator2
-			->field(new Field('test'))
+			->addField(new Field('test'))
 				->filter('md5');
 
 		$form = new Field('form');
 		$form->children = $validator2->getFields();
 
 		$this->_validator
-			->field(new Field('test'))
+			->addField(new Field('test'))
 				->filter('md5')
-			->field($form);
+			->addField($form);
 
 		$this->_validator->validate(
 			array(
@@ -225,16 +225,16 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$validator2 = new Validator($this->_loader);
 		$validator2
-			->field(new Field('test2'))
+			->addField(new Field('test2'))
 				->rule('is_int');
 
 		$form = new Field('form');
 		$form->children = $validator2->getFields();
 
 		$this->_validator
-			->field(new Field('test'))
+			->addField(new Field('test'))
 				->rule('is_int')
-			->field($form);
+			->addField($form);
 
 		$this->_validator->validate(
 			array('test' => 1, 'form' => array('test2' => 5))
@@ -247,16 +247,16 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		$validator2 = new Validator($this->_loader);
 		$validator2
-			->field(new Field('test2'))
+			->addField(new Field('test2'))
 				->rule('is_int');
 
 		$form = new Field('form');
 		$form->children = $validator2->getFields();
 
 		$this->_validator
-			->field(new Field('test'))
+			->addField(new Field('test'))
 				->rule('is_int')
-			->field($form);
+			->addField($form);
 
 
 		$this->_validator->validate(
@@ -269,7 +269,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testError()
 	{
 		$this->_validator
-			->field(new Field('field'))
+			->addField(new Field('field'))
 				->testFail()
 				->error('this is an error');
 
@@ -291,8 +291,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		$form->children = array('test' => new Field('test'));
 
 		$this->_validator
-			->field(new Field('test'))
-			->field($form);
+			->addField(new Field('test'))
+			->addField($form);
 
 		$fields = $this->_validator->getFields();
 

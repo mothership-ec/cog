@@ -15,7 +15,6 @@ class Validator
 {
 	protected $_data;
 	protected $_fieldPointer;
-	protected $_dataPointer;
 	protected $_rulePointer;
 	protected $_fields = array();
 
@@ -82,15 +81,13 @@ class Validator
 	}
 
 	/**
-	 * Add a new field to be validated.
+	 * Add a new field to be validated and adjusts the fieldPointer
 	 *
-	 * @param  string $name         Name of the field to be added
-	 * @param  bool   $readableName If true, a "readable name" is saved, assuming
-	 *                              the name is formatted as camel case
+	 * @param  Field $field         the field to be added
 	 *
 	 * @return Validator            Returns $this for chainability
 	 */
-	public function field(Field $field)
+	public function addField(Field $field)
 	{
 		if (!isset($this->_fields[$field->name])) {
 			$this->_fields[$field->name] = $field;
@@ -217,7 +214,8 @@ class Validator
 		$this->_messages->clear();
 
 		// Run 'pre' filters first, then validate the data, then run the 'post' filters
-		$this->_applyFilters('pre')
+		$this
+			->_applyFilters('pre')
 			->_applyRules()
 			->_applyFilters('post')
 			->_cleanData();
