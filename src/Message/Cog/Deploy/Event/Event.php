@@ -14,8 +14,14 @@ use Symfony\Component\Console\Input\InputDefinition;
 
 class Event extends BaseEvent {
 
+	protected $_input;
 	protected $_output;
 	protected $_commandCollection;
+
+	public function setInput(InputInterface $input)
+	{
+		$this->_input = $input;
+	}
 
 	public function setOutput(OutputInterface $output)
 	{
@@ -35,7 +41,12 @@ class Event extends BaseEvent {
 	public function executeCommand($command, InputInterface $input = null)
 	{
 		if (null === $input) {
-			$input = new ArrayInput(array(), new InputDefinition());
+			// $input = new ArrayInput(array(), new InputDefinition());
+			$input = $this->_input;
+		}
+
+		if ($env = $input->getOption('env')) {
+			$command .= ' --env=' . $env;
 		}
 
 		$result = `bin/cog $command`;

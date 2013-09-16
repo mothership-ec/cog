@@ -10,6 +10,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputDefinition;
+
 /**
  * DeployEvent
  *
@@ -35,7 +38,11 @@ class DeployEvent extends Command
 
 		$event = new Deploy\Event\Event();
 
+		// $eventInput = new ArrayInput(array('env' => $this->_services['env']));
+		$event->setInput($input);
+
 		$event->setOutput($output);
+
 		$event->setCommandCollection($this->_services['console.commands']);
 
 		if ($input->getOption('before')) {
