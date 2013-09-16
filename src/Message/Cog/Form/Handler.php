@@ -252,7 +252,11 @@ class Handler
 		}
 
 		if($handler) {
-			$this->getValidator()->nestForm($handler);
+			$this->getValidator()->form(
+				$handler->getForm()->getName(),
+				$handler->getValidator()->getFields(),
+				$handler->getForm()->getConfig()->getOption('label')
+			);
 		} else {
 			// Get the field we just added and add it to the validator
 			$field = $this->field($this->_getChildName($child));

@@ -100,12 +100,10 @@ class Validator
 		return $this;
 	}
 
-	public function nestForm(\Message\Cog\Form\Handler $handler)
+	public function form($name, $children, $readableName = false)
 	{
-		$form = $handler->getForm();
-		$this->field($form->getName(), $form->getConfig()->getOption('label'));
-
-		$this->_fields[$form->getName()]->children = $handler->getValidator()->getFields();
+		$this->field($name, $readableName);
+		$this->_fields[$name]->children = $children;
 	}
 
 	/**
@@ -257,17 +255,22 @@ class Validator
 	 *
 	 * @return Validator        Returns $this for chainability
 	 */
-	protected function _cleanData()
+	protected function _cleanData($fieldArray = null, &$dataArray = null)
 	{
-		$data = array();
-
-		foreach ($this->_data as $key => $value) {
-			if (isset($this->_fields[$key])) {
-				$data[$key] = $value;
-			}
+		if($fieldArray === null) {
+			$fieldArray = $this->_fields;
+		}
+		if($dataArray === null) {
+			$dataArray = &$this->_data;
 		}
 
-		$this->_data = $data;
+		foreach ($dataArray as $key => $data) {
+			if (!isset($fieldArray[$key])) {
+				unset($dataArray[$key]);
+			} elseif (count($fieldArray[$key]->children) > 0) {
+				$this->_cleanData($fieldArray[$key]->children, $dataArray[$key]);
+			}
+		}
 
 		return $this;
 	}
@@ -292,7 +295,7 @@ class Validator
 		foreach($fieldArray as $name => $field) {
 
 			// Escape if data field doesn't exist
-			if (!isset($this->dataArray[$name])) {
+			if (!isset($dataArray[$name])) {
 				continue;
 			}
 
@@ -302,10 +305,10 @@ class Validator
 				foreach($field->filters[$type] as $filter) {
 					list($ruleName, $func, $args) = $filter;
 
-					array_unshift($args, $this->dataArray[$name]);
+					array_unshift($args, $dataArray[$name]);
 					$result = call_user_func_array($filter[1], $args);
 
-					$this->dataArray[$name] = $result;
+					$dataArray[$name] = $result;
 				}
 			}
 		}
@@ -331,7 +334,7 @@ class Validator
 			if(count($field->children) > 0 && isset($dataArray[$name])) {
 				$this->_applyRules($field->children, $dataArray[$name]);
 			} else {
-				$this->_setRequiredError($field, $dataArray[$name]);
+				$this->_setRequiredError($field, $dataArray);
 
 				if (isset($dataArray[$name])) {
 					$this->_setMessages($field, $dataArray[$name]);
@@ -352,10 +355,11 @@ class Validator
 	 */
 	protected function _setRequiredError($field, $data)
 	{
-		$notSet = $this->_checkRequired($data);
+		$notSet = !isset($data[$field->name]);
+		$notSet = $notSet ? $notSet : $this->_checkRequired($data[$field->name]);
 
 		if ($notSet && !$field->optional) {
-			$this->_messages->addError($field->name, $field->readableName.' is a required field.');
+			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName);
 		}
 
 		return $this;

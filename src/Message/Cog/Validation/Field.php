@@ -8,7 +8,7 @@ namespace Message\Cog\Validation;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class Field implements \Iterator
+class Field
 {
 	public $name;
 	public $readableName;
@@ -33,51 +33,10 @@ class Field implements \Iterator
 		return $this;
 	}
 
-	public function getIterator()
-	{
-		return new \RecursiveArrayIterator($children);
-	}
-
-	public function getFilter($type)
-	{
-		if ($type === 'pre') {
-			return $this->pre;
-		} elseif ($type === 'post') {
-			return $this->post;
-		} else {
-			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $type must be either \'pre\' or \'post\', \'' . $type . '\' given');
-		}
-	}
-
 	public function optional()
 	{
 		$this->optional = true;
 
 		return $this;
-	}
-
-	public function current()
-	{
-		return current($this->children);
-	}
-
-	public function key()
-	{
-		return key($this->children);
-	}
-
-	public function next()
-	{
-		return next($this->children);
-	}
-
-	public function rewind()
-	{
-		return reset($this->children);
-	}
-
-	public function valid()
-	{
-		return array_key_exists(key($this->children), $this->children);
 	}
 }
