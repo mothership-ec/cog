@@ -34,7 +34,7 @@ class MigrateRun extends Command
 		foreach ($modules as $module) {
 
 			// Locate the module
-			$path = $this->get('module.locator')->getPath($module);
+			$path = $this->get('module.locator')->getPath($module, false);
 
 			// Check if there is a migrations folder
 			if ($this->get('filesystem')->exists($path . 'resources/migrations')) {
