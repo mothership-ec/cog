@@ -18,7 +18,7 @@ use InvalidArgumentException;
  */
 class TwigFilesystemLoader extends Twig_Loader_Filesystem
 {
-	public $parsedPaths = array();
+	static public $parsedPaths = array();
 
 	protected $_parser;
 
@@ -55,7 +55,7 @@ class TwigFilesystemLoader extends Twig_Loader_Filesystem
 			));
 		}
 
-		$this->parsedPaths[$parsed->getPath()] = $parsed->getPath();
+		self::$parsedPaths[$parsed->getPath()] = $parsed->getPath();
 
 		return parent::findTemplate($parsed->getPath());
 	}
