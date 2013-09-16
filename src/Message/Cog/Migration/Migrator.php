@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Migration;
 
+use Adapter\MigrationInterface;
+
 use Exception;
 
 class Migrator {
@@ -53,11 +55,11 @@ class Migrator {
 	/**
 	 * Run 'up' a migration.
 	 *
-	 * @param  Migration $migration
+	 * @param  MigrationInterface $migration
 	 * @param  int       $batch
 	 * @return void
 	 */
-	public function runUp(Migration $migration, $batch)
+	public function runUp(MigrationInterface $migration, $batch)
 	{
 		try {
 			$migration->up();
@@ -170,10 +172,10 @@ class Migrator {
 	/**
 	 * Run 'down' a migration.
 	 *
-	 * @param  Migration $migration
+	 * @param  MigrationInterface $migration
 	 * @return void
 	 */
-	protected function _runDown(Migration $migration)
+	protected function _runDown(MigrationInterface $migration)
 	{
 		try {
 			$migration->down();
