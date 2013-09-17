@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\AssetManagement;
+namespace Message\Cog\Migration;
 
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
