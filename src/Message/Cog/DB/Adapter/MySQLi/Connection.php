@@ -38,7 +38,7 @@ class Connection implements ConnectionInterface
 		);
 
 		// Set to natively return integer & float types where appropriate
-		if (defined(MYSQLI_OPT_INT_AND_FLOAT_NATIVE)) {
+		if (defined('MYSQLI_OPT_INT_AND_FLOAT_NATIVE')) {
 			$this->_handle->options(MYSQLI_OPT_INT_AND_FLOAT_NATIVE, true);
 		}
 
