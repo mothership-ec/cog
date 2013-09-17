@@ -60,14 +60,13 @@ class EventListener extends BaseListener implements SubscriberInterface
 	}
 
 	/**
-	 * Register the "Whoops" error page when NOT in the live or staging
-	 * environment.
+	 * Register the "Whoops" error page when NOT in the live environment.
 	 *
 	 * @param  Event  $event The event object
 	 */
 	public function registerWhoopsHandlers(Event $event)
 	{
-		if (!in_array($this->get('environment')->get(), array('live', 'staging'))) {
+		if (!in_array($this->get('environment')->get(), array('live'))) {
 			$this->_services['whoops']->register();
 		}
 	}
