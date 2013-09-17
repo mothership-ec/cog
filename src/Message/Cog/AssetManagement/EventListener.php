@@ -30,7 +30,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 				array('generateAssetsOnRequest'),
 			),
 			'cog.deploy.after.update_code' => array(
-				'generateAssetsOnDeploy'
+				array('generateAssetsOnDeploy'),
 			)
 		);
 	}
@@ -53,7 +53,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			return;
 		}
 
-		foreach ($this->_services['templating.twig.loader']->parsedPaths as $template) {
+		$twigLoader = $this->_services['templating.twig.loader'];
+
+		foreach ($twigLoader::$parsedPaths as $template) {
 			$this->_services['asset.manager']->addResource(new TwigResource(
 				new \Twig_Loader_Filesystem('/'),
 				$template

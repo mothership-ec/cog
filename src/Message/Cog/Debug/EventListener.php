@@ -21,9 +21,6 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
  */
 class EventListener extends BaseListener implements SubscriberInterface
 {
-	protected $_profiler;
-	protected $_environment;
-
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -35,18 +32,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 				array('registerMonologHandlers'),
 			),
 		);
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @param Profiler    $profiler    Instance of the profiler
-	 * @param Environment $environment Instance of the application environment
-	 */
-	public function __construct(Profiler $profiler, Environment $environment)
-	{
-		$this->_profiler    = $profiler;
-		$this->_environment = $environment;
 	}
 
 	/**
@@ -66,8 +51,8 @@ class EventListener extends BaseListener implements SubscriberInterface
 
 		$contentType = $event->getResponse()->headers->get('Content-Type');
 
-		if ($this->_environment->isLocal()
-		 && $this->_environment->context() != 'console'
+		if ($this->get('environment')->isLocal()
+		 && $this->get('environment')->context() != 'console'
 		 && (is_null($contentType) || 'text/html' === $contentType)) {
 			$html = $this->get('profiler')->renderHtml();
 			$event->getResponse()->setContent($event->getResponse()->getContent() . $html);
@@ -82,7 +67,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function registerWhoopsHandlers(Event $event)
 	{
-		if (!in_array($this->_environment->get(), array('live', 'staging'))) {
+		if (!in_array($this->get('environment')->get(), array('live', 'staging'))) {
 			$this->_services['whoops']->register();
 		}
 	}
