@@ -241,6 +241,10 @@ class Services implements ServicesInterface
 				return $services['environment'];
 			});
 
+			$globals->set('request', function($services) {
+				return $services['request'];
+			});
+
 			return $globals;
 		};
 
