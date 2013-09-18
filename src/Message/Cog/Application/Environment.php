@@ -96,6 +96,21 @@ class Environment implements EnvironmentInterface
 	}
 
 	/**
+	 * Sets the current environment with the installation name.
+	 *
+	 * @param string $name A valid environment and installation name
+	 */
+	public function setWithInstallation($name)
+	{
+		if (false !== strpos($name, self::ENV_SEPARATOR)) {
+			list($name, $installation) = explode(self::ENV_SEPARATOR, $name);
+			$this->_installation = $installation;
+		}
+
+		return $this->set($name);
+	}
+
+	/**
 	 * Useful accessor to check if we're running on a developers machine.
 	 *
 	 * @return boolean True if on local development machine
@@ -195,12 +210,7 @@ class Environment implements EnvironmentInterface
 	protected function _detectEnvironment()
 	{
 		if ($env = $this->getEnvironmentVar($this->_flagEnv)) {
-			if (false !== strpos($env, self::ENV_SEPARATOR)) {
-				list($env, $installation) = explode(self::ENV_SEPARATOR, $env);
-				$this->_installation = $installation;
-			}
-
-			return $this->set($env);
+			return $this->setWithInstallation($env);
 		}
 
 		return $this->set($this->_allowedEnvironments[0]);

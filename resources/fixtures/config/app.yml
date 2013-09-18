@@ -1,2 +1,6 @@
 name: My Application
-default-email-from: My Application <noreply@default.com>
+base-url: default.com
+default-email-from:
+  email: noreply@default.com
+  name: My Application
+csrf-secret: CHANGE THIS FOR EACH INSTALLATION

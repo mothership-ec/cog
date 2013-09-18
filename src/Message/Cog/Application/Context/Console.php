@@ -83,7 +83,7 @@ class Console implements ContextInterface
 
 		$input = new ArgvInput($arguments);
 		if ($env = $input->getParameterOption(array('--env'), '')) {
-			$this->_services['environment']->set($env);
+			$this->_services['environment']->setWithInstallation($env);
 		}
 
 		// Setup a fake request context

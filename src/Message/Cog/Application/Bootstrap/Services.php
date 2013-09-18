@@ -101,14 +101,9 @@ class Services implements ServicesInterface
 		$serviceContainer['routing.generator'] = function($c) {
 
 			$generator = new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
-			$generator->setCsrfSecrets($c['http.session'], $c['routing.csrf_secret']);
+			$generator->setCsrfSecrets($c['http.session'], $c['cfg']->app->csrfSecret);
 
 			return $generator;
-		};
-
-		// @todo - Get this out of the config  rather than hardcoding it and change it for every site
-		$serviceContainer['routing.csrf_secret'] = function($c) {
-			return 'THIS IS A SECRET DO NOT SHARE IT AROUND';
 		};
 
 		// Service for the templating delegation engine
@@ -240,6 +235,12 @@ class Services implements ServicesInterface
 			$globals->set('environment', function($services) {
 				return $services['environment'];
 			});
+
+			if (isset($services['request'])) {
+				$globals->set('request', function($services) {
+					return $services['request'];
+				});
+			}
 
 			return $globals;
 		};
@@ -412,6 +413,7 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.csrf_secret'] = function($c) {
 			$parts = array(
+				$c['cfg']->app->csrfSecret,
 				$c['request']->headers->get('host'),
 				$c['user.current']->email,
 				$c['user.current']->id,
@@ -663,7 +665,7 @@ class Services implements ServicesInterface
 			$c['templating.formats'] = $origFormats;
 
 			// Set default from address
-			$message->setFrom($c['cfg']->app->defaultEmailFrom);
+			$message->setFrom($c['cfg']->app->defaultEmailFrom->email, $c['cfg']->app->defaultEmailFrom->name);
 
 			return $message;
 		});
