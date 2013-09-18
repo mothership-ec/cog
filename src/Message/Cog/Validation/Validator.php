@@ -15,7 +15,6 @@ class Validator
 {
 	protected $_data;
 	protected $_fieldPointer;
-	protected $_dataPointer;
 	protected $_rulePointer;
 	protected $_fields = array();
 
@@ -82,30 +81,20 @@ class Validator
 	}
 
 	/**
-	 * Add a new field to be validated.
+	 * Add a new field to be validated and adjusts the fieldPointer
 	 *
-	 * @param  string $name         Name of the field to be added
-	 * @param  bool   $readableName If true, a "readable name" is saved, assuming
-	 *                              the name is formatted as camel case
+	 * @param  Field $field         the field to be added
 	 *
 	 * @return Validator            Returns $this for chainability
 	 */
-	public function field($name, $readableName = false)
+	public function addField(Field $field)
 	{
-		if (!isset($this->_fields[$name])) {
-			$this->_fields[$name] = new Field($name, $readableName);
+		if (!isset($this->_fields[$field->name])) {
+			$this->_fields[$field->name] = $field;
 		}
-		$this->_fieldPointer = &$this->_fields[$name];
+		$this->_fieldPointer = &$this->_fields[$field->name];
 
 		return $this;
-	}
-
-	public function nestForm(\Message\Cog\Form\Handler $handler)
-	{
-		$form = $handler->getForm();
-		$this->field($form->getName(), $form->getConfig()->getOption('label'));
-
-		$this->_fields[$form->getName()]->children = $handler->getValidator()->getFields();
 	}
 
 	/**
@@ -225,7 +214,8 @@ class Validator
 		$this->_messages->clear();
 
 		// Run 'pre' filters first, then validate the data, then run the 'post' filters
-		$this->_applyFilters('pre')
+		$this
+			->_applyFilters('pre')
 			->_applyRules()
 			->_applyFilters('post')
 			->_cleanData();
@@ -257,28 +247,36 @@ class Validator
 	 *
 	 * @return Validator        Returns $this for chainability
 	 */
-	protected function _cleanData()
+	protected function _cleanData($fieldArray = null, &$dataArray = null)
 	{
-		$data = array();
-
-		foreach ($this->_data as $key => $value) {
-			if (isset($this->_fields[$key])) {
-				$data[$key] = $value;
-			}
+		if($fieldArray === null) {
+			$fieldArray = $this->_fields;
+		}
+		if($dataArray === null) {
+			$dataArray = &$this->_data;
 		}
 
-		$this->_data = $data;
+		foreach ($dataArray as $key => $data) {
+			if (!isset($fieldArray[$key])) {
+				unset($dataArray[$key]);
+			} elseif (count($fieldArray[$key]->children) > 0) {
+				$this->_cleanData($fieldArray[$key]->children, $dataArray[$key]);
+			}
+		}
 
 		return $this;
 	}
 
 	/**
-	 * Parse data through filters
+	 * Recursive method to parse data through filters
+	 * Only applies filters to fields, not to forms!
 	 *
-	 * @param string $type      'Pre' or 'post' validation - Determines which set of data should be validated
-	 * @throws \Exception       Throws exception if $type is not set to 'pre' or 'post'
+	 * @param  string 	 $type  		'Pre' or 'post' validation -
+	 * 									Determines which set of data should be validated
+	 * @param  array 	 $fieldArray  	the current array of fields to iterate over
+	 * @param  array 	 $dataArray 	the current array of data to apply the rules to
 	 *
-	 * @return Validator        Returns $this for chainability
+	 * @return Validator 				Returns $this for chainability
 	 */
 	protected function _applyFilters($type, $fieldArray = null, &$dataArray = null)
 	{
@@ -292,7 +290,7 @@ class Validator
 		foreach($fieldArray as $name => $field) {
 
 			// Escape if data field doesn't exist
-			if (!isset($this->dataArray[$name])) {
+			if (!isset($dataArray[$name])) {
 				continue;
 			}
 
@@ -302,10 +300,10 @@ class Validator
 				foreach($field->filters[$type] as $filter) {
 					list($ruleName, $func, $args) = $filter;
 
-					array_unshift($args, $this->dataArray[$name]);
+					array_unshift($args, $dataArray[$name]);
 					$result = call_user_func_array($filter[1], $args);
 
-					$this->dataArray[$name] = $result;
+					$dataArray[$name] = $result;
 				}
 			}
 		}
@@ -314,9 +312,12 @@ class Validator
 	}
 
 	/**
-	 * Validate data with rules
+	 * Recursive method to apply rules to data.
+	 * Only applies rules to fields, not to forms!
 	 *
-	 * @return Validator        Returns $this for chainability
+	 * @param  fieldArray  array  the current array of fields to iterate over
+	 * @param  dataArray   array  the current array of data to apply the rules to
+	 * @return Validator   Returns $this for chainability
 	 */
 	protected function _applyRules($fieldArray = null, $dataArray = null)
 	{
@@ -331,7 +332,7 @@ class Validator
 			if(count($field->children) > 0 && isset($dataArray[$name])) {
 				$this->_applyRules($field->children, $dataArray[$name]);
 			} else {
-				$this->_setRequiredError($field, $dataArray[$name]);
+				$this->_setRequiredError($field, $dataArray);
 
 				if (isset($dataArray[$name])) {
 					$this->_setMessages($field, $dataArray[$name]);
@@ -352,10 +353,11 @@ class Validator
 	 */
 	protected function _setRequiredError($field, $data)
 	{
-		$notSet = $this->_checkRequired($data);
+		$notSet = !isset($data[$field->name]);
+		$notSet = $notSet ? $notSet : $this->_checkRequired($data[$field->name]);
 
 		if ($notSet && !$field->optional) {
-			$this->_messages->addError($field->name, $field->readableName.' is a required field.');
+			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
 		}
 
 		return $this;

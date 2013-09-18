@@ -3,6 +3,7 @@
 namespace Message\Cog\Test\Validation;
 
 use Message\Cog\Validation\Validator;
+use Message\Cog\Validation\Field;
 use Message\Cog\Validation\Messages;
 use Message\Cog\Validation\Loader;
 use Message\Cog\Validation\Filter\Other as OtherFilter;
@@ -38,8 +39,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testOptional()
 	{
 		$this->_validator
-			->field('last_name') 
-			->field('first_name')
+			->addField(new Field('last_name'))
+			->addField(new Field('first_name'))
 				->optional()
 		;
 
@@ -62,8 +63,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testField()
 	{
-		$this->assertEquals($this->_validator, $this->_validator->field('test'));
-		$this->assertEquals($this->_validator, $this->_validator->field('another test', 'Test field'));
+		$this->assertEquals($this->_validator, $this->_validator->addField(new Field('test')));
+		$this->assertEquals($this->_validator, $this->_validator->addField(new Field('another test', 'Test field')));
 	}
 
 	/**
@@ -73,7 +74,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	{
 		try {
 			$this->_validator
-				->field('first_name')
+				->addField('first_name')
 					->khaskd();
 		}
 		catch (\Exception $e) {
@@ -88,7 +89,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testNotMethod()
 	{
 		$this->_validator
-			->field('test')
+			->addField(new Field('test'))
 				->notTestRule()
 		;
 
@@ -108,7 +109,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testMissingData()
 	{
 		$this->_validator
-			->field('test')
+			->addField(new Field('test'))
 				->testRule()
 		;
 
@@ -116,6 +117,37 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 			'not_test' => 'where did it go?'
 		));
 
+		$this->assertEquals(1, count($this->_validator->getMessages()));
+	}
+
+	public function testCleanData()
+	{
+		$form = new Field('form');
+		$form->children = array('testNested' => new Field('testNested'));
+
+		$this->_validator
+			->addField($form)
+			->addField(new Field('test'));
+
+		$this->_validator->validate(
+			array(
+				'test' => 'field',
+				'notAfield' => 'bla',
+				'form' => array(
+					'testNested' => 'nested!',
+					'notAfieldEither' => 'nope'
+				)
+			)
+		);
+
+		$expected = array (
+			'test' => 'field',
+			'form' => array(
+				'testNested' => 'nested!'
+			)
+		);
+
+		$this->assertEquals($expected, $this->_validator->getData());
 	}
 
 	/**
@@ -124,7 +156,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testBeforeFilter()
 	{
 		$this->_validator
-			->field('field')
+			->addField(new Field('field'))
 				->isTest()
 				->testFilterBefore();
 
@@ -144,7 +176,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	public function testAfterFilter()
 	{
 		$this->_validator
-			->field('field')
+			->addField(new Field('field'))
 				->testFilterAfter()
 				->isTest();
 
@@ -163,27 +195,49 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testOtherFilter()
 	{
-		$this->_validator
-			->field('test')
+		$validator2 = new Validator($this->_loader);
+		$validator2
+			->addField(new Field('test'))
 				->filter('md5');
 
+		$form = new Field('form');
+		$form->children = $validator2->getFields();
+
+		$this->_validator
+			->addField(new Field('test'))
+				->filter('md5')
+			->addField($form);
+
 		$this->_validator->validate(
-			array('test' => 'test')
+			array(
+				'test' => 'test',
+				'form' => array('test' => 'test'),
+			)
 		);
 
 		$data = $this->_validator->getData();
 
 		$this->assertTrue(strlen($data['test']) === 32);
+		$this->assertEquals(strlen($data['form']['test']), strlen($data['test']));
 	}
 
 	public function testOtherRulePass()
 	{
-		$this->_validator
-			->field('test')
+		$validator2 = new Validator($this->_loader);
+		$validator2
+			->addField(new Field('test2'))
 				->rule('is_int');
 
+		$form = new Field('form');
+		$form->children = $validator2->getFields();
+
+		$this->_validator
+			->addField(new Field('test'))
+				->rule('is_int')
+			->addField($form);
+
 		$this->_validator->validate(
-			array('test' => 1)
+			array('test' => 1, 'form' => array('test2' => 5))
 		);
 
 		$this->assertEquals(0, count($this->_validator->getMessages()));
@@ -191,21 +245,31 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
 	public function testOtherRuleFail()
 	{
-		$this->_validator
-			->field('test')
+		$validator2 = new Validator($this->_loader);
+		$validator2
+			->addField(new Field('test2'))
 				->rule('is_int');
 
+		$form = new Field('form');
+		$form->children = $validator2->getFields();
+
+		$this->_validator
+			->addField(new Field('test'))
+				->rule('is_int')
+			->addField($form);
+
+
 		$this->_validator->validate(
-			array('test' => 'test')
+			array('test' => 'abc', 'form' => array('test2' => 'lolol'))
 		);
 
-		$this->assertEquals(1, count($this->_validator->getMessages()));
+		$this->assertEquals(2, count($this->_validator->getMessages()));
 	}
 
 	public function testError()
 	{
 		$this->_validator
-			->field('field')
+			->addField(new Field('field'))
 				->testFail()
 				->error('this is an error');
 
@@ -223,13 +287,19 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGetFields()
 	{
+		$form = new Field('form');
+		$form->children = array('test' => new Field('test'));
+
 		$this->_validator
-			->field('test');
+			->addField(new Field('test'))
+			->addField($form);
 
 		$fields = $this->_validator->getFields();
 
 		$this->assertTrue(is_array($fields));
 		$this->assertTrue(array_key_exists('test', $fields));
+
+		$this->assertEquals(1, count($fields['form']->children));
 	}
 
 	public function testGetFieldsEmpty()

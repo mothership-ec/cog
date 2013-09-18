@@ -3,6 +3,7 @@
 namespace Message\Cog\Form;
 
 use Symfony\Component\Form\Form as SymfonyForm;
+use Message\Cog\Validation\Field;
 use Message\Cog\Validation\Validator;
 use Message\Cog\Service\Container;
 
@@ -251,16 +252,19 @@ class Handler
 			$this->getForm()->add($child, $type, $options);
 		}
 
+		$field = null;
 		if($handler) {
-			$this->getValidator()->nestForm($handler);
+			$form = $handler->getForm();
+			$field = new Field($form->getName(), $form->getConfig()->getOption('label') ? $form->getConfig()->getOption('label'): false);
+			$field->children = $handler->getValidator()->getFields();
 		} else {
-			// Get the field we just added and add it to the validator
-			$field = $this->field($this->_getChildName($child));
-
-			$this->getValidator()->field($field->getName(), $field->getConfig()->getOption('label') ?: false);
+			// Get the field we just added and turn it into a Validator\Field
+			$handlerField = $this->field($this->_getChildName($child));
+			$field = new Field($handlerField->getName(), $handlerField->getConfig()->getOption('label') ? $handlerField->getConfig()->getOption('label'): false);
 		}
 
-		// d($this->getValidator());
+		$this->getValidator()->addField($field);
+
 		return $this;
 
 	}
@@ -392,9 +396,7 @@ class Handler
 	 */
 	public function isValid($addToFlash = true)
 	{
-		/**
-		 * Ensure validation is not run twice as this can cause field data to go missing second time round
-		 */
+		// Ensure validation is not run twice as this can cause field data to go missing second time round
 		if ($this->_valid === null) {
 
 			if(!$this->getPost()) {
@@ -409,7 +411,7 @@ class Handler
 
 			// because symfony removes invalid data, but we actually need this data for the validator
 			// to display the right error messages, we need to give the validator an array with both the
-			// new symfony-form-data and the post-data
+			// new symfony-form-data and the post-data :'(
 			$data = array_replace_recursive($this->getPost(), $this->getForm()->getData());
 
 			$valid = $this->_validator->validate($data);

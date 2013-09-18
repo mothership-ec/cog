@@ -17,7 +17,7 @@ Let's say we want to validate the following array of data which could have come 
 Firstly we create an instance of the validation object:
 
     $validator = new \Message\Cog\Validation\Validator;
-    
+
 Next we go about adding rules. In the validator component rules are associated to a field. A field is basically an
 expected key in the data array.
 
@@ -27,24 +27,24 @@ it must conform to every rule which has been declared. For the entire array to v
 Fields and rules are declared using a fluent interface:
 
     $validator
-	    ->field('first_name') // Add a required field to the validator.
+	    ->addField('first_name') // Add a required field to the validator.
 			->alnum() // must be alpha numeric
 			->length(3, 10) // between 3 and 10 characters
-		->field('last_name')
+		->addField('last_name')
 		    ->length(0, 25) // between 0 and 25 characters
-		->field('email_address') 
+		->addField('email_address')
 		    ->email() // ensures the field is a valid email address
-		->field('age')
-		    ->min(18) // No under 18's allowed!   
+		->addField('age')
+		    ->min(18) // No under 18's allowed!
     ;
-    
+
 Once fields and rules have been declared you run the `validate()` method and pass in the data we want to run our rules
 against.
 
     if ($validator->validate($data)) { //returns true or false
         addUserToDB($validator->getData);
     }
-    
+
 In this example the `validate()` will return `true` and a user will be added to the database. But what if we pass in
 invalid data?
 
@@ -56,11 +56,11 @@ This time let's pass in the following data and output any error messages:
         'email_address' => 'swm_example.org',
         'age'           => '16',
     );
-    
+
     $validator->validate($data); // returns false
     $errors = $validator->getMessages();
     var_dump($errors);
-    
+
 `getMessages()` returns an array containing error messages which have been raised. The output of `var_dump` will look
 like this:
 
@@ -83,30 +83,30 @@ like this:
 		    string(40) "Age must be equal to or greater than 18."
 		  }
 	}
-	
+
 The `Validator` class is able to determine the field name and generate nice error messages just from the rules you
 define. In exactly 83% of cases this should be enough but sometimes you might want to set your own field names and
 error messages:
 
     $validator
-	    ->field('first_name', 'Forename')
+	    ->addField('first_name', 'Forename')
 			->alnum()
 			->length(3, 10)
 		    ->error('%s must be below 11 and above 2 characters.')
-		->field('last_name', 'Surname')
+		->addField('last_name', 'Surname')
 		    ->length(0, 15)
-		->field('email_address') 
+		->addField('email_address')
 		    ->email()
-		->field('age')
+		->addField('age')
 		    ->min(18)
 	        ->error('You must be over 18 to sign up')
-        ->field('address')
+        ->addField('address')
             ->optional()
     ;
 
 Here, the custom field name is the second parameter of the `field()` method, i.e. `Forename` in the `first_name` field.
 The error message is defined using the `error()` method.
-    
+
 By declaring a field you automatically make it a required element. If the field is left blank then the validation will
 fail. To make a field optional call the `optional()` method, as shown on the `address` field above. If the field is
 blank then the rules won't be applied and the field will be skipped when validating.
@@ -117,7 +117,7 @@ Filters modify the data passed to `validate()`. They can be applied before or af
 This is determined by adding `Before` or `After` to the method call, for instance:
 
 	$validator
-		->field('url')
+		->addField('url')
 			->toUrlBefore()
 			->url()
 	;
@@ -129,7 +129,7 @@ before the url() rule, ensuring that the http:// protocol is prefixed to the str
 If you were to change this to:
 
 	$validator
-		->field('url')
+		->addField('url')
 			->toUrlAfter()
 			->url()
 	;
@@ -145,7 +145,7 @@ Where filters modify the data passed to `validate()`, rules determine what is re
 In the example below, data will not pass validation is `age` doesn't fall between 30 and 40:
 
 	$validator
-		->field('age')
+		->addField('age')
 			->between(30, 40)
 	;
 
@@ -153,7 +153,7 @@ Rules can be inverted by prepending the method name with `not` (and camel casing
 above so that data will not pass validation if `age` falls between 30 and 40:
 
 	$validator
-		->field(`age`)
+		->addField(`age`)
 			->notBetween(30, 40)
 	;
 
@@ -165,7 +165,7 @@ instance, if you wanted to create an md5 hash of the input before submitting it,
 rule already exists for this), you could do the following:
 
 	$validator
-		->field('password')
+		->addField('password')
 			->filter('md5')
 			->rule('is_string')
 	;
@@ -189,7 +189,7 @@ not stated, for instance the following method:
 would be called by the validator as so:
 
 	$validator
-		->field('field')
+		->addField('field')
 			->example()
 	;
 
@@ -203,7 +203,7 @@ If there are extra parameters, these are shifted over when called by the validat
 becomes this when called by the validator:
 
 	$validator
-		->field('field')
+		->addField('field')
 			->example('valueForSecondParam')
 	;
 

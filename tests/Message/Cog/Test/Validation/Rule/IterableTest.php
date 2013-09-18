@@ -65,8 +65,8 @@
 //	{
 //		$callback = function(Validator $val){
 //			$val
-//				->field('example')
-//				->field('example_two');
+//				->addField('example')
+//				->addField('example_two');
 //			return $val;
 //		};
 //
@@ -83,7 +83,7 @@
 //	public function testValidateEachFalse()
 //	{
 //		$callback = function(Validator $val){
-//			$val->field('example');
+//			$val->addField('example');
 //			return $val;
 //		};
 //
