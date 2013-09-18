@@ -662,7 +662,7 @@ class Services implements ServicesInterface
 			$c['templating.formats'] = $origFormats;
 
 			// Set default from address
-			$message->setFrom($c['cfg']->app->defaultEmailFrom);
+			$message->setFrom($c['cfg']->app->defaultEmailFrom );
 
 			return $message;
 		});
