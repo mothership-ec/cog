@@ -176,7 +176,6 @@ class Services implements ServicesInterface
 					'cache'       => 'cog://tmp',
 					'auto_reload' => true,
 					'debug'       => 'live' !== $c['env'],
-
 				)
 			);
 
@@ -662,6 +661,9 @@ class Services implements ServicesInterface
 
 			// Now replace the old templating formats
 			$c['templating.formats'] = $origFormats;
+
+			// Set default from address
+			$message->setFrom($c['cfg']->app->defaultEmailFrom);
 
 			return $message;
 		});

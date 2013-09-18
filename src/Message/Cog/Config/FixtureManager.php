@@ -47,7 +47,7 @@ class FixtureManager
 	{
 		$package = $event->getOperation()->getPackage();
 
-		if (!static::isPackageCogModule($package)) {
+		if (!static::isPackageCompatible($package)) {
 			return false;
 		}
 
@@ -97,7 +97,7 @@ class FixtureManager
 	 */
 	static public function preUpdate(PackageEvent $event)
 	{
-		if (!static::isPackageCogModule($event->getOperation()->getInitialPackage())) {
+		if (!static::isPackageCompatible($event->getOperation()->getInitialPackage())) {
 			return false;
 		}
 
@@ -135,7 +135,7 @@ class FixtureManager
 	 */
 	static public function postUpdate(PackageEvent $event)
 	{
-		if (!static::isPackageCogModule($event->getOperation()->getInitialPackage())) {
+		if (!static::isPackageCompatible($event->getOperation()->getInitialPackage())) {
 			return false;
 		}
 
@@ -201,20 +201,21 @@ class FixtureManager
 	}
 
 	/**
-	 * Check if a given Composer package is a Cog module.
+	 * Check if a given Composer package is compatible with this functionality.
 	 *
-	 * Cog module packages are identified by a name prefixed with 'cog-',
-	 * regardless of the vendor name.
+	 * Compatible packages always have a vendor name of "message" and the
+	 * package name is either "cog" (for Cog itself) or is prefixed with "cog-"
+	 * (for cogules).
 	 *
 	 * @param  BasePackage $package The Composer package to check
 	 *
-	 * @return boolean              True if the package is a Cog module
+	 * @return boolean              True if the package is compatible
 	 */
-	static public function isPackageCogModule(BasePackage $package)
+	static public function isPackageCompatible(BasePackage $package)
 	{
 		list($vendor, $name) = explode('/', $package->getPrettyName());
 
-		return 'cog-' === substr($name, 0, 4);
+		return ('message' === $vendor && ('cog-' === substr($name, 0, 4) || 'cog' === $name));
 	}
 
 	/**

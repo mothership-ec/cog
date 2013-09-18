@@ -78,6 +78,10 @@ class Loader implements LoaderInterface {
 			LIMIT 1
 		');
 
+		if (! $results or count($results) == 0) {
+			return 0;
+		}
+
 		return $results[0]->batch;
 	}
 
