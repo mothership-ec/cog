@@ -1,2 +1,4 @@
 name: My Application
-default-email-from: My Application <noreply@default.com>
+default-email-from:
+  email: noreply@default.com
+  name: My Application
