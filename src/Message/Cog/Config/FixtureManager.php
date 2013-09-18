@@ -47,7 +47,7 @@ class FixtureManager
 	{
 		$package = $event->getOperation()->getPackage();
 
-		if (!static::isPackageCogModule($package)) {
+		if (!static::isPackageCompatible($package)) {
 			return false;
 		}
 
@@ -65,7 +65,7 @@ class FixtureManager
 				$file = $workingDir . 'config/' . $fixture;
 				$packageName = $event->getOperation()->getPackage()->getPrettyName();
 
-				if(file_exists($file)) {
+				if (file_exists($file)) {
 					$event->getIO()->write("<warning>Config Fixture already exists for {$packageName}</warning>");
 					continue;
 				}
@@ -97,7 +97,7 @@ class FixtureManager
 	 */
 	static public function preUpdate(PackageEvent $event)
 	{
-		if (!static::isPackageCogModule($event->getOperation()->getInitialPackage())) {
+		if (!static::isPackageCompatible($event->getOperation()->getInitialPackage())) {
 			return false;
 		}
 
@@ -124,7 +124,8 @@ class FixtureManager
 
 	/**
 	 * Detects changes to config fixtures in the newly updated version of a
-	 * given package.
+	 * given package. Also installs any new configs fixtures not in this
+	 * installations config directory.
 	 *
 	 * The user is warned if a difference is detected, as they should manually
 	 * check to see what has changed.
@@ -135,12 +136,13 @@ class FixtureManager
 	 */
 	static public function postUpdate(PackageEvent $event)
 	{
-		if (!static::isPackageCogModule($event->getOperation()->getInitialPackage())) {
+		if (!static::isPackageCompatible($event->getOperation()->getInitialPackage())) {
 			return false;
 		}
 
 		$package    = $event->getOperation()->getInitialPackage();
 		$fixtureDir = static::getConfigFixtureDir($event->getComposer(), $package);
+		$workingDir = static::getWorkingDir();
 
 		try {
 			$fixtures = static::getFixtures($fixtureDir);
@@ -150,13 +152,29 @@ class FixtureManager
 			}
 
 			foreach ($fixtures as $fixture) {
-				$checksum = md5_file($fixtureDir . $fixture);
+				$file        = $workingDir . 'config/' . $fixture;
+				$packageName = $event->getOperation()->getInitialPackage()->getPrettyName();
 
-				if (isset(static::$_updatedFixtures[$package->getPrettyName()][$fixture])
-				 && $checksum !== static::$_updatedFixtures[$package->getPrettyName()][$fixture]) {
+				// If config file for this fixture exists, detect + report any change in the fixture
+				if (file_exists($file)) {
+					$checksum = md5_file($fixtureDir . $fixture);
+
+					if (isset(static::$_updatedFixtures[$package->getPrettyName()][$fixture])
+					 && $checksum !== static::$_updatedFixtures[$package->getPrettyName()][$fixture]) {
+						$event->getIO()->write(sprintf(
+							'<warning>Package `%s` config fixture `%s` has changed: please review manually.</warning>',
+							$package->getPrettyName(),
+							$fixture
+						));
+					}
+				}
+				// If config file for this fixture does not exist yet, create it
+				else {
+					copy($fixtureDir . $fixture, $file);
+
 					$event->getIO()->write(sprintf(
-						'<warning>Package `%s` config fixture `%s` has changed: please review manually.</warning>',
-						$package->getPrettyName(),
+						'<info>Moved package `%s` config fixture `%s` to application config directory.</info>',
+						$packageName,
 						$fixture
 					));
 				}
@@ -201,20 +219,21 @@ class FixtureManager
 	}
 
 	/**
-	 * Check if a given Composer package is a Cog module.
+	 * Check if a given Composer package is compatible with this functionality.
 	 *
-	 * Cog module packages are identified by a name prefixed with 'cog-',
-	 * regardless of the vendor name.
+	 * Compatible packages always have a vendor name of "message" and the
+	 * package name is either "cog" (for Cog itself) or is prefixed with "cog-"
+	 * (for cogules).
 	 *
 	 * @param  BasePackage $package The Composer package to check
 	 *
-	 * @return boolean              True if the package is a Cog module
+	 * @return boolean              True if the package is compatible
 	 */
-	static public function isPackageCogModule(BasePackage $package)
+	static public function isPackageCompatible(BasePackage $package)
 	{
 		list($vendor, $name) = explode('/', $package->getPrettyName());
 
-		return 'cog-' === substr($name, 0, 4);
+		return ('message' === $vendor && ('cog-' === substr($name, 0, 4) || 'cog' === $name));
 	}
 
 	/**
