@@ -1,4 +1,5 @@
 name: My Application
+base-url: default.com
 default-email-from:
   email: noreply@default.com
   name: My Application
