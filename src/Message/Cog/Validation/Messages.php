@@ -45,7 +45,7 @@ class Messages
 	 */
 	public function getDefaultErrorMessage($ruleName)
 	{
-		return $this->_defaults[$ruleName]; 
+		return $this->_defaults[$ruleName];
 	}
 
 	/**
@@ -79,12 +79,12 @@ class Messages
 			$error = $this->_defaults[$ruleName];
 		}
 
-		$params = array_merge(array($field['readableName'], ($invertResult ? ' not': '')), $args);
+		$params = array_merge(array($field->readableName, ($invertResult ? ' not': '')), $args);
 
 		// Parse the error
 		$formatted = vsprintf($error, $params);
 
-		$this->addError($field['name'], $formatted);
+		$this->addError($field->name, $formatted);
 
 		return $this;
 	}

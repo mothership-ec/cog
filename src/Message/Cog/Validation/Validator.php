@@ -39,8 +39,8 @@ class Validator
 
 	public function __clone()
 	{
-		foreach($this as $name => $value) { 
-			if(is_object($value)) { 
+		foreach($this as $name => $value) {
+			if(is_object($value)) {
 				$this->$name = clone $this->$name;
 			}
 		}
@@ -81,20 +81,18 @@ class Validator
 	}
 
 	/**
-	 * Add a new field to be validated.
+	 * Add a new field to be validated and adjusts the fieldPointer
 	 *
-	 * @param  string $name         Name of the field to be added
-	 * @param  bool   $readableName If true, a "readable name" is saved, assuming
-	 *                              the name is formatted as camel case
+	 * @param  Field $field         the field to be added
 	 *
 	 * @return Validator            Returns $this for chainability
 	 */
-	public function field($name, $readableName = false)
+	public function addField(Field $field)
 	{
-		if (!isset($this->_fields[$name])) {
-			$this->_createField($name, $readableName);
+		if (!isset($this->_fields[$field->name])) {
+			$this->_fields[$field->name] = $field;
 		}
-		$this->_fieldPointer = &$this->_fields[$name];
+		$this->_fieldPointer = &$this->_fields[$field->name];
 
 		return $this;
 	}
@@ -120,7 +118,7 @@ class Validator
 	 */
 	public function optional()
 	{
-		$this->_fieldPointer['optional'] = true;
+		$this->_fieldPointer->optional();
 
 		return $this;
 	}
@@ -188,13 +186,13 @@ class Validator
 	protected function _setPointers($methodName, $precendence, array $args, $invertResult)
 	{
 		if ($rule = $this->_loader->getRule($methodName)) {
-			$this->_fieldPointer['rules'][] = array($methodName, $rule, $args, $invertResult, '');
+			$this->_fieldPointer->rules[] = array($methodName, $rule, $args, $invertResult, '');
 
-			$end = count($this->_fieldPointer['rules']) - 1;
-			$this->_rulePointer = &$this->_fieldPointer['rules'][$end];
+			$end = count($this->_fieldPointer->rules) - 1;
+			$this->_rulePointer = &$this->_fieldPointer->rules[$end];
 		}
 		elseif ($filter = $this->_loader->getFilter($methodName)) {
-			$this->_fieldPointer['filters'][$precendence][] = array($methodName, $filter, $args);
+			$this->_fieldPointer->filters[$precendence][] = array($methodName, $filter, $args);
 		}
 		else {
 			throw new \Exception(sprintf('No rule or filter exists named `%s`.', $methodName));
@@ -216,7 +214,8 @@ class Validator
 		$this->_messages->clear();
 
 		// Run 'pre' filters first, then validate the data, then run the 'post' filters
-		$this->_applyFilters('pre')
+		$this
+			->_applyFilters('pre')
 			->_applyRules()
 			->_applyFilters('post')
 			->_cleanData();
@@ -248,51 +247,64 @@ class Validator
 	 *
 	 * @return Validator        Returns $this for chainability
 	 */
-	protected function _cleanData()
+	protected function _cleanData($fieldArray = null, &$dataArray = null)
 	{
-		$data = array();
-
-		foreach ($this->_data as $key => $value) {
-			if (isset($this->_fields[$key])) {
-				$data[$key] = $value;
-			}
+		if($fieldArray === null) {
+			$fieldArray = $this->_fields;
+		}
+		if($dataArray === null) {
+			$dataArray = &$this->_data;
 		}
 
-		$this->_data = $data;
+		foreach ($dataArray as $key => $data) {
+			if (!isset($fieldArray[$key])) {
+				unset($dataArray[$key]);
+			} elseif (count($fieldArray[$key]->children) > 0) {
+				$this->_cleanData($fieldArray[$key]->children, $dataArray[$key]);
+			}
+		}
 
 		return $this;
 	}
 
 	/**
-	 * Parse data through filters
+	 * Recursive method to parse data through filters
+	 * Only applies filters to fields, not to forms!
 	 *
-	 * @param string $type      'Pre' or 'post' validation - Determines which set of data should be validated
-	 * @throws \Exception       Throws exception if $type is not set to 'pre' or 'post'
+	 * @param  string 	 $type  		'Pre' or 'post' validation -
+	 * 									Determines which set of data should be validated
+	 * @param  array 	 $fieldArray  	the current array of fields to iterate over
+	 * @param  array 	 $dataArray 	the current array of data to apply the rules to
 	 *
-	 * @return Validator        Returns $this for chainability
+	 * @return Validator 				Returns $this for chainability
 	 */
-	protected function _applyFilters($type)
+	protected function _applyFilters($type, $fieldArray = null, &$dataArray = null)
 	{
-		if (($type !== 'pre') && ($type !== 'post')) {
-			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $type must be either \'pre\' or \'post\', \'' . $type . '\' given');
+		if($fieldArray === null) {
+			$fieldArray = $this->_fields;
+		}
+		if($dataArray === null) {
+			$dataArray = &$this->_data;
 		}
 
-		foreach($this->_fields as $name => $field) {
+		foreach($fieldArray as $name => $field) {
 
 			// Escape if data field doesn't exist
-			if (!isset($this->_data[$name])) {
+			if (!isset($dataArray[$name])) {
 				continue;
 			}
 
-			foreach($field['filters'][$type] as $filter) {
+			if(count($field->children) > 0 && isset($dataArray[$name])) {
+				$this->_applyFilters($type, $field->children, $dataArray[$name]);
+			} else {
+				foreach($field->filters[$type] as $filter) {
+					list($ruleName, $func, $args) = $filter;
 
-				list($ruleName, $func, $args) = $filter;
+					array_unshift($args, $dataArray[$name]);
+					$result = call_user_func_array($filter[1], $args);
 
-				array_unshift($args, $this->_data[$name]);
-				$result = call_user_func_array($filter[1], $args);
-
-				$this->_data[$name] = $result;
-
+					$dataArray[$name] = $result;
+				}
 			}
 		}
 
@@ -300,20 +312,32 @@ class Validator
 	}
 
 	/**
-	 * Validate data with rules
+	 * Recursive method to apply rules to data.
+	 * Only applies rules to fields, not to forms!
 	 *
-	 * @return Validator        Returns $this for chainability
+	 * @param  fieldArray  array  the current array of fields to iterate over
+	 * @param  dataArray   array  the current array of data to apply the rules to
+	 * @return Validator   Returns $this for chainability
 	 */
-	protected function _applyRules()
+	protected function _applyRules($fieldArray = null, $dataArray = null)
 	{
-		foreach($this->_fields as $name => $field) {
+		if($fieldArray === null) {
+			$fieldArray = $this->_fields;
+		}
+		if($dataArray === null) {
+			$dataArray = $this->_data;
+		}
 
-			$this->_setRequiredError($name, $field);
+		foreach($fieldArray as $name => $field) {
+			if(count($field->children) > 0 && isset($dataArray[$name])) {
+				$this->_applyRules($field->children, $dataArray[$name]);
+			} else {
+				$this->_setRequiredError($field, $dataArray);
 
-			if (isset($this->_data[$name])) {
-				$this->_setMessages($name, $field);
+				if (isset($dataArray[$name])) {
+					$this->_setMessages($field, $dataArray[$name]);
+				}
 			}
-
 		}
 
 		return $this;
@@ -327,15 +351,13 @@ class Validator
 	 *
 	 * @return Validator            Returns $this for chainability
 	 */
-	protected function _setRequiredError($name, $field)
+	protected function _setRequiredError($field, $data)
 	{
-		// Check if data has been submitted
-		$data = $this->_data[$name];
-		
-		$notSet = $this->_checkRequired($data);
+		$notSet = !isset($data[$field->name]);
+		$notSet = $notSet ? $notSet : $this->_checkRequired($data[$field->name]);
 
-		if ($notSet && !$field['optional']) {
-			$this->_messages->addError($name, $field['readableName'].' is a required field.');
+		if ($notSet && !$field->optional) {
+			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
 		}
 
 		return $this;
@@ -366,12 +388,12 @@ class Validator
 	 *
 	 * @return Validator        Returns $this for chainability
 	 */
-	protected function _setMessages($name, $field)
+	protected function _setMessages($field, $data)
 	{
-		foreach($field['rules'] as $rule) {
+		foreach($field->rules as $rule) {
 			list($ruleName, $func, $args, $invertResult, $error) = $rule;
 
-			array_unshift($args, $this->_data[$name]);
+			array_unshift($args, $data);
 			$result = call_user_func_array($func, $args);
 
 			if ($invertResult) {
@@ -382,37 +404,6 @@ class Validator
 				$this->_messages->addFromRule($field, $rule);
 			}
 		}
-
-		return $this;
-	}
-
-	/**
-	 * Add a new field to be validated
-	 *
-	 * @param $name                     Name of new field
-	 * @param bool $readableName        Readable name for field. If set to false, method will create a name based on
-	 *                                  $name
-	 *
-	 * @return Validator                Returns $this for chainability
-	 */
-	protected function _createField($name, $readableName = false)
-	{
-		if ($readableName === false) {
-			$readableName = str_replace('_', ' ', $name);
-			$readableName = preg_replace(array('/(?<=[^A-Z])([A-Z])/', '/(?<=[^0-9])([0-9])/'), ' $0', $readableName);
-			$readableName = ucwords($readableName);
-		}
-
-		$this->_fields[$name] = array(
-			'name'          => $name,
-			'readableName'  => $readableName,
-			'optional'	    => false,
-			'rules'         => array(),
-			'filters'       => array(
-			'pre'	        => array(),
-			'post'          => array(),
-			),
-		);
 
 		return $this;
 	}
