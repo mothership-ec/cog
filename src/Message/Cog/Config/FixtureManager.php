@@ -65,7 +65,7 @@ class FixtureManager
 				$file = $workingDir . 'config/' . $fixture;
 				$packageName = $event->getOperation()->getPackage()->getPrettyName();
 
-				if(file_exists($file)) {
+				if (file_exists($file)) {
 					$event->getIO()->write("<warning>Config Fixture already exists for {$packageName}</warning>");
 					continue;
 				}
@@ -141,6 +141,7 @@ class FixtureManager
 
 		$package    = $event->getOperation()->getInitialPackage();
 		$fixtureDir = static::getConfigFixtureDir($event->getComposer(), $package);
+		$workingDir = static::getWorkingDir();
 
 		try {
 			$fixtures = static::getFixtures($fixtureDir);
@@ -150,13 +151,28 @@ class FixtureManager
 			}
 
 			foreach ($fixtures as $fixture) {
-				$checksum = md5_file($fixtureDir . $fixture);
+				$file = $workingDir . 'config/' . $fixture;
 
-				if (isset(static::$_updatedFixtures[$package->getPrettyName()][$fixture])
-				 && $checksum !== static::$_updatedFixtures[$package->getPrettyName()][$fixture]) {
+				// If config file for this fixture exists, detect + report any change in the fixture
+				if (file_exists($file)) {
+					$checksum = md5_file($fixtureDir . $fixture);
+
+					if (isset(static::$_updatedFixtures[$package->getPrettyName()][$fixture])
+					 && $checksum !== static::$_updatedFixtures[$package->getPrettyName()][$fixture]) {
+						$event->getIO()->write(sprintf(
+							'<warning>Package `%s` config fixture `%s` has changed: please review manually.</warning>',
+							$package->getPrettyName(),
+							$fixture
+						));
+					}
+				}
+				// If config file for this fixture does not exist yet, create it
+				else {
+					copy($fixtureDir . $fixture, $file);
+
 					$event->getIO()->write(sprintf(
-						'<warning>Package `%s` config fixture `%s` has changed: please review manually.</warning>',
-						$package->getPrettyName(),
+						'<info>Moved package `%s` config fixture `%s` to application config directory.</info>',
+						$packageName,
 						$fixture
 					));
 				}
