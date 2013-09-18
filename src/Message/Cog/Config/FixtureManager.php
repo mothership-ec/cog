@@ -152,7 +152,8 @@ class FixtureManager
 			}
 
 			foreach ($fixtures as $fixture) {
-				$file = $workingDir . 'config/' . $fixture;
+				$file        = $workingDir . 'config/' . $fixture;
+				$packageName = $event->getOperation()->getPackage()->getPrettyName();
 
 				// If config file for this fixture exists, detect + report any change in the fixture
 				if (file_exists($file)) {
