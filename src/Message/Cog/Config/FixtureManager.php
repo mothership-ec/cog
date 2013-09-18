@@ -124,7 +124,8 @@ class FixtureManager
 
 	/**
 	 * Detects changes to config fixtures in the newly updated version of a
-	 * given package.
+	 * given package. Also installs any new configs fixtures not in this
+	 * installations config directory.
 	 *
 	 * The user is warned if a difference is detected, as they should manually
 	 * check to see what has changed.
