@@ -75,16 +75,12 @@ The best practice for validating the form is to include both the definition of t
 
 ## CSRF protection
 
-The form component makes use of Symfony's CSRF extension. These can be customised on a form to form basis in the options of a field. This is the third parameter when creating a new field, e.g.
+The form component makes use of Symfony's CSRF extension. These can be customised on a form to form basis in the options of a form.
 
-	$form->add(
-		'name',
-		'text',
-		array(
-			'csrf_protection' => true,
-			'csrf_field_name' => '_token',
-		)
-	);
+	$form->addOptions(array(
+		'csrf_protection' => true,
+		'csrf_field_name' => '_token',
+	));
 
 For more details see the Symfony documentation (http://symfony.com/doc/current/book/forms.html#csrf-protection)
 
