@@ -3,6 +3,7 @@
 namespace Message\Cog\ImageResize\Templating;
 
 use Message\Cog\ImageResize\Resize;
+use Message\Cog\ImageResize\ResizableInterface;
 
 /**
  * Provides integration of the ImageResize component with Twig.
@@ -30,9 +31,9 @@ class TwigExtension extends \Twig_Extension
 		);
 	}
 
-	public function getResizeUrl($url, $width, $height)
+	public function getResizeUrl(ResizableInterface $file, $width, $height)
 	{
-		return $this->_resize->generateUrl($url, $width, $height);
+		return $this->_resize->generateUrl($file->getUrl(), $width, $height);
 	}
 
 	/**

@@ -3,6 +3,7 @@
 namespace Message\Cog\ImageResize\Templating;
 
 use Message\Cog\ImageResize\Resize;
+use Message\Cog\ImageResize\ResizableInterface;
 use Symfony\Component\Templating\Helper\Helper;
 
 /**
@@ -32,12 +33,12 @@ class PhpHelper extends Helper
 	 * @param string         $url      The public path to the file to resize
 	 * @param int|null       $width    The width of the image to create
 	 * @param int|null       $height   The height of the image to create
-	 * 
+	 *
 	 * @return string The generated URL
 	 */
-	public function generateUrl($url, $width, $height)
+	public function generateUrl(ResizableInterface $file, $width, $height)
 	{
-		return $this->_resize->generateUrl($url, $width, $height);
+		return $this->_resize->generateUrl($file->getUrl(), $width, $height);
 	}
 
 	/**
