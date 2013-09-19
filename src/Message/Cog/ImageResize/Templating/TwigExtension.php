@@ -27,13 +27,26 @@ class TwigExtension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			'resize'  => new \Twig_Function_Method($this, 'getResizeUrl'),
+			'resize'  		   => new \Twig_Function_Method($this, 'getResizeUrl'),
+			'resizeAndRender'  => new \Twig_Function_Method($this, 'getResizeUrlAndRender'),
 		);
 	}
 
 	public function getResizeUrl(ResizableInterface $file, $width, $height)
 	{
 		return $this->_resize->generateUrl($file->getUrl(), $width, $height);
+	}
+
+	public function getResizeUrlAndRender(ResizableInterface $file, $width, $height, $attributes)
+	{
+		$url = $this->getResizeUrl($file, $width, $height);
+
+		$attributeString = "";
+		foreach($attributes as $attribute => $value) {
+			$attributeString .= sprintf('%s="%s" ', $attribute, $value);
+		}
+
+		return sprintf('<img src="%s" width="%d" height="%d" alt="%s" %s>', $url, $width, $height, $file->getAltText(), $attributeString);
 	}
 
 	/**
