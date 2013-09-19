@@ -28,6 +28,17 @@ Calling the `add()` method automatically adds the field to both the form and the
 		->optional() // set field to optional
 		->toUrl(); // append 'http://' protocol if not already set
 
+For nested Forms just create a new form and add the form to its parent:
+
+	$child
+		->add('price', 'money', 'Price GBP', array('currency' => 'GBP'))
+		->val() // call validator
+		->number(); // applies number()-rule
+
+	$parent->add($child, 'form'); // adds the child form with its validation and all fields to the parent-form
+
+Nested forms will be represented as multi-dimensional arrays in the data.
+
 Once we have added all the fields to our form, we can get the completed form using the `getForm()` method:
 
 	$form = $form->getForm();
@@ -154,6 +165,10 @@ Note that with Twig you need to reference the file name, but with PHP you need t
 ### Field types
 
 ### Validation rules
+
+#### Type
+
+**number()** - Check whether value is a number or valid numeric string
 
 #### Text
 
