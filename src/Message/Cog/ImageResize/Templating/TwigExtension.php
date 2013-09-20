@@ -4,6 +4,7 @@ namespace Message\Cog\ImageResize\Templating;
 
 use Message\Cog\ImageResize\Resize;
 use Message\Cog\ImageResize\ResizableInterface;
+use Message\Cog\HTTP\Response;
 
 /**
  * Provides integration of the ImageResize component with Twig.
@@ -27,26 +28,35 @@ class TwigExtension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			'resize'  		   => new \Twig_Function_Method($this, 'getResizeUrl'),
-			'resizeAndRender'  => new \Twig_Function_Method($this, 'getResizeUrlAndRender'),
+			'getResizedUri'    => new \Twig_Function_Method($this, 'getResizedUri'),
+			'getResizedImage'  => new \Twig_Function_Method(
+				$this,
+				'getResizedImageTag',
+				array(
+					'needs_environment' => true,
+					'is_safe' => array('html'),
+				)
+			),
 		);
 	}
 
-	public function getResizeUrl(ResizableInterface $file, $width, $height)
+	public function getResizedUri(ResizableInterface $file, $width, $height)
 	{
 		return $this->_resize->generateUrl($file->getUrl(), $width, $height);
 	}
 
-	public function getResizeUrlAndRender(ResizableInterface $file, $width, $height, $attributes)
+	public function getResizedImageTag(\Twig_Environment $environment, ResizableInterface $file, $width, $height, $attributes = array())
 	{
-		$url = $this->getResizeUrl($file, $width, $height);
+		$url = $this->getResizedUri($file, $width, $height);
 
-		$attributeString = "";
-		foreach($attributes as $attribute => $value) {
-			$attributeString .= sprintf('%s="%s" ', $attribute, $value);
-		}
-
-		return sprintf('<img src="%s" width="%d" height="%d" alt="%s" %s>', $url, $width, $height, $file->getAltText(), $attributeString);
+		return $environment->render('Message:Cog::image-resize:image',
+			array(
+				'url'		 => $url,
+				'width'		 => $width,
+				'height' 	 => $height,
+				'altText' 	 => $file->getAltText(),
+				'attributes' => $attributes
+			));
 	}
 
 	/**
