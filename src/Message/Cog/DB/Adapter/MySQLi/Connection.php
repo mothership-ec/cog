@@ -46,6 +46,11 @@ class Connection implements ConnectionInterface
 		if(isset($this->_params['charset'])) {
 			$this->_handle->set_charset($this->_params['charset']);
 		}
+
+		// Set the timezone to match PHP's
+		$now = new \DateTime;
+		$offset = $now->format('P');
+		$this->query('SET time_zone="' . $offset . '";');
 	}
 
 	public function query($sql)
