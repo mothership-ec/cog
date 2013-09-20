@@ -36,7 +36,8 @@ class Services implements ServicesInterface
 				$c['imagine'],
 				$c['routing.generator'],
 				Services::ROUTE_NAME,
-				Services::SALT
+				Services::SALT,
+				$c['cfg']->app->imageResize->defaultImagePath
 			);
 			$resize->setDefaultQuality(90);
 

@@ -22,6 +22,7 @@ class Resize
 	protected $_generator;
 	protected $_salt;
 	protected $_defaultQuality = 90;
+	protected $_defaultImagePath;
 
 	/**
 	 * Constructor
@@ -29,17 +30,18 @@ class Resize
 	 * @param ImagineInterface      $imagine   An instance of the Imagine library
 	 * @param UrlGeneratorInterface $generator An instance of the URL generator
 	 * @param string                $routeName The route for the controller where this class is used
-	 * @param string                $salt      A random string used to prevent people from 
+	 * @param string                $salt      A random string used to prevent people from
 	 *                                         creating arbritary sized images.
 	 */
-	public function __construct(ImagineInterface $imagine, UrlGeneratorInterface $generator, $routeName, $salt)
+	public function __construct(ImagineInterface $imagine, UrlGeneratorInterface $generator, $routeName, $salt, $defaultImagePath)
 	{
-		$this->_imagine   = $imagine;
-		$this->_generator = $generator;
+		$this->_imagine  		 = $imagine;
+		$this->_generator 		 = $generator;
 		// The url param is mandatory for this route so we pass it in then strip it off with substr()
-		$this->_cacheDir  =  substr($this->_generator->generate($routeName, array('url' => '-')), 0, -2);
-		$this->_cachePath = 'cog://public'.$this->_cacheDir;
-		$this->_salt      = $salt;
+		$this->_cacheDir  		 =  substr($this->_generator->generate($routeName, array('url' => '-')), 0, -2);
+		$this->_cachePath 		 = 'cog://public'.$this->_cacheDir;
+		$this->_salt      		 = $salt;
+		$this->_defaultImagePath = $defaultImagePath;
 	}
 
 	/**
@@ -62,7 +64,7 @@ class Resize
 	public function resize($url)
 	{
 		$url = '/'.ltrim($url, '/');
-		
+
 		if(!file_exists($this->_cachePath) || !is_writeable($this->_cachePath)) {
 			throw new \RuntimeException('Cache directory does not exist or is not writeable.');
 		}
@@ -89,14 +91,18 @@ class Resize
 
 		// ensure original exists
 		if(!file_exists($original) || !is_file($original)) {
-			throw new Exception\NotFound('The original file does not exist or is a directory.');
+			$original = new File($this->_defaultImagePath);
+
+			if(!file_exists($original) || !is_file($original)) {
+				throw new Exception\NotFound('Neither the original file nor the default-image exist.');
+			}
 		}
 
 		// make sure the target dir exists and we can write to it.
 		$saved    = new File($this->_cachePath.$url);
 		$savedRaw = new File($saved->getRealPath());
 		$fs       = new Filesystem;
-		
+
 		$fs->mkdir($savedRaw->getPath(), 0777);
 
 		if($params['width'] === self::DIMENSION_AUTO || $params['height'] === self::DIMENSION_AUTO) {
@@ -124,7 +130,7 @@ class Resize
 	 *                            it is calculated based on height.
 	 * @param  int|null $height   The height of the image to generate (in pixels). If null
 	 *                            it is calculated based on width.
-	 *                            
+	 *
 	 * @return string 	The URL that the resized image can be accessed at.
 	 */
 	public function generateUrl($url, $width, $height)
@@ -171,7 +177,7 @@ class Resize
 	{
 		$params = explode('-', $paramString);
 
-		// Ensure we specify a size. 
+		// Ensure we specify a size.
 		// This matches sizes like 600x400 or 900xAUTO or AUTOx300
 		$regex = "/^([0-9]+?|".preg_quote(self::AUTO_KEYWORD).")x([0-9]+?|".preg_quote(self::AUTO_KEYWORD).")$/u";
 		if(!preg_match($regex, $params[0], $matches)) {

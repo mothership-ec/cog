@@ -10,6 +10,7 @@ use Message\Cog\HTTP\Response;
  * Provides integration of the ImageResize component with Twig.
  *
  * @author James Moss <james@message.co.uk>
+ * @author Iris Schaffer <iris@message.co.uk>
  */
 class TwigExtension extends \Twig_Extension
 {
@@ -45,16 +46,28 @@ class TwigExtension extends \Twig_Extension
 		return $this->_resize->generateUrl($file->getUrl(), $width, $height);
 	}
 
+	/**
+	 * Function which renders the image-tag with set width, height, src and alt-attributes.
+	 * More attributes can passed in through the $attributes-array.
+	 * If attributes['alt'] is defined, it will be used in the tag instead of $file->getAltText()
+	 *
+	 * @param \Twig_Environment		$environment 	Twig Environment needed to render image-tag
+	 * @param ResizableInterface	$file 			File to be resized
+	 * @param mixed					$width 			New width
+	 * @param mixed					$height 		New height
+	 * @param array 				$attributes 	Additional attributes to be used in the image-tag
+	 */
 	public function getResizedImageTag(\Twig_Environment $environment, ResizableInterface $file, $width, $height, $attributes = array())
 	{
 		$url = $this->getResizedUri($file, $width, $height);
+		$alt = (array_key_exists('alt', $attributes) ? $attributes['alt'] : $file->getAltText());
 
 		return $environment->render('Message:Cog::image-resize:image',
 			array(
 				'url'		 => $url,
 				'width'		 => $width,
 				'height' 	 => $height,
-				'altText' 	 => $file->getAltText(),
+				'altText' 	 => $alt,
 				'attributes' => $attributes
 			));
 	}

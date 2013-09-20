@@ -4,3 +4,5 @@ default-email-from:
   email: noreply@default.com
   name: My Application
 csrf-secret: CHANGE THIS FOR EACH INSTALLATION
+image-resize:
+  default-image-path: /cogules/Message:Mothership:ControlPanel/images/default.png
