@@ -277,7 +277,6 @@ class Authorship
 
 		$this->_deletedAt = null;
 		$this->_deletedBy = null;
-		$this->_deletedUser = null;
 
 		return $this;
 	}
