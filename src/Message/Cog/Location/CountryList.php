@@ -1,9 +1,11 @@
 <?php
 
-namespace Message\Mothership\Commerce;
+namespace Message\Cog\Location;
 
-class CountryList implements \ArrayAccess, \IteratorAggregate, \Countable
-{
+use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
+
+class CountryList extends ChoiceList {
+
 	protected $_countries = array(
 		'AX' => 'Åland Islands',
 		'AL' =>	'Albania',
@@ -286,9 +288,18 @@ class CountryList implements \ArrayAccess, \IteratorAggregate, \Countable
 		'GB', // United Kingdom
 	);
 
-	public function exists($id)
+	public function __construct(array $options = array(), array $preferredChoices = array())
 	{
-		return array_key_exists($id, $this->_countries);
+		if (isset($options['onlyEU']) and $options['onlyEU']) {
+			$choices = $this->getEU();
+		}
+		else {
+			$choices = $this->all();
+		}
+
+		$labels = $choices;
+
+		parent::__construct($choices, $labels, $preferredChoices);
 	}
 
 	public function all()
@@ -296,39 +307,14 @@ class CountryList implements \ArrayAccess, \IteratorAggregate, \Countable
 		return $this->_countries;
 	}
 
-	public function count()
-	{
-		return count($this->_countries);
-	}
-
-	public function offsetSet($id, $value)
-	{
-		throw new \BadMethodCallException('`Entity\Collection` does not allow setting entities using array access');
-	}
-
-	public function offsetGet($id)
-	{
-		return $this->get($id);
-	}
-
-	public function offsetExists($id)
-	{
-		return $this->exists($id);
-	}
-
-	public function offsetUnset($id)
-	{
-		unset($this->_countries[$id]);
-	}
-
-	public function getIterator()
-	{
-		return new \ArrayIterator($this->_countries);
-	}
-
 	public function getByID($countryID)
 	{
 		return isset($this->_countries[$countryID]) ? $this->_countries[$countryID] : false;
+	}
+
+	public function getEU()
+	{
+		return array_intersect_key($this->_countries, array_flip($this->_eu));
 	}
 
 	public function isInEU($countryID)
@@ -339,4 +325,5 @@ class CountryList implements \ArrayAccess, \IteratorAggregate, \Countable
 
 		return in_array($countryID, $this->_eu);
 	}
+
 }
