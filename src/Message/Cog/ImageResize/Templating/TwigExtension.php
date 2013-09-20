@@ -29,7 +29,7 @@ class TwigExtension extends \Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			'getResizedUri'    => new \Twig_Function_Method($this, 'getResizedUri'),
+			'getResizedUrl'    => new \Twig_Function_Method($this, 'getResizedUrl'),
 			'getResizedImage'  => new \Twig_Function_Method(
 				$this,
 				'getResizedImageTag',
@@ -41,7 +41,7 @@ class TwigExtension extends \Twig_Extension
 		);
 	}
 
-	public function getResizedUri(ResizableInterface $file, $width, $height)
+	public function getResizedUrl(ResizableInterface $file, $width, $height)
 	{
 		return $this->_resize->generateUrl($file->getUrl(), $width, $height);
 	}
@@ -59,7 +59,7 @@ class TwigExtension extends \Twig_Extension
 	 */
 	public function getResizedImageTag(\Twig_Environment $environment, ResizableInterface $file, $width, $height, $attributes = array())
 	{
-		$url = $this->getResizedUri($file, $width, $height);
+		$url = $this->getResizedUrl($file, $width, $height);
 		$alt = (array_key_exists('alt', $attributes) ? $attributes['alt'] : $file->getAltText());
 
 		return $environment->render('Message:Cog::image-resize:image',

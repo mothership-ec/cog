@@ -23,6 +23,7 @@ class Resize
 	protected $_salt;
 	protected $_defaultQuality = 90;
 	protected $_defaultImagePath;
+	protected $_publicDirectory = 'cog://public'; // replace by either contant or inject??
 
 	/**
 	 * Constructor
@@ -39,7 +40,7 @@ class Resize
 		$this->_generator 		 = $generator;
 		// The url param is mandatory for this route so we pass it in then strip it off with substr()
 		$this->_cacheDir  		 =  substr($this->_generator->generate($routeName, array('url' => '-')), 0, -2);
-		$this->_cachePath 		 = 'cog://public'.$this->_cacheDir;
+		$this->_cachePath 		 = $this->_publicDirectory.$this->_cacheDir;
 		$this->_salt      		 = $salt;
 		$this->_defaultImagePath = $defaultImagePath;
 	}
@@ -87,15 +88,11 @@ class Resize
 		$params = $this->_parseParams($paramString);
 
 		// lets generate an image!
-		$original = new File('cog://public'.$path.$ext);
+		$original = new File($this->_publicDirectory.$path.$ext);
 
 		// ensure original exists
 		if(!file_exists($original) || !is_file($original)) {
-			$original = new File($this->_defaultImagePath);
-
-			if(!file_exists($original) || !is_file($original)) {
-				throw new Exception\NotFound('Neither the original file nor the default-image exist.');
-			}
+			throw new Exception\NotFound('Neither the original file nor the default-image exist.');
 		}
 
 		// make sure the target dir exists and we can write to it.
@@ -135,6 +132,11 @@ class Resize
 	 */
 	public function generateUrl($url, $width, $height)
 	{
+		$original = new File($this->_publicDirectory.$url);
+		if(!file_exists($original) || !is_file($original)) {
+			$url = $this->_defaultImagePath;
+		}
+
 		$url = ltrim($url, '/');
 
 		if(is_null($width)) {
