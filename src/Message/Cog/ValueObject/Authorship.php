@@ -2,6 +2,8 @@
 
 namespace Message\Cog\ValueObject;
 
+use Message\Cog\Service\Container;
+
 /**
  * Represents the created, updated and deleted metadata for a model.
  *
@@ -14,14 +16,20 @@ class Authorship
 
 	protected $_createdAt;
 	protected $_createdBy;
+	protected $_createdUser;
 
 	protected $_updatedAt;
 	protected $_updatedBy;
 	protected $_updatable = true;
+	protected $_updatedUser;
 
 	protected $_deletedAt;
 	protected $_deletedBy;
+	protected $_deletedUser;
 	protected $_deletable = true;
+
+	protected $_users = array();
+	protected static $_userLoader;
 
 	/**
 	 * Get the date & time of creation.
@@ -274,6 +282,70 @@ class Authorship
 	}
 
 	/**
+	 * Get the created by user.
+	 *
+	 * @return UserInterface
+	 */
+	public function createdUser()
+	{
+		return $this->_getUser($this->_createdBy);
+	}
+
+	/**
+	 * Get the updated user.
+	 *
+	 * @return UserInterface
+	 */
+	public function updatedUser()
+	{
+		return $this->_getUser($this->_updatedBy);
+	}
+
+	/**
+	 * Get the deleted user.
+	 *
+	 * @return UserInterface
+	 */
+	public function deletedUser()
+	{
+		return $this->_getUser($this->_deletedBy);
+	}
+
+	/**
+	 * Get a user singleton by id.
+	 *
+	 * @param  int $id
+	 * @return UserInterface
+	 */
+	protected function _getUser($id)
+	{
+		if (! isset($this->_users[$id])) {
+			$this->_users[$id] = $this->_getUserLoader()->getById($id);
+		}
+
+		return $this->_users[$id];
+	}
+
+	/**
+	 * Get the user loader from the service container. This is a pretty dirty
+	 * fix to let us access the user's properties instead of just an id number
+	 * in the $this->_createdBy property.
+	 *
+	 * @see https://github.com/messagedigital/cog/issues/179
+	 *
+	 * @return unknown The user loader
+	 */
+	protected function _getUserLoader()
+	{
+		if (null === self::$_userLoader) {
+			// Get the user loader statically from the service container. Sorry about this :(
+			self::$_userLoader = Container::get('user.loader');
+		}
+
+		return self::$_userLoader;
+	}
+
+	/**
 	 * Print out the authorship metadata as a string.
 	 *
 	 * @return string The authorship metadata represented as a string
@@ -283,17 +355,17 @@ class Authorship
 		$return = '';
 
 		if (!is_null($this->_createdAt)) {
-			$return .= 'Created ' . ($this->_createdBy ? 'by ' . $this->_createdBy . ' ' : '');
+			$return .= 'Created ' . ($this->_createdBy ? 'by ' . $this->createdUser()->getName() . ' ' : '');
 			$return .= 'on ' . $this->_createdAt->format(self::DATE_FORMAT) . "\n";
 		}
 
 		if (!is_null($this->_updatedAt)) {
-			$return .= 'Last updated ' . ($this->_updatedBy ? 'by ' . $this->_updatedBy . ' ' : '');
+			$return .= 'Last updated ' . ($this->_updatedBy ? 'by ' . $this->updatedUser()->getName() . ' ' : '');
 			$return .= 'on ' . $this->_updatedAt->format(self::DATE_FORMAT) . "\n";
 		}
 
 		if (!is_null($this->_deletedAt)) {
-			$return .= 'Deleted ' . ($this->_deletedBy ? 'by ' . $this->_deletedBy . ' ' : '');
+			$return .= 'Deleted ' . ($this->_deletedBy ? 'by ' . $this->deletedUser()->getName() . ' ' : '');
 			$return .= 'on ' . $this->_deletedAt->format(self::DATE_FORMAT);
 		}
 
