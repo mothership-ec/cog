@@ -132,9 +132,13 @@ class Resize
 	 */
 	public function generateUrl($url, $width, $height)
 	{
-		$original = new File($this->_publicDirectory.$url);
-		if(!file_exists($original) || !is_file($original)) {
+		if($url === '') {
 			$url = $this->_defaultImagePath;
+		} else {
+			$original = new File($this->_publicDirectory.$url);
+			if(!file_exists($original) || !is_file($original)) {
+				$url = $this->_defaultImagePath;
+			}
 		}
 
 		$url = ltrim($url, '/');

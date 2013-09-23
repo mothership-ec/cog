@@ -41,9 +41,12 @@ class TwigExtension extends \Twig_Extension
 		);
 	}
 
-	public function getResizedUrl(ResizableInterface $file, $width, $height)
+	public function getResizedUrl($file, $width, $height)
 	{
-		return $this->_resize->generateUrl($file->getUrl(), $width, $height);
+		$this->_checkFileType($file);
+
+		$url = ($file ? $file->getUrl() : '');
+		return $this->_resize->generateUrl($url, $width, $height);
 	}
 
 	/**
@@ -57,10 +60,12 @@ class TwigExtension extends \Twig_Extension
 	 * @param mixed					$height 		New height
 	 * @param array 				$attributes 	Additional attributes to be used in the image-tag
 	 */
-	public function getResizedImageTag(\Twig_Environment $environment, ResizableInterface $file, $width, $height, $attributes = array())
+	public function getResizedImageTag(\Twig_Environment $environment, $file, $width, $height, $attributes = array())
 	{
+		$this->_checkFileType($file);
+
 		$url = $this->getResizedUrl($file, $width, $height);
-		$alt = (array_key_exists('alt', $attributes) ? $attributes['alt'] : $file->getAltText());
+		$alt = (array_key_exists('alt', $attributes) ? $attributes['alt'] : ($file ? $file->getAltText() : ""));
 
 		return $environment->render('Message:Cog::image-resize:image',
 			array(
@@ -70,6 +75,13 @@ class TwigExtension extends \Twig_Extension
 				'altText' 	 => $alt,
 				'attributes' => $attributes
 			));
+	}
+
+	protected function _checkFileType($file)
+	{
+		if(!($file instanceof ResizableInterface || is_null($file))) {
+			throw new \InvalidArgumentException("$file must either be an instance of ResizableInterface or null!");
+		}
 	}
 
 	/**
