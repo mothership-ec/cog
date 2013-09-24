@@ -91,7 +91,10 @@ class Validator
 	{
 		if (!isset($this->_fields[$field->name])) {
 			$this->_fields[$field->name] = $field;
+		} else {
+			$this->_fields[$field->name] = $this->_fields[$field->name]->merge($field);
 		}
+
 		$this->_fieldPointer = &$this->_fields[$field->name];
 
 		return $this;
@@ -118,7 +121,7 @@ class Validator
 	 */
 	public function optional()
 	{
-		$this->_fieldPointer->optional();
+		$this->_fieldPointer->optional = true;
 
 		return $this;
 	}
@@ -294,21 +297,30 @@ class Validator
 				continue;
 			}
 
-			if(count($field->children) > 0 && isset($dataArray[$name])) {
+			if (count($field->children) > 0) {
 				$this->_applyFilters($type, $field->children, $dataArray[$name]);
-			} else {
-				foreach($field->filters[$type] as $filter) {
-					list($ruleName, $func, $args) = $filter;
-
-					array_unshift($args, $dataArray[$name]);
-					$result = call_user_func_array($filter[1], $args);
-
-					$dataArray[$name] = $result;
+			} elseif ($field->repeatable) {
+				foreach($dataArray[$name] as &$data) {
+					$this->_applyFiltersForField($type, $field, $data);
 				}
+			} else {
+				$this->_applyFiltersForField($type, $field, $dataArray[$name]);
 			}
 		}
 
 		return $this;
+	}
+
+	protected function _applyFiltersForField($type, $field, &$data)
+	{
+		foreach($field->filters[$type] as $filter) {
+			list($ruleName, $func, $args) = $filter;
+
+			array_unshift($args, $data);
+			$result = call_user_func_array($filter[1], $args);
+
+			$data = $result;
+		}
 	}
 
 	/**
@@ -329,18 +341,28 @@ class Validator
 		}
 
 		foreach($fieldArray as $name => $field) {
-			if(count($field->children) > 0 && isset($dataArray[$name])) {
-				$this->_applyRules($field->children, $dataArray[$name]);
-			} else {
-				$this->_setRequiredError($field, $dataArray);
+			if(!isset($dataArray[$name])) {
+				$dataArray[$name] = null;
+			}
 
-				if (isset($dataArray[$name])) {
-					$this->_setMessages($field, $dataArray[$name]);
+			if(count($field->children) > 0) {
+				$this->_applyRules($field->children, $dataArray[$name]);
+			}  elseif ($field->repeatable) {
+				foreach($dataArray[$name] as $data) {
+					$this->_applyRulesForField($field, $data);
 				}
+			} else {
+				$this->_applyRulesForField($field, $dataArray[$name]);
 			}
 		}
 
 		return $this;
+	}
+
+	protected function _applyRulesForField($field, $data) {
+		$this->_setRequiredError($field, $data);
+
+		$this->_setMessages($field, $data);
 	}
 
 	/**
@@ -353,8 +375,7 @@ class Validator
 	 */
 	protected function _setRequiredError($field, $data)
 	{
-		$notSet = !isset($data[$field->name]);
-		$notSet = $notSet ? $notSet : $this->_checkRequired($data[$field->name]);
+		$notSet = $this->_isSet($data);
 
 		if ($notSet && !$field->optional) {
 			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
@@ -363,7 +384,7 @@ class Validator
 		return $this;
 	}
 
-	protected function _checkRequired($data)
+	protected function _isSet($data)
 	{
 		if($data === false) {
 			return true;

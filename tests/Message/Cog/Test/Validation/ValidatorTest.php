@@ -195,9 +195,14 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testOtherFilter()
 	{
+		$repeatableField = new Field('repeatable');
+		$repeatableField->repeatable = true;
+
 		$validator2 = new Validator($this->_loader);
 		$validator2
 			->addField(new Field('test'))
+				->filter('md5')
+			->addField($repeatableField)
 				->filter('md5');
 
 		$form = new Field('form');
@@ -211,21 +216,30 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 		$this->_validator->validate(
 			array(
 				'test' => 'test',
-				'form' => array('test' => 'test'),
+				'form' => array(
+					'test' 		 => 'test',
+					'repeatable' => array('abc', 'abc')
+				),
 			)
 		);
 
 		$data = $this->_validator->getData();
 
 		$this->assertTrue(strlen($data['test']) === 32);
-		$this->assertEquals(strlen($data['form']['test']), strlen($data['test']));
+		$this->assertEquals($data['form']['test'], $data['test']);
+		$this->assertEquals($data['form']['repeatable'][0], $data['form']['repeatable'][1]);
 	}
 
 	public function testOtherRulePass()
 	{
+		$repeatableField = new Field('repeatable');
+		$repeatableField->repeatable = true;
+
 		$validator2 = new Validator($this->_loader);
 		$validator2
 			->addField(new Field('test2'))
+				->rule('is_int')
+			->addField($repeatableField)
 				->rule('is_int');
 
 		$form = new Field('form');
@@ -237,7 +251,13 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 			->addField($form);
 
 		$this->_validator->validate(
-			array('test' => 1, 'form' => array('test2' => 5))
+			array(
+				'test' => 1,
+				'form' => array(
+					'test2' 	 => 5,
+					'repeatable' => array(4, 8)
+				)
+			)
 		);
 
 		$this->assertEquals(0, count($this->_validator->getMessages()));
@@ -245,9 +265,14 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
 	public function testOtherRuleFail()
 	{
+		$repeatableField = new Field('repeatable');
+		$repeatableField->repeatable = true;
+
 		$validator2 = new Validator($this->_loader);
 		$validator2
 			->addField(new Field('test2'))
+				->rule('is_int')
+			->addField($repeatableField)
 				->rule('is_int');
 
 		$form = new Field('form');
@@ -258,12 +283,17 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 				->rule('is_int')
 			->addField($form);
 
-
 		$this->_validator->validate(
-			array('test' => 'abc', 'form' => array('test2' => 'lolol'))
+			array(
+				'test' => 'abc',
+				'form' => array(
+					'test2' 	 => 'lala',
+					'repeatable' => array(4, 'test')
+				)
+			)
 		);
 
-		$this->assertEquals(2, count($this->_validator->getMessages()));
+		$this->assertEquals(3, count($this->_validator->getMessages()));
 	}
 
 	public function testError()

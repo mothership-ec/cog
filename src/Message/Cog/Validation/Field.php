@@ -13,10 +13,9 @@ class Field
 	public $name;
 	public $readableName;
 	public $optional = false;
+	public $repeatable = false;
 	public $rules = array();
 	public $filters = array('pre' => array(), 'post' => array());
-	public $pre = array();
-	public $post = array();
 	public $children = array();
 
 	public function __construct($name, $readableName = false)
@@ -33,9 +32,14 @@ class Field
 		return $this;
 	}
 
-	public function optional()
+	public function merge(Field $field)
 	{
-		$this->optional = true;
+		$this->readableName = $field->readableName ? $field->readableName : $this->readableName;
+		$this->optional     = $field->optional || $this->optional;
+
+		$this->rules    = array_merge($this->rules, $field->rules);
+		$this->filters  = array_merge_recursive($this->filters, $field->filters);
+		$this->children = array_merge($this->children, $field->children);
 
 		return $this;
 	}
