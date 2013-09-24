@@ -375,7 +375,7 @@ class Validator
 	 */
 	protected function _setRequiredError($field, $data)
 	{
-		$notSet = $this->_isSet($data);
+		$notSet = !$this->_isSet($data);
 
 		if ($notSet && !$field->optional) {
 			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
@@ -387,18 +387,23 @@ class Validator
 	protected function _isSet($data)
 	{
 		if($data === false) {
-			return true;
+			return false;
 		}
 
 		if(is_null($data)) {
-			return true;
+			return false;
 		}
 
 		if(is_string($data) && trim($data) === '') {
-			return true;
+			return false;
 		}
 
-		return false;
+		// needed for selects, checkboxes etc.
+		if(is_array($data) && count($data) === 0) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
