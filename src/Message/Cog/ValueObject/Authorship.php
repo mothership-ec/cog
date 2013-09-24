@@ -202,7 +202,7 @@ class Authorship
 		$this->_createdAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_createdBy = $user;
 
-		$this->_createdAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+		$this->_createdAt = $this->_createdAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
 		return $this;
 	}
@@ -227,7 +227,7 @@ class Authorship
 		$this->_updatedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_updatedBy = $user;
 
-		$this->_updatedAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+		$this->_updatedAt = $this->_updatedAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
 		return $this;
 	}
@@ -257,6 +257,8 @@ class Authorship
 
 		$this->_deletedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_deletedBy = $user;
+
+		$this->_deletedAt = $this->_deletedAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
 		return $this;
 	}
