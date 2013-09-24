@@ -263,6 +263,7 @@ class Handler
 			$field = new Field($handlerField->getName(), $handlerField->getConfig()->getOption('label') ? $handlerField->getConfig()->getOption('label'): false);
 		}
 
+		$field->repeatable = $this->_repeatable;
 		$this->getValidator()->addField($field);
 
 		return $this;
