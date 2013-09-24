@@ -13,6 +13,9 @@ class Message extends  \Swift_Message
 	protected $_engine;
 	protected $_parser;
 
+	protected $_whitelist = array();
+	protected $_whitelistFallback;
+
 	public function __construct($engine, $parser)
 	{
 		$this->_engine = $engine;
@@ -94,5 +97,73 @@ class Message extends  \Swift_Message
 	public function getTemplateContentType($format)
 	{
 		return (isset($this->_templateContentTypes[$format])) ? $this->_templateContentTypes[$format] : '';
+	}
+
+	/**
+	 * Restrict 'to' addresses to only those that are whitelisted
+	 */
+	public function addTo($address, $name = null)
+	{
+		// If there are any whitelist tests
+		if (count($this->_whitelist) > 0) {
+			$matched = false;
+
+			// Check against each whitelist regex test
+			foreach ($this->_whitelist as $regex) {
+				$matched = preg_match($regex, $address);
+				if ($matched) break;
+			}
+
+			// If the address did not match any of the tests, replace it with
+			// the fallback address
+			if (false === $matched) {
+				$address = $this->_whitelistFallback;
+			}
+		}
+
+		parent::addTo($address, $name);
+	}
+
+	/**
+	 * Set the fallback email address that is used when an address does not
+	 * match any whitelist options.
+	 *
+	 * @param string $address
+	 */
+	public function setWhitelistFallback($address)
+	{
+		$this->_whitelistFallback = $address;
+	}
+
+	/**
+	 * Get the whitelist
+	 *
+	 * @return array
+	 */
+	public function getWhitelist()
+	{
+		return $this->_whitelist;
+	}
+
+	/**
+	 * Set the whitelist
+	 *
+	 * @param array $walterWhite
+	 */
+	public function setWhitelist($walterWhite)
+	{
+		$this->_whitelist = $walterWhite;
+	}
+
+	/**
+	 * Add a regex test to the whitelist
+	 *
+	 * @param string $regex
+	 */
+	public function addToWhitelist($regex)
+	{
+		$regex = is_array($regex) ? $regex : array($regex);
+
+		$this->_whitelist = array_merge($this->_whitelist, $regex);
 	}
 }

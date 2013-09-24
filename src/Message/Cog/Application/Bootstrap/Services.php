@@ -667,6 +667,10 @@ class Services implements ServicesInterface
 			// Set default from address
 			$message->setFrom($c['cfg']->app->defaultEmailFrom->email, $c['cfg']->app->defaultEmailFrom->name);
 
+			// Set the default whitelist fallback, and only whitelist match as .*@message.co.uk
+			$message->setWhitelistFallback('dev@message.co.uk');
+			$message->addToWhitelist('/.+@message\.co\.uk/');
+
 			return $message;
 		});
 
