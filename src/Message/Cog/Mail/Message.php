@@ -115,8 +115,12 @@ class Message extends  \Swift_Message
 			}
 
 			// If the address did not match any of the tests, replace it with
-			// the fallback address
+			// the fallback address and add the original address to a custom
+			// header.
 			if (false === $matched) {
+				$this->getHeaders()->addTextHeader(
+					'Original-To', $address
+				);
 				$address = $this->_whitelistFallback;
 			}
 		}
