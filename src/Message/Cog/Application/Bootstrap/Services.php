@@ -669,5 +669,10 @@ class Services implements ServicesInterface
 
 			return $message;
 		});
+
+
+		$serviceContainer['country.list'] = function($c) {
+			return new \Message\Cog\Location\CountryList;
+		};
 	}
 }
