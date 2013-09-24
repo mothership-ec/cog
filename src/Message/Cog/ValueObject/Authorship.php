@@ -2,6 +2,7 @@
 
 namespace Message\Cog\ValueObject;
 
+use DateTimeZone;
 use Message\Cog\Service\Container;
 
 /**
@@ -201,6 +202,8 @@ class Authorship
 		$this->_createdAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_createdBy = $user;
 
+		$this->_createdAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
+
 		return $this;
 	}
 
@@ -223,6 +226,8 @@ class Authorship
 
 		$this->_updatedAt = $datetime ?: new DateTimeImmutable('now');
 		$this->_updatedBy = $user;
+
+		$this->_updatedAt->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
 		return $this;
 	}
