@@ -1,0 +1,5 @@
+hostname: 127.0.0.1
+user: user
+pass: password
+name: table_name
+charset: utf8
