@@ -149,10 +149,6 @@ class Message extends  \Swift_Message
 			$filtered = $addresses;
 		}
 
-		// Remove duplicate values, i.e. if multiple addresses were replaced
-		// with the fallback address.
-		$filtered = array_unique($filtered);
-
 		// Only attach the 'Original-To' header if this email is only sending to
 		// the fallback, so we do not accidently share addresses with other
 		// users.
