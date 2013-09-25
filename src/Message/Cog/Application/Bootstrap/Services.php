@@ -643,6 +643,14 @@ class Services implements ServicesInterface
 			$transport = $c['mail.transport'];
 			$dispatcher = new \Message\Cog\Mail\Mailer($transport);
 
+			$dispatcher->setWhitelistFallback('dev@message.co.uk');
+			$dispatcher->addToWhitelist('/.+@message\.co\.uk/');
+
+			// Only enable whitelist filtering on non-live environments
+			if ($c['env']!== 'live') {
+				$dispatcher->enableToFiltering();
+			}
+
 			return $dispatcher;
 		});
 
@@ -666,13 +674,6 @@ class Services implements ServicesInterface
 
 			// Set default from address
 			$message->setFrom($c['cfg']->app->defaultEmailFrom->email, $c['cfg']->app->defaultEmailFrom->name);
-
-			// On non-live environments, set the default whitelist fallback, and
-			// only whitelist match as .*@message.co.uk
-			if ($c['env']!== 'live') {
-				$message->setWhitelistFallback('dev@message.co.uk');
-				$message->addToWhitelist('/.+@message\.co\.uk/');
-			}
 
 			return $message;
 		});

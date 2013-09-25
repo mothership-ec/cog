@@ -13,9 +13,6 @@ class Message extends  \Swift_Message
 	protected $_engine;
 	protected $_parser;
 
-	protected $_whitelist = array();
-	protected $_whitelistFallback;
-
 	public function __construct($engine, $parser)
 	{
 		$this->_engine = $engine;
@@ -97,110 +94,5 @@ class Message extends  \Swift_Message
 	public function getTemplateContentType($format)
 	{
 		return (isset($this->_templateContentTypes[$format])) ? $this->_templateContentTypes[$format] : '';
-	}
-
-	/**
-	 * Restrict 'to' addresses to only those that are whitelisted.
-	 */
-	public function setTo($addresses, $name = null)
-	{
-		if (!is_array($addresses) && isset($name)) {
-			$addresses = array($addresses => $name);
-		}
-
-		$addresses = $this->_whitelistFilter($addresses);
-
-		return parent::setTo($addresses, $name);
-	}
-
-	/**
-	 * Filter an array of addresses against the whitelist.
-	 *
-	 * @param  array $addresses
-	 * @return array
-	 */
-	protected function _whitelistFilter(array $addresses)
-	{
-		$filtered = array();
-
-		// If there are any whitelist tests
-		if (count($this->_whitelist) > 0) {
-
-			// Filter each address
-			foreach ($addresses as $address => $name) {
-				$matched = false;
-
-				// Check against each whitelist regex test
-				foreach ($this->_whitelist as $regex) {
-					$matched = (bool) preg_match($regex, $address);
-					if ($matched) break;
-				}
-
-				// If the address did not match any of the tests, replace it with
-				// the fallback address.
-				if (false === $matched) {
-					$address = $this->_whitelistFallback;
-				}
-
-				$filtered[$address] = $name;
-			}
-		}
-		else {
-			$filtered = $addresses;
-		}
-
-		// Only attach the 'Original-To' header if this email is only sending to
-		// the fallback, so we do not accidently share addresses with other
-		// users.
-		if (1 === count($filtered) and $this->_whitelistFallback === key($filtered)) {
-			$this->getHeaders()->addMailboxHeader(
-				'Original-To', $addresses
-			);
-		}
-
-		return $filtered;
-	}
-
-	/**
-	 * Set the fallback email address that is used when an address does not
-	 * match any whitelist options.
-	 *
-	 * @param string $address
-	 */
-	public function setWhitelistFallback($address)
-	{
-		$this->_whitelistFallback = $address;
-	}
-
-	/**
-	 * Get the whitelist
-	 *
-	 * @return array
-	 */
-	public function getWhitelist()
-	{
-		return $this->_whitelist;
-	}
-
-	/**
-	 * Set the whitelist
-	 *
-	 * @param array $walterWhite
-	 */
-	public function setWhitelist($walterWhite)
-	{
-		$this->_whitelist = $walterWhite;
-	}
-
-	/**
-	 * Add a regex test to the whitelist
-	 *
-	 * @param string $regex
-	 */
-	public function addToWhitelist($regex)
-	{
-		$regex = is_array($regex) ? $regex : array($regex);
-
-		$this->_whitelist = array_merge($this->_whitelist, $regex);
 	}
 }
