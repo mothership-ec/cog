@@ -131,6 +131,9 @@ class Services implements ServicesInterface
 					$formats[$key] = $request->getFormat($mimeType);
 				}
 
+				// Remove duplicate formats caused by html / xhtml etc.
+				$formats = array_unique($formats);
+
 				// If there is a request and the formats are empty then fill
 				// with a default html format.
 				// @see https://github.com/messagedigital/cog/issues/214
