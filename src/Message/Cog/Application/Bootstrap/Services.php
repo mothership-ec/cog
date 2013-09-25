@@ -655,6 +655,7 @@ class Services implements ServicesInterface
 
 			$dispatcher->setWhitelistFallback('dev@message.co.uk');
 			$dispatcher->addToWhitelist('/.+@message\.co\.uk/');
+			$dispatcher->addToWhitelist('/.+@message\.uk\.com/');
 
 			// Only enable whitelist filtering on non-live environments
 			if ($c['env']!== 'live') {
