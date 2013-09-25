@@ -100,32 +100,69 @@ class Message extends  \Swift_Message
 	}
 
 	/**
-	 * Restrict 'to' addresses to only those that are whitelisted
+	 * Restrict 'to' addresses to only those that are whitelisted.
 	 */
-	public function addTo($address, $name = null)
+	public function setTo($addresses, $name = null)
 	{
-		// If there are any whitelist tests
-		if (count($this->_whitelist) > 0) {
-			$matched = false;
-
-			// Check against each whitelist regex test
-			foreach ($this->_whitelist as $regex) {
-				$matched = preg_match($regex, $address);
-				if ($matched) break;
-			}
-
-			// If the address did not match any of the tests, replace it with
-			// the fallback address and add the original address to a custom
-			// header.
-			if (false === $matched) {
-				$this->getHeaders()->addTextHeader(
-					'Original-To', $address
-				);
-				$address = $this->_whitelistFallback;
-			}
+		if (!is_array($addresses) && isset($name)) {
+			$addresses = array($addresses => $name);
 		}
 
-		parent::addTo($address, $name);
+		$addresses = $this->_whitelistFilter($addresses);
+
+		return parent::setTo($addresses, $name);
+	}
+
+	/**
+	 * Filter an array of addresses against the whitelist.
+	 *
+	 * @param  array $addresses
+	 * @return array
+	 */
+	protected function _whitelistFilter(array $addresses)
+	{
+		$filtered = array();
+
+		// If there are any whitelist tests
+		if (count($this->_whitelist) > 0) {
+
+			// Filter each address
+			foreach ($addresses as $address => $name) {
+				$matched = false;
+
+				// Check against each whitelist regex test
+				foreach ($this->_whitelist as $regex) {
+					$matched = (bool) preg_match($regex, $address);
+					if ($matched) break;
+				}
+
+				// If the address did not match any of the tests, replace it with
+				// the fallback address.
+				if (false === $matched) {
+					$address = $this->_whitelistFallback;
+				}
+
+				$filtered[$address] = $name;
+			}
+		}
+		else {
+			$filtered = $addresses;
+		}
+
+		// Remove duplicate values, i.e. if multiple addresses were replaced
+		// with the fallback address.
+		$filtered = array_unique($filtered);
+
+		// Only attach the 'Original-To' header if this email is only sending to
+		// the fallback, so we do not accidently share addresses with other
+		// users.
+		if (1 === count($filtered) and $this->_whitelistFallback === key($filtered)) {
+			$this->getHeaders()->addMailboxHeader(
+				'Original-To', $addresses
+			);
+		}
+
+		return $filtered;
 	}
 
 	/**
