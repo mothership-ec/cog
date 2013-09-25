@@ -643,6 +643,14 @@ class Services implements ServicesInterface
 			$transport = $c['mail.transport'];
 			$dispatcher = new \Message\Cog\Mail\Mailer($transport);
 
+			$dispatcher->setWhitelistFallback('dev@message.co.uk');
+			$dispatcher->addToWhitelist('/.+@message\.co\.uk/');
+
+			// Only enable whitelist filtering on non-live environments
+			if ($c['env']!== 'live') {
+				$dispatcher->enableToFiltering();
+			}
+
 			return $dispatcher;
 		});
 
