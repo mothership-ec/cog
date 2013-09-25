@@ -130,6 +130,13 @@ class Services implements ServicesInterface
 				foreach($contentTypes as $key => $mimeType) {
 					$formats[$key] = $request->getFormat($mimeType);
 				}
+
+				// If there is a request and the formats are empty then fill
+				// with a default html format.
+				// @see https://github.com/messagedigital/cog/issues/214
+				if (empty($formats) or (1 === count($formats) and null === $formats[0])) {
+					$formats = array('html');
+				}
 			}
 
 			return $formats;
