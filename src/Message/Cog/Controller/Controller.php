@@ -240,6 +240,6 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function createAccessDeniedException($message = 'Access Denied', \Exception $previous = null, $code = 0)
 	{
-	    return new NotFoundHttpException($message, $previous);
+	    return new AccessDeniedHttpException($message, $previous);
 	}
 }
