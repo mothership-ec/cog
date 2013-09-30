@@ -6,11 +6,11 @@ use Message\Cog\Filesystem\File;
 
 interface LoaderInterface {
 
-	public function __construct($connector, $filesystem);
+	public function __construct($connector, $finder, $filesystem, $referenceParser);
 	public function getAll();
-	public function getFromPath($path);
+	public function getFromReference($reference);
 	public function getLastBatch();
 	public function getLastBatchNumber();
-	public function resolve(File $file);
+	public function resolve(File $file, $reference);
 
 }
