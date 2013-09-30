@@ -42,7 +42,6 @@ class Loader implements LoaderInterface {
 
 		$path = $this->_referenceParser->getFullPath('resources/migrations');
 
-
 		if (! $this->_filesystem->exists($path)) {
 			return array();
 		}
@@ -53,7 +52,8 @@ class Loader implements LoaderInterface {
 
 		foreach ($files as $file) {
 			if ($file->isFile()) {
-				$migrations[] = $this->resolve($file, $reference);
+				$fileReference = 'cog://' . $reference . 'resources/migrations/' . $file->getBasename();
+				$migrations[] = $this->resolve($file, $fileReference);
 			}
 		}
 
@@ -108,8 +108,6 @@ class Loader implements LoaderInterface {
 		// Get the class name
 		$classname = str_replace('.php', '', $file->getBasename());
 
-		$reference .= $file->getBasename();
-
 		return new $classname($reference, $file, $this->_connector);
 	}
 
@@ -133,15 +131,8 @@ class Loader implements LoaderInterface {
 		$migrations = array();
 
 		foreach ($results as $row) {
-			list($reference, $basename) = explode('::', $row->path);
-
-			$reference .= '::';
-
-			$this->_referenceParser->parse($reference);
-			$path = $this->_referenceParser->getFullPath('resources/migrations');
-
-			$file = new File($path . '/' . $basename);
-			$migrations[] = $this->resolve($file, $reference);
+			$file = new File($row->path);
+			$migrations[] = $this->resolve($file, $row->path);
 		}
 
 		return $migrations;
