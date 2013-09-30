@@ -696,5 +696,15 @@ class Services implements ServicesInterface
 		$serviceContainer['state.list'] = function($c) {
 			return new \Message\Cog\Location\StateList;
 		};
+
+		$serviceContainer['title.list'] = function($c) {
+			return array(
+				'Mr' => 'Mr',
+				'Mrs' => 'Mrs',
+				'Miss' => 'Miss',
+				'Ms' => 'Ms',
+				'Doctor' => 'Doctor'
+			);
+		};
 	}
 }
