@@ -8,12 +8,16 @@ use Message\Cog\Filesystem\File;
 class Loader implements LoaderInterface {
 
 	protected $_connector;
+	protected $_finder;
 	protected $_filesystem;
+	protected $_referenceParser;
 
-	public function __construct($connector, $filesystem)
+	public function __construct($connector, $finder, $filesystem, $referenceParser)
 	{
 		$this->_connector = $connector;
+		$this->_finder = $finder;
 		$this->_filesystem = $filesystem;
+		$this->_referenceParser = $referenceParser;
 	}
 
 	public function getAll()
@@ -30,15 +34,26 @@ class Loader implements LoaderInterface {
 		return $this->_getMigrations($results);
 	}
 
-	public function getFromPath($path)
+	public function getFromReference($reference)
 	{
-		$files = $this->_filesystem->files()->in($path);
+		$reference .= '::';
+
+		$this->_referenceParser->parse($reference);
+
+		$path = $this->_referenceParser->getFullPath('resources/migrations');
+
+
+		if (! $this->_filesystem->exists($path)) {
+			return array();
+		}
+
+		$files = $this->_finder->files()->in($path);
 
 		$migrations = array();
 
 		foreach ($files as $file) {
 			if ($file->isFile()) {
-				$migrations[] = $this->resolve($file);
+				$migrations[] = $this->resolve($file, $reference);
 			}
 		}
 
@@ -85,7 +100,7 @@ class Loader implements LoaderInterface {
 		return $results[0]->batch;
 	}
 
-	public function resolve(File $file)
+	public function resolve(File $file, $reference)
 	{
 		// Load the migration class
 		include_once $file->getRealpath();
@@ -93,7 +108,9 @@ class Loader implements LoaderInterface {
 		// Get the class name
 		$classname = str_replace('.php', '', $file->getBasename());
 
-		return new $classname($file, $this->_connector);
+		$reference .= $file->getBasename();
+
+		return new $classname($reference, $file, $this->_connector);
 	}
 
 	public function install()
@@ -116,8 +133,15 @@ class Loader implements LoaderInterface {
 		$migrations = array();
 
 		foreach ($results as $row) {
-			$file = new File($row->path);
-			$migrations[] = $this->resolve($file);
+			list($reference, $basename) = explode('::', $row->path);
+
+			$reference .= '::';
+
+			$this->_referenceParser->parse($reference);
+			$path = $this->_referenceParser->getFullPath('resources/migrations');
+
+			$file = new File($path . '/' . $basename);
+			$migrations[] = $this->resolve($file, $reference);
 		}
 
 		return $migrations;

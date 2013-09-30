@@ -9,8 +9,9 @@ abstract class Migration implements MigrationInterface {
 	protected $_query;
 	protected $_file;
 
-	public function __construct($file, $query)
+	public function __construct($reference, $file, $query)
 	{
+		$this->_reference = $reference;
 		$this->_file = $file;
 		$this->_query = $query;
 	}
@@ -33,6 +34,11 @@ abstract class Migration implements MigrationInterface {
 	public function getFile()
 	{
 		return $this->_file;
+	}
+
+	public function getReference()
+	{
+		return $this->_reference;
 	}
 
 }

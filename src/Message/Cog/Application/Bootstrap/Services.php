@@ -624,7 +624,9 @@ class Services implements ServicesInterface
 		$serviceContainer['migration.mysql.loader'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Migration\Adapter\MySQL\Loader(
 				$c['db'],
-				$c['filesystem.finder']
+				$c['filesystem.finder'],
+				$c['filesystem'],
+				$c['reference_parser']
 			);
 		});
 

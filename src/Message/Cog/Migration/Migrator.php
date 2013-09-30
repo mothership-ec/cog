@@ -25,13 +25,13 @@ class Migrator {
 	/**
 	 * Run the outstanding migrations at a given path.
 	 *
-	 * @param  string $path
+	 * @param  string $reference
 	 * @return void
 	 */
-	public function run($path)
+	public function run($reference)
 	{
 		// Find the migrations in the path that have not yet been run
-		$migrations = $inPath = $this->_loader->getFromPath($path);
+		$migrations = $inPath = $this->_loader->getFromReference($reference);
 		$run = $this->_loader->getAll();
 
 		// Diff the migrations in the path and those run to get new migrations
@@ -45,7 +45,7 @@ class Migrator {
 
 		// Add the new migrations to the collection
 		foreach ($migrations as $migration) {
-			$this->_collection[$migration->getFile()->getRealpath()] = $migration;
+			$this->_collection[$migration->getReference()] = $migration;
 		}
 
 		// Run the collection
@@ -63,10 +63,10 @@ class Migrator {
 	{
 		try {
 			$migration->up();
-			$this->_note('<comment>- Ran up ' . $migration->getFile()->getBasename() . '</comment>');
+			$this->_note('<comment>- Ran up ' . $migration->getReference() . '</comment>');
 		}
 		catch (Exception $e) {
-			$this->_note('<error>- Failed to run up ' . $migration->getFile()->getBasename() . '</error>');
+			$this->_note('<error>- Failed to run up ' . $migration->getReference() . '</error>');
 			$this->_note('<error>	with message: "' . $e->getMessage() . '"</error>');
 			return;
 		}
@@ -81,7 +81,7 @@ class Migrator {
 	 */
 	public function rollback()
 	{
-		$migrations = $this->_loader->getLastBatch();
+		$migrations = array_reverse($this->_loader->getLastBatch());
 
 		if (count($migrations) == 0) {
 			$this->_note('<comment>Nothing to rollback</comment>');
@@ -179,10 +179,10 @@ class Migrator {
 	{
 		try {
 			$migration->down();
-			$this->_note('<comment>- Ran down ' . $migration->getFile()->getBasename() . '</comment>');
+			$this->_note('<comment>- Ran down ' . $migration->getReference() . '</comment>');
 		}
 		catch (Exception $e) {
-			$this->_note('<error>- Failed to run down ' . $migration->getFile()->getBasename() . '</error>');
+			$this->_note('<error>- Failed to run down ' . $migration->getReference() . '</error>');
 			return;
 		}
 
