@@ -231,7 +231,7 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$serviceContainer['templating.globals'] = function($c) {
+		$serviceContainer['templating.globals'] = $serviceContainer->share(function($c) {
 			$globals = new Cog\Templating\GlobalVariables($c);
 
 			$globals->set('session', function($services) {
@@ -253,7 +253,7 @@ class Services implements ServicesInterface
 			});
 
 			return $globals;
-		};
+		});
 
 		$serviceContainer['http.kernel'] = function($c) {
 			return new \Message\Cog\HTTP\Kernel(
