@@ -624,7 +624,9 @@ class Services implements ServicesInterface
 		$serviceContainer['migration.mysql.loader'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Migration\Adapter\MySQL\Loader(
 				$c['db'],
-				$c['filesystem.finder']
+				$c['filesystem.finder'],
+				$c['filesystem'],
+				$c['reference_parser']
 			);
 		});
 
@@ -695,6 +697,16 @@ class Services implements ServicesInterface
 
 		$serviceContainer['state.list'] = function($c) {
 			return new \Message\Cog\Location\StateList;
+		};
+
+		$serviceContainer['title.list'] = function($c) {
+			return array(
+				'Mr' => 'Mr',
+				'Mrs' => 'Mrs',
+				'Miss' => 'Miss',
+				'Ms' => 'Ms',
+				'Doctor' => 'Doctor'
+			);
 		};
 	}
 }
