@@ -22,7 +22,7 @@ class Delete implements DeleteInterface {
 				path = ?s AND
 				adapter = "mysql"
 		', array(
-			$migration->getFile()->getPath() . "/" . $migration->getFile()->getBasename()
+			$migration->getReference()
 		));
 	}
 

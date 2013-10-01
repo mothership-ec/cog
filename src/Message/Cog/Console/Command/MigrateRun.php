@@ -33,30 +33,23 @@ class MigrateRun extends Command
 
 		foreach ($modules as $module) {
 
-			// Locate the module
-			$path = $this->get('module.locator')->getPath($module, false);
+			// Get the reference
+			$reference = '@' . str_replace('\\', ':', $module);
 
-			// Check if there is a migrations folder
-			if ($this->get('filesystem')->exists($path . 'resources/migrations')) {
-
-				try {
-					$this->get('migration')->run($path . 'resources/migrations');
-				}
-				catch (\Message\Cog\DB\Exception $e) {
-					throw new \Exception("Migration error: Have you run `migrate:install`?", null, $e);
-				}
-
-				// Output this migration's notes
-				foreach ($this->get('migration')->getNotes() as $note) {
-					$output->writeln($note);
-				}
-
-				// Clear the notes
-				$this->get('migration')->clearNotes();
+			try {
+				$this->get('migration')->run($reference);
 			}
-			else {
-				$output->writeln(sprintf('<comment>No migrations found in %s</comment>', $module));
+			catch (\Message\Cog\DB\Exception $e) {
+				throw new \Exception("Migration error: Have you run `migrate:install`?", null, $e);
 			}
+
+			// Output this migration's notes
+			foreach ($this->get('migration')->getNotes() as $note) {
+				$output->writeln($note);
+			}
+
+			// Clear the notes
+			$this->get('migration')->clearNotes();
 		}
 	}
 }
