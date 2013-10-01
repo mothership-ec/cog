@@ -237,6 +237,24 @@ class Result extends ResultArrayAccess
 		return $result;
 	}
 
+
+	public function bindWith(\Closure $closure)
+	{
+		$this->reset();
+
+		$result = array();
+		while ($row = $this->_result->fetchObject()) {
+			$obj = $closure($row);
+			if (! is_object($obj)) {
+				throw new \InvalidArgumentException(sprintf('Binding return value must be an object, "%s" returned', gettype($obj)));
+			}
+
+			$result[] = $obj;
+		}
+
+		return $result;
+	}
+
 	/**
 	 * Get the number of rows affected by the query which generated this result.
 	 *
