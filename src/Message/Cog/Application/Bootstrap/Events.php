@@ -75,6 +75,9 @@ class Events implements EventsInterface, ContainerAwareInterface
 		// Asset Management
 		$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
 
+		// Migrations
+		$eventDispatcher->addSubscriber(new \Message\Cog\Migration\EventListener);
+
 		// Deploy
 		$eventDispatcher->addSubscriber(new \Message\Cog\Deploy\EventListener);
 
