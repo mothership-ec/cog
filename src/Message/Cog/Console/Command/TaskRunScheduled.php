@@ -21,9 +21,9 @@ use Symfony\Component\Process\Process;
  * asynchronously launched as seperate processes which run independantly.
  *
  * The entry in the crontab file needs to look something like this:
- * 
+ *
  * 		* * * * * /path/to/site/bin/cog --env=live task:run_scheduled > /dev/null 2>&1
- * 		
+ *
  */
 class TaskRunScheduled extends Command
 {
@@ -40,10 +40,10 @@ class TaskRunScheduled extends Command
 		$path = $_SERVER['argv'][0];
 		$env  = ' --env='.$this->get('env');
 		foreach($this->get('task.collection')->all() as $task) {
-			if($this->_isDue($task[2], time(), $this->get('env'))) {
+			if($this->_isDue($task[1], new \DateTime, $this->get('env'))) {
 				$output->writeln('Running ' . $task[2]->getName());
 				try {
-					$process = new Process($path . $env . ' task:run ' . $task[2]->getName());
+					$process = new Process($path . $env . ' task:run ' . $task[1]->getName());
 					$process->start();
 				} catch (\Exception $e) {
 					$output->writeln('Error: ' . $e->getMessage());
@@ -52,7 +52,7 @@ class TaskRunScheduled extends Command
 		}
 	}
 
-	protected function _isDue($task, $time, $env)
+	protected function _isDue($task, \DateTime $time, $env)
 	{
 		if(!$task->getCronExpression()) {
 			return false;
