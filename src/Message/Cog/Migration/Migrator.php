@@ -81,7 +81,7 @@ class Migrator {
 	 */
 	public function rollback()
 	{
-		$migrations = array_reverse($this->_loader->getLastBatch());
+		$migrations = $this->_loader->getLastBatch();
 
 		if (count($migrations) == 0) {
 			$this->_note('<comment>Nothing to rollback</comment>');
@@ -103,13 +103,19 @@ class Migrator {
 	 */
 	public function reset()
 	{
-		while (true) {
+		$prev = null;
+
+		do {
 			$count = $this->rollback();
 
-			if ($count == 0) {
+			if ($prev === $count) {
+				$this->_note('<error>Rollback count not reducing, breaking out of infinite loop');
 				break;
 			}
-		}
+
+			$prev = $count;
+
+		} while ($count > 0);
 	}
 
 	/**
