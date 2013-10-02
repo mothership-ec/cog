@@ -71,7 +71,8 @@ class Loader implements LoaderInterface {
 				batch = ?i AND
 				adapter = "mysql"
 			ORDER BY
-				run_at DESC
+				run_at DESC,
+				migration_id DESC
 		', array(
 			$this->getLastBatchNumber()
 		));
