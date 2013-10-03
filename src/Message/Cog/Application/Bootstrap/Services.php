@@ -590,9 +590,9 @@ class Services implements ServicesInterface
 			$logger = new \Monolog\Logger('errors');
 
 			// Set up handler for logging to file (as default)
-			$logger->pushHandler(
-				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
-			);
+			// $logger->pushHandler(
+			// 	new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
+			// );
 
 			return $logger;
 		});
