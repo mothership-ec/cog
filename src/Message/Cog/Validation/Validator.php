@@ -345,6 +345,12 @@ class Validator
 				$dataArray[$name] = null;
 			}
 
+			// If the field is optional and the data is null, don't apply the
+			// rules.
+			if ($field->optional and null === $dataArray[$name]) {
+				continue;
+			}
+
 			if(count($field->children) > 0) {
 				$this->_applyRules($field->children, $dataArray[$name]);
 			}  elseif ($field->repeatable) {
