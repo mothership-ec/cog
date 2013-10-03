@@ -17,7 +17,6 @@ class Validator
 	protected $_fieldPointer;
 	protected $_rulePointer;
 	protected $_fields = array();
-	protected $_fieldRequiredErrors = array();
 
 	/**
 	 * @var Loader
@@ -110,7 +109,7 @@ class Validator
 	 */
 	public function error($message)
 	{
-		$this->_fieldRequiredErrors[$this->_fieldPointer->name] = $message;
+		$this->_rulePointer[4] = $message;
 
 		return $this;
 	}
@@ -385,12 +384,7 @@ class Validator
 		$notSet = !$this->_isSet($data);
 
 		if ($notSet && !$field->optional) {
-			if (isset($this->_fieldRequiredErrors[$field->name])) {
-				$this->_messages->addError($field->name, $this->_fieldRequiredErrors[$field->name]);
-			}
-			else {
-				$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
-			}
+			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
 		}
 
 		return $this;

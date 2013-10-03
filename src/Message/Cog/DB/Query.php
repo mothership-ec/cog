@@ -53,9 +53,6 @@ class Query implements QueryableInterface
 
 		static::$_queryCount++;
 
-		file_put_contents('/Users/laurence/Sites/rawquerylog.txt', "\n" . str_replace("\t", " ", str_replace("\n", "", $this->_query)), FILE_APPEND);
-		file_put_contents('/Users/laurence/Sites/querylog.txt', "\n" . str_replace("\t", " ", str_replace("\n", "", $this->_parsedQuery)), FILE_APPEND);
-
 		if($result === false) {
 			throw new Exception($this->_connection->getLastError(), $this->_query);
 		}
@@ -65,7 +62,7 @@ class Query implements QueryableInterface
 
 	/**
 	 * Gets the static count of queries
-	 *
+	 * 
 	 * @return int
 	 */
 	public function getQueryCount()
