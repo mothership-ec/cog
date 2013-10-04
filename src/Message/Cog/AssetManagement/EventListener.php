@@ -56,8 +56,6 @@ class EventListener extends BaseListener implements SubscriberInterface
 		$twigLoader = $this->_services['templating.twig.loader'];
 
 		foreach ($twigLoader::$parsedPaths as $template) {
-			# Dumping out the templates parsed on this page (handy for comparing to asset:generate)
-			d($template);
 			$this->_services['asset.manager']->addResource(new TwigResource(
 				new \Twig_Loader_Filesystem('/'),
 				$template
