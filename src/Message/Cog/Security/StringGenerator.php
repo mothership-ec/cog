@@ -12,9 +12,22 @@ namespace Message\Cog\Security;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Salt
+class StringGenerator
 {
 	const DEFAULT_LENGTH = 32;
+	protected $_pattern = '/.*/';
+
+
+	/**
+	 * Allows setting a regex the String must match
+	 * @param string $pattern the regex
+	 * @return StringGenerator $this for chainability
+	 */
+	public function setPattern($pattern)
+	{
+		$this->_pattern = $pattern;
+		return $this;
+	}
 
 	/**
 	 * Generates a pseudorandom string using the most preferred method.
@@ -92,16 +105,18 @@ class Salt
 			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
 		}
 
-		$handle = fopen($path, 'r');
-		$random = fread($handle, $length);
-		fclose($handle);
+		do {
+			$handle = fopen($path, 'r');
+			$random = fread($handle, $length);
+			fclose($handle);
 
-		if (!$random) {
-			throw new \RuntimeException(sprintf('`%s` returned an empty value.', $path));
-		}
+			if (!$random) {
+				throw new \RuntimeException(sprintf('`%s` returned an empty value.', $path));
+			}
 
-		$string = substr(base64_encode($random), 0, $length);
-		$string = str_replace(array('+', '='), '.', $string);
+			$string = substr(base64_encode($random), 0, $length);
+			$string = str_replace(array('+', '='), '.', $string);
+		} while (!preg_match($this->_pattern, $string));
 
 		return $string;
 	}
@@ -123,10 +138,13 @@ class Salt
 			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
 		}
 
-		$random = openssl_random_pseudo_bytes($length);
+		do {
+			$random = openssl_random_pseudo_bytes($length);
 
-		$string = substr(base64_encode($random), 0, $length);
-		$string = str_replace(array('+', '='), '.', $string);
+			$string = substr(base64_encode($random), 0, $length);
+			$string = str_replace(array('+', '='), '.', $string);
+		} while (!preg_match($this->_pattern, $string));
+		
 
 		return $string;
 	}
@@ -142,13 +160,17 @@ class Salt
 	 */
 	public function generateNatively($length = self::DEFAULT_LENGTH)
 	{
-		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.';
+		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
 		$charLength = strlen($chars) - 1;
-		$string     = '';
 
-		for ($i = 0; $i < $length; $i++) {
-			$string .= $chars[mt_rand(0, $charLength)];
-		}
+		do {
+			$string     = '';
+
+			for ($i = 0; $i < $length; $i++) {
+				$string .= $chars[mt_rand(0, $charLength)];
+			}
+		} while (!preg_match($this->_pattern, $string));
+
 
 		return $string;
 	}

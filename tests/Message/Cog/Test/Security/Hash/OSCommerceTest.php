@@ -11,7 +11,7 @@ class OSCommerceTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_saltGenerator = $this->getMock('Message\Cog\Security\Salt');
+		$this->_saltGenerator = $this->getMock('Message\Cog\Security\StringGenerator');
 		$this->_hash		  = new OSCommerce($this->_saltGenerator);
 	}
 

@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Security\Hash;
 
-use Message\Cog\Security\Salt;
+use Message\Cog\Security\StringGenerator;
 
 /**
  * An implementation of the hashing component for OSCommerce's custom hashing
@@ -24,7 +24,7 @@ class OSCommerce implements HashInterface
 	 *
 	 * @param Salt $saltGenerator The pseudorandom string generator class
 	 */
-	public function __construct($saltGenerator)
+	public function __construct(StringGenerator $saltGenerator)
 	{
 		$this->_saltGenerator = $saltGenerator;
 	}

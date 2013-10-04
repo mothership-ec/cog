@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Test\Security;
 
-use Message\Cog\Security\Salt;
+use Message\Cog\Security\StringGenerator;
 
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamWrapper;
@@ -17,8 +17,8 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_salt    = new Salt;
-		$this->_dlength = Salt::DEFAULT_LENGTH;
+		$this->_salt    = new StringGenerator;
+		$this->_dlength = StringGenerator::DEFAULT_LENGTH;
 	}
 
 	public function testAllGenerateMethodsRespectLength()

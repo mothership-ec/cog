@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Security\Hash;
 
-use Message\Cog\Security\Salt;
+use Message\Cog\Security\StringGenerator;
 
 /**
  * MD5 implementation of the hash interface with an appended salt.
@@ -20,7 +20,7 @@ class MD5 implements HashInterface
 	*
 	* @param Salt $saltGenerator The pseudorandom string generator class
 	*/
-	public function __construct(Salt $saltGenerator)
+	public function __construct(StringGenerator $saltGenerator)
 	{
 		$this->_saltGenerator = $saltGenerator;
 	}

@@ -509,11 +509,15 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['security.salt'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Security\Salt;
+			return new \Message\Cog\Security\StringGenerator;
+		});
+
+		$serviceContainer['security.string-generator'] = $serviceContainer->share(function() {
+			return new \Message\Cog\Security\StringGenerator;
 		});
 
 		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Security\Hash\Bcrypt($c['security.salt']);
+			return new \Message\Cog\Security\Hash\Bcrypt($c['security.string-generator']);
 		});
 
 
