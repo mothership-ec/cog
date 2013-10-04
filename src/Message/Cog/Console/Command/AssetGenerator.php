@@ -9,6 +9,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Templating\TemplateReference;
+
 use Assetic\Extension\Twig\TwigResource;
 
 /**
@@ -37,6 +39,8 @@ class AssetGenerator extends Command
 		// Service to work with files
 		$fileSystem = $this->get('filesystem.finder');
 
+		$twigLoader = $this->get('templating.twig.loader');
+
 		// Get list of loaded codules
 		$modules = $this->get('module.loader')->getModules();
 
@@ -44,6 +48,32 @@ class AssetGenerator extends Command
 		$moduleLocator = $this->get('module.locator');
 
 		$output->writeln('<info>Generating public assets for ' . count($modules) . ' modules.</info>');
+
+		// NOTE TO IRIS:
+		// I tried moving the view overrides block loop above the main one for all
+		// modules to see if that helped. Didn't seem to =[
+
+		// Compile assets for view overrides
+		if (file_exists('cog://view/')) {
+			foreach ($fileSystem->in('cog://view/') as $file) {
+				// Check that the file is one that we need to combine.
+				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
+					continue;
+				}
+
+				#d($file->getPathname());
+
+				$this->_services['asset.manager']->addResource(new TwigResource(
+					$twigLoader,
+					new TemplateReference($file->getPathname(), $file->getExtension())
+					// NOTE TO IRIS:
+					// I tried passing a TemplateReference because now we're using our own
+					// twig filesystem loader it will try and parse the plain path name as
+					// if it was a Cog reference. Passing a TemplateReference should bypass
+					// that. That said, I'm not sure doing the above atually changed anything.
+				), 'twig');
+			}
+		}
 
 		// Compile assets for all cogules
 		foreach ($modules as $module) {
@@ -66,23 +96,8 @@ class AssetGenerator extends Command
 				}
 
 				$this->_services['asset.manager']->addResource(new TwigResource(
-					new \Twig_Loader_Filesystem('/'),
-					$file->getPathname()
-				), 'twig');
-			}
-		}
-
-		// Compile assets for view overrides
-		if (file_exists('cog://view')) {
-			foreach ($fileSystem->in('cog://view') as $file) {
-				// Check that the file is one that we need to combine.
-				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
-					continue;
-				}
-
-				$this->_services['asset.manager']->addResource(new TwigResource(
-					new \Twig_Loader_Filesystem('/'),
-					$file->getPathname()
+					$twigLoader,
+					new TemplateReference($file->getPathname(), $file->getExtension())
 				), 'twig');
 			}
 		}
