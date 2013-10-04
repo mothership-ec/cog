@@ -9,6 +9,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Templating\TemplateReference;
+
 use Assetic\Extension\Twig\TwigResource;
 
 /**
@@ -37,6 +39,8 @@ class AssetGenerator extends Command
 		// Service to work with files
 		$fileSystem = $this->get('filesystem.finder');
 
+		$twigLoader = $this->get('templating.twig.loader');
+
 		// Get list of loaded codules
 		$modules = $this->get('module.loader')->getModules();
 
@@ -49,7 +53,7 @@ class AssetGenerator extends Command
 		foreach ($modules as $module) {
 			$moduleName = str_replace("\\", ':', $module);
 
-			// Path for codules' view directory
+			// Path for cogules' view directory
 			$originDir = $moduleLocator->getPath($module, false) . 'resources/view';
 
 			// If there are no views for a module, no need to check for templates
@@ -66,23 +70,23 @@ class AssetGenerator extends Command
 				}
 
 				$this->_services['asset.manager']->addResource(new TwigResource(
-					new \Twig_Loader_Filesystem('/'),
-					$file->getPathname()
+					$twigLoader,
+					new TemplateReference($file->getPathname(), $file->getExtension())
 				), 'twig');
 			}
 		}
 
 		// Compile assets for view overrides
-		if (file_exists('cog://view')) {
-			foreach ($fileSystem->in('cog://view') as $file) {
+		if (file_exists('cog://view/')) {
+			foreach ($fileSystem->in('cog://view/') as $file) {
 				// Check that the file is one that we need to combine.
 				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
 					continue;
 				}
 
 				$this->_services['asset.manager']->addResource(new TwigResource(
-					new \Twig_Loader_Filesystem('/'),
-					$file->getPathname()
+					$twigLoader,
+					new TemplateReference($file->getRealPath(), $file->getExtension())
 				), 'twig');
 			}
 		}
