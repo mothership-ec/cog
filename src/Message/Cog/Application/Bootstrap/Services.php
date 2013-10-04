@@ -424,12 +424,11 @@ class Services implements ServicesInterface
 
 		$serviceContainer['form.csrf_secret'] = function($c) {
 			$parts = array(
-				$c['cfg']->app->csrfSecret,
-				$c['request']->headers->get('host'),
-				$c['user.current']->email,
-				$c['user.current']->id,
-				$c['user.current']->lastLoginAt,
-				$c['environment'],
+				$c['cfg']->app->csrfSecret,							// Global CSRF secret key
+				$c['http.request.master']->headers->get('host'),	// HTTP host
+				$c['environment'],									// Application environment
+				$c['http.request.master']->getClientIp(),			// User's IP address
+				$c['http.session']->getId(),						// Session ID
 			);
 
 			return serialize($parts);

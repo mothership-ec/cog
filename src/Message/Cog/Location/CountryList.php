@@ -7,6 +7,7 @@ use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 class CountryList extends ChoiceList {
 
 	protected $_countries = array(
+		'AF' => 'Afghanistan',
 		'AX' => 'Åland Islands',
 		'AL' =>	'Albania',
 		'DZ' =>	'Algeria',
