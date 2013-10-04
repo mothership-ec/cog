@@ -47,14 +47,14 @@ class TaskList extends Command
 		foreach($tasks as $task) {
 			$scheduled = '';
 			$next      = '';
-			if($cron = $task[2]->getCronExpression()) {
+			if($cron = $task[1]->getCronExpression()) {
 				$scheduled = $cron->getExpression();
 				$next      = $cron->getNextRunDate()->format('d/m/y H:i T');
-				if(count($envs = $task[2]->getCronEnvironments()) && !in_array($this->get('env'), $envs)) {
+				if(count($envs = $task[1]->getCronEnvironments()) && !in_array($this->get('env'), $envs)) {
 					$next = 'Only runs on '.implode('|', $envs);
 				}
 			}
-			$table->addRow(array($task[2]->getName(), $task[1], $scheduled, $next));
+			$table->addRow(array($task[1]->getName(), $task[0], $scheduled, $next));
 		}
 		$table->render($output);
 	}

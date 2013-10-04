@@ -35,7 +35,8 @@ class Field
 	public function merge(Field $field)
 	{
 		$this->readableName = $field->readableName ? $field->readableName : $this->readableName;
-		$this->optional     = $field->optional || $this->optional;
+		$this->optional     = $field->optional   || $this->optional;
+		$this->repeatable   = $field->repeatable || $this->repeatable;
 
 		$this->rules    = array_merge($this->rules, $field->rules);
 		$this->filters  = array_merge_recursive($this->filters, $field->filters);

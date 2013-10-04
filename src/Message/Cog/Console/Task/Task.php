@@ -18,7 +18,6 @@ use Cron\CronExpression;
  */
 abstract class Task extends Command
 {
-	protected $_services;
 	protected $_input;
 	protected $_cronExpression   = false;
 	protected $_cronEnvironments = array();
@@ -33,7 +32,7 @@ abstract class Task extends Command
 	final public function addOutputHandler(OutputHandler\OutputHandler $handler)
 	{
 		if($handler instanceof ContainerAwareInterface) {
-			$handler->setContainer($this->services);
+			$handler->setContainer($this->_services);
 		}
 
 		$handler->setTask($this);

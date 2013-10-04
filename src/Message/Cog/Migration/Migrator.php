@@ -188,7 +188,7 @@ class Migrator {
 			$this->_note('<comment>- Ran down ' . $migration->getReference() . '</comment>');
 		}
 		catch (Exception $e) {
-			$this->_note('<error>- Failed to run down ' . $migration->getReference() . '</error>');
+			$this->_note('<error>- Failed to run down ' . $migration->getReference() . ' with message ' . $e->getMessage() . '</error>');
 			return;
 		}
 
