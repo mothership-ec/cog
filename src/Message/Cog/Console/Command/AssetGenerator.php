@@ -49,37 +49,11 @@ class AssetGenerator extends Command
 
 		$output->writeln('<info>Generating public assets for ' . count($modules) . ' modules.</info>');
 
-		// NOTE TO IRIS:
-		// I tried moving the view overrides block loop above the main one for all
-		// modules to see if that helped. Didn't seem to =[
-
-		// Compile assets for view overrides
-		if (file_exists('cog://view/')) {
-			foreach ($fileSystem->in('cog://view/') as $file) {
-				// Check that the file is one that we need to combine.
-				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
-					continue;
-				}
-
-				#d($file->getPathname());
-
-				$this->_services['asset.manager']->addResource(new TwigResource(
-					$twigLoader,
-					new TemplateReference($file->getPathname(), $file->getExtension())
-					// NOTE TO IRIS:
-					// I tried passing a TemplateReference because now we're using our own
-					// twig filesystem loader it will try and parse the plain path name as
-					// if it was a Cog reference. Passing a TemplateReference should bypass
-					// that. That said, I'm not sure doing the above atually changed anything.
-				), 'twig');
-			}
-		}
-
 		// Compile assets for all cogules
 		foreach ($modules as $module) {
 			$moduleName = str_replace("\\", ':', $module);
 
-			// Path for codules' view directory
+			// Path for cogules' view directory
 			$originDir = $moduleLocator->getPath($module, false) . 'resources/view';
 
 			// If there are no views for a module, no need to check for templates
@@ -98,6 +72,21 @@ class AssetGenerator extends Command
 				$this->_services['asset.manager']->addResource(new TwigResource(
 					$twigLoader,
 					new TemplateReference($file->getPathname(), $file->getExtension())
+				), 'twig');
+			}
+		}
+
+		// Compile assets for view overrides
+		if (file_exists('cog://view/')) {
+			foreach ($fileSystem->in('cog://view/') as $file) {
+				// Check that the file is one that we need to combine.
+				if (!in_array($file->getExtension(), $this->_fileExtensions)) {
+					continue;
+				}
+
+				$this->_services['asset.manager']->addResource(new TwigResource(
+					$twigLoader,
+					new TemplateReference($file->getRealPath(), $file->getExtension())
 				), 'twig');
 			}
 		}
