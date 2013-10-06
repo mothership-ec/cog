@@ -75,6 +75,12 @@ class Messages
 	{
 		list($ruleName, $func, $args, $invertResult, $error) = $rule;
 
+		foreach($args as $key => $value) {
+			if($value instanceof \DateTime) {
+				$args[$key] = $value->format('d/m/Y H:i:s');
+			}
+		}
+
 		if(!$error) {
 			$error = $this->_defaults[$ruleName];
 		}
