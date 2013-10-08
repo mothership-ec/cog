@@ -718,7 +718,11 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['pagination.adapter.dbresult'] = function($c) {
-			return new \Message\Cog\Pagination\Adapters\DBResultAdapter;
+			return new \Message\Cog\Pagination\Adapter\DBResultAdapter();
+		};
+
+		$serviceContainer['pagination.adapter.sql'] = function($c) {
+			return new \Message\Cog\Pagination\Adapter\SQLAdapter($c['db.query']);
 		};
 	}
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace Message\Cog\Pagination\Adapters;
+namespace Message\Cog\Pagination\Adapter;
 
+use Message\Cog\DB\Result;
 use Pagerfanta\Adapter\AdapterInterface;
 
 class DBResultAdapter implements AdapterInterface {
@@ -13,7 +14,7 @@ class DBResultAdapter implements AdapterInterface {
 		//
 	}
 
-	public function setResults($results)
+	public function setResults(Result $results)
 	{
 		$this->results = $results;
 	}
