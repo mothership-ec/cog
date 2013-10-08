@@ -33,7 +33,7 @@ class SQLAdapter implements AdapterInterface {
 	{
 		if (null === $this->_count) {
 			if (null === $this->_countSql) {
-				$this->_countSql = preg_replace('/(SELECT)[^FROM]*(.*)LIMIT.*/s', '$1 COUNT(id) $2', $this->_sql);
+				$this->_countSql = preg_replace('/(SELECT)[^FROM]*(.*)/s', '$1 COUNT(id) $2', $this->_sql);
 				$this->_countParams = $this->_params;
 			}
 
@@ -48,7 +48,11 @@ class SQLAdapter implements AdapterInterface {
 
 	public function getSlice($offset, $length)
 	{
+		$sql = $this->_sql . ' LIMIT ' . $offset . ',' . $length;
 
+		$slice = $this->_query->run($sql, $this->_params);
+
+		return $slice;
 	}
 
 }
