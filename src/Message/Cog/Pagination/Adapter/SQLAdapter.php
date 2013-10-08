@@ -9,8 +9,10 @@ class SQLAdapter implements AdapterInterface {
 
 	protected $_query;
 	protected $_sql;
-	protected $_countSql;
 	protected $_count;
+	protected $_countSql;
+	protected $_countParams;
+	protected $_countColumn;
 
 	public function __construct(Query $query)
 	{
@@ -29,11 +31,17 @@ class SQLAdapter implements AdapterInterface {
 		$this->_countParams = $params;
 	}
 
+	public function setCountColumn($column)
+	{
+		$this->_countColumn = $column;
+	}
+
 	public function getNbResults()
 	{
 		if (null === $this->_count) {
 			if (null === $this->_countSql) {
-				$this->_countSql = preg_replace('/(SELECT)[^FROM]*(.*)/s', '$1 COUNT(id) $2', $this->_sql);
+				$column = ($this->_countColumn) ?: 'id';
+				$this->_countSql = preg_replace('/(SELECT)[^FROM]*(.*)/s', '$1 COUNT('.$column.') as `count` $2', $this->_sql);
 				$this->_countParams = $this->_params;
 			}
 
