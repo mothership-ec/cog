@@ -8,6 +8,7 @@ use Pagerfanta\Adapter\AdapterInterface;
 class Pagination {
 
 	protected $_paginator;
+	protected $_pendingCurrentPage;
 
 	public function __construct(AdapterInterface $adapter)
 	{
@@ -23,6 +24,18 @@ class Pagination {
 	{
 		return $this->_paginator->getAdapter()->getNbResults();
 	}
+
+	// public function setCurrentPage($currentPage)
+	// {
+	// 	$this->_pendingCurrentPage = $currentPage;
+	// }
+
+	// public function getCurrentPage()
+	// {
+	// 	$this->_paginator->setCurrentPage($this->_pendingCurrentPage);
+
+	// 	return $this->_paginator->getCurrentPage();
+	// }
 
 	public function __call($method, $params)
 	{

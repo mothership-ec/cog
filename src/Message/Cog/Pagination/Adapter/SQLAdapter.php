@@ -58,6 +58,8 @@ class SQLAdapter implements AdapterInterface {
 	{
 		$sql = $this->_sql . ' LIMIT ' . $offset . ',' . $length;
 
+		// d($sql);
+
 		$slice = $this->_query->run($sql, $this->_params);
 
 		return $slice;
