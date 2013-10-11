@@ -3,7 +3,6 @@
 namespace Message\Cog\Pagination\Adapter;
 
 use Message\Cog\DB\Result;
-use Pagerfanta\Adapter\AdapterInterface;
 
 class ArrayAdapter implements AdapterInterface {
 
@@ -27,7 +26,7 @@ class ArrayAdapter implements AdapterInterface {
     /**
      * {@inheritdoc}
      */
-    public function getNbResults()
+    public function getCount()
     {
         return count($this->array);
     }

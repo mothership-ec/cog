@@ -3,7 +3,6 @@
 namespace Message\Cog\Pagination\Adapter;
 
 use Message\Cog\DB\Query;
-use Pagerfanta\Adapter\AdapterInterface;
 
 class SQLAdapter implements AdapterInterface {
 
@@ -36,7 +35,7 @@ class SQLAdapter implements AdapterInterface {
 		$this->_countColumn = $column;
 	}
 
-	public function getNbResults()
+	public function getCount()
 	{
 		if (null === $this->_count) {
 			if (null === $this->_countSql) {

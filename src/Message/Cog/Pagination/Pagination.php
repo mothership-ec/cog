@@ -2,50 +2,83 @@
 
 namespace Message\Cog\Pagination;
 
-use Pagerfanta\Pagerfanta;
-use Pagerfanta\Adapter\AdapterInterface;
+use Message\Cog\Pagination\Adapter\AdapterInterface;
 
 class Pagination {
 
-	protected $_paginator;
-	protected $_pendingCurrentPage;
+	protected $_adapter;
+	protected $_currentPage;
+	protected $_maxPerPage;
 
 	public function __construct(AdapterInterface $adapter)
 	{
-		$this->_paginator = new Pagerfanta($adapter);
+		$this->setAdapter($adapter);
 	}
 
 	public function setAdapter(AdapterInterface $adapter)
 	{
-		$this->_paginator = new Pagerfanta($adapter);
+		$this->_adapter = $adapter;
 	}
 
-	public function getCount()
+	public function getAdapter()
 	{
-		return $this->_paginator->getAdapter()->getNbResults();
+		return $this->_adapter;
 	}
 
-	// public function setCurrentPage($currentPage)
-	// {
-	// 	$this->_pendingCurrentPage = $currentPage;
-	// }
-
-	// public function getCurrentPage()
-	// {
-	// 	$this->_paginator->setCurrentPage($this->_pendingCurrentPage);
-
-	// 	return $this->_paginator->getCurrentPage();
-	// }
-
-	public function __call($method, $params)
+	public function setMaxPerPage($max)
 	{
-		if (method_exists($this->_paginator, $method)) {
-			return call_user_func_array(array($this->_paginator, $method), $params);
-		}
+		$this->_maxPerPage = (int) $max;
+	}
 
-		$adapter = $this->_paginator->getAdapter();
-		if (method_exists($adapter, $method)) {
-			return call_user_func_array(array($adapter, $method), $params);
+	public function getMaxPerPage()
+	{
+		return $this->_maxPerPage;
+	}
+
+	public function setCurrentPage($page)
+	{
+		$this->_currentPage = max(1, (int) $page);
+	}
+
+	public function getCurrentPage()
+	{
+		return $this->_currentPage;
+	}
+
+	public function getCurrentPageResults()
+	{
+		return $this->_adapter->getSlice(($this->getCurrentPage() - 1), $this->getMaxPerPage());
+	}
+
+	public function getCountPages()
+	{
+		return (int) floor($this->_adapter->getCount() / $this->getMaxPerPage());
+	}
+
+	public function hasNextPage()
+	{
+		return $this->getCurrentPage() < $this->getCountPages();
+	}
+
+	public function getNextPage()
+	{
+		return $this->getCurrentPage() + 1;
+	}
+
+	public function hasPreviousPage()
+	{
+		return $this->getCurrentPage() > 1;
+	}
+
+	public function getPreviousPage()
+	{
+		return $this->getCurrentPage() - 1;
+	}
+
+	public function __call($method, $parameters)
+	{
+		if (method_exists($this->_adapter, $method)) {
+			return call_user_func_array(array($this->_adapter, $method), $parameters);
 		}
 	}
 
