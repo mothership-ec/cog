@@ -18,6 +18,8 @@ class Pagination {
 	public function setAdapter(AdapterInterface $adapter)
 	{
 		$this->_adapter = $adapter;
+
+		return $this;
 	}
 
 	public function getAdapter()
@@ -28,6 +30,8 @@ class Pagination {
 	public function setMaxPerPage($max)
 	{
 		$this->_maxPerPage = (int) $max;
+
+		return $this;
 	}
 
 	public function getMaxPerPage()
@@ -38,6 +42,8 @@ class Pagination {
 	public function setCurrentPage($page)
 	{
 		$this->_currentPage = max(1, (int) $page);
+
+		return $this;
 	}
 
 	public function getCurrentPage()
