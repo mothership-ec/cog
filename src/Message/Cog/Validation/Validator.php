@@ -17,7 +17,6 @@ class Validator
 	protected $_fieldPointer;
 	protected $_rulePointer;
 	protected $_fields = array();
-	protected $_fieldRequiredErrors = array();
 
 	/**
 	 * @var Loader
@@ -124,7 +123,7 @@ class Validator
 	 */
 	public function requiredError($message)
 	{
-		$this->_fieldRequiredErrors[$this->_fieldPointer->name] = $message;
+		$this->_fieldPointer->requiredError = $message;
 
 		return $this;
 	}
@@ -380,7 +379,7 @@ class Validator
 				// set required error if field is required and empty
 				$this->_setRequiredError($field, $data);
 			}
-			
+
 		// only check rules if field is not empty
 		} else {
 			$this->_setMessages($field, $data);
@@ -397,8 +396,8 @@ class Validator
 	 */
 	protected function _setRequiredError($field, $data)
 	{
-		if (isset($this->_fieldRequiredErrors[$field->name])) {
-			$this->_messages->addError($field->name, $this->_fieldRequiredErrors[$field->name]);
+		if ($field->requiredError) {
+			$this->_messages->addError($field->name, $field->requiredError);
 		}
 		else {
 			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));

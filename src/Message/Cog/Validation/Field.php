@@ -13,6 +13,7 @@ class Field
 	public $name;
 	public $readableName;
 	public $optional = false;
+	public $requiredError;
 	public $repeatable = false;
 	public $rules = array();
 	public $filters = array('pre' => array(), 'post' => array());
@@ -34,7 +35,8 @@ class Field
 
 	public function merge(Field $field)
 	{
-		$this->readableName = $field->readableName ? $field->readableName : $this->readableName;
+		$this->readableName = $field->readableName ?: $this->readableName;
+		$this->requiredError = $field->requiredError ?: $this->requiredError;
 		$this->optional     = $field->optional   || $this->optional;
 		$this->repeatable   = $field->repeatable || $this->repeatable;
 
