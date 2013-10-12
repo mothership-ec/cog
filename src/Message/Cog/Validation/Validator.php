@@ -110,6 +110,20 @@ class Validator
 	 */
 	public function error($message)
 	{
+		$this->_rulePointer[4] = $message;
+
+		return $this;
+	}
+
+	/**
+	 * Method used to set the required error for the current field
+	 *
+	 * @param string $message       Error message to display
+	 *
+	 * @return Validator            Returns $this for chainability
+	 */
+	public function requiredError($message)
+	{
 		$this->_fieldRequiredErrors[$this->_fieldPointer->name] = $message;
 
 		return $this;
@@ -346,12 +360,6 @@ class Validator
 				$dataArray[$name] = null;
 			}
 
-			// If the field is optional and the data is null, don't apply the
-			// rules.
-			if ($field->optional and null === $dataArray[$name]) {
-				continue;
-			}
-
 			if(count($field->children) > 0) {
 				$this->_applyRules($field->children, $dataArray[$name]);
 			}  elseif ($field->repeatable) {
@@ -367,30 +375,33 @@ class Validator
 	}
 
 	protected function _applyRulesForField($field, $data) {
-		$this->_setRequiredError($field, $data);
-
-		$this->_setMessages($field, $data);
+		if(!$this->_isSet($data)) {
+			if(!$field->optional) {
+				// set required error if field is required and empty
+				$this->_setRequiredError($field, $data);
+			}
+			
+		// only check rules if field is not empty
+		} else {
+			$this->_setMessages($field, $data);
+		}
 	}
 
 	/**
 	 * Method to check if a field is required and set an error where appropriate
 	 *
-	 * @param string $name          Name of field
-	 * @param array $field          Array of field data and information
+	 * @param Field $field          field the error should be set to
+	 * @param string $data          submitted data
 	 *
-	 * @return Validator            Returns $this for chainability
+	 * @return Validatot           	$this for chainability
 	 */
 	protected function _setRequiredError($field, $data)
 	{
-		$notSet = !$this->_isSet($data);
-
-		if ($notSet && !$field->optional) {
-			if (isset($this->_fieldRequiredErrors[$field->name])) {
-				$this->_messages->addError($field->name, $this->_fieldRequiredErrors[$field->name]);
-			}
-			else {
-				$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
-			}
+		if (isset($this->_fieldRequiredErrors[$field->name])) {
+			$this->_messages->addError($field->name, $this->_fieldRequiredErrors[$field->name]);
+		}
+		else {
+			$this->_messages->addError($field->name, sprintf('%s is a required field', $field->readableName));
 		}
 
 		return $this;
