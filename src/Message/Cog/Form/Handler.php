@@ -408,8 +408,6 @@ class Handler
 
 			$this->submitForm();
 
-			$children = $this->getForm()->all();
-
 			// because symfony removes invalid data, but we actually need this data for the validator
 			// to display the right error messages, we need to give the validator an array with both the
 			// new symfony-form-data and the post-data :'(
