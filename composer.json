@@ -49,7 +49,10 @@
 		"kriswallsmith/assetic"        : "1.1.*",
 		"imagine/imagine"              : "0.4.*",
 		"filp/whoops"                  : "1.0.*",
-		"swiftmailer/swiftmailer"      : "5.0.*"
+		"swiftmailer/swiftmailer"      : "5.0.*",
+		"knplabs/knp-snappy"           : "0.1.*",
+		"h4cc/wkhtmltopdf-i386"        : "0.11.0-RC1",
+		"h4cc/wkhtmltoimage-i386"      : "0.11.0-RC1"
 	},
 	"require-dev": {
 		"mikey179/vfsStream": "1.1.*"
