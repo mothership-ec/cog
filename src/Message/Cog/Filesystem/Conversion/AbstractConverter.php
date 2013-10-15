@@ -12,7 +12,7 @@ use Message\Cog\Service\ContainerAwareInterface;
  *     $converter->setView('::my-view', ['foo' => 'bar']);
  *     $file = $converter->save('/path/to/file');
  */
-abstract class Converter implements ContainerAwareInterface {
+abstract class AbstractConverter implements ContainerAwareInterface {
 
 	protected $_html;
 

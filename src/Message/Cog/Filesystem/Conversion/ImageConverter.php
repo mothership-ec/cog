@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use Knp\Snappy\Image;
 use Message\Cog\Filesystem\File;
 
-class ImageConverter extends Converter {
+class ImageConverter extends AbstractConverter {
 
 	public function generate($path, $html)
 	{

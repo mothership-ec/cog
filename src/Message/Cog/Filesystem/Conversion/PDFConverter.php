@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use Knp\Snappy\Pdf;
 use Message\Cog\Filesystem\File;
 
-class PDFConverter extends Converter {
+class PDFConverter extends AbstractConverter {
 
 	public function generate($path, $html)
 	{
