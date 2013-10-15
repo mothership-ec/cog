@@ -49,8 +49,7 @@
 		"kriswallsmith/assetic"        : "1.1.*",
 		"imagine/imagine"              : "0.4.*",
 		"filp/whoops"                  : "1.0.*",
-		"swiftmailer/swiftmailer"      : "5.0.*",
-		"pagerfanta/pagerfanta"        : "1.0.*"
+		"swiftmailer/swiftmailer"      : "5.0.*"
 	},
 	"require-dev": {
 		"mikey179/vfsStream": "1.1.*"
