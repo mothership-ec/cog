@@ -11,7 +11,12 @@ class PDFConverter extends Converter {
 
 	public function generate($path, $html)
 	{
-		if ("pdf" !== $ext = pathinfo($path, PATHINFO_EXTENSION)) {
+		$ext = pathinfo($path, PATHINFO_EXTENSION);
+
+		if (null === $ext) {
+			$path .= ".ext";
+		}
+		elseif ("pdf" !== $ext) {
 			throw new InvalidArgumentException(sprintf("Your destination path must have a .pdf extension for conversion, '%s' passed.", $ext));
 		}
 

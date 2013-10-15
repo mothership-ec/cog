@@ -10,7 +10,7 @@ use Message\Cog\Service\ContainerAwareInterface;
  * @usage
  *     $converter = $this->get('filesystem.conversion.pdf');
  *     $converter->setView('::my-view', ['foo' => 'bar']);
- *     $file = $converter->save('/path/to/dir');
+ *     $file = $converter->save('/path/to/file');
  */
 abstract class Converter implements ContainerAwareInterface {
 
