@@ -34,10 +34,12 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 
 	public function setView($view, $params = array())
 	{
-		$this->_html = $this->_container['response_builder']
+		$html = $this->_container['response_builder']
 			->setRequest($this->_container['request'])
 			->render($view, $params)
 			->getContent();
+
+		$this->_html = $this->_extractAssets($html);
 
 		return $this;
 	}
@@ -49,8 +51,10 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		$this->_html = curl_exec($ch);
+		$html = curl_exec($ch);
 		curl_close($ch);
+
+		$this->_html = $this->_extractAssets($html);
 
 		return $this;
 	}
@@ -85,5 +89,47 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		}
 
 		throw new Exception("Could not determine binary type");
+	}
+
+	protected function _extractAssets($html)
+	{
+		// http://regex101.com/r/mN7iX7
+		preg_match_all("/(<(link|img)[^>]+(href|src)=[\"|']([^\"]+)[\"|'][^>]*\/?>)/", $html, $matches);
+
+		$replaces = array();
+
+		foreach ($matches[4] as $i => $href) {
+			$path = $this->_container['app.loader']->getBaseDir() . 'public' . $href;
+
+			$ext = pathinfo($path, PATHINFO_EXTENSION);
+
+			// CSS
+			if ('css' === $ext) {
+				if (isset($replaces[$matches[0][$i]])) {
+					continue;
+				}
+
+				$contents = file_get_contents($path);
+				$newTag = '<style>' . $contents . '</style>';
+
+				$replaces[$matches[0][$i]] = $newTag;
+			}
+
+			// Images
+			else {
+				if (isset($replaces[$href])) {
+					continue;
+				}
+
+				$contents = file_get_contents($path);
+				$newPath = 'data:image/' . $ext . ';base64,' . base64_encode($contents);
+
+				$replaces[$href] = $newPath;
+			}
+		}
+
+		$html = str_replace(array_keys($replaces), array_values($replaces), $html);
+
+		return $html;
 	}
 }
