@@ -29,7 +29,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			KernelEvents::RESPONSE => array(
 				array('generateAssetsOnRequest'),
 			),
-			'cog.deploy.after.update_code' => array(
+			'cog.deploy.after.deploy' => array(
 				array('generateAssetsOnDeploy'),
 			)
 		);

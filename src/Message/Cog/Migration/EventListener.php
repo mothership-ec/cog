@@ -20,7 +20,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'cog.deploy.before.create_symlink' => array(
+			'cog.deploy.after.deploy' => array(
 				array('runMigrations')
 			)
 		);
