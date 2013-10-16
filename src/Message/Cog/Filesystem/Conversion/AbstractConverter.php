@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Filesystem\Conversion;
 
+use Exception;
+use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 
 /**
@@ -15,6 +17,7 @@ use Message\Cog\Service\ContainerAwareInterface;
 abstract class AbstractConverter implements ContainerAwareInterface {
 
 	protected $_html;
+	protected $_options = array();
 
 	public function __construct(ContainerInterface $container)
 	{
@@ -31,7 +34,23 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 
 	public function setView($view, $params = array())
 	{
-		$this->_html = $this->_getHtml($view, $params);
+		$this->_html = $this->_container['response_builder']
+			->setRequest($this->_container['request'])
+			->render($view, $params)
+			->getContent();
+
+		return $this;
+	}
+
+	public function setUrl($url)
+	{
+		$ch = curl_init($url);
+
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+		$this->_html = curl_exec($ch);
+		curl_close($ch);
 
 		return $this;
 	}
@@ -43,21 +62,28 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		return $file;
 	}
 
-	abstract public function generate($path, $html);
-
-	/**
-	 * Get the rendered html for a view.
-	 *
-	 * @param  string $view
-	 * @param  array  $params
-	 * @return string Rendered html output
-	 */
-	protected function _getHtml($view, $params)
+	public function setOptions($options)
 	{
-		return $this->_container['response_builder']
-			->setRequest($this->_container['request'])
-			->render($view, $params)
-			->getContent();
+		$this->_options = $options;
 	}
 
+	abstract public function generate($path, $html);
+
+
+	protected function _getBinDir()
+	{
+		return $this->_container['app.loader']->getBaseDir() . 'bin/';
+	}
+
+	protected function _getBinaryType()
+	{
+		if ("Darwin" === PHP_OS) {
+			return "osx";
+		}
+		elseif ("Linux" == PHP_OS) {
+			return (8 === PHP_INT_SIZE) ? "amd64" : "i1386";
+		}
+
+		throw new Exception("Could not determine binary type");
+	}
 }

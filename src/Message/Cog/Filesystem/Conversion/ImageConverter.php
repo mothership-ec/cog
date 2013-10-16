@@ -12,7 +12,11 @@ class ImageConverter extends AbstractConverter {
 	public function generate($path, $html)
 	{
 		$image = new Image;
-		$image->setBinary('/path/to/vendor/bin/wkhtmltoimage');
+		$image->setBinary($this->_getBinDir() . 'wkhtmltoimage-' . $this->_getBinaryType());
+
+		foreach ($this->_options as $key => $value) {
+			$image->setOption($key, $value);
+		}
 
 		$image->generateFromHTML($html, $path);
 

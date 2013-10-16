@@ -21,7 +21,11 @@ class PDFConverter extends AbstractConverter {
 		}
 
 		$pdf = new Pdf;
-		$pdf->setBinary('/path/to/vendor/bin/wkhtmltopdf');
+		$pdf->setBinary($this->_getBinDir() . 'wkhtmltopdf-' . $this->_getBinaryType());
+
+		foreach ($this->_options as $key => $value) {
+			$pdf->setOption($key, $value);
+		}
 
 		$pdf->generateFromHTML($html, $path);
 
