@@ -32,7 +32,14 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		$this->_container = $container;
 	}
 
-	public function setView($view, $params = array())
+	/**
+	 * Get the html from a view.
+	 *
+	 * @param  string $view
+	 * @param  array  $params
+	 * @return AbstractConverter
+	 */
+	public function setView($view, array $params = array())
 	{
 		$html = $this->_container['response_builder']
 			->setRequest($this->_container['request'])
@@ -44,6 +51,12 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		return $this;
 	}
 
+	/**
+	 * Get the html from a url.
+	 *
+	 * @param  string $url
+	 * @return AbstractConverter
+	 */
 	public function setUrl($url)
 	{
 		$ch = curl_init($url);
@@ -59,6 +72,23 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		return $this;
 	}
 
+	/**
+	 * Set the options to pass to the binary.
+	 *
+	 * @param  array $options
+	 * @return AbstractConverter
+	 */
+	public function setOptions(array $options)
+	{
+		$this->_options = $options;
+	}
+
+	/**
+	 * Save the file to the specified path.
+	 *
+	 * @param  string $path
+	 * @return \Message\Cog\Filesystem\File
+	 */
 	public function save($path)
 	{
 		$file = $this->generate($path, $this->_html);
@@ -66,19 +96,31 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		return $file;
 	}
 
-	public function setOptions($options)
-	{
-		$this->_options = $options;
-	}
-
+	/**
+	 * Generate the converted file.
+	 *
+	 * @param  string $path
+	 * @param  string $html
+	 * @return \Message\Cog\Filesystem\File
+	 */
 	abstract public function generate($path, $html);
 
-
+	/**
+	 * Get the absolute path to the bin directory.
+	 *
+	 * @return string
+	 */
 	protected function _getBinDir()
 	{
 		return $this->_container['app.loader']->getBaseDir() . 'bin/';
 	}
 
+	/**
+	 * Check which binary file should be loaded.
+	 *
+	 * @throws Exception If no appropriate binary type allowed.
+	 * @return string
+	 */
 	protected function _getBinaryType()
 	{
 		if ("Darwin" === PHP_OS) {
@@ -91,6 +133,13 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		throw new Exception("Could not determine binary type");
 	}
 
+	/**
+	 * Extract remote resources and convert to inline data. Images are written
+	 * as base64 data tags and css links are replaced with style blocks.
+	 *
+	 * @param  string $html
+	 * @return string
+	 */
 	protected function _extractAssets($html)
 	{
 		// http://regex101.com/r/mN7iX7
@@ -99,6 +148,8 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 		$replaces = array();
 
 		foreach ($matches[4] as $i => $href) {
+
+			// Get the file path for the remote resource.
 			$path = $this->_container['app.loader']->getBaseDir() . 'public' . $href;
 
 			$ext = pathinfo($path, PATHINFO_EXTENSION);
@@ -109,6 +160,7 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 					continue;
 				}
 
+				// Put file contents into a <style> block.
 				$contents = file_get_contents($path);
 				$newTag = '<style>' . $contents . '</style>';
 
@@ -121,6 +173,7 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 					continue;
 				}
 
+				// Convert the contents to a base64 data tag.
 				$contents = file_get_contents($path);
 				$newPath = 'data:image/' . $ext . ';base64,' . base64_encode($contents);
 
@@ -128,6 +181,7 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 			}
 		}
 
+		// Replace all matches.
 		$html = str_replace(array_keys($replaces), array_values($replaces), $html);
 
 		return $html;

@@ -9,6 +9,9 @@ use Message\Cog\Filesystem\File;
 
 class ImageConverter extends AbstractConverter {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function generate($path, $html)
 	{
 		$image = new Image;

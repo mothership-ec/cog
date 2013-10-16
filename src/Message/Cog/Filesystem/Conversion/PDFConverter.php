@@ -9,6 +9,9 @@ use Message\Cog\Filesystem\File;
 
 class PDFConverter extends AbstractConverter {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function generate($path, $html)
 	{
 		$ext = pathinfo($path, PATHINFO_EXTENSION);
