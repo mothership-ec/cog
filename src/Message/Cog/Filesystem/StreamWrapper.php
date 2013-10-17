@@ -346,7 +346,7 @@ class StreamWrapper implements StreamWrapperInterface
 		$localpath = $this->getLocalPath($uri);
 
 		if ($options & STREAM_REPORT_ERRORS) {
-			return mkdir($localpath, $mode, $recursive);
+			return is_dir($localpath) ? true : mkdir($localpath, $mode, $recursive);
 		}
 
 		return mkdir($localpath, $mode, $recursive);
