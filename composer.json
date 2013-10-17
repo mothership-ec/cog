@@ -57,7 +57,9 @@
 		"h4cc/wkhtmltoimage-amd64"     : "0.11.0-RC1"
 	},
 	"require-dev": {
-		"mikey179/vfsStream": "1.1.*"
+		"mikey179/vfsStream"              : "1.1.*",
+		"messagedigital/wkhtmltopdf-osx"  : "0.9.9",
+		"messagedigital/wkhtmltoimage-osx": "0.10.0-RC2"
 	},
 	"suggest": {
 		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
