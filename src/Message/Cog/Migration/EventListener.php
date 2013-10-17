@@ -22,7 +22,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 		return array(
 			'cog.deploy.after.deploy' => array(
 				array('runMigrations')
-			)
+			),
+			'cog.deploy.after.complete' => array(
+				array('runMigrations')
+			),
 		);
 	}
 

@@ -31,7 +31,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 			),
 			'cog.deploy.after.deploy' => array(
 				array('generateAssetsOnDeploy'),
-			)
+			),
+			'cog.deploy.after.complete' => array(
+				array('generateAssetsOnDeploy'),
+			),
 		);
 	}
 
