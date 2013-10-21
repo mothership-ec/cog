@@ -13,7 +13,7 @@ class TwigResource extends AsseticTwigResource {
 		// methods.
 		// Oh and $name is a private variable so can not be accessed directly.
 		// @see https://gist.github.com/lsjroberts/7084126
-		return (string) $this->__toString();
+		return (string) parent::__toString();
 	}
 
 }
