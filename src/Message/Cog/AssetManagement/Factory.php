@@ -41,4 +41,25 @@ class Factory extends AssetFactory
 
         return $collection;
     }
+
+    public function generateAssetName($inputs, $filters, $options = array())
+    {
+        $name = parent::generateAssetName($inputs, $filters, $options);
+
+        // Cache busting
+        $hash = hash_init('sha1');
+
+        foreach ($inputs as $input) {
+            // Parse the input
+            $parsed = $this->_referenceParser->parse($input);
+
+            // Update the input to the real full path
+            $path = $parsed->getFullPath();
+
+            hash_update($hash, filemtime($path));
+        }
+
+        // Return a combination of the two name parts
+        return $name . substr(hash_final($hash), 0, 7);
+    }
 }

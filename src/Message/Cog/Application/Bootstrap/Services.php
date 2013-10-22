@@ -565,8 +565,6 @@ class Services implements ServicesInterface
 
 			$c['asset.factory']->setAssetManager($manager);
 
-			$c['asset.factory']->addWorker(new \Assetic\Factory\Worker\CacheBustingWorker($manager));
-
 			return $manager;
 		});
 
