@@ -107,7 +107,7 @@ class Pagination
 	 */
 	public function getCountPages()
 	{
-		return (int) floor($this->_adapter->getCount() / $this->getMaxPerPage());
+		return (int) ceil($this->_adapter->getCount() / $this->getMaxPerPage());
 	}
 
 	/**
