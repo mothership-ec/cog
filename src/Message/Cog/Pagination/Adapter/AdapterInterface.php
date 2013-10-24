@@ -2,7 +2,8 @@
 
 namespace Message\Cog\Pagination\Adapter;
 
-interface AdapterInterface {
+interface AdapterInterface
+{
 
 	/**
 	 * Get the count of results.

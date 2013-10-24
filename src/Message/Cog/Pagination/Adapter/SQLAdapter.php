@@ -4,7 +4,8 @@ namespace Message\Cog\Pagination\Adapter;
 
 use Message\Cog\DB\Query;
 
-class SQLAdapter implements AdapterInterface {
+class SQLAdapter implements AdapterInterface
+{
 
 	protected $_query;
 	protected $_sql;

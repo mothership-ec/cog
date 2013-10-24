@@ -4,7 +4,8 @@ namespace Message\Cog\Pagination\Adapter;
 
 use Message\Cog\DB\Result;
 
-class DBResultAdapter extends ArrayAdapter {
+class DBResultAdapter extends ArrayAdapter
+{
 
 	/**
 	 * Adds typehint to constructor.

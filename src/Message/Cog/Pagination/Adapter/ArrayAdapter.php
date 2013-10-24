@@ -4,7 +4,8 @@ namespace Message\Cog\Pagination\Adapter;
 
 use Message\Cog\DB\Result;
 
-class ArrayAdapter implements AdapterInterface {
+class ArrayAdapter implements AdapterInterface
+{
 
 	protected $array;
 

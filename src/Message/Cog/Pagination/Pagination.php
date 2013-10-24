@@ -4,7 +4,8 @@ namespace Message\Cog\Pagination;
 
 use Message\Cog\Pagination\Adapter\AdapterInterface;
 
-class Pagination {
+class Pagination
+{
 
 	protected $_adapter;
 	protected $_currentPage;
