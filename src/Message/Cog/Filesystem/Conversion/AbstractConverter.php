@@ -143,7 +143,7 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 	protected function _extractAssets($html)
 	{
 		// http://regex101.com/r/mN7iX7
-		preg_match_all("/(<(link|img)[^>]+(href|src)=[\"|']([^\"]+)[\"|'][^>]*\/?>)/", $html, $matches);
+		preg_match_all("/(<(link|img)[^>]+(href|src)=[\"']([^\"]+)[\"'][^>]*\/?>)/", $html, $matches);
 
 		$replaces = array();
 
