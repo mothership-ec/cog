@@ -250,9 +250,6 @@
 			{% if not compound %}
 				{% set label_attr = label_attr|merge({'for': id}) %}
 			{% endif %}
-			{% if required %}
-				{% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
-			{% endif %}
 			{% if label is empty %}
 				{% set label = name|humanize %}
 			{% endif %}
@@ -277,7 +274,8 @@
 
 {% block form_row %}
 	{% spaceless %}
-		<div class="{{ compound ? 'field-wrap' : 'field' }}">
+		{% set requiredClass = (required ? ' required' : '') %}
+		<div class="{{ compound ? 'field-wrap' : 'field'~requiredClass }}">
 			{{ form_label(form) }}
 			{{ form_errors(form) }}
 			{{ form_widget(form) }}
