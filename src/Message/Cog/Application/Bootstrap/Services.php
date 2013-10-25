@@ -712,5 +712,21 @@ class Services implements ServicesInterface
 				'Doctor' => 'Doctor'
 			);
 		};
+
+		$serviceContainer['pagination'] = function($c) {
+			return new \Message\Cog\Pagination\Pagination($c['pagination.adapter.sql']);
+		};
+
+		$serviceContainer['pagination.adapter.dbresult'] = function($c) {
+			return new \Message\Cog\Pagination\Adapter\DBResultAdapter();
+		};
+
+		$serviceContainer['pagination.adapter.sql'] = function($c) {
+			return new \Message\Cog\Pagination\Adapter\SQLAdapter($c['db.query']);
+		};
+
+		$serviceContainer['pagination.adapter.array'] = function($c) {
+			return new \Message\Cog\Pagination\Adapter\ArrayAdapter();
+		};
 	}
 }
