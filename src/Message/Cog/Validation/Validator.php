@@ -98,7 +98,7 @@ class Validator
 	}
 
 	/**
-	 * Add a new field to be validated and adjusts the fieldPointer
+	 * Adds a new field to be validated and adjusts the fieldPointer
 	 *
 	 * @param  Field $field         the field to be added
 	 *
