@@ -242,7 +242,7 @@ class Handler
 
 		if(!is_string($child) && (!$child instanceof SymfonyForm)) {
 			throw new \InvalidArgumentException(
-				'You child you tried to add to the form doesn\'t have the right type!'
+				'The child you tried to add to the form doesn\'t have the right type!'
 			);
 		}
 
@@ -261,7 +261,7 @@ class Handler
 		$fieldName = $this->_getChildName($child);
 		$fieldLabel = (isset($options['label']) ? $options['label'] : false);
 		$this->_fields[$fieldName] = $field;
-		
+
 		$validatorField = new Field($fieldName, $fieldLabel);
 		if($handler) {
 			$validatorField->children = $handler->getValidator()->getFields();
@@ -396,7 +396,7 @@ class Handler
 		}
 		else {
 			$this->_form->add($fieldArray['child'], $fieldArray['type'], $fieldArray['options']);
-		}	
+		}
 	}
 
 	protected function _initialiseForm()
