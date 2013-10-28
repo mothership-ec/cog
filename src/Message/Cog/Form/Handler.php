@@ -63,7 +63,7 @@ class Handler
 	 * @var array
 	 */
 	protected $_options = array(
-		'required' => false,
+		'required' => true,
 		'csrf_protection' => true,
 		'csrf_field_name' => self::CSRF_ATTRIBUTE_NAME,
 		'intention' => 'form'
@@ -83,6 +83,11 @@ class Handler
 	 * @var bool | null
 	 */
 	protected $_valid = null;
+
+	/**
+	 * @var array all fields to be added to the form
+	 */
+	protected $_fields = array();
 
 
 	/**
@@ -209,65 +214,63 @@ class Handler
 	public function clear()
 	{
 		$this->_form            = $this->_container['form.builder']->getForm();
+		$this->_fields          = array();
 		$this->_validator       = $this->_container['validator'];
 		$this->_addedToFlash    = false;
 		$this->_valid           = null;
 	}
 
 	/**
-	 * Add a field to a form
+	 * Adds a field to the $_fields-array to then be added to $_form
 	 *
-	 * @param string | SymfonyForm $child       Name or instance of field, e.g. 'First name'
-	 * @param null $type                        Type of field, defaults to text
-	 * @param string $label                     Label for the field, if null it's auto generated from the name
-	 * @param array $options                    Options for field, see Symfony Form documentation
-	 * @throws \InvalidArgumentException        Throws exception if $child is not a string or Form object
+	 * @param string | SymfonyForm | Handler $child Name or instance of field, e.g. 'First name'
+	 * @param null $type                            Type of field, defaults to text
+	 * @param string $label                         Label for the field, if null it's auto generated from the name
+	 * @param array $options                        Options for field, see Symfony Form documentation
+	 * @throws \InvalidArgumentException            Throws exception if $child is not a string or Form object
 	 *
-	 * @return Handler                          Returns $this for chainability
+	 * @return Handler                              Returns $this for chainability
 	 */
 	public function add($child, $type = null, $label = null, array $options = array())
 	{
 		$handler = null;
+
 		if($child instanceof Handler) {
 			$handler = $child;
-			$child = $handler->getForm();
+			$child   = $handler->getForm();
 		}
 
 		if(!is_string($child) && (!$child instanceof SymfonyForm)) {
 			throw new \InvalidArgumentException(
-				'You child you tried to add to the form doesn\'t have the right type!'
+				'The child you tried to add to the form doesn\'t have the right type!'
 			);
 		}
-
-		$options = array_merge($this->_options, $options);
 
 		if ($label) {
 			$options = array_merge(array('label' => $label), $options);
 		}
 
-		if ($this->_repeatable) {
-			$this->_addCollection($child, $type, $options);
-		}
-		else {
-			$this->getForm()->add($child, $type, $options);
-		}
+		$options = array_merge($this->_options, $options);
 
-		$field = null;
+		$field = array(
+			'child'   => $child,
+			'type'    => $type,
+			'options' => $options,
+		);
+
+		$fieldName = $this->_getChildName($child);
+		$fieldLabel = (isset($options['label']) ? $options['label'] : false);
+		$this->_fields[$fieldName] = $field;
+
+		$validatorField = new Field($fieldName, $fieldLabel);
 		if($handler) {
-			$form = $handler->getForm();
-			$field = new Field($form->getName(), $form->getConfig()->getOption('label') ? $form->getConfig()->getOption('label'): false);
-			$field->children = $handler->getValidator()->getFields();
-		} else {
-			// Get the field we just added and turn it into a Validator\Field
-			$handlerField = $this->field($this->_getChildName($child));
-			$field = new Field($handlerField->getName(), $handlerField->getConfig()->getOption('label') ? $handlerField->getConfig()->getOption('label'): false);
+			$validatorField->children = $handler->getValidator()->getFields();
 		}
 
-		$field->repeatable = $this->_repeatable;
-		$this->getValidator()->addField($field);
+		$validatorField->repeatable = $this->_repeatable;
+		$this->getValidator()->addField($validatorField);
 
 		return $this;
-
 	}
 
 	/**
@@ -279,7 +282,7 @@ class Handler
 	 */
 	protected function _addCollection($child, $type, $options)
 	{
-		$this->getForm()->add($child, 'collection', array(
+		$this->_form->add($child, 'collection', array(
 			'type'         => $type,
 			'allow_add'    => true,
 			'allow_delete' => true,
@@ -353,7 +356,9 @@ class Handler
 	}
 
 	/**
-	 * Get instance of SymfonyForm
+	 * Returns instance of SymfonyForm and fills it with fields from $_fields.
+	 * Checks whether all $_fields are already in the SymfonyForm and adds
+	 * them if necessary.
 	 *
 	 * @return SymfonyForm         Returns assigned form
 	 */
@@ -363,7 +368,35 @@ class Handler
 			$this->_form = $this->_initialiseForm();
 		}
 
+		$formFields = $this->_form->all();
+		foreach($this->_fields as $name => &$fieldArray) {
+			if(!array_key_exists($name, $formFields)) {
+				$this->_addFieldToSymfonyForm($fieldArray);
+			}
+		}
+
 		return $this->_form;
+	}
+
+	/**
+	 * Add a field (in form of an array) to $_form
+	 * Sets the required option to what is defined in the validator.
+	 *
+	 * @param array $fieldArray Array consisting of child, type and options(inc. label) for the field
+	 *
+	 * @return Handler          Returns $this for chainability
+	 */
+	protected function _addFieldToSymfonyForm(&$fieldArray)
+	{
+		$validatorField = $this->getValidator()->getField($this->_getChildName($fieldArray['child']));
+		$fieldArray['options']['required'] = !$validatorField->optional;
+
+		if ($this->_repeatable) {
+			$this->_addCollection($fieldArray['child'], $fieldArray['type'], $fieldArray['options']);
+		}
+		else {
+			$this->_form->add($fieldArray['child'], $fieldArray['type'], $fieldArray['options']);
+		}
 	}
 
 	protected function _initialiseForm()
