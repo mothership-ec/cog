@@ -37,14 +37,14 @@ class TaskRunScheduled extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$path = $_SERVER['argv'][0];
+		$path = $this->get('app.loader')->getBaseDir() . 'bin/cog';
 		$env  = ' --env='.$this->get('env');
 		foreach($this->get('task.collection')->all() as $task) {
 			if($this->_isDue($task[1], new \DateTime, $this->get('env'))) {
-				$output->writeln('Running ' . $task[2]->getName());
+				$output->writeln('Running ' . $task[1]->getName());
 				try {
 					$process = new Process($path . $env . ' task:run ' . $task[1]->getName());
-					$process->start();
+					$process->run();
 				} catch (\Exception $e) {
 					$output->writeln('Error: ' . $e->getMessage());
 				}
@@ -60,7 +60,7 @@ class TaskRunScheduled extends Command
 		if(!$task->getCronExpression()->isDue($time)) {
 			return false;
 		}
-		if(count($this->getCronEnvironments()) && !in_array($env, $this->getCronEnvironments())) {
+		if(count($task->getCronEnvironments()) && !in_array($env, $task->getCronEnvironments())) {
 			return false;
 		}
 
