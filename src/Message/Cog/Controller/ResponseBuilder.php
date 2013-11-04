@@ -58,8 +58,12 @@ class ResponseBuilder implements RequestAwareInterface
 	 * @todo When rendering the view, find out the type of the view rendered and
 	 *       set the content type as appropriate.
 	 */
-	public function render($reference, array $params = array())
+	public function render($reference, array $params = array(), Response $response = null)
 	{
+		if (!$response) {
+			$response = new Response;
+		}
+
 		// Convert any shorthand parameters to what they should be
 		foreach ($params as $key => $val) {
 			if ($val instanceof FormHandler) {
@@ -68,7 +72,9 @@ class ResponseBuilder implements RequestAwareInterface
 		}
 
 		try {
-			return Response::create($this->_engine->render($reference, $params));
+			$response->setContent($this->_engine->render($reference, $params));
+
+			return $response;
 		}
 		catch (\Exception $e) {
 			// See if we can automatically generate a response

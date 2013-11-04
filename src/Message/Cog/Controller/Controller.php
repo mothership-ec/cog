@@ -192,7 +192,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 *
 	 * @throws LogicException    If the Request is not set on this class
 	 */
-	public function render($reference, array $params = array())
+	public function render($reference, array $params = array(), Response $response = null)
 	{
 		if (!($this->_request instanceof Request)) {
 			throw new LogicException('Request must be set on the controller to render a view.');
@@ -200,7 +200,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 
 		return $this->_services['response_builder']
 			->setRequest($this->_request)
-			->render($reference, $params);
+			->render($reference, $params, $response);
 	}
 
 	/**
