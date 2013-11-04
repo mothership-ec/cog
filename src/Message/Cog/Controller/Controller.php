@@ -96,6 +96,16 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
+	 * Get the current request.
+	 *
+	 * @return Request
+	 */
+	public function getRequest()
+	{
+		return $this->_request;
+	}
+
+	/**
 	 * Generate a URL from a route name.
 	 *
 	 * @see \Message\Cog\Routing\UrlGenerator::generate()
@@ -172,7 +182,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 		// Set the Symfony controller reference
 		$attributes['_controller'] = $this->_services['reference_parser']->parse($reference)->getSymfonyLogicalControllerName();
 
-		$kernel  = $this->_services['http.kernel'];
+		$kernel  = $this->_services['http.cache'];
 		$request = $this->_services['request']->duplicate($query, null, $attributes);
 
 		// Execute the sub-request
