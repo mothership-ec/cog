@@ -287,7 +287,7 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
-			$inlineRenderer = new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel']);
+			$inlineRenderer = new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.cache']);
 
 			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
 				new \Symfony\Component\HttpKernel\Fragment\EsiFragmentRenderer($c['http.cache.esi'], $inlineRenderer),
