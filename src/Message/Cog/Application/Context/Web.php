@@ -29,8 +29,9 @@ class Web implements ContextInterface
 		$this->_services['http.cache'] = $this->_services->share(function($c) {
 			return new \Symfony\Component\HttpKernel\HttpCache\HttpCache(
 				$c['http.kernel'],
-				new \Symfony\Component\HttpKernel\HttpCache\Store('cog://tmp/http_cache/'),
-				$c['http.cache.esi']
+				new \Symfony\Component\HttpKernel\HttpCache\Store('/tmp/http_cache/'),
+				$c['http.cache.esi'],
+				array('debug' => true)
 			);
 		});
 
