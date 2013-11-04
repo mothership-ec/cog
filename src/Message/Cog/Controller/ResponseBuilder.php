@@ -73,7 +73,8 @@ class ResponseBuilder implements RequestAwareInterface
 		catch (\Exception $e) {
 			// See if we can automatically generate a response
 			if ($generatedResponse = $this->_generateResponse($params)) {
-				return $generatedResponse;
+				// Disabled as it doesn't work properly and might be undesirable anyway
+			#	return $generatedResponse;
 			}
 			// If not, throw an exception
 			throw new NotAcceptableHttpException(
