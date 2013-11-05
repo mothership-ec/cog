@@ -33,6 +33,19 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 	}
 
 	/**
+	 * Directly set the html.
+	 *
+	 * @param  string $html
+	 * @return AbstractConverter
+	 */
+	public function setHtml($html)
+	{
+		$this->_html = $html;
+
+		return $this;
+	}
+
+	/**
 	 * Get the html from a view.
 	 *
 	 * @param  string $view
