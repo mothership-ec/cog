@@ -37,7 +37,7 @@ class ArrayAdapter implements AdapterInterface
      */
     public function getSlice($offset, $length)
     {
-        return array_slice($this->array, $offset, $length);
+        return array_slice($this->array, $offset * $length, $length);
     }
 
 }
