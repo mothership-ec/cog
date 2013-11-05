@@ -21,6 +21,10 @@ class ImageConverter extends AbstractConverter {
 			$image->setOption($key, $value);
 		}
 
+		if (is_file($path)) {
+			unlink($path);
+		}
+
 		$image->generateFromHTML($html, $path);
 
 		return new File($path);

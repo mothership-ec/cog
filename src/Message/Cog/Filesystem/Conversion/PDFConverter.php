@@ -32,6 +32,10 @@ class PDFConverter extends AbstractConverter implements CombinerInterface {
 			$pdf->setOption($key, $value);
 		}
 
+		if (is_file($path)) {
+			unlink($path);
+		}
+
 		$pdf->generateFromHTML($html, $path);
 
 		return new File($path);
