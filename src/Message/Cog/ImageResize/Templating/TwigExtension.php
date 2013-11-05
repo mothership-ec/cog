@@ -79,7 +79,7 @@ class TwigExtension extends \Twig_Extension
 
 	protected function _checkFileType($file)
 	{
-		if(!($file instanceof ResizableInterface || is_null($file))) {
+		if(!($file instanceof ResizableInterface || is_null($file) || false === $file)) {
 			throw new \InvalidArgumentException("$file must either be an instance of ResizableInterface or null!");
 		}
 	}
