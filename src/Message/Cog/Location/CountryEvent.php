@@ -16,11 +16,11 @@ class CountryEvent extends Event
 	/**
 	 * Constructor.
 	 *
-	 * @param array $countries The countries for this event.
+	 * @param CountryLIst $countries.
 	 */
-	public function __construct(array $countries)
+	public function __construct(CountryList $countries)
 	{
-		$this->setCountries($countries);
+		$this->setCountries($countries->all());
 	}
 
 	/**
