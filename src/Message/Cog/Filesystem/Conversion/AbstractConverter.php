@@ -40,7 +40,7 @@ abstract class AbstractConverter implements ContainerAwareInterface {
 	 */
 	public function setHtml($html)
 	{
-		$this->_html = $html;
+		$this->_html = $this->_extractAssets($html);
 
 		return $this;
 	}
