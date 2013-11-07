@@ -57,7 +57,7 @@ class AssetDump extends Command
 
 			// Directory locations
 			$originDir = $moduleLocator->getPath($module, false) . $resourcesDir;
-			$targetDir = $cogulePath . $moduleName;
+			$targetDir = $this->get('app.loader')->getBaseDir() . '/' . $cogulePath . $moduleName;
 
 			// Move on to next module if there are no public resources.
 			if(!$fileSystem->exists($originDir)) {

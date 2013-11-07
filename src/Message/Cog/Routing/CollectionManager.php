@@ -138,6 +138,9 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 	 */
 	public function compileRoutes()
 	{
+		// first check validity of _collections
+		$this->_checkCollectionsValidity();
+
 		// Firstly, find collections that have a parent set and add them to that
 		// parent.
 		$hierarchy   = $this->_getCollectionHierarchy();
@@ -168,23 +171,6 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 			// Get the name of the parent
 			$parent = $collection->getParent();
 
-			// A collection can't be it's own parent
-			if($parent === $name) {
-				throw new \RuntimeException(sprintf(
-					'RouteCollection `%s` cannot be set as a parent of itself.',
-					$name
-				));
-			}
-
-			// Ensure that the parent exists
-			if(!isset($this->_collections[$parent])) {
-				throw new \RuntimeException(sprintf(
-					'Cannot add RouteCollection `%s` to `%s` as it does not exist.',
-					$name,
-					$parent
-				));
-			}
-
 			// Get prefix we want to use and the collection we need to add to
 			$prefix           = $collection->getPrefix();
 			$parentCollection = $this->_collections[$parent]->getRouteCollection();
@@ -214,6 +200,33 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		}
 
 		return $root;
+	}
+
+	protected function _checkCollectionsValidity() {
+		foreach($this as $name => $collection) {
+			$parent = $collection->getParent();
+
+			if(!$parent) {
+				continue;
+			}
+
+			// A collection can't be it's own parent
+			if($parent === $name) {
+				throw new \RuntimeException(sprintf(
+					'RouteCollection `%s` cannot be set as a parent of itself.',
+					$name
+				));
+			}
+
+			// Ensure that the parent exists
+			if(!isset($this->_collections[$parent])) {
+				throw new \RuntimeException(sprintf(
+					'Cannot add RouteCollection `%s` to `%s` as it does not exist.',
+					$name,
+					$parent
+				));
+			}
+		}
 	}
 
 	/**

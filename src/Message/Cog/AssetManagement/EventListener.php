@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-use Assetic\Extension\Twig\TwigResource;
+use Message\Cog\AssetManagement\TwigResource;
 
 /**
  * Event listener for the asset management system.

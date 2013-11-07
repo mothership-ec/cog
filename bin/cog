@@ -1,4 +1,4 @@
-FILE=bin/cog-console
-DIR=$PWD
+FILE=cog-console
+DIR=$(cd $(dirname "$0"); pwd)
 
 php $DIR/$FILE "$@"

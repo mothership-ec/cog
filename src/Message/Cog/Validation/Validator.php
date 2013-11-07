@@ -81,7 +81,24 @@ class Validator
 	}
 
 	/**
-	 * Add a new field to be validated and adjusts the fieldPointer
+	 * Gets field by given name or field current field
+	 * @param  string $name name of field, defaults to null
+	 * 
+	 * @throws \Exception   If no field with name $name exists
+	 * 
+	 * @return Field        Field with name $name or $_fieldPointer
+	 */
+	public function getField($name = null)
+	{
+		if($name && !array_key_exists($name, $this->_fields)) {
+			throw new \Exception(sprintf('Form field `%s` does not exist.', $name));
+		}
+
+		return $name ? $this->_fields[$name] : $this->_fieldPointer;
+	}
+
+	/**
+	 * Adds a new field to be validated and adjusts the fieldPointer
 	 *
 	 * @param  Field $field         the field to be added
 	 *

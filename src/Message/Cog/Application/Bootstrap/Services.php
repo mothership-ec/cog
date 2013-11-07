@@ -385,6 +385,14 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Filesystem\Finder;
 		};
 
+		$serviceContainer['filesystem.conversion.pdf'] = function($c) {
+			return new \Message\Cog\Filesystem\Conversion\PDFConverter($c);
+		};
+
+		$serviceContainer['filesystem.conversion.image'] = function($c) {
+			return new \Message\Cog\Filesystem\Conversion\ImageConverter($c);
+		};
+
 		// Application Contexts
 		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Application\Context\Web($c);
@@ -711,6 +719,22 @@ class Services implements ServicesInterface
 				'Ms' => 'Ms',
 				'Doctor' => 'Doctor'
 			);
+		};
+
+		$serviceContainer['pagination'] = function($c) {
+			return new \Message\Cog\Pagination\Pagination($c['pagination.adapter.sql']);
+		};
+
+		$serviceContainer['pagination.adapter.dbresult'] = function($c) {
+			return new \Message\Cog\Pagination\Adapter\DBResultAdapter();
+		};
+
+		$serviceContainer['pagination.adapter.sql'] = function($c) {
+			return new \Message\Cog\Pagination\Adapter\SQLAdapter($c['db.query']);
+		};
+
+		$serviceContainer['pagination.adapter.array'] = function($c) {
+			return new \Message\Cog\Pagination\Adapter\ArrayAdapter();
 		};
 	}
 }

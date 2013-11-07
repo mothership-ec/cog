@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use Symfony\Component\Templating\TemplateReference;
 
-use Assetic\Extension\Twig\TwigResource;
+use Message\Cog\AssetManagement\TwigResource;
 
 /**
  * AssetGenerator

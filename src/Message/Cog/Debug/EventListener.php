@@ -66,7 +66,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function registerWhoopsHandlers(Event $event)
 	{
-		if (!in_array($this->get('environment')->get(), array('live'))) {
+		if (!in_array($this->get('environment')->get(), array('live', 'staging'))) {
 			$this->_services['whoops']->register();
 		}
 	}
