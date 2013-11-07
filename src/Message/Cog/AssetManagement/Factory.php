@@ -7,59 +7,129 @@ use Assetic\Factory\AssetFactory;
 class Factory extends AssetFactory
 {
 	protected $_referenceParser;
+	protected $_parsed = array();
 
 	public function setReferenceParser($referenceParser)
 	{
 		$this->_referenceParser = $referenceParser;
 	}
 
-    public function createAsset($inputs = array(), $filters = array(), array $options = array())
-    {
-        if (!is_array($inputs)) {
-            $inputs = array($inputs);
-        }
+	/**
+	 * Create the combined assets from a set of inputs and store the cog
+	 * namespace for later use.
+	 *
+	 * @param  array  $inputs
+	 * @param  array  $filters
+	 * @param  array  $options
+	 * @return \Assetic\Asset\AssetCollection
+	 */
+	public function createAsset($inputs = array(), $filters = array(), array $options = array())
+	{
+		if (!is_array($inputs)) {
+			$inputs = array($inputs);
+		}
 
-        $namespaces = array();
+		$paths      = $this->_getFullPaths($inputs);
+		$namespaces = $this->_getNamespaces($inputs);
 
-        foreach ($inputs as $key => $input) {
-            // Parse the input
-            $parsed = $this->_referenceParser->parse($input);
+		$collection = parent::createAsset($paths, $filters, $options);
 
-            // Update the input to the real full path
-        	$inputs[$key] = $parsed->getFullPath();
+		// Store the cog namespace against each asset for use in the cogule filter
+		foreach ($collection as $asset) {
+			$asset->cogNamespace = $namespaces[$asset->getSourceRoot() . '/' .$asset->getSourcePath()];
+		}
 
-            // Get the module name
-            $namespaces[$inputs[$key]] = str_replace('\\', ':', $parsed->getModuleName());
-        }
+		return $collection;
+	}
 
-        $collection = parent::createAsset($inputs, $filters, $options);
+	/**
+	 * Generate the asset name as a hash of the input file modified times.
+	 *
+	 * @param  array  $inputs
+	 * @param  array  $filters
+	 * @param  array  $options
+	 * @return string
+	 */
+	public function generateAssetName($inputs, $filters, $options = array())
+	{
+		$name = parent::generateAssetName($inputs, $filters, $options);
 
-        // Store the cog namespace against each asset for use in the cogule filter
-        foreach ($collection as $asset) {
-            $asset->cogNamespace = $namespaces[$asset->getSourceRoot() . '/' .$asset->getSourcePath()];
-        }
+		$hash = hash_init('sha1');
 
-        return $collection;
-    }
+		hash_update($hash, $name);
 
-    public function generateAssetName($inputs, $filters, $options = array())
-    {
-        $name = parent::generateAssetName($inputs, $filters, $options);
+		foreach ($inputs as $input) {
+			// Parse the input
+			$parsed = $this->_referenceParser->parse($input);
 
-        // Cache busting
-        $hash = hash_init('sha1');
+			// Update the input to the real full path
+			$path = $parsed->getFullPath();
 
-        foreach ($inputs as $input) {
-            // Parse the input
-            $parsed = $this->_referenceParser->parse($input);
+			hash_update($hash, filemtime($path));
+		}
 
-            // Update the input to the real full path
-            $path = $parsed->getFullPath();
+		// Return the final hash
+		return hash_final($hash);
+	}
 
-            hash_update($hash, filemtime($path));
-        }
+	/**
+	 * Get the real full path for a set of inputs.
+	 *
+	 * @param  array $inputs
+	 * @return array
+	 */
+	protected function _getFullPaths($inputs)
+	{
+		$parsedInputs = $this->_getParsedInputs($inputs);
 
-        // Return a combination of the two name parts
-        return $name . substr(hash_final($hash), 0, 7);
-    }
+		foreach ($parsedInputs as $input => $parsed) {
+			// Update the input to the real full path
+			$inputs[array_search($input, $inputs)] = $parsed->getFullPath();
+		}
+
+		return $inputs;
+	}
+
+	/**
+	 * Get the namespaces for a set of inputs.
+	 *
+	 * @param  array $inputs
+	 * @return array
+	 */
+	protected function _getNamespaces($inputs)
+	{
+		$parsedInputs = $this->_getParsedInputs($inputs);
+
+		$namespaces = array();
+
+		foreach ($parsedInputs as $key => $parsed) {
+			// Get the module name
+			$namespaces[$parsed->getFullPath()] = str_replace('\\', ':', $parsed->getModuleName());
+		}
+
+		return $namespaces;
+	}
+
+	/**
+	 * Get the parsed references for a set of inputs.
+	 *
+	 * @param  array $inputs
+	 * @return array
+	 */
+	protected function _getParsedInputs($inputs)
+	{
+		$parsed = array();
+
+		foreach ($inputs as $key => $input) {
+			if (! isset($this->_parsed[$input])) {
+				// Parse the input, has to be cloned else the last parsed reference
+				// will override all previous
+				$this->_parsed[$input] = clone $this->_referenceParser->parse($input);
+			}
+
+			$parsed[$input] = $this->_parsed[$input];
+		}
+
+		return $parsed;
+	}
 }
