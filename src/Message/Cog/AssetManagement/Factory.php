@@ -58,13 +58,9 @@ class Factory extends AssetFactory
 
 		hash_update($hash, $name);
 
-		foreach ($inputs as $input) {
-			// Parse the input
-			$parsed = $this->_referenceParser->parse($input);
+        $paths = $this->_getFullPaths($inputs);
 
-			// Update the input to the real full path
-			$path = $parsed->getFullPath();
-
+		foreach ($paths as $path) {
 			hash_update($hash, filemtime($path));
 		}
 
