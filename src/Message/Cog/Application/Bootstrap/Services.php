@@ -548,7 +548,7 @@ class Services implements ServicesInterface
 			// Load translation files from modules
 			foreach ($c['module.loader']->getModules() as $moduleName) {
 				$moduleName = str_replace('\\', $c['reference_parser']::SEPARATOR, $moduleName);
-				$dir        = 'cog://@' . $moduleName . $c['reference_parser']::MODULE_SEPARATOR . 'translations';
+				$dir        = 'cog://@' . $moduleName . $c['reference_parser']::MODULE_SEPARATOR . 'resources/translations';
 
 				if (file_exists($dir)) {
 					foreach ($c['filesystem.finder']->in($dir) as $file) {
