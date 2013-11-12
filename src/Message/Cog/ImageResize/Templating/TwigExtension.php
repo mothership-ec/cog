@@ -67,6 +67,11 @@ class TwigExtension extends \Twig_Extension
 		$url = $this->getResizedUrl($file, $width, $height);
 		$alt = (array_key_exists('alt', $attributes) ? $attributes['alt'] : ($file ? $file->getAltText() : ""));
 
+		$resize = $this->_resize;
+		if ($width == $resize::AUTO_KEYWORD or $height == $resize::AUTO_KEYWORD) {
+
+		}
+
 		return $environment->render('Message:Cog::image-resize:image',
 			array(
 				'url'		 => $url,
