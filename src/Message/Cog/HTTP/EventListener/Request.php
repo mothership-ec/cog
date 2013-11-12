@@ -51,11 +51,6 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 	/**
 	 * Adds the current request to the service container with the key `request`.
 	 *
-	 * If the request is a master request, it is also saved with the key
-	 * `http.request.master`. This is because when using Symfony's reverse proxy
-	 * for caching the master request changes to a sub-request for the master
-	 * content.
-	 *
 	 * @param GetResponseEvent $event     The HttpKernel request event instance
 	 */
 	public function addRequestToServices(GetResponseEvent $event)
@@ -63,12 +58,6 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 		$this->_services['request'] = $this->_services->share(function() use ($event) {
 			return $event->getRequest();
 		});
-
-		if (HttpKernelInterface::MASTER_REQUEST == $event->getRequestType()) {
-			$this->_services['http.request.master'] = $this->_services->share(function() use ($event) {
-				return $event->getRequest();
-			});
-		}
 
 		$this->_services['http.fragment_handler']->setRequest($this->_services['request']);
 	}

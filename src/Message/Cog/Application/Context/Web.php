@@ -26,15 +26,6 @@ class Web implements ContextInterface
 	{
 		$this->_services = $container;
 
-		$this->_services['http.cache'] = $this->_services->share(function($c) {
-			return new \Symfony\Component\HttpKernel\HttpCache\HttpCache(
-				$c['http.kernel'],
-				new \Symfony\Component\HttpKernel\HttpCache\Store('/tmp/http_cache/'),
-				$c['http.cache.esi'],
-				array('debug' => true)
-			);
-		});
-
 		$this->_services['http.request.master'] = $this->_services->share(function() {
 			return \Message\Cog\HTTP\Request::createFromGlobals();
 		});
@@ -61,10 +52,10 @@ class Web implements ContextInterface
 	 */
 	public function run()
 	{
-		$response = $this->_services['http.cache']->handle($this->_services['http.request.master']);
+		$response = $this->_services['http.kernel']->handle($this->_services['http.request.master']);
 
 		$response->send();
 
-		$this->_services['http.cache']->terminate($this->_services['http.request.master'], $response);
+		$this->_services['http.kernel']->terminate($this->_services['http.request.master'], $response);
 	}
 }
