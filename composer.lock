@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1368fff5f8ff67392867cd0bd7274861",
+    "hash": "3ef29b8a35ebb296ce58b108dee07819",
     "packages": [
         {
             "name": "filp/whoops",
-            "version": "1.0.8",
+            "version": "1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "1.0.8"
+                "reference": "6de5a6fbb675c091ee4ee40fd01b2e3df4f200af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/1.0.8",
-                "reference": "1.0.8",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/6de5a6fbb675c091ee4ee40fd01b2e3df4f200af",
+                "reference": "6de5a6fbb675c091ee4ee40fd01b2e3df4f200af",
                 "shasum": ""
             },
             "require": {
@@ -54,7 +54,7 @@
                 "whoops",
                 "zf2"
             ],
-            "time": "2013-08-06 20:39:59"
+            "time": "2013-10-28 22:06:33"
         },
         {
             "name": "h4cc/wkhtmltoimage-amd64",
@@ -232,6 +232,65 @@
             "time": "2012-12-13 18:31:18"
         },
         {
+            "name": "itbz/fpdf",
+            "version": "1.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iio/fpdf.git",
+                "reference": "141f491e4feacc6879c74413b7f5c6a83ffe31ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iio/fpdf/zipball/141f491e4feacc6879c74413b7f5c6a83ffe31ca",
+                "reference": "141f491e4feacc6879c74413b7f5c6a83ffe31ca",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fpdf": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Unofficial PSR-0 compliant version of the FPDF library",
+            "homepage": "http://www.fpdf.org/",
+            "time": "2012-05-18 00:06:51"
+        },
+        {
+            "name": "itbz/fpdi",
+            "version": "1.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iio/fpdi.git",
+                "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iio/fpdi/zipball/89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
+                "reference": "89a7e66fd3289cc7ce06eb80306de3c5835b1f1e",
+                "shasum": ""
+            },
+            "require": {
+                "itbz/fpdf": "1.7.*",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "fpdi": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Unofficial PSR-0 compliant version of the FPDI library",
+            "time": "2013-10-28 12:15:49"
+        },
+        {
             "name": "knplabs/knp-snappy",
             "version": "0.1.2",
             "source": {
@@ -357,17 +416,143 @@
             "time": "2013-07-19 00:03:27"
         },
         {
+            "name": "lmammino/jsmin4assetic",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lmammino/JsMin4Assetic.git",
+                "reference": "56407baa5a867b6557d1052eff5df9c8fad24e96"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lmammino/JsMin4Assetic/zipball/56407baa5a867b6557d1052eff5df9c8fad24e96",
+                "reference": "56407baa5a867b6557d1052eff5df9c8fad24e96",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Luciano Mammino",
+                    "email": "lmammino@oryzone.com",
+                    "homepage": "http://oryzone.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Douglas Crockford",
+                    "homepage": "http://www.crockford.com"
+                },
+                {
+                    "name": "Bogdan Yurov",
+                    "email": "bogdan@yurov.me"
+                }
+            ],
+            "description": "Library for minifying JavaScript files using jsmin with assetic and composer",
+            "time": "2013-02-28 11:59:46"
+        },
+        {
+            "name": "messagedigital/wkhtmltoimage-osx",
+            "version": "0.10.0-RC2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/messagedigital/wkhtmltoimage-osx.git",
+                "reference": "2dcb92d98b79560233a12e9415b83b19c09e7f22"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/messagedigital/wkhtmltoimage-osx/zipball/2dcb92d98b79560233a12e9415b83b19c09e7f22",
+                "reference": "2dcb92d98b79560233a12e9415b83b19c09e7f22",
+                "shasum": ""
+            },
+            "bin": [
+                "bin/wkhtmltoimage-osx"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL Version 3"
+            ],
+            "authors": [
+                {
+                    "name": "Laurence Roberts",
+                    "email": "laurence@message.co.uk"
+                }
+            ],
+            "description": "Convert html to image using webkit (qtwebkit). Static linked osx binary.",
+            "homepage": "https://code.google.com/p/wkhtmltopdf/",
+            "keywords": [
+                "binary",
+                "convert",
+                "image",
+                "snapshot",
+                "thumbnail",
+                "wkhtmltopdf"
+            ],
+            "time": "2013-10-17 10:19:53"
+        },
+        {
+            "name": "messagedigital/wkhtmltopdf-osx",
+            "version": "0.9.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/messagedigital/wkhtmltopdf-osx.git",
+                "reference": "0850579902b5906889b51aa09d36b8126b5a3d40"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/messagedigital/wkhtmltopdf-osx/zipball/0850579902b5906889b51aa09d36b8126b5a3d40",
+                "reference": "0850579902b5906889b51aa09d36b8126b5a3d40",
+                "shasum": ""
+            },
+            "bin": [
+                "bin/wkhtmltopdf-osx"
+            ],
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL Version 3"
+            ],
+            "authors": [
+                {
+                    "name": "Laurence Roberts",
+                    "email": "laurence@message.co.uk"
+                }
+            ],
+            "description": "Convert html to pdf using webkit (qtwebkit). Static linked osx binary.",
+            "homepage": "https://code.google.com/p/wkhtmltopdf/",
+            "keywords": [
+                "binary",
+                "convert",
+                "pdf",
+                "snapshot",
+                "thumbnail",
+                "wkhtmltopdf"
+            ],
+            "time": "2013-10-17 10:10:05"
+        },
+        {
             "name": "monolog/monolog",
             "version": "1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "1.6.0"
+                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1.6.0",
-                "reference": "1.6.0",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f72392d0e6eb855118f5a84e89ac2d257c704abd",
+                "reference": "f72392d0e6eb855118f5a84e89ac2d257c704abd",
                 "shasum": ""
             },
             "require": {
@@ -458,6 +643,48 @@
                 "schedule"
             ],
             "time": "2013-04-05 18:55:56"
+        },
+        {
+            "name": "natxet/CssMin",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/natxet/CssMin.git",
+                "reference": "afdcdbdb5fc332313f47a79ae60346df3e69a572"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/natxet/CssMin/zipball/afdcdbdb5fc332313f47a79ae60346df3e69a572",
+                "reference": "afdcdbdb5fc332313f47a79ae60346df3e69a572",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joe Scylla",
+                    "email": "joe.scylla@gmail.com",
+                    "homepage": "https://profiles.google.com/joe.scylla"
+                }
+            ],
+            "description": "Minifying CSS",
+            "homepage": "http://code.google.com/p/cssmin/",
+            "keywords": [
+                "css",
+                "minify"
+            ],
+            "time": "2013-07-02 20:53:35"
         },
         {
             "name": "pimple/pimple",
@@ -1718,86 +1945,6 @@
     ],
     "packages-dev": [
         {
-            "name": "messagedigital/wkhtmltoimage-osx",
-            "version": "0.10.0-RC2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/messagedigital/wkhtmltoimage-osx.git",
-                "reference": "2dcb92d98b79560233a12e9415b83b19c09e7f22"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/wkhtmltoimage-osx/zipball/2dcb92d98b79560233a12e9415b83b19c09e7f22",
-                "reference": "2dcb92d98b79560233a12e9415b83b19c09e7f22",
-                "shasum": ""
-            },
-            "bin": [
-                "bin/wkhtmltoimage-osx"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL Version 3"
-            ],
-            "authors": [
-                {
-                    "name": "Laurence Roberts",
-                    "email": "laurence@message.co.uk"
-                }
-            ],
-            "description": "Convert html to image using webkit (qtwebkit). Static linked osx binary.",
-            "homepage": "https://code.google.com/p/wkhtmltopdf/",
-            "keywords": [
-                "binary",
-                "convert",
-                "image",
-                "snapshot",
-                "thumbnail",
-                "wkhtmltopdf"
-            ],
-            "time": "2013-10-17 10:19:53"
-        },
-        {
-            "name": "messagedigital/wkhtmltopdf-osx",
-            "version": "0.9.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/messagedigital/wkhtmltopdf-osx.git",
-                "reference": "0850579902b5906889b51aa09d36b8126b5a3d40"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/wkhtmltopdf-osx/zipball/0850579902b5906889b51aa09d36b8126b5a3d40",
-                "reference": "0850579902b5906889b51aa09d36b8126b5a3d40",
-                "shasum": ""
-            },
-            "bin": [
-                "bin/wkhtmltopdf-osx"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL Version 3"
-            ],
-            "authors": [
-                {
-                    "name": "Laurence Roberts",
-                    "email": "laurence@message.co.uk"
-                }
-            ],
-            "description": "Convert html to pdf using webkit (qtwebkit). Static linked osx binary.",
-            "homepage": "https://code.google.com/p/wkhtmltopdf/",
-            "keywords": [
-                "binary",
-                "convert",
-                "pdf",
-                "snapshot",
-                "thumbnail",
-                "wkhtmltopdf"
-            ],
-            "time": "2013-10-17 10:10:05"
-        },
-        {
             "name": "mikey179/vfsStream",
             "version": "v1.1.0",
             "source": {
@@ -1829,10 +1976,16 @@
         }
     ],
     "aliases": [
-
+        {
+            "alias": "0.0.0",
+            "alias_normalized": "0.0.0.0",
+            "version": "9999999-dev",
+            "package": "natxet/cssmin"
+        }
     ],
     "minimum-stability": "stable",
     "stability-flags": {
+        "natxet/cssmin": 20,
         "h4cc/wkhtmltopdf-i386": 5,
         "h4cc/wkhtmltoimage-i386": 5,
         "h4cc/wkhtmltopdf-amd64": 5,

@@ -588,6 +588,9 @@ class Services implements ServicesInterface
 
 			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
 
+			$manager->set('cssmin', new \Assetic\Filter\CssMinFilter);
+			$manager->set('jsmin', new \Assetic\Filter\JSMinFilter);
+
 			return $manager;
 		});
 
