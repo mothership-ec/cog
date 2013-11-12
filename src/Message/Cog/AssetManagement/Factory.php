@@ -7,11 +7,22 @@ use Assetic\Factory\AssetFactory;
 class Factory extends AssetFactory
 {
 	protected $_referenceParser;
+	protected $_cacheBustingEnabled = false;
 	protected $_parsed = array();
 
 	public function setReferenceParser($referenceParser)
 	{
 		$this->_referenceParser = $referenceParser;
+	}
+
+	public function enableCacheBusting()
+	{
+		$this->_cacheBustingEnabled = true;
+	}
+
+	public function disableCacheBusting()
+	{
+		$this->_cacheBustingEnabled = false;
 	}
 
 	/**
@@ -54,18 +65,22 @@ class Factory extends AssetFactory
 	{
 		$name = parent::generateAssetName($inputs, $filters, $options);
 
-		$hash = hash_init('sha1');
+		if ($this->_cacheBustingEnabled) {
+			$hash = hash_init('sha1');
 
-		hash_update($hash, $name);
+			hash_update($hash, $name);
 
-        $paths = $this->_getFullPaths($inputs);
+	        $paths = $this->_getFullPaths($inputs);
 
-		foreach ($paths as $path) {
-			hash_update($hash, filemtime($path));
+			foreach ($paths as $path) {
+				hash_update($hash, filemtime($path));
+			}
+
+			// Return the final hash
+			$name = hash_final($hash);
 		}
 
-		// Return the final hash
-		return hash_final($hash);
+		return $name;
 	}
 
 	/**

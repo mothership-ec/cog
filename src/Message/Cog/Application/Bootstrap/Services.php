@@ -590,6 +590,10 @@ class Services implements ServicesInterface
 			$factory->setReferenceParser($c['reference_parser']);
 			$factory->setFilterManager($c['asset.filters']);
 
+			if (! $c['environment']->isLocal()) {
+				$factory->enableCacheBusting();
+			}
+
 			return $factory;
 		});
 
