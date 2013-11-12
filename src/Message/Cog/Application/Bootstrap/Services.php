@@ -256,6 +256,10 @@ class Services implements ServicesInterface
 			return $globals;
 		});
 
+		$serviceContainer['http.cache.esi'] = $serviceContainer->share(function($c) {
+			return new \Symfony\Component\HttpKernel\HttpCache\Esi;
+		});
+
 		$serviceContainer['http.kernel'] = function($c) {
 			return new \Message\Cog\HTTP\Kernel(
 				$c['event.dispatcher'],
@@ -283,8 +287,11 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
+			$inlineRenderer = new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel']);
+
 			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
-				new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel'])
+				new \Symfony\Component\HttpKernel\Fragment\EsiFragmentRenderer($c['http.cache.esi'], $inlineRenderer),
+				$inlineRenderer
 			), ('local' === $c['env']));
 		});
 
