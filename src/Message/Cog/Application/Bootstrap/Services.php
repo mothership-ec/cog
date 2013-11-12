@@ -714,6 +714,10 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Location\CountryList;
 		};
 
+		$serviceContainer['country.event'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Location\CountryEvent($c['country.list']);
+		});
+
 		$serviceContainer['state.list'] = function($c) {
 			return new \Message\Cog\Location\StateList;
 		};

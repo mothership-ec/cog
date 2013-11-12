@@ -32,6 +32,13 @@ class PDFConverter extends AbstractConverter implements CombinerInterface {
 			$pdf->setOption($key, $value);
 		}
 
+		if (is_file($path)) {
+			unlink($path);
+		}
+
+		// Strip out `@font-face{ ... }` style tags as these break the pdf
+		$html = preg_replace('/@font-face{([^}]*)}/ms', '', $html);
+
 		$pdf->generateFromHTML($html, $path);
 
 		return new File($path);
