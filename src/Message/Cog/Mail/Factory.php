@@ -26,7 +26,7 @@ abstract class Factory implements ContainerAwareInterface {
 		return $this->_container[$service];
 	}
 
-	abstract public function build($params = array())
+	abstract public function build()
 	{
 		$this->_built = true;
 	}
