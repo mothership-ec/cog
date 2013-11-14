@@ -47,7 +47,7 @@ class Factory implements MailableInterface {
 	 * @param  integer  $priority Optional priority, low to high
 	 * @return Factory
 	 */
-	public function extend($callback, $priority = 0)
+	public function extend(\Closure $callback, $priority = 0)
 	{
 		$this->_callbacks[$priority][] = $callback;
 
