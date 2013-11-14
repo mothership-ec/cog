@@ -93,13 +93,24 @@ class Factory implements MailableInterface {
 	 * @param  string $key
 	 * @return mixed
 	 */
-	public function __get($key)
+	public function get($key)
 	{
 		if (isset($this->_items[$key])) {
 			return $this->_items[$key];
 		}
 
 		throw new Exception(sprintf("No item found with key '%s'", $key));
+	}
+
+	/**
+	 * Provide magic access to items.
+	 *
+	 * @param  string $key
+	 * @return mixed
+	 */
+	public function __get($key)
+	{
+		return $this->get($key);
 	}
 
 }
