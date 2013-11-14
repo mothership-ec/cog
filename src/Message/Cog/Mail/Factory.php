@@ -16,7 +16,7 @@ class Factory implements MailableInterface {
 	 *
 	 * @param Message $message
 	 */
-	public function __construct($message)
+	public function __construct(Message $message)
 	{
 		$this->_message = $message;
 	}
