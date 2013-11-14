@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Mail;
 
-class Message extends  \Swift_Message
+class Message extends \Swift_Message implements MailableInterface
 {
 	protected $_view = '';
 	protected $_templateContentTypes = array(
@@ -29,6 +29,14 @@ class Message extends  \Swift_Message
 	public function setEngine($engine)
 	{
 		$this->_engine = $engine;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getMessage()
+	{
+		return $this;
 	}
 
 	/**
