@@ -667,8 +667,8 @@ class Services implements ServicesInterface
 
 		$serviceContainer['mail.dispatcher'] = $serviceContainer->share(function($c) {
 
-			$transport = $c['mail.transport'];
-			$dispatcher = new \Message\Cog\Mail\Mailer($transport);
+			$swift = new \Swift_Mailer($c['mail.transport']);
+			$dispatcher = new \Message\Cog\Mail\Mailer($swift);
 
 			$dispatcher->setWhitelistFallback('dev@message.co.uk');
 			$dispatcher->addToWhitelist('/.+@message\.co\.uk/');
