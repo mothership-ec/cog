@@ -1,6 +1,6 @@
 {
 	"name": "message/cog",
-	"description": "Message's powerful PHP5 framework",
+	"description": "Message's powerful PHP5 framework for building modular systems",
 	"keywords": ["framework", "cog"],
 	"homepage": "http://message.co.uk",
 	"authors": [
@@ -71,8 +71,7 @@
 		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
 		"ext-apc"                : "The preferred caching system in Cog",
 
-		"message/cog-maintenance": "A cog module that provides maintenance mode functionality",
-		"message/cog-raven"      : "A cog module that logs errors, exceptions and messages to Sentry"
+		"message/cog-raven"      : "A Cog module that logs errors, exceptions and messages to Sentry"
 	},
 	"extra": {
 		"branch-alias": {
