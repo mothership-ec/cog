@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1682b85fd2ae98e24edd311273119a62",
+    "hash": "f63fd821147709b06305a78d4eb3ef8b",
     "packages": [
         {
             "name": "filp/whoops",
@@ -1981,6 +1981,36 @@
             "alias_normalized": "0.0.0.0",
             "version": "9999999-dev",
             "package": "natxet/cssmin"
+        },
+        {
+            "alias": "0.11.0",
+            "alias_normalized": "0.11.0.0",
+            "version": "0.11.0.0-RC1",
+            "package": "h4cc/wkhtmltopdf-i386"
+        },
+        {
+            "alias": "0.11.0",
+            "alias_normalized": "0.11.0.0",
+            "version": "0.11.0.0-RC1",
+            "package": "h4cc/wkhtmltoimage-i386"
+        },
+        {
+            "alias": "0.11.0",
+            "alias_normalized": "0.11.0.0",
+            "version": "0.11.0.0-RC1",
+            "package": "h4cc/wkhtmltopdf-amd64"
+        },
+        {
+            "alias": "0.11.0",
+            "alias_normalized": "0.11.0.0",
+            "version": "0.11.0.0-RC1",
+            "package": "h4cc/wkhtmltoimage-amd64"
+        },
+        {
+            "alias": "0.10.0",
+            "alias_normalized": "0.10.0.0",
+            "version": "0.10.0.0-RC2",
+            "package": "messagedigital/wkhtmltoimage-osx"
         }
     ],
     "minimum-stability": "stable",
