@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "f63fd821147709b06305a78d4eb3ef8b",
+    "hash": "91234225a55e9da38b2925d233e7c007",
     "packages": [
         {
             "name": "filp/whoops",
@@ -55,134 +55,6 @@
                 "zf2"
             ],
             "time": "2013-10-28 22:06:33"
-        },
-        {
-            "name": "h4cc/wkhtmltoimage-amd64",
-            "version": "0.11.0-RC1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/h4cc/wkhtmltoimage-amd64.git",
-                "reference": "d82b21391251ee2a6144359f0f47ad296106d232"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/h4cc/wkhtmltoimage-amd64/zipball/d82b21391251ee2a6144359f0f47ad296106d232",
-                "reference": "d82b21391251ee2a6144359f0f47ad296106d232",
-                "shasum": ""
-            },
-            "bin": [
-                "bin/wkhtmltoimage-amd64"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL Version 3"
-            ],
-            "authors": [
-                {
-                    "name": "Julius Beckmann",
-                    "email": "github@h4cc.de"
-                }
-            ],
-            "description": "Convert html to image using webkit (qtwebkit)",
-            "homepage": "https://code.google.com/p/wkhtmltopdf/",
-            "time": "2013-09-06 13:32:03"
-        },
-        {
-            "name": "h4cc/wkhtmltoimage-i386",
-            "version": "0.11.0-RC1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/h4cc/wkhtmltoimage-i386.git",
-                "reference": "81d1e3def4cfa9ac65e60a2328e15bdc081f8168"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/h4cc/wkhtmltoimage-i386/zipball/81d1e3def4cfa9ac65e60a2328e15bdc081f8168",
-                "reference": "81d1e3def4cfa9ac65e60a2328e15bdc081f8168",
-                "shasum": ""
-            },
-            "bin": [
-                "bin/wkhtmltoimage-i386"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL Version 3"
-            ],
-            "authors": [
-                {
-                    "name": "Julius Beckmann",
-                    "email": "github@h4cc.de"
-                }
-            ],
-            "description": "Convert html to image using webkit (qtwebkit)",
-            "homepage": "https://code.google.com/p/wkhtmltopdf/",
-            "time": "2013-09-06 13:07:52"
-        },
-        {
-            "name": "h4cc/wkhtmltopdf-amd64",
-            "version": "0.11.0-RC1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/h4cc/wkhtmltopdf-amd64.git",
-                "reference": "de1ed65ae2e50b9802cba61bd515fefc33b5a457"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/h4cc/wkhtmltopdf-amd64/zipball/de1ed65ae2e50b9802cba61bd515fefc33b5a457",
-                "reference": "de1ed65ae2e50b9802cba61bd515fefc33b5a457",
-                "shasum": ""
-            },
-            "bin": [
-                "bin/wkhtmltopdf-amd64"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL Version 3"
-            ],
-            "authors": [
-                {
-                    "name": "Julius Beckmann",
-                    "email": "github@h4cc.de"
-                }
-            ],
-            "description": "Convert html to pdf using webkit (qtwebkit)",
-            "homepage": "https://code.google.com/p/wkhtmltopdf/",
-            "time": "2013-09-06 12:54:18"
-        },
-        {
-            "name": "h4cc/wkhtmltopdf-i386",
-            "version": "0.11.0-RC1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/h4cc/wkhtmltopdf-i386.git",
-                "reference": "a207c6b272142332994aed801ca7c9b92d21fa90"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/h4cc/wkhtmltopdf-i386/zipball/a207c6b272142332994aed801ca7c9b92d21fa90",
-                "reference": "a207c6b272142332994aed801ca7c9b92d21fa90",
-                "shasum": ""
-            },
-            "bin": [
-                "bin/wkhtmltopdf-i386"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL Version 3"
-            ],
-            "authors": [
-                {
-                    "name": "Julius Beckmann",
-                    "email": "github@h4cc.de"
-                }
-            ],
-            "description": "Convert html to pdf using webkit (qtwebkit)",
-            "homepage": "https://code.google.com/p/wkhtmltopdf/",
-            "time": "2013-09-06 12:11:15"
         },
         {
             "name": "imagine/imagine",
@@ -462,21 +334,26 @@
             "time": "2013-02-28 11:59:46"
         },
         {
-            "name": "messagedigital/wkhtmltoimage-osx",
-            "version": "0.10.0-RC2",
+            "name": "message/wkhtmltopdf",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/messagedigital/wkhtmltoimage-osx.git",
-                "reference": "2dcb92d98b79560233a12e9415b83b19c09e7f22"
+                "url": "https://github.com/messagedigital/wkhtmltopdf.git",
+                "reference": "7bf2bb8b049d4e3e4ba556a230d87b5dd7115368"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/wkhtmltoimage-osx/zipball/2dcb92d98b79560233a12e9415b83b19c09e7f22",
-                "reference": "2dcb92d98b79560233a12e9415b83b19c09e7f22",
+                "url": "https://api.github.com/repos/messagedigital/wkhtmltopdf/zipball/7bf2bb8b049d4e3e4ba556a230d87b5dd7115368",
+                "reference": "7bf2bb8b049d4e3e4ba556a230d87b5dd7115368",
                 "shasum": ""
             },
             "bin": [
-                "bin/wkhtmltoimage-osx"
+                "bin/wkhtmltopdf-osx",
+                "bin/wkhtmltopdf-amd64",
+                "bin/wkhtmltopdf-i386",
+                "bin/wkhtmltoimage-osx",
+                "bin/wkhtmltoimage-amd64",
+                "bin/wkhtmltoimage-i386"
             ],
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
@@ -487,59 +364,25 @@
                 {
                     "name": "Laurence Roberts",
                     "email": "laurence@message.co.uk"
+                },
+                {
+                    "name": "Joe Holdcroft",
+                    "email": "joe@message.co.uk"
                 }
             ],
-            "description": "Convert html to image using webkit (qtwebkit). Static linked osx binary.",
+            "description": "Convert html to pdf using webkit (qtwebkit). Re-packaged with a stable version, with all available binaries.",
             "homepage": "https://code.google.com/p/wkhtmltopdf/",
             "keywords": [
                 "binary",
                 "convert",
                 "image",
-                "snapshot",
-                "thumbnail",
-                "wkhtmltopdf"
-            ],
-            "time": "2013-10-17 10:19:53"
-        },
-        {
-            "name": "messagedigital/wkhtmltopdf-osx",
-            "version": "0.9.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/messagedigital/wkhtmltopdf-osx.git",
-                "reference": "0850579902b5906889b51aa09d36b8126b5a3d40"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/messagedigital/wkhtmltopdf-osx/zipball/0850579902b5906889b51aa09d36b8126b5a3d40",
-                "reference": "0850579902b5906889b51aa09d36b8126b5a3d40",
-                "shasum": ""
-            },
-            "bin": [
-                "bin/wkhtmltopdf-osx"
-            ],
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL Version 3"
-            ],
-            "authors": [
-                {
-                    "name": "Laurence Roberts",
-                    "email": "laurence@message.co.uk"
-                }
-            ],
-            "description": "Convert html to pdf using webkit (qtwebkit). Static linked osx binary.",
-            "homepage": "https://code.google.com/p/wkhtmltopdf/",
-            "keywords": [
-                "binary",
-                "convert",
                 "pdf",
                 "snapshot",
                 "thumbnail",
+                "wkhtmltoimage",
                 "wkhtmltopdf"
             ],
-            "time": "2013-10-17 10:10:05"
+            "time": "2013-11-17 14:22:37"
         },
         {
             "name": "monolog/monolog",
@@ -1981,46 +1824,11 @@
             "alias_normalized": "0.0.0.0",
             "version": "9999999-dev",
             "package": "natxet/cssmin"
-        },
-        {
-            "alias": "0.11.0",
-            "alias_normalized": "0.11.0.0",
-            "version": "0.11.0.0-RC1",
-            "package": "h4cc/wkhtmltopdf-i386"
-        },
-        {
-            "alias": "0.11.0",
-            "alias_normalized": "0.11.0.0",
-            "version": "0.11.0.0-RC1",
-            "package": "h4cc/wkhtmltoimage-i386"
-        },
-        {
-            "alias": "0.11.0",
-            "alias_normalized": "0.11.0.0",
-            "version": "0.11.0.0-RC1",
-            "package": "h4cc/wkhtmltopdf-amd64"
-        },
-        {
-            "alias": "0.11.0",
-            "alias_normalized": "0.11.0.0",
-            "version": "0.11.0.0-RC1",
-            "package": "h4cc/wkhtmltoimage-amd64"
-        },
-        {
-            "alias": "0.10.0",
-            "alias_normalized": "0.10.0.0",
-            "version": "0.10.0.0-RC2",
-            "package": "messagedigital/wkhtmltoimage-osx"
         }
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "natxet/cssmin": 20,
-        "h4cc/wkhtmltopdf-i386": 5,
-        "h4cc/wkhtmltoimage-i386": 5,
-        "h4cc/wkhtmltopdf-amd64": 5,
-        "h4cc/wkhtmltoimage-amd64": 5,
-        "messagedigital/wkhtmltoimage-osx": 5
+        "natxet/cssmin": 20
     },
     "platform": {
         "php": ">=5.3.0",
