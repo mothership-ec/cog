@@ -19,6 +19,12 @@
 			"Message\\Cog\\Test": "tests"
 		}
 	},
+	"repositories": [
+		{
+			"type": "vcs",
+			"url" : "https://github.com/messagedigital/CssMin"
+		}
+	],
 	"require": {
 		"php"          : ">=5.3.0",
 		"ext-simplexml": "*",
@@ -48,7 +54,7 @@
 		"treasure-chest/treasure-chest"    : "0.1.*",
 		"kriswallsmith/assetic"            : "1.1.*",
 		"lmammino/jsmin4assetic"           : "1.0.*",
-		"natxet/CssMin"                    : "dev-master as 0.0.0",
+		"natxet/CssMin"                    : "3.0.*",
 		"imagine/imagine"                  : "0.4.*",
 		"filp/whoops"                      : "1.0.*",
 		"swiftmailer/swiftmailer"          : "5.0.*",
