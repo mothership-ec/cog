@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "91234225a55e9da38b2925d233e7c007",
+    "hash": "3aa41c1dff117f93a77c5ff4d4e9ebc4",
     "packages": [
         {
             "name": "filp/whoops",
@@ -488,16 +488,16 @@
             "time": "2013-04-05 18:55:56"
         },
         {
-            "name": "natxet/CssMin",
-            "version": "dev-master",
+            "name": "natxet/cssmin",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/natxet/CssMin.git",
+                "url": "https://github.com/messagedigital/CssMin.git",
                 "reference": "afdcdbdb5fc332313f47a79ae60346df3e69a572"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/natxet/CssMin/zipball/afdcdbdb5fc332313f47a79ae60346df3e69a572",
+                "url": "https://api.github.com/repos/messagedigital/CssMin/zipball/afdcdbdb5fc332313f47a79ae60346df3e69a572",
                 "reference": "afdcdbdb5fc332313f47a79ae60346df3e69a572",
                 "shasum": ""
             },
@@ -510,7 +510,6 @@
                     "src/"
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -527,6 +526,9 @@
                 "css",
                 "minify"
             ],
+            "support": {
+                "source": "https://github.com/messagedigital/CssMin/tree/3.0.1"
+            },
             "time": "2013-07-02 20:53:35"
         },
         {
@@ -1819,17 +1821,12 @@
         }
     ],
     "aliases": [
-        {
-            "alias": "0.0.0",
-            "alias_normalized": "0.0.0.0",
-            "version": "9999999-dev",
-            "package": "natxet/cssmin"
-        }
+
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "natxet/cssmin": 20
-    },
+    "stability-flags": [
+
+    ],
     "platform": {
         "php": ">=5.3.0",
         "ext-simplexml": "*",
