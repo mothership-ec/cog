@@ -21,8 +21,8 @@
 	},
 	"repositories": [
 		{
-			"type": "vcs",
-			"url" : "https://github.com/messagedigital/CssMin"
+			"type": "composer",
+			"url" : "http://packages.message.co.uk"
 		}
 	],
 	"require": {
