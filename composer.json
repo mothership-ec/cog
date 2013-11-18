@@ -19,6 +19,12 @@
 			"Message\\Cog\\Test": "tests"
 		}
 	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url" : "http://packages.message.co.uk"
+		}
+	],
 	"require": {
 		"php"          : ">=5.3.0",
 		"ext-simplexml": "*",
@@ -48,24 +54,17 @@
 		"treasure-chest/treasure-chest"    : "0.1.*",
 		"kriswallsmith/assetic"            : "1.1.*",
 		"lmammino/jsmin4assetic"           : "1.0.*",
-		"natxet/CssMin"                    : "dev-master as 0.0.0",
+		"natxet/CssMin"                    : "3.0.*",
 		"imagine/imagine"                  : "0.4.*",
 		"filp/whoops"                      : "1.0.*",
 		"swiftmailer/swiftmailer"          : "5.0.*",
 		"knplabs/knp-snappy"               : "0.1.*",
-		"h4cc/wkhtmltopdf-i386"            : "0.11.0-RC1 as 0.11.0",
-		"h4cc/wkhtmltoimage-i386"          : "0.11.0-RC1 as 0.11.0",
-		"h4cc/wkhtmltopdf-amd64"           : "0.11.0-RC1 as 0.11.0",
-		"h4cc/wkhtmltoimage-amd64"         : "0.11.0-RC1 as 0.11.0",
-		"messagedigital/wkhtmltopdf-osx"   : "0.9.9",
-		"messagedigital/wkhtmltoimage-osx" : "0.10.0-RC2 as 0.10.0",
+		"message/wkhtmltopdf"              : "1.0.*",
 		"itbz/fpdf"                        : "1.7.*",
 		"itbz/fpdi"                        : "1.4.*"
 	},
 	"require-dev": {
-		"mikey179/vfsStream"              : "1.1.*",
-		"messagedigital/wkhtmltopdf-osx"  : "0.9.9",
-		"messagedigital/wkhtmltoimage-osx": "0.10.0-RC2"
+		"mikey179/vfsStream"              : "1.1.*"
 	},
 	"suggest": {
 		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
