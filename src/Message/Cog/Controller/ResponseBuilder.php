@@ -53,7 +53,7 @@ class ResponseBuilder implements RequestAwareInterface
 	 *
 	 * @return Response          The rendered result as a Response instance
 	 *
-	 * @throws NotAcceptableHttpException If view could not be rendered or generated
+	 * @throws NotAcceptableHttpException If view could not be rendered
 	 *
 	 * @todo When rendering the view, find out the type of the view rendered and
 	 *       set the content type as appropriate.
