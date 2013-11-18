@@ -77,12 +77,6 @@ class ResponseBuilder implements RequestAwareInterface
 			return $response;
 		}
 		catch (\Exception $e) {
-			// See if we can automatically generate a response
-			if ($generatedResponse = $this->_generateResponse($params)) {
-				// Disabled as it doesn't work properly and might be undesirable anyway
-			#	return $generatedResponse;
-			}
-			// If not, throw an exception
 			throw new NotAcceptableHttpException(
 				sprintf(
 					'Exception thrown while rendering view `%s`: `%s`',
@@ -92,31 +86,5 @@ class ResponseBuilder implements RequestAwareInterface
 				$e
 			);
 		}
-	}
-
-	/**
-	 * Looks at the allowed content types and checks whether any of these can
-	 * be automatically generated, and returns the automatically generated
-	 * response if so.
-	 *
-	 * @param  array $params  The parameters to use when generating the response
-	 *
-	 * @return Response|false The generated response result, or false if not generated
-	 */
-	protected function _generateResponse(array $params = array())
-	{
-		// REFACTOR: One day this could use Engine classes to auto-generate, but
-		// for now it's so simple it's kinda pointless.
-		foreach ($this->_request->getAllowedContentTypes() as $mimeType) {
-			$format = $this->_request->getFormat($mimeType);
-
-			switch ($format) {
-				case 'json':
-					return Response::create(json_encode($params), 200, array('Content-Type' => $mimeType));
-					break;
-			}
-		}
-
-		return false;
 	}
 }
