@@ -69,7 +69,10 @@ class TwigExtension extends \Twig_Extension
 
 		$resize = $this->_resize;
 		if ($width == $resize::AUTO_KEYWORD or $height == $resize::AUTO_KEYWORD) {
+			list($sw, $sh) = getimagesize('APP_URL' . $file->getUrl());
 
+			if ($width == $resize::AUTO_KEYWORD)  $width = $sw;
+			if ($height == $resize::AUTO_KEYWORD) $height = $sh;
 		}
 
 		return $environment->render('Message:Cog::image-resize:image',
@@ -79,7 +82,8 @@ class TwigExtension extends \Twig_Extension
 				'height' 	 => $height,
 				'altText' 	 => $alt,
 				'attributes' => $attributes
-			));
+			)
+		);
 	}
 
 	protected function _checkFileType($file)
