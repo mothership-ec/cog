@@ -53,13 +53,17 @@ class ResponseBuilder implements RequestAwareInterface
 	 *
 	 * @return Response          The rendered result as a Response instance
 	 *
-	 * @throws NotAcceptableHttpException If view could not be rendered or generated
+	 * @throws NotAcceptableHttpException If view could not be rendered
 	 *
 	 * @todo When rendering the view, find out the type of the view rendered and
 	 *       set the content type as appropriate.
 	 */
-	public function render($reference, array $params = array())
+	public function render($reference, array $params = array(), Response $response = null)
 	{
+		if (!$response) {
+			$response = new Response;
+		}
+
 		// Convert any shorthand parameters to what they should be
 		foreach ($params as $key => $val) {
 			if ($val instanceof FormHandler) {
@@ -68,14 +72,11 @@ class ResponseBuilder implements RequestAwareInterface
 		}
 
 		try {
-			return Response::create($this->_engine->render($reference, $params));
+			$response->setContent($this->_engine->render($reference, $params));
+
+			return $response;
 		}
 		catch (\Exception $e) {
-			// See if we can automatically generate a response
-			if ($generatedResponse = $this->_generateResponse($params)) {
-				return $generatedResponse;
-			}
-			// If not, throw an exception
 			throw new NotAcceptableHttpException(
 				sprintf(
 					'Exception thrown while rendering view `%s`: `%s`',
@@ -85,31 +86,5 @@ class ResponseBuilder implements RequestAwareInterface
 				$e
 			);
 		}
-	}
-
-	/**
-	 * Looks at the allowed content types and checks whether any of these can
-	 * be automatically generated, and returns the automatically generated
-	 * response if so.
-	 *
-	 * @param  array $params  The parameters to use when generating the response
-	 *
-	 * @return Response|false The generated response result, or false if not generated
-	 */
-	protected function _generateResponse(array $params = array())
-	{
-		// REFACTOR: One day this could use Engine classes to auto-generate, but
-		// for now it's so simple it's kinda pointless.
-		foreach ($this->_request->getAllowedContentTypes() as $mimeType) {
-			$format = $this->_request->getFormat($mimeType);
-
-			switch ($format) {
-				case 'json':
-					return Response::create(json_encode($params), 200, array('Content-Type' => $mimeType));
-					break;
-			}
-		}
-
-		return false;
 	}
 }
