@@ -213,6 +213,11 @@ class Environment implements EnvironmentInterface
 			return $this->setWithInstallation($env);
 		}
 
+		// Compatibility for how environment variables are set on Apache2 PHP-FPM
+		if ($env = $this->getEnvironmentVar('REDIRECT_' . $this->_flagEnv)) {
+			return $this->setWithInstallation($env);
+		}
+
 		return $this->set($this->_allowedEnvironments[0]);
 	}
 

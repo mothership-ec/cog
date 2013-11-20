@@ -256,6 +256,10 @@ class Services implements ServicesInterface
 			return $globals;
 		});
 
+		$serviceContainer['http.cache.esi'] = $serviceContainer->share(function($c) {
+			return new \Symfony\Component\HttpKernel\HttpCache\Esi;
+		});
+
 		$serviceContainer['http.kernel'] = function($c) {
 			return new \Message\Cog\HTTP\Kernel(
 				$c['event.dispatcher'],
@@ -283,8 +287,11 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
+			$inlineRenderer = new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel']);
+
 			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
-				new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel'])
+				new \Symfony\Component\HttpKernel\Fragment\EsiFragmentRenderer($c['http.cache.esi'], $inlineRenderer),
+				$inlineRenderer
 			), ('local' === $c['env']));
 		});
 
@@ -581,6 +588,9 @@ class Services implements ServicesInterface
 
 			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
 
+			$manager->set('cssmin', new \Assetic\Filter\CssMinFilter);
+			$manager->set('jsmin', new \Assetic\Filter\JSMinFilter);
+
 			return $manager;
 		});
 
@@ -668,8 +678,8 @@ class Services implements ServicesInterface
 
 		$serviceContainer['mail.dispatcher'] = $serviceContainer->share(function($c) {
 
-			$transport = $c['mail.transport'];
-			$dispatcher = new \Message\Cog\Mail\Mailer($transport);
+			$swift = new \Swift_Mailer($c['mail.transport']);
+			$dispatcher = new \Message\Cog\Mail\Mailer($swift);
 
 			$dispatcher->setWhitelistFallback('dev@message.co.uk');
 			$dispatcher->addToWhitelist('/.+@message\.co\.uk/');
@@ -710,6 +720,10 @@ class Services implements ServicesInterface
 		$serviceContainer['country.list'] = function($c) {
 			return new \Message\Cog\Location\CountryList;
 		};
+
+		$serviceContainer['country.event'] = $serviceContainer->share(function($c) {
+			return new \Message\Cog\Location\CountryEvent($c['country.list']);
+		});
 
 		$serviceContainer['state.list'] = function($c) {
 			return new \Message\Cog\Location\StateList;

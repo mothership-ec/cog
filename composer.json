@@ -1,6 +1,6 @@
 {
 	"name": "message/cog",
-	"description": "Message's powerful PHP5 framework",
+	"description": "Message's powerful PHP5 framework for building modular systems",
 	"keywords": ["framework", "cog"],
 	"homepage": "http://message.co.uk",
 	"authors": [
@@ -19,6 +19,12 @@
 			"Message\\Cog\\Test": "tests"
 		}
 	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url" : "http://packages.message.co.uk"
+		}
+	],
 	"require": {
 		"php"          : ">=5.3.0",
 		"ext-simplexml": "*",
@@ -43,34 +49,28 @@
 		"symfony/finder"                   : "2.2.*",
 		"twig/twig"                        : "1.13.*",
 		"pimple/pimple"                    : "1.0.1",
-		"monolog/monolog"                  : "1.6.*",
+		"monolog/monolog"                  : "1.7.*",
 		"mtdowling/cron-expression"        : "1.0.*",
 		"treasure-chest/treasure-chest"    : "0.1.*",
 		"kriswallsmith/assetic"            : "1.1.*",
+		"lmammino/jsmin4assetic"           : "1.0.*",
+		"natxet/CssMin"                    : "3.0.*",
 		"imagine/imagine"                  : "0.4.*",
 		"filp/whoops"                      : "1.0.*",
 		"swiftmailer/swiftmailer"          : "5.0.*",
 		"knplabs/knp-snappy"               : "0.1.*",
-		"h4cc/wkhtmltopdf-i386"            : "0.11.0-RC1",
-		"h4cc/wkhtmltoimage-i386"          : "0.11.0-RC1",
-		"h4cc/wkhtmltopdf-amd64"           : "0.11.0-RC1",
-		"h4cc/wkhtmltoimage-amd64"         : "0.11.0-RC1",
-		"messagedigital/wkhtmltopdf-osx"   : "0.9.9",
-		"messagedigital/wkhtmltoimage-osx" : "0.10.0-RC2",
+		"message/wkhtmltopdf"              : "1.0.*",
 		"itbz/fpdf"                        : "1.7.*",
 		"itbz/fpdi"                        : "1.4.*"
 	},
 	"require-dev": {
-		"mikey179/vfsStream"              : "1.1.*",
-		"messagedigital/wkhtmltopdf-osx"  : "0.9.9",
-		"messagedigital/wkhtmltoimage-osx": "0.10.0-RC2"
+		"mikey179/vfsStream"              : "1.1.*"
 	},
 	"suggest": {
 		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
 		"ext-apc"                : "The preferred caching system in Cog",
 
-		"message/cog-maintenance": "A cog module that provides maintenance mode functionality",
-		"message/cog-raven"      : "A cog module that logs errors, exceptions and messages to Sentry"
+		"message/cog-raven"      : "A Cog module that logs errors, exceptions and messages to Sentry"
 	},
 	"extra": {
 		"branch-alias": {
