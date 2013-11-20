@@ -517,7 +517,7 @@ class Handler
 			if (false !== strstr($date, '-')) $split = '-';
 
 			// Check if the date starts with dd or mm
-			if (preg_match('/[0-9]{2}(\/|-)[0-9]{2}(\/|-)[0-9]{2,4}/', $date)) {
+			if (preg_match('/[0-9]{2}(\/|-)[0-9]{2}(\/|-)[0-9]{4}/', $date)) {
 				$parts = explode($split, $date);
 
 				// Do a dumb check to see if the second value is greater than 12
@@ -529,7 +529,7 @@ class Handler
 				return 'd'.$split.'m'.$split.'Y';
 			}
 			// Else check if the date starts with yyyy
-			elseif (preg_match('/[0-9]{2,4}(\/|-)[0-9]{2}(\/|-)[0-9]{2}/', $date)) {
+			elseif (preg_match('/[0-9]{4}(\/|-)[0-9]{2}(\/|-)[0-9]{2}/', $date)) {
 				return 'Y'.$split.'m'.$split.'d';
 			}
 
