@@ -513,8 +513,7 @@ class Handler
 		// are instantiated correctly.
 		foreach ($this->_fields as $name => $field) {
 			if ('date' == $field['type'] and $value = $data[$name] and ! $value instanceof \DateTime) {
-				list($d, $m, $y) = explode('/', $value);
-				$data[$name] = new \DateTime($y.'-'.$m.'-'.$d);
+				$data[$name] = \DateTime::createFromFormat('Y-m-d', $value);
 			}
 		}
 
