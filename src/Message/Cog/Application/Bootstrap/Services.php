@@ -668,6 +668,10 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Helper\ProrateHelper;
 		};
 
+		$serviceContainer['helper.date'] = function() {
+			return new \Message\Cog\Helper\DateHelper;
+		};
+
 		$serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Mail\Transport\Mail();
 		});
