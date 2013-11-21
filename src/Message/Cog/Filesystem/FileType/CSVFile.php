@@ -17,12 +17,12 @@ class CSVFile extends File {
 		$this->setFlags(self::DROP_NEW_LINE + self::READ_AHEAD + self::SKIP_EMPTY + self::READ_CSV);
 	}
 
-	public function getFirstLineAsColumns($expected)
+	public function getFirstLineAsColumns($expected = null)
 	{
 		$this->_firstLineIsColumns = true;
 		$this->rewind();
 
-		if ($this->_columns != $expected) {
+		if (null !== $expected and $this->_columns != $expected) {
 			throw new Exception("Columns did not match those expected on the first line");
 		}
 
