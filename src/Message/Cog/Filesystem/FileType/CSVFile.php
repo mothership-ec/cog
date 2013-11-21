@@ -5,6 +5,18 @@ namespace Message\Cog\Filesystem\FileType;
 use Exception;
 use Message\Cog\Filesystem\File;
 
+/**
+ * Read a file as a csv.
+ *
+ * Usage
+ *     $file = new CSVFile('/path/to/file.csv');
+ *     $file->getFirstLineAsColumns(array('optional', 'array', 'of', 'expected', 'columns'));
+ *     foreach ($file as $line) {
+ *         echo $line['column_name'];
+ *     }
+ *
+ * @author Laurence Roberts <laurence@message.co.uk>
+ */
 class CSVFile extends \SplFileObject {
 
 	protected $_columns;
@@ -17,6 +29,12 @@ class CSVFile extends \SplFileObject {
 		$this->setFlags(self::DROP_NEW_LINE + self::READ_AHEAD + self::SKIP_EMPTY + self::READ_CSV);
 	}
 
+	/**
+	 * Gets the first line as columns with an optional expected set of columns.
+	 *
+	 * @param  array $expected
+	 * @return array
+	 */
 	public function getFirstLineAsColumns($expected = null)
 	{
 		$this->_firstLineIsColumns = true;
@@ -33,6 +51,8 @@ class CSVFile extends \SplFileObject {
 	{
 		parent::rewind();
 
+		// If we are getting the first line as columns, take them then skip to
+		// the next line.
 		if ($this->_firstLineIsColumns) {
 			$this->setColumns(parent::current());
 			parent::next();
