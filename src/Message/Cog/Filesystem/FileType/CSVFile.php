@@ -5,7 +5,7 @@ namespace Message\Cog\Filesystem\FileType;
 use Exception;
 use Message\Cog\Filesystem\File;
 
-class CSVFile extends File {
+class CSVFile extends \SplFileObject {
 
 	protected $_columns;
 	protected $_firstLineIsColumns;

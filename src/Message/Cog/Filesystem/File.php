@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\File\File as BaseFile;
 *
 * @author  James Moss <james@message.co.uk>
 */
-class File extends \SplFileObject
+class File extends \SplFileInfo
 {
 	const PUBLIC_DIR = 'public/';
 	const COG_PREFIX = 'cog';
