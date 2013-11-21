@@ -73,7 +73,7 @@ class Factory extends AssetFactory
 	        $paths = $this->_getFullPaths($inputs);
 
 			foreach ($paths as $path) {
-				hash_update($hash, filemtime($path));
+				hash_update($hash, file_get_contents($path));
 			}
 
 			// Return the final hash
