@@ -506,7 +506,19 @@ class Handler
 
 		// here we want the filtered data from the validator but don't need to include the
 		// data symfony removed because it doesn't match the type
-		return $this->_validator->getData();
+		$data = $this->_validator->getData();
+
+		// Sometimes date fields do not automatically get formatted to a
+		// Datetime object due to browser differences. This ensures all dates
+		// are instantiated correctly.
+		foreach ($this->_fields as $name => $field) {
+			if ('date' == $field['type'] and $value = $data[$name] and ! $value instanceof \DateTime) {
+				$format = $this->_container['helper.date']->detectFormat($value);
+				$data[$name] = \DateTime::createFromFormat($format, $value);
+			}
+		}
+
+		return $data;
 	}
 
 	/**
