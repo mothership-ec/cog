@@ -201,7 +201,13 @@ namespace Message\Cog\Application {
 			// Register the service for the bootstrap loader
 			$this->_services['bootstrap.loader'] = function($c) {
 				// Can not call $this->_services['filesystem.finder'] as it has not yet been created.
-				return new \Message\Cog\Bootstrap\Loader($c, new \Message\Cog\Filesystem\Finder());
+				$loader = new \Message\Cog\Bootstrap\Loader($c, new \Message\Cog\Filesystem\Finder());
+
+				if ('local' !== $c['env']) {
+					$loader->enableCaching();
+				}
+
+				return $loader;
 			};
 
 			// Register the service for the environment

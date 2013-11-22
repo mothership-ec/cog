@@ -53,7 +53,7 @@ class Loader implements LoaderInterface
 		$cacheKey = sprintf('cog.bootstrap.loader.%s.classNames', str_replace('\\', '_', $namespace));
 
 		// Get the class names from the path and cache if not on local
-		if ('local' == $this->_services['env'] or (false === $classNames = $cache->fetch($cacheKey))) {
+		if (false === $this->_cacheEnabled or (false === $classNames = $cache->fetch($cacheKey))) {
 			$classNames = array();
 
 			// Find all files in the path recursively
@@ -192,6 +192,26 @@ class Loader implements LoaderInterface
 	public function getBootstraps()
 	{
 		return $this->_bootstraps;
+	}
+
+	/**
+	 * Enable bootstrap class path caching.
+	 *
+	 * @return void
+	 */
+	public function enableCaching()
+	{
+		$this->_cacheEnabled = true;
+	}
+
+	/**
+	 * Disable bootstrap class path caching.
+	 *
+	 * @return void
+	 */
+	public function disableCaching()
+	{
+		$this->_cacheEnabled = false;
 	}
 
 	/**
