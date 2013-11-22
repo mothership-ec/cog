@@ -67,16 +67,24 @@ class Services implements ServicesInterface
 			return new \Message\Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
 		};
 
-		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
-			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-			$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
-			$cache        = new \Message\Cog\Cache\Instance(
-				new $adapterClass
-			);
+		$serviceContainer['cache.adapter'] = $serviceContainer->share(function() {
+			if (extension_loaded('apc') && ini_get('apc.enabled')) {
+				$adapter = new \Message\Cog\Cache\Adapter\APC;
+			}
+			else {
+				$adapter = new \Message\Cog\Cache\Adapter\Filesystem('cog://tmp');
+			}
+
+			return $adapter;
+		});
+
+		$serviceContainer['cache'] = $serviceContainer->share(function($c) {
+			$cache = new \Message\Cog\Cache\Instance($c['cache.adapter']);
+
 			$cache->setPrefix(implode('.', array(
-				$s['app.loader']->getAppName(),
-				$s['environment']->get(),
-				$s['environment']->installation(),
+				$c['app.loader']->getAppName(),
+				$c['environment']->get(),
+				$c['environment']->installation(),
 			)));
 
 			return $cache;
