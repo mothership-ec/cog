@@ -37,6 +37,8 @@ namespace Message\Cog\Application {
 	use Message\Cog\Service\ContainerInterface;
 	use Message\Cog\Service\Container as ServiceContainer;
 
+	use Message\Cog\Application\Environment;
+
 	use Composer\Autoload\ClassLoader;
 
 	use RuntimeException;
@@ -201,6 +203,31 @@ namespace Message\Cog\Application {
 				// Can not call $this->_services['filesystem.finder'] as it has not yet been created.
 				return new \Message\Cog\Bootstrap\Loader($c, new \Message\Cog\Filesystem\Finder());
 			};
+
+			// Register the service for the environment
+			$env = new Environment;
+			$this->_services['environment'] = $this->_services->share(function() use ($env) {
+				return $env;
+			});
+			$this->_services['env'] = function($c) {
+				return $c['environment']->get();
+			};
+
+			// Register the service for the cache
+			$this->_services['cache'] = $this->_services->share(function($s) {
+				$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+				$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
+				$cache        = new \Message\Cog\Cache\Instance(
+					new $adapterClass
+				);
+				$cache->setPrefix(implode('.', array(
+					$s['app.loader']->getAppName(),
+					$s['environment']->get(),
+					$s['environment']->installation(),
+				)));
+
+				return $cache;
+			});
 
 			// Load the Cog bootstraps
 			$this->_services['bootstrap.loader']->addFromDirectory(
