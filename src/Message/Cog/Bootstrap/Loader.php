@@ -52,6 +52,7 @@ class Loader implements LoaderInterface
 		$cache = $this->_services['cache'];
 		$cacheKey = sprintf('cog.bootstrap.loader.%s.classNames', str_replace('\\', '_', $namespace));
 
+		// Get the class names from the path and cache if not on local
 		if ('local' == $this->_services['env'] or (false === $classNames = $cache->fetch($cacheKey))) {
 			$classNames = array();
 
