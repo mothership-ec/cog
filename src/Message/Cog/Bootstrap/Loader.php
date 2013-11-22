@@ -49,20 +49,34 @@ class Loader implements LoaderInterface
 			$namespace = '\\' . $namespace;
 		}
 
-		// Find all files in the path recursively
-		$finder = $this->_finder->files()->in($path);
+		$cache = $this->_services['cache'];
+		$cacheKey = sprintf('cog.bootstrap.loader.%s.classNames', str_replace('\\', '_', $namespace));
 
-		foreach ($finder as $file) {
-			// Skip non-php files
-			if ('php' !== $file->getExtension()) {
-				continue;
+		if ('local' == $this->_services['env'] or (false === $classNames = $cache->fetch($cacheKey))) {
+			$classNames = array();
+
+			// Find all files in the path recursively
+			$finder = $this->_finder->files()->in($path);
+
+			foreach ($finder as $file) {
+				// Skip non-php files
+				if ('php' !== $file->getExtension()) {
+					continue;
+				}
+				// Determine class name
+				$className = $namespace . str_replace('/', '\\', str_replace($path, '', $file->getPath())) . '\\' . $file->getBasename('.php');
+				// Check class can be loaded, skip if not
+				if (!class_exists($className)) {
+					continue;
+				}
+
+				$classNames[] = $className;
 			}
-			// Determine class name
-			$className = $namespace . str_replace('/', '\\', str_replace($path, '', $file->getPath())) . '\\' . $file->getBasename('.php');
-			// Check class can be loaded, skip if not
-			if (!class_exists($className)) {
-				continue;
-			}
+
+			$cache->store($cacheKey, $classNames);
+		}
+
+		foreach ($classNames as $className) {
 			// Load the bootstrap
 			$class = new $className;
 			if ($class instanceof ContainerAwareInterface) {
