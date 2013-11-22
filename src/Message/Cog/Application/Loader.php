@@ -198,6 +198,29 @@ namespace Message\Cog\Application {
 				return $appLoader;
 			});
 
+			$this->_services['cache.adapter'] = $this->_services->share(function() {
+				if (extension_loaded('apc') && ini_get('apc.enabled')) {
+					$adapter = new \Message\Cog\Cache\Adapter\APC;
+				}
+				else {
+					$adapter = new \Message\Cog\Cache\Adapter\Filesystem('cog://tmp');
+				}
+
+				return $adapter;
+			});
+
+			$this->_services['cache'] = $this->_services->share(function($c) {
+				$cache = new \Message\Cog\Cache\Instance($c['cache.adapter']);
+
+				$cache->setPrefix(implode('.', array(
+					$c['app.loader']->getAppName(),
+					$c['environment']->get(),
+					$c['environment']->installation(),
+				)));
+
+				return $cache;
+			});
+
 			// Register the service for the bootstrap loader
 			$this->_services['bootstrap.loader'] = function($c) {
 				// Can not call $this->_services['filesystem.finder'] as it has not yet been created.
