@@ -693,7 +693,7 @@ class Services implements ServicesInterface
 			return $dispatcher;
 		});
 
-		$serviceContainer['mail.message'] = $serviceContainer->share(function($c) {
+		$serviceContainer['mail.message'] = function($c) {
 			// This is all a bit hacky, but the only easy way I can think of
 			// First, change the formats allowed in templating for views
 			$origFormats = $c->raw('templating.formats');
@@ -715,7 +715,7 @@ class Services implements ServicesInterface
 			$message->setFrom($c['cfg']->app->defaultEmailFrom->email, $c['cfg']->app->defaultEmailFrom->name);
 
 			return $message;
-		});
+		};
 
 		$serviceContainer['country.list'] = function($c) {
 			return new \Message\Cog\Location\CountryList;
