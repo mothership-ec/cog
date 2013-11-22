@@ -19,6 +19,8 @@ class Loader implements LoaderInterface
 	protected $_finder;
 	protected $_bootstraps = array();
 
+	protected $_cacheEnabled = false;
+
 	/**
 	 * Constructor.
 	 *
