@@ -37,6 +37,8 @@ namespace Message\Cog\Application {
 	use Message\Cog\Service\ContainerInterface;
 	use Message\Cog\Service\Container as ServiceContainer;
 
+	use Message\Cog\Application\Environment;
+
 	use Composer\Autoload\ClassLoader;
 
 	use RuntimeException;
@@ -196,11 +198,65 @@ namespace Message\Cog\Application {
 				return $appLoader;
 			});
 
+			$this->_services['cache.adapter'] = $this->_services->share(function() {
+				if (extension_loaded('apc') && ini_get('apc.enabled')) {
+					$adapter = new \Message\Cog\Cache\Adapter\APC;
+				}
+				else {
+					$adapter = new \Message\Cog\Cache\Adapter\Filesystem('cog://tmp');
+				}
+
+				return $adapter;
+			});
+
+			$this->_services['cache'] = $this->_services->share(function($c) {
+				$cache = new \Message\Cog\Cache\Instance($c['cache.adapter']);
+
+				$cache->setPrefix(implode('.', array(
+					$c['app.loader']->getAppName(),
+					$c['environment']->get(),
+					$c['environment']->installation(),
+				)));
+
+				return $cache;
+			});
+
 			// Register the service for the bootstrap loader
 			$this->_services['bootstrap.loader'] = function($c) {
 				// Can not call $this->_services['filesystem.finder'] as it has not yet been created.
-				return new \Message\Cog\Bootstrap\Loader($c, new \Message\Cog\Filesystem\Finder());
+				$loader = new \Message\Cog\Bootstrap\Loader($c, new \Message\Cog\Filesystem\Finder());
+
+				if ('local' !== $c['env']) {
+					$loader->enableCaching();
+				}
+
+				return $loader;
 			};
+
+			// Register the service for the environment
+			$env = new Environment;
+			$this->_services['environment'] = $this->_services->share(function() use ($env) {
+				return $env;
+			});
+			$this->_services['env'] = function($c) {
+				return $c['environment']->get();
+			};
+
+			// Register the service for the cache
+			$this->_services['cache'] = $this->_services->share(function($s) {
+				$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
+				$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
+				$cache        = new \Message\Cog\Cache\Instance(
+					new $adapterClass
+				);
+				$cache->setPrefix(implode('.', array(
+					$s['app.loader']->getAppName(),
+					$s['environment']->get(),
+					$s['environment']->installation(),
+				)));
+
+				return $cache;
+			});
 
 			// Load the Cog bootstraps
 			$this->_services['bootstrap.loader']->addFromDirectory(

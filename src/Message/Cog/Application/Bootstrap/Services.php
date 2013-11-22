@@ -5,7 +5,6 @@ namespace Message\Cog\Application\Bootstrap;
 use Message\Cog;
 
 use Message\Cog\Bootstrap\ServicesInterface;
-use Message\Cog\Application\Environment;
 use Message\Cog\Routing\RouteCollection;
 use Message\Cog\DB;
 
@@ -31,14 +30,6 @@ class Services implements ServicesInterface
 				return $s['db']->getQueryCount();
 			}, false);
 		});
-
-		$env = new Environment;
-		$serviceContainer['environment'] = $serviceContainer->share(function() use ($env) {
-			return $env;
-		});
-		$serviceContainer['env'] = function($c) {
-			return $c['environment']->get();
-		};
 
 		$serviceContainer['db.connection'] = $serviceContainer->share(function($s) {
 			return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
@@ -66,29 +57,6 @@ class Services implements ServicesInterface
 		$serviceContainer['db.nested_set_helper'] = function($s) {
 			return new \Message\Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
 		};
-
-		$serviceContainer['cache.adapter'] = $serviceContainer->share(function() {
-			if (extension_loaded('apc') && ini_get('apc.enabled')) {
-				$adapter = new \Message\Cog\Cache\Adapter\APC;
-			}
-			else {
-				$adapter = new \Message\Cog\Cache\Adapter\Filesystem('cog://tmp');
-			}
-
-			return $adapter;
-		});
-
-		$serviceContainer['cache'] = $serviceContainer->share(function($c) {
-			$cache = new \Message\Cog\Cache\Instance($c['cache.adapter']);
-
-			$cache->setPrefix(implode('.', array(
-				$c['app.loader']->getAppName(),
-				$c['environment']->get(),
-				$c['environment']->installation(),
-			)));
-
-			return $cache;
-		});
 
 		$serviceContainer['event'] = function() {
 			return new \Message\Cog\Event\Event;
