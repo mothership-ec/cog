@@ -198,12 +198,14 @@ namespace Message\Cog\Application {
 				return $appLoader;
 			});
 
-			$this->_services['cache.adapter'] = $this->_services->share(function() {
+			$this->_services['cache.adapter'] = $this->_services->share(function() use ($appLoader) {
 				if (extension_loaded('apc') && ini_get('apc.enabled')) {
 					$adapter = new \Message\Cog\Cache\Adapter\APC;
 				}
 				else {
-					$adapter = new \Message\Cog\Cache\Adapter\Filesystem('cog://tmp');
+					// NOTE: Can't use cog:// stream here as the stream wrapper
+					// has not yet been defined
+					$adapter = new \Message\Cog\Cache\Adapter\Filesystem($appLoader->getBaseDir() . 'tmp');
 				}
 
 				return $adapter;
@@ -241,22 +243,6 @@ namespace Message\Cog\Application {
 			$this->_services['env'] = function($c) {
 				return $c['environment']->get();
 			};
-
-			// Register the service for the cache
-			$this->_services['cache'] = $this->_services->share(function($s) {
-				$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-				$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
-				$cache        = new \Message\Cog\Cache\Instance(
-					new $adapterClass
-				);
-				$cache->setPrefix(implode('.', array(
-					$s['app.loader']->getAppName(),
-					$s['environment']->get(),
-					$s['environment']->installation(),
-				)));
-
-				return $cache;
-			});
 
 			// Load the Cog bootstraps
 			$this->_services['bootstrap.loader']->addFromDirectory(
