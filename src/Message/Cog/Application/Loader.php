@@ -242,22 +242,6 @@ namespace Message\Cog\Application {
 				return $c['environment']->get();
 			};
 
-			// Register the service for the cache
-			$this->_services['cache'] = $this->_services->share(function($s) {
-				$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-				$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
-				$cache        = new \Message\Cog\Cache\Instance(
-					new $adapterClass
-				);
-				$cache->setPrefix(implode('.', array(
-					$s['app.loader']->getAppName(),
-					$s['environment']->get(),
-					$s['environment']->installation(),
-				)));
-
-				return $cache;
-			});
-
 			// Load the Cog bootstraps
 			$this->_services['bootstrap.loader']->addFromDirectory(
 				__DIR__ . '/Bootstrap',
