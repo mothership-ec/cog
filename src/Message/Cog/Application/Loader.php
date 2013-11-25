@@ -198,12 +198,14 @@ namespace Message\Cog\Application {
 				return $appLoader;
 			});
 
-			$this->_services['cache.adapter'] = $this->_services->share(function() {
+			$this->_services['cache.adapter'] = $this->_services->share(function() use ($appLoader) {
 				if (extension_loaded('apc') && ini_get('apc.enabled')) {
 					$adapter = new \Message\Cog\Cache\Adapter\APC;
 				}
 				else {
-					$adapter = new \Message\Cog\Cache\Adapter\Filesystem('cog://tmp');
+					// NOTE: Can't use cog:// stream here as the stream wrapper
+					// has not yet been defined
+					$adapter = new \Message\Cog\Cache\Adapter\Filesystem($appLoader->getBaseDir() . 'tmp');
 				}
 
 				return $adapter;
