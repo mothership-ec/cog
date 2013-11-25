@@ -18,15 +18,19 @@ use Symfony\Component\Yaml\Exception\ParseException;
 class YamlFileLoader extends ArrayLoader implements LoaderInterface
 {
 	protected $_yamlParser;
+	protected $_cache;
+
+	protected $_cacheEnabled = false;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param YamlParser $yamlParser YAML parser
 	 */
-	public function __construct(YamlParser $yamlParser)
+	public function __construct(YamlParser $yamlParser, $cache)
 	{
 		$this->_yamlParser = $yamlParser;
+		$this->_cache = $cache;
 	}
 
 	/**
@@ -42,14 +46,20 @@ class YamlFileLoader extends ArrayLoader implements LoaderInterface
 			throw new NotFoundResourceException(sprintf('File "%s" not found.', $resource));
 		}
 
-		try {
-			$messages = $this->_yamlParser->parse(file_get_contents($resource));
-		} catch (ParseException $e) {
-			throw new InvalidResourceException('Error parsing YAML.', 0, $e);
+		$cacheKey = sprintf('cog.localisation.translations.%s', md5($resource . $locale . $domain));
+
+		if (false === $this->_cacheEnabled or (false === $messages = $this->_cache->fetch($cacheKey))) {
+			try {
+				$messages = $this->_yamlParser->parse(file_get_contents($resource));
+			} catch (ParseException $e) {
+				throw new InvalidResourceException('Error parsing YAML.', 0, $e);
+			}
+
+			$this->_cache->store($cacheKey, $messages);
 		}
 
 		// empty file
-		if (null === $messages) {
+		if (empty($messages)) {
 			$messages = array();
 		}
 
@@ -61,5 +71,25 @@ class YamlFileLoader extends ArrayLoader implements LoaderInterface
 		$catalogue = parent::load($messages, $locale, $domain);
 
 		return $catalogue;
+	}
+
+	/**
+	 * Enable bootstrap class path caching.
+	 *
+	 * @return void
+	 */
+	public function enableCaching()
+	{
+		$this->_cacheEnabled = true;
+	}
+
+	/**
+	 * Disable bootstrap class path caching.
+	 *
+	 * @return void
+	 */
+	public function disableCaching()
+	{
+		$this->_cacheEnabled = false;
 	}
 }

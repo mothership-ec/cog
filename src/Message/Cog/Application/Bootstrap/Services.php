@@ -524,9 +524,16 @@ class Services implements ServicesInterface
 			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
 			$translator->setFallbackLocale($c['locale']->getFallback());
 
-			$translator->addLoader('yml', new \Message\Cog\Localisation\YamlFileLoader(
-				new \Symfony\Component\Yaml\Parser
-			));
+			$yml = new \Message\Cog\Localisation\YamlFileLoader(
+				new \Symfony\Component\Yaml\Parser,
+				$c['cache']
+			);
+
+			if ('local' !== $c['env']) {
+				$yml->enableCaching();
+			}
+
+			$translator->addLoader('yml', $yml);
 
 			// Load translation files from modules
 			foreach ($c['module.loader']->getModules() as $moduleName) {
