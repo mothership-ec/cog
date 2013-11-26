@@ -419,7 +419,7 @@ class Services implements ServicesInterface
 				$c['http.request.master']->headers->get('host'),	// HTTP host
 				$c['environment'],									// Application environment
 				$c['http.request.master']->getClientIp(),			// User's IP address
-				$c['http.session']->getId(),						// Session ID
+//				$c['http.session']->getId(),						// Session ID
 			);
 
 			return serialize($parts);
