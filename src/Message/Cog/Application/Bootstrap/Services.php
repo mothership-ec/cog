@@ -408,7 +408,7 @@ class Services implements ServicesInterface
 				new \Message\Cog\Form\Extension\Extension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
-					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($c['form.csrf_secret'])
+					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
 			);
 		};
@@ -419,7 +419,7 @@ class Services implements ServicesInterface
 				$c['http.request.master']->headers->get('host'),	// HTTP host
 				$c['environment'],									// Application environment
 				$c['http.request.master']->getClientIp(),			// User's IP address
-				$c['http.session']->getId(),						// Session ID
+//				$c['http.session']->getId(),						// Session ID
 			);
 
 			return serialize($parts);

@@ -2,10 +2,11 @@
 
 namespace Message\Cog\Location;
 
-use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
+use Symfony\Component\Form\Extension\Core\ChoiceList\LazyChoiceList;
+use Symfony\Component\Form\Extension\Core\ChoiceList\SimpleChoiceList;
 
-class CountryList extends ChoiceList {
-
+class CountryList extends LazyChoiceList
+{
 	protected $_countries = array(
 		'AF' => 'Afghanistan',
 		'AX' => 'Åland Islands',
@@ -289,20 +290,6 @@ class CountryList extends ChoiceList {
 		'GB', // United Kingdom
 	);
 
-	public function __construct(array $options = array(), array $preferredChoices = array())
-	{
-		if (isset($options['onlyEU']) and $options['onlyEU']) {
-			$choices = $this->getEU();
-		}
-		else {
-			$choices = $this->all();
-		}
-
-		$labels = $choices;
-
-		parent::__construct($choices, $labels, $preferredChoices);
-	}
-
 	public function all()
 	{
 		return $this->_countries;
@@ -327,4 +314,8 @@ class CountryList extends ChoiceList {
 		return in_array($countryID, $this->_eu);
 	}
 
+	public function loadChoiceList()
+	{
+		return new SimpleChoiceList($this->_countries);
+	}
 }
