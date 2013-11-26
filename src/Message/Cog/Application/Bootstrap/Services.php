@@ -408,7 +408,7 @@ class Services implements ServicesInterface
 				new \Message\Cog\Form\Extension\Extension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
-					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($c['form.csrf_secret'])
+					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
 			);
 		};
