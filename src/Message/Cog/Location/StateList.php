@@ -60,6 +60,7 @@ class StateList extends ChoiceList {
 			'WY' => 'Wyoming',
 		),
 		'CA' => array(
+			'AB' => 'Alberta',
 			'BC' => 'British Columbia',
 			'MB' => 'Manitoba',
 			'NB' => 'New Brunswick',
