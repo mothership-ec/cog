@@ -157,6 +157,23 @@ class Services implements ServicesInterface
 					'cache'       => 'cog://tmp',
 					'auto_reload' => true,
 					'debug'       => 'live' !== $c['env'],
+					'autoescape'  => function($name) {
+						// Trim off the .twig file extension
+						if ('.twig' === substr($name, -5)) {
+							$name = substr($name, 0, -5);
+						}
+
+						// Get the actual file extension (format)
+						$format = substr($name, strrpos($name, '.') + 1);
+
+						// If the format is html, css or js, set that as the autoescape strategy
+						if (in_array($format, array('html', 'js', 'css'))) {
+							return $format;
+						}
+
+						// Otherwise, turn off autoescaping (for example, .txt files for plaintext emails)
+						return false;
+					}
 				)
 			);
 
@@ -408,7 +425,7 @@ class Services implements ServicesInterface
 				new \Message\Cog\Form\Extension\Extension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
-					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($c['form.csrf_secret'])
+					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
 			);
 		};
@@ -419,7 +436,7 @@ class Services implements ServicesInterface
 				$c['http.request.master']->headers->get('host'),	// HTTP host
 				$c['environment'],									// Application environment
 				$c['http.request.master']->getClientIp(),			// User's IP address
-				$c['http.session']->getId(),						// Session ID
+//				$c['http.session']->getId(),						// Session ID
 			);
 
 			return serialize($parts);
