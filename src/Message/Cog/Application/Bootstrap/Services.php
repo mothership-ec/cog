@@ -523,6 +523,7 @@ class Services implements ServicesInterface
 
 			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
 			$translator->setFallbackLocale($c['locale']->getFallback());
+			$translator->setContainer($c);
 
 			$yml = new \Message\Cog\Localisation\YamlFileLoader(
 				new \Symfony\Component\Yaml\Parser,
@@ -530,28 +531,13 @@ class Services implements ServicesInterface
 			);
 
 			if ('local' !== $c['env']) {
-				$yml->enableCaching();
+				$translator->enableCaching();
 			}
 
 			$translator->addLoader('yml', $yml);
 
-			// Load translation files from modules
-			foreach ($c['module.loader']->getModules() as $moduleName) {
-				$moduleName = str_replace('\\', $c['reference_parser']::SEPARATOR, $moduleName);
-				$dir        = 'cog://@' . $moduleName . $c['reference_parser']::MODULE_SEPARATOR . 'translations';
+			$translator->loadCatalogue($id);
 
-				if (file_exists($dir)) {
-					foreach ($c['filesystem.finder']->in($dir) as $file) {
-						$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
-					}
-				}
-			}
-
-			// Load application translation files
-			$dir = $c['app.loader']->getBaseDir().'translations';
-			foreach ($c['filesystem.finder']->in($dir) as $file) {
-				$translator->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
-			}
 
 			return $translator;
 		});
