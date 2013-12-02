@@ -526,8 +526,7 @@ class Services implements ServicesInterface
 			$translator->setContainer($c);
 
 			$yml = new \Message\Cog\Localisation\YamlFileLoader(
-				new \Symfony\Component\Yaml\Parser,
-				$c['cache']
+				new \Symfony\Component\Yaml\Parser
 			);
 
 			if ('local' !== $c['env']) {

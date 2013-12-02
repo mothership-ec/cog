@@ -25,7 +25,6 @@ class YamlFileLoader extends ArrayLoader implements LoaderInterface
 	 * Constructor.
 	 *
 	 * @param YamlParser     $yamlParser YAML parser
-	 * @param CacheInterface $cache
 	 */
 	public function __construct(YamlParser $yamlParser)
 	{
@@ -52,7 +51,7 @@ class YamlFileLoader extends ArrayLoader implements LoaderInterface
 		}
 
 		// empty file
-		if (empty($messages)) {
+		if (null === $messages) {
 			$messages = array();
 		}
 
