@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Localisation;
 
-use Message\Cog\Cache\CacheInterface;
-
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Exception\InvalidResourceException;
@@ -24,7 +22,7 @@ class YamlFileLoader extends ArrayLoader implements LoaderInterface
 	/**
 	 * Constructor.
 	 *
-	 * @param YamlParser     $yamlParser YAML parser
+	 * @param YamlParser $yamlParser YAML parser
 	 */
 	public function __construct(YamlParser $yamlParser)
 	{
