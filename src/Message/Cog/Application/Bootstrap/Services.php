@@ -5,7 +5,6 @@ namespace Message\Cog\Application\Bootstrap;
 use Message\Cog;
 
 use Message\Cog\Bootstrap\ServicesInterface;
-use Message\Cog\Application\Environment;
 use Message\Cog\Routing\RouteCollection;
 use Message\Cog\DB;
 
@@ -31,14 +30,6 @@ class Services implements ServicesInterface
 				return $s['db']->getQueryCount();
 			}, false);
 		});
-
-		$env = new Environment;
-		$serviceContainer['environment'] = $serviceContainer->share(function() use ($env) {
-			return $env;
-		});
-		$serviceContainer['env'] = function($c) {
-			return $c['environment']->get();
-		};
 
 		$serviceContainer['db.connection'] = $serviceContainer->share(function($s) {
 			return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
@@ -66,21 +57,6 @@ class Services implements ServicesInterface
 		$serviceContainer['db.nested_set_helper'] = function($s) {
 			return new \Message\Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
 		};
-
-		$serviceContainer['cache'] = $serviceContainer->share(function($s) {
-			$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
-			$adapterClass = '\\Message\\Cog\\Cache\\Adapter\\' . $adapterClass;
-			$cache        = new \Message\Cog\Cache\Instance(
-				new $adapterClass
-			);
-			$cache->setPrefix(implode('.', array(
-				$s['app.loader']->getAppName(),
-				$s['environment']->get(),
-				$s['environment']->installation(),
-			)));
-
-			return $cache;
-		});
 
 		$serviceContainer['event'] = function() {
 			return new \Message\Cog\Event\Event;
@@ -432,7 +408,7 @@ class Services implements ServicesInterface
 				new \Message\Cog\Form\Extension\Extension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
-					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($c['form.csrf_secret'])
+					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
 			);
 		};
@@ -443,7 +419,7 @@ class Services implements ServicesInterface
 				$c['http.request.master']->headers->get('host'),	// HTTP host
 				$c['environment'],									// Application environment
 				$c['http.request.master']->getClientIp(),			// User's IP address
-				$c['http.session']->getId(),						// Session ID
+//				$c['http.session']->getId(),						// Session ID
 			);
 
 			return serialize($parts);
@@ -672,6 +648,10 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Helper\ProrateHelper;
 		};
 
+		$serviceContainer['helper.date'] = function() {
+			return new \Message\Cog\Helper\DateHelper;
+		};
+
 		$serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Mail\Transport\Mail();
 		});
@@ -693,7 +673,7 @@ class Services implements ServicesInterface
 			return $dispatcher;
 		});
 
-		$serviceContainer['mail.message'] = $serviceContainer->share(function($c) {
+		$serviceContainer['mail.message'] = function($c) {
 			// This is all a bit hacky, but the only easy way I can think of
 			// First, change the formats allowed in templating for views
 			$origFormats = $c->raw('templating.formats');
@@ -715,7 +695,7 @@ class Services implements ServicesInterface
 			$message->setFrom($c['cfg']->app->defaultEmailFrom->email, $c['cfg']->app->defaultEmailFrom->name);
 
 			return $message;
-		});
+		};
 
 		$serviceContainer['country.list'] = function($c) {
 			return new \Message\Cog\Location\CountryList;
