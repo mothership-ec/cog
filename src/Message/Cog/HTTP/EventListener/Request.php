@@ -104,6 +104,10 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 		// Otherwise, only allow requested & available content types
 		else {
 
+			if (empty($requestedContentTypes)) {
+				$requestedContentTypes = array('*/*');
+			}
+
 			// Loop through requested content types
 			foreach ($requestedContentTypes as $mimeType) {
 				// If the request allows any content type, and hasn't defined any
@@ -122,12 +126,7 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 		}
 
 		// If none of the requested content types were acceptable, throw exception
-		if (empty($allowedContentTypes) && empty($requestedContentTypes)) {
-			throw new NotAcceptableHttpException(
-				'No content type(s) requested' . ((!isset($requestedContentTypes)) ? ': $requestedContentTypes not set' : '')
-			);
-		}
-		elseif (empty($allowedContentTypes)) {
+		if (empty($allowedContentTypes)) {
 			throw new NotAcceptableHttpException(sprintf(
 				'Unacceptable content type(s) requested: `%s`',
 				implode(', ', $requestedContentTypes)
