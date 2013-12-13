@@ -123,11 +123,9 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 
 		// If none of the requested content types were acceptable, throw exception
 		if (empty($allowedContentTypes) && empty($requestedContentTypes)) {
-			$varType = (is_array($requestedContentTypes)) ? "empty array" : gettype($requestedContentTypes);
-			throw new NotAcceptableHttpException(sprintf(
-				'No content type(s) requested: $requestedContentTypes is `%s`',
-				$varType
-			));
+			throw new NotAcceptableHttpException(
+				'No content type(s) requested' . ((!isset($requestedContentTypes)) ? ': $requestedContentTypes not set' : '')
+			);
 		}
 		elseif (empty($allowedContentTypes)) {
 			throw new NotAcceptableHttpException(sprintf(
