@@ -78,6 +78,8 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 	 * @param GetResponseEvent $event     The HttpKernel request event instance
 	 *
 	 * @throws NotAcceptableHttpException If none of the requested content type(s) are acceptable
+	 *
+	 * @returns bool | void
 	 */
 	public function validateRequestedFormats(GetResponseEvent $event)
 	{
@@ -90,6 +92,9 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 		$allowedContentTypes = array();
 		$allowedFormats      = explode('|', $request->attributes->get('_format'));
 
+		// Determine the content type to return based on what's allowed and what's requested
+		$requestedContentTypes = $request->getAcceptableContentTypes();
+
 		// If this is a subrequest, set the allowed content types to whatever is in _format
 		if (HttpKernelInterface::SUB_REQUEST === $event->getRequestType()) {
 			foreach ($allowedFormats as $format) {
@@ -98,8 +103,6 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 		}
 		// Otherwise, only allow requested & available content types
 		else {
-			// Determine the content type to return based on what's allowed and what's requested
-			$requestedContentTypes = $request->getAcceptableContentTypes();
 
 			// Loop through requested content types
 			foreach ($requestedContentTypes as $mimeType) {
@@ -119,7 +122,14 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 		}
 
 		// If none of the requested content types were acceptable, throw exception
-		if (empty($allowedContentTypes)) {
+		if (empty($allowedContentTypes) && empty($requestedContentTypes)) {
+			$varType = (is_array($requestedContentTypes)) ? "empty array" : gettype($requestedContentTypes);
+			throw new NotAcceptableHttpException(sprintf(
+				'No content type(s) requested: $requestedContentTypes is `%s`',
+				$varType
+			));
+		}
+		elseif (empty($allowedContentTypes)) {
 			throw new NotAcceptableHttpException(sprintf(
 				'Unacceptable content type(s) requested: `%s`',
 				implode(', ', $requestedContentTypes)
