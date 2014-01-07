@@ -14,11 +14,13 @@ use Message\Cog\HTTP\Response;
  */
 class TwigExtension extends \Twig_Extension
 {
+	protected $_baseDir;
 	protected $_resize;
 
-	public function __construct(Resize $resize)
+	public function __construct($baseDir, Resize $resize)
 	{
-		$this->_resize = $resize;
+		$this->_baseDir = $baseDir;
+		$this->_resize  = $resize;
 	}
 
 	/**
@@ -67,6 +69,14 @@ class TwigExtension extends \Twig_Extension
 		$url = $this->getResizedUrl($file, $width, $height);
 		$alt = (array_key_exists('alt', $attributes) ? $attributes['alt'] : ($file ? $file->getAltText() : ""));
 
+		$resize = $this->_resize;
+		if ($width == $resize::AUTO_KEYWORD or $height == $resize::AUTO_KEYWORD) {
+			list($sw, $sh) = getimagesize($this->_baseDir . $file->getUrl());
+
+			if ($width == $resize::AUTO_KEYWORD)  $width = $sw;
+			if ($height == $resize::AUTO_KEYWORD) $height = $sh;
+		}
+
 		return $environment->render('Message:Cog::image-resize:image',
 			array(
 				'url'		 => $url,
@@ -74,7 +84,8 @@ class TwigExtension extends \Twig_Extension
 				'height' 	 => $height,
 				'altText' 	 => $alt,
 				'attributes' => $attributes
-			));
+			)
+		);
 	}
 
 	protected function _checkFileType($file)
