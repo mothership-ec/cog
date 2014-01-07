@@ -2,17 +2,25 @@
 
 namespace Message\Cog\Mail;
 
-class Mailer extends \Swift_Mailer
+class Mailer
 {
+	protected $_swiftMailer;
 	protected $_whitelist = array();
 	protected $_whitelistFallback;
 	protected $_whitelistEnabled = false;
 
+	public function __construct(\Swift_Mailer $swiftMailer)
+	{
+		$this->_swiftMailer = $swiftMailer;
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send(\Swift_Mime_Message $message, &$failedRecipients = null)
+	public function send(MailableInterface $mailable, &$failedRecipients = null)
     {
+    	$message = $mailable->getMessage();
+
     	if ($this->_whitelistEnabled) {
 	    	// Get the original 'to' addresses
 	    	$original = $message->getTo();
@@ -33,7 +41,7 @@ class Mailer extends \Swift_Mailer
 			}
 	    }
 
-    	return parent::send($message, $failedRecipients);
+    	return $this->_swiftMailer->send($message, $failedRecipients);
     }
 
     /**

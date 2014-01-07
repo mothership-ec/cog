@@ -15,6 +15,7 @@ class StateList extends ChoiceList {
 			'CA' => 'California',
 			'CO' => 'Colorado',
 			'CT' => 'Connecticut',
+			'DC' => 'District of Columbia',
 			'DE' => 'Delaware',
 			'FL' => 'Florida',
 			'GA' => 'Georgia',
@@ -60,6 +61,7 @@ class StateList extends ChoiceList {
 			'WY' => 'Wyoming',
 		),
 		'CA' => array(
+			'AB' => 'Alberta',
 			'BC' => 'British Columbia',
 			'MB' => 'Manitoba',
 			'NB' => 'New Brunswick',
