@@ -54,7 +54,7 @@ class Services implements ServicesInterface
 
 		$container['templating.twig.environment'] = $container->share($container->extend('templating.twig.environment', function($twig, $c) {
 			$twig->addExtension(
-				new Templating\TwigExtension($c['app.loader']->getBaseDir(), $c['image.resize'])
+				new Templating\TwigExtension($c['image.resize'])
 			);
 			return $twig;
 		}));
