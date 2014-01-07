@@ -14,11 +14,13 @@ use Message\Cog\HTTP\Response;
  */
 class TwigExtension extends \Twig_Extension
 {
+	protected $_baseDir;
 	protected $_resize;
 
-	public function __construct(Resize $resize)
+	public function __construct($baseDir, Resize $resize)
 	{
-		$this->_resize = $resize;
+		$this->_baseDir = $baseDir;
+		$this->_resize  = $resize;
 	}
 
 	/**
@@ -69,7 +71,7 @@ class TwigExtension extends \Twig_Extension
 
 		$resize = $this->_resize;
 		if ($width == $resize::AUTO_KEYWORD or $height == $resize::AUTO_KEYWORD) {
-			list($sw, $sh) = getimagesize('APP_URL' . $file->getUrl());
+			list($sw, $sh) = getimagesize($this->_baseDir . $file->getUrl());
 
 			if ($width == $resize::AUTO_KEYWORD)  $width = $sw;
 			if ($height == $resize::AUTO_KEYWORD) $height = $sh;
