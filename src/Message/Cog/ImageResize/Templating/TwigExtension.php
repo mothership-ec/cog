@@ -18,7 +18,7 @@ class TwigExtension extends \Twig_Extension
 
 	public function __construct(Resize $resize)
 	{
-		$this->_resize = $resize;
+		$this->_resize  = $resize;
 	}
 
 	/**
@@ -67,6 +67,26 @@ class TwigExtension extends \Twig_Extension
 		$url = $this->getResizedUrl($file, $width, $height);
 		$alt = (array_key_exists('alt', $attributes) ? $attributes['alt'] : ($file ? $file->getAltText() : ""));
 
+		$resize = $this->_resize;
+		if ($width == $resize::AUTO_KEYWORD or $height == $resize::AUTO_KEYWORD) {
+			$path = 'cog://public/' . $file->getUrl();
+			if (is_file($path)) {
+				list($sw, $sh) = getimagesize($path);
+
+				if ($width == $resize::AUTO_KEYWORD) {
+					$width = floor(($height / $sh) * $sw);
+				}
+
+				if ($height == $resize::AUTO_KEYWORD) {
+					$height = floor(($width / $sw) * $sh);
+				}
+			}
+			else {
+				if ($width == $resize::AUTO_KEYWORD)  $width = 0;
+				if ($height == $resize::AUTO_KEYWORD) $height = 0;
+			}
+		}
+
 		return $environment->render('Message:Cog::image-resize:image',
 			array(
 				'url'		 => $url,
@@ -74,7 +94,8 @@ class TwigExtension extends \Twig_Extension
 				'height' 	 => $height,
 				'altText' 	 => $alt,
 				'attributes' => $attributes
-			));
+			)
+		);
 	}
 
 	protected function _checkFileType($file)
