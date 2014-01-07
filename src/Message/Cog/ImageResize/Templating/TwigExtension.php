@@ -71,10 +71,16 @@ class TwigExtension extends \Twig_Extension
 
 		$resize = $this->_resize;
 		if ($width == $resize::AUTO_KEYWORD or $height == $resize::AUTO_KEYWORD) {
-			list($sw, $sh) = getimagesize($this->_baseDir . $file->getUrl());
+			if (is_file($this->_baseDir . $file->getUrl())) {
+				list($sw, $sh) = getimagesize($this->_baseDir . $file->getUrl());
 
-			if ($width == $resize::AUTO_KEYWORD)  $width = $sw;
-			if ($height == $resize::AUTO_KEYWORD) $height = $sh;
+				if ($width == $resize::AUTO_KEYWORD)  $width = $sw;
+				if ($height == $resize::AUTO_KEYWORD) $height = $sh;
+			}
+			else {
+				$width  = 0;
+				$height = 0;
+			}
 		}
 
 		return $environment->render('Message:Cog::image-resize:image',
