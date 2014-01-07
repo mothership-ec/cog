@@ -73,12 +73,17 @@ class TwigExtension extends \Twig_Extension
 			if (is_file($path)) {
 				list($sw, $sh) = getimagesize($path);
 
-				if ($width == $resize::AUTO_KEYWORD)  $width = $sw;
-				if ($height == $resize::AUTO_KEYWORD) $height = $sh;
+				if ($width == $resize::AUTO_KEYWORD) {
+					$width = floor(($height / $sh) * $sw);
+				}
+
+				if ($height == $resize::AUTO_KEYWORD) {
+					$height = floor(($width / $sw) * $sh);
+				}
 			}
 			else {
-				$width  = 0;
-				$height = 0;
+				if ($width == $resize::AUTO_KEYWORD)  $width = 0;
+				if ($height == $resize::AUTO_KEYWORD) $height = 0;
 			}
 		}
 
