@@ -320,7 +320,29 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['module.locator'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Module\Locator($c['class.loader']->getPrefixes());
+			$classLoader = $c['class.loader'];
+			$prefixes    = array();
+
+			// Get PSR-0 prefixes and append the namespace directories
+			foreach ($classLoader->getPrefixes() as $prefix => $dirs) {
+				$prefix      = trim($prefix, '\\');
+				$prefixAsDir = str_replace('\\', DIRECTORY_SEPARATOR, $prefix);
+
+				foreach ($dirs as $key => $dir) {
+					$dirs[$key] = $dir .= DIRECTORY_SEPARATOR . $prefixAsDir;
+				}
+
+				$prefixes[rtrim($prefix)] = $dirs;
+			}
+
+			// If the Composer autoloader supports PSR-4, grab those too
+			if (method_exists($classLoader, 'getPrefixesPsr4')) {
+				foreach ($classLoader->getPrefixesPsr4() as $prefix => $dirs) {
+					$prefixes[trim($prefix, '\\')] = $dirs;
+				}
+			}
+
+			return new \Message\Cog\Module\Locator($prefixes);
 		});
 
 		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
