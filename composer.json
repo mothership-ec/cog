@@ -70,11 +70,6 @@
 
 		"message/cog-raven"      : "A Cog module that logs errors, exceptions and messages to Sentry"
 	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "1.0.x-dev"
-		}
-	},
 	"bin": [
 		"bin/cog",
 		"bin/cog-console"

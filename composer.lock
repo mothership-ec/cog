@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d44ce7d881ea164fa2533b82874ff107",
+    "hash": "e88fd94dd34922ccd7f72e9ae063c97a",
     "packages": [
         {
             "name": "filp/whoops",
