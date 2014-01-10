@@ -48,12 +48,12 @@ class Locator implements LocatorInterface
 					$directory = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 					if ($inLibrary) {
 						// Add PSR-0 namespace
-						$this->_paths[$key] = $directory . str_replace('\\', DIRECTORY_SEPARATOR, $moduleName) . DIRECTORY_SEPARATOR;
+						$this->_paths[$key] = $directory;
 					}
 					else {
 						// Remove source directory
-						if ('src/' === substr($directory, -4)) {
-							$directory = substr($directory, 0, -4);
+						if (false !== ($srcPos = strpos($directory, 'src/'))) {
+							$directory = substr($directory, 0, $srcPos);
 						}
 
 						$this->_paths[$key] = $directory;

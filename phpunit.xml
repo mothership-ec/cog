@@ -50,9 +50,6 @@
 		<testsuite name="HTTP">
 			<directory>./tests/Message/Cog/Test/HTTP/</directory>
 		</testsuite>
-		<testsuite name="ImageResize">
-			<directory>./tests/Message/Cog/Test/ImageResize/</directory>
-		</testsuite>
 		<testsuite name="Localisation">
 			<directory>./tests/Message/Cog/Test/Localisation/</directory>
 		</testsuite>
