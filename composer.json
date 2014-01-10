@@ -55,7 +55,6 @@
 		"kriswallsmith/assetic"            : "1.1.*",
 		"lmammino/jsmin4assetic"           : "1.0.*",
 		"natxet/CssMin"                    : "3.0.*",
-		"imagine/imagine"                  : "0.4.*",
 		"filp/whoops"                      : "1.0.*",
 		"swiftmailer/swiftmailer"          : "5.0.*",
 		"knplabs/knp-snappy"               : "0.1.*",
@@ -67,7 +66,6 @@
 		"mikey179/vfsStream"              : "1.1.*"
 	},
 	"suggest": {
-		"ext-imagemagick"        : "Provides faster and more powerful image manipulation libraries",
 		"ext-apc"                : "The preferred caching system in Cog",
 
 		"message/cog-raven"      : "A Cog module that logs errors, exceptions and messages to Sentry"

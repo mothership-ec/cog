@@ -5,5 +5,3 @@ default-email-from:
   email: noreply@default.com
   name: My Application
 csrf-secret: CHANGE THIS FOR EACH INSTALLATION
-image-resize:
-  default-image-path: /cogules/Message:cog/images/default.png # Path to default image for resizing, relative to public/web path
