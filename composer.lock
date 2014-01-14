@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e94b8ba800d5e9ece24cbd5c1ee657d5",
+    "hash": "376c20501f60fad1deb43deccedf4255",
     "packages": [
         {
             "name": "filp/whoops",
@@ -1702,12 +1702,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755"
+                "reference": "v1.13.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/6d6a1009427d1f398c9d40904147bf9f723d5755",
-                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/v1.13.2",
+                "reference": "v1.13.2",
                 "shasum": ""
             },
             "require": {
@@ -1786,7 +1786,7 @@
 
     ],
     "platform": {
-        "php": ">=5.3.0",
+        "php": ">=5.4.0",
         "ext-simplexml": "*",
         "ext-curl": "*",
         "ext-gd": "*",
