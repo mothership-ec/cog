@@ -66,6 +66,7 @@ class Handler
 		'required' => true,
 		'csrf_protection' => true,
 		'csrf_field_name' => self::CSRF_ATTRIBUTE_NAME,
+		'csrf_message' => 'It seems something went wrong, please refresh / re-open your page and try again.',
 		'intention' => 'form'
 	);
 
