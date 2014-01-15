@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "b510c37c501dd59b5d69602333aecccf",
+    "hash": "1bbb20e6383f02e413fb4c119f02bd42",
     "packages": [
         {
             "name": "filp/whoops",
@@ -178,12 +178,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f"
+                "reference": "v1.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/735cffd3982c6e8cdebe292d5db39d077f65890f",
-                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/v1.1.2",
+                "reference": "v1.1.2",
                 "shasum": ""
             },
             "require": {
@@ -495,13 +495,13 @@
             "version": "v1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fabpot/Pimple.git",
-                "reference": "86df0604a10c5faf20b466ae6a0b762cc6ed0a35"
+                "url": "git://github.com/fabpot/Pimple.git",
+                "reference": "v1.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/86df0604a10c5faf20b466ae6a0b762cc6ed0a35",
-                "reference": "86df0604a10c5faf20b466ae6a0b762cc6ed0a35",
+                "url": "https://github.com/fabpot/Pimple/archive/v1.0.1.zip",
+                "reference": "v1.0.1",
                 "shasum": ""
             },
             "require": {
@@ -541,13 +541,13 @@
             "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/php-fig/log.git",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
+                "url": "https://github.com/php-fig/log",
+                "reference": "1.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
-                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "url": "https://github.com/php-fig/log/archive/1.0.0.zip",
+                "reference": "1.0.0",
                 "shasum": ""
             },
             "type": "library",
@@ -1061,18 +1061,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Icu.git",
-                "reference": "7299cd3d8d6602103d1ebff5d0a9917b7bc6de72"
+                "reference": "v1.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Icu/zipball/7299cd3d8d6602103d1ebff5d0a9917b7bc6de72",
-                "reference": "7299cd3d8d6602103d1ebff5d0a9917b7bc6de72",
+                "url": "https://api.github.com/repos/symfony/Icu/zipball/v1.2.0",
+                "reference": "v1.2.0",
                 "shasum": ""
             },
             "require": {
                 "lib-icu": ">=4.4",
                 "php": ">=5.3.3",
-                "symfony/intl": "~2.3"
+                "symfony/intl": ">=2.3,<3.0"
             },
             "type": "library",
             "autoload": {
@@ -1653,13 +1653,13 @@
             "version": "0.1.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/jamesmoss/treasure-chest.git",
-                "reference": "fd9e9747cd77eee583ae4dbe8b87781717073d8b"
+                "url": "git@github.com:jamesmoss/treasure-chest.git",
+                "reference": "0.1.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jamesmoss/treasure-chest/zipball/fd9e9747cd77eee583ae4dbe8b87781717073d8b",
-                "reference": "fd9e9747cd77eee583ae4dbe8b87781717073d8b",
+                "url": "https://github.com/jamesmoss/treasure-chest/archive/0.1.5.zip",
+                "reference": "0.1.5",
                 "shasum": ""
             },
             "require": {
@@ -1836,13 +1836,13 @@
             "version": "v1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mikey179/vfsStream.git",
-                "reference": "fc0fe8f4d0b527254a2dc45f0c265567c881d07e"
+                "url": "https://github.com/mikey179/vfsStream",
+                "reference": "v1.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mikey179/vfsStream/zipball/fc0fe8f4d0b527254a2dc45f0c265567c881d07e",
-                "reference": "fc0fe8f4d0b527254a2dc45f0c265567c881d07e",
+                "url": "https://github.com/mikey179/vfsStream/zipball/v1.1.0",
+                "reference": "v1.1.0",
                 "shasum": ""
             },
             "require": {
@@ -1859,7 +1859,7 @@
                 "BSD"
             ],
             "homepage": "http://vfs.bovigo.org/",
-            "time": "2012-08-25 12:49:29"
+            "time": "2012-08-25 05:49:29"
         }
     ],
     "aliases": [
