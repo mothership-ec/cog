@@ -9,7 +9,6 @@ namespace Message\Cog\Helper;
  */
 class DateHelper
 {
-
 	/**
 	 * Attempt to detect the format of a date. Prefers UK / international dates
 	 * over U.S. dates.
