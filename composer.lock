@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "376c20501f60fad1deb43deccedf4255",
+    "hash": "b510c37c501dd59b5d69602333aecccf",
     "packages": [
         {
             "name": "filp/whoops",
@@ -178,12 +178,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "v1.1.2"
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/v1.1.2",
-                "reference": "v1.1.2",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f",
                 "shasum": ""
             },
             "require": {
@@ -495,13 +495,13 @@
             "version": "v1.0.1",
             "source": {
                 "type": "git",
-                "url": "git://github.com/fabpot/Pimple.git",
-                "reference": "v1.0.1"
+                "url": "https://github.com/fabpot/Pimple.git",
+                "reference": "86df0604a10c5faf20b466ae6a0b762cc6ed0a35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/fabpot/Pimple/archive/v1.0.1.zip",
-                "reference": "v1.0.1",
+                "url": "https://api.github.com/repos/fabpot/Pimple/zipball/86df0604a10c5faf20b466ae6a0b762cc6ed0a35",
+                "reference": "86df0604a10c5faf20b466ae6a0b762cc6ed0a35",
                 "shasum": ""
             },
             "require": {
@@ -541,13 +541,13 @@
             "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/php-fig/log",
-                "reference": "1.0.0"
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/php-fig/log/archive/1.0.0.zip",
-                "reference": "1.0.0",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
                 "shasum": ""
             },
             "type": "library",
@@ -1061,18 +1061,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Icu.git",
-                "reference": "v1.2.0"
+                "reference": "7299cd3d8d6602103d1ebff5d0a9917b7bc6de72"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Icu/zipball/v1.2.0",
-                "reference": "v1.2.0",
+                "url": "https://api.github.com/repos/symfony/Icu/zipball/7299cd3d8d6602103d1ebff5d0a9917b7bc6de72",
+                "reference": "7299cd3d8d6602103d1ebff5d0a9917b7bc6de72",
                 "shasum": ""
             },
             "require": {
                 "lib-icu": ">=4.4",
                 "php": ">=5.3.3",
-                "symfony/intl": ">=2.3,<3.0"
+                "symfony/intl": "~2.3"
             },
             "type": "library",
             "autoload": {
@@ -1653,13 +1653,13 @@
             "version": "0.1.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:jamesmoss/treasure-chest.git",
-                "reference": "0.1.5"
+                "url": "https://github.com/jamesmoss/treasure-chest.git",
+                "reference": "fd9e9747cd77eee583ae4dbe8b87781717073d8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/jamesmoss/treasure-chest/archive/0.1.5.zip",
-                "reference": "0.1.5",
+                "url": "https://api.github.com/repos/jamesmoss/treasure-chest/zipball/fd9e9747cd77eee583ae4dbe8b87781717073d8b",
+                "reference": "fd9e9747cd77eee583ae4dbe8b87781717073d8b",
                 "shasum": ""
             },
             "require": {
@@ -1702,12 +1702,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "v1.13.2"
+                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/v1.13.2",
-                "reference": "v1.13.2",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/6d6a1009427d1f398c9d40904147bf9f723d5755",
+                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755",
                 "shasum": ""
             },
             "require": {
@@ -1744,6 +1744,90 @@
                 "templating"
             ],
             "time": "2013-08-03 15:35:31"
+        },
+        {
+            "name": "zendframework/zend-debug",
+            "version": "2.2.5",
+            "target-dir": "Zend/Debug",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/Component_ZendDebug.git",
+                "reference": "1c4099a9f287ece9a32cf569b30ef8c20e123c7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendDebug/zipball/1c4099a9f287ece9a32cf569b30ef8c20e123c7a",
+                "reference": "1c4099a9f287ece9a32cf569b30ef8c20e123c7a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "zendframework/zend-escaper": "self.version"
+            },
+            "suggest": {
+                "ext/xdebug": "XDebug, for better backtrace output"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev",
+                    "dev-develop": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Zend\\Debug\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "keywords": [
+                "debug",
+                "zf2"
+            ],
+            "time": "2013-05-01 21:52:57"
+        },
+        {
+            "name": "zendframework/zend-escaper",
+            "version": "2.2.5",
+            "target-dir": "Zend/Escaper",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/Component_ZendEscaper.git",
+                "reference": "5db67b32359d86326077209f1fefbbf1183911e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendEscaper/zipball/5db67b32359d86326077209f1fefbbf1183911e8",
+                "reference": "5db67b32359d86326077209f1fefbbf1183911e8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev",
+                    "dev-develop": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Zend\\Escaper\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "keywords": [
+                "escaper",
+                "zf2"
+            ],
+            "time": "2013-05-01 21:53:03"
         }
     ],
     "packages-dev": [
@@ -1752,13 +1836,13 @@
             "version": "v1.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mikey179/vfsStream",
-                "reference": "v1.1.0"
+                "url": "https://github.com/mikey179/vfsStream.git",
+                "reference": "fc0fe8f4d0b527254a2dc45f0c265567c881d07e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/mikey179/vfsStream/zipball/v1.1.0",
-                "reference": "v1.1.0",
+                "url": "https://api.github.com/repos/mikey179/vfsStream/zipball/fc0fe8f4d0b527254a2dc45f0c265567c881d07e",
+                "reference": "fc0fe8f4d0b527254a2dc45f0c265567c881d07e",
                 "shasum": ""
             },
             "require": {
@@ -1775,7 +1859,7 @@
                 "BSD"
             ],
             "homepage": "http://vfs.bovigo.org/",
-            "time": "2012-08-25 05:49:29"
+            "time": "2012-08-25 12:49:29"
         }
     ],
     "aliases": [

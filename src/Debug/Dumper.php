@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Debug;
 
+use Zend\Debug\Debug as ZendDebug;
+
 /**
  * Variable dumper, useful for developers debugging Cog and Cog applications.
  *
@@ -61,7 +63,7 @@ class Dumper
 		$this->_applySettings();
 
 		foreach ($this->_variables as $var) {
-			var_dump($var);
+			ZendDebug::dump($var);
 		}
 
 		echo sprintf('<p>Dump in <strong>%s</strong>:<strong>%s</strong></p>',
