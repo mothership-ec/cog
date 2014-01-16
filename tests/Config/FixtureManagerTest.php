@@ -342,7 +342,7 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->will($this->returnValue('Message/Cog'));
 
 		$this->assertEquals(
-			__DIR__ . '/message/cog-cms/Message/Cog/fixtures/config/',
+			__DIR__ . '/message/cog-cms/Message/Cog/resources/fixtures/config/',
 			FixtureManager::getConfigFixtureDir($composer, $package)
 		);
 	}
