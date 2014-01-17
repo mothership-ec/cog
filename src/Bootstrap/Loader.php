@@ -46,6 +46,10 @@ class Loader implements LoaderInterface
 	 */
 	public function addFromDirectory($path, $namespace)
 	{
+		if (! file_exists($path) or ! is_dir($path)) {
+			return $this;
+		}
+
 		// Check the leading namespace slash is there
 		if ('\\' !== substr($namespace, 0, 1)) {
 			$namespace = '\\' . $namespace;
