@@ -40,7 +40,8 @@ class MigrateRun extends Command
 				$this->get('migration')->run($reference);
 			}
 			catch (\Message\Cog\DB\Exception $e) {
-				throw new \Exception("Migration error: Have you run `migrate:install`?", null, $e);
+				$output->writeln('<error>Migration error: Have you run `migrate:install`?</error>');
+				return;
 			}
 
 			// Output this migration's notes
