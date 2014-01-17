@@ -21,16 +21,6 @@ abstract class Migration implements MigrationInterface {
 		$this->_query->run($command);
 	}
 
-	public function up()
-	{
-
-	}
-
-	public function down()
-	{
-
-	}
-
 	public function getFile()
 	{
 		return $this->_file;
