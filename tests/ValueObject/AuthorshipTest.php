@@ -7,6 +7,11 @@ use Message\Cog\ValueObject\DateTimeImmutable;
 
 class AuthorshipTest extends \PHPUnit_Framework_TestCase
 {
+	public function setUp()
+	{
+		date_default_timezone_set('UTC');
+	}
+
 	public function testCreating()
 	{
 		$authorship = new Authorship;
