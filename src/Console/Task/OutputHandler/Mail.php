@@ -2,12 +2,17 @@
 
 namespace Message\Cog\Console\Task\OutputHandler;
 
+use Message\Cog\Mail\MailableInterface;
 
 class Mail extends OutputHandler
 {
-	protected $_recipients;
-	protected $_subject;
-	protected $_body;
+	protected $_message;
+	protected $_dispatch;
+
+	public function __construct(MailableInterface $message, Mailer $dispatch)
+	{
+		$this->_message = $message;
+	}
 
 	/**
 	 * {inheritDoc}
@@ -18,33 +23,13 @@ class Mail extends OutputHandler
 	}
 
 	/**
-	 * Set the recipients for the console mail output.
+	 * Get the message instance.
 	 *
-	 * @param string|array $recipients The recipients this should be delivered to.
+	 * @return MailableInterface
 	 */
-	public function setRecipients($recipients)
+	public function getMessage()
 	{
-		$this->_recipients = $recipients;
-	}
-
-	/**
-	 * Set the subject.
-	 *
-	 * @param string $subject The subject of the email to send.
-	 */
-	public function setSubject($subject)
-	{
-		$this->_subject = $subject;
-	}
-
-	/**
-	 * Set the body.
-	 *
-	 * @param string $body The body to prepend to the output in the email.
-	 */
-	public function setBody($body)
-	{
-		$this->_body = $body;
+		return $this->_message;
 	}
 
 	/**
@@ -56,17 +41,18 @@ class Mail extends OutputHandler
 			return;
 		}
 
-		// if a single string is provided turn it into the format we expect
-		if(!is_array($this->_recipients)) {
-			$this->_recipients = array($this->_recipients => '');
+		// Get the output from the task
+		$content = $args[0];
+
+		// Set the subject to a default if not already set
+		if ("" == $this->_message->getSubject()) {
+			$this->_message->setSubject("Output of " . $this->_task->getName());
 		}
 
-		$content    = $args[0];
-		$recipients = $this->_recipients;
-		$subject    = $this->_subject ?: 'Output of '.$this->_task->getName();
-		$body       = $this->_body  . $content;
+		// Append the task output to any existing body
+		$this->_message->setBody($this->_message->getBody() . $content);
 
-		// Todo: use the email component when it's built
-		mail(implode(', ', array_keys($this->_recipients)), $subject, $body);
+		// Dispatch the message
+		$this->_dispatcher->send($this->_message);
 	}
 }

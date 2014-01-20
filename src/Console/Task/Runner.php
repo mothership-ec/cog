@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\StringInput;
 /**
 * Runner.
 *
-* A factory for creating an instance of a Task\Application, adding a task 
+* A factory for creating an instance of a Task\Application, adding a task
 * to it and running it.
 */
 class Runner
@@ -27,7 +27,7 @@ class Runner
 		$app->setContainer($container);
 
 		$command->addOutputHandler(new OutputHandler\Printer);
-		$command->addOutputHandler(new OutputHandler\Mail);
+		$command->addOutputHandler(new OutputHandler\Mail($container['mail.message']));
 		$command->addOutputHandler(new OutputHandler\Log);
 
 		// Output to the console by default
