@@ -11,8 +11,8 @@ class Extension extends AbstractExtension
     protected function loadTypes()
     {
         return array(
-            new Type\DateType(),
-            new Type\TimeType(),
+			new Type\DateType(),
+			new Type\TimeType(),
 			new Type\DatalistType(),
         );
     }
