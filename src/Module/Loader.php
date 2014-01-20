@@ -6,6 +6,8 @@ use Message\Cog\Bootstrap\LoaderInterface as BootstrapLoaderInterface;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\Event\Event;
 
+use Psr\Log\LoggerInterface;
+
 /**
  * Loads Cog modules and their related files.
  *
@@ -27,11 +29,12 @@ class Loader implements LoaderInterface
 	 * @param DispatcherInterface      $dispatcher      The event dispatcher to use for event firing
 	 */
 	public function __construct(LocatorInterface $locator, BootstrapLoaderInterface $bootstrapLoader,
-		DispatcherInterface $dispatcher)
+		DispatcherInterface $dispatcher, LoggerInterface $logger)
 	{
 		$this->_locator         = $locator;
 		$this->_bootstrapLoader = $bootstrapLoader;
 		$this->_eventDispatcher = $dispatcher;
+		$this->_logger          = $logger;
 	}
 
 	/**
@@ -90,13 +93,21 @@ class Loader implements LoaderInterface
 	protected function _loadModules()
 	{
 		foreach ($this->_modules as $module) {
-			// Load the bootstraps
-			$this->_bootstrapLoader
-				->addFromDirectory(
-					$this->_locator->getPath($module) . 'Bootstrap',
-					$module . '\\Bootstrap'
-				)
-				->load();
+
+			try {
+				// Load the bootstraps
+				$this->_bootstrapLoader
+					->addFromDirectory(
+						$this->_locator->getPath($module) . 'Bootstrap',
+						$module . '\\Bootstrap'
+					)
+					->load();
+
+			} catch (RuntimeException $e) {
+				// Catch and log an exception if the directory is not found, to
+				// allow the application to continue since this is not fatal.
+				$this->_logger->warning($e->getMessage());
+			}
 
 			// Fire the "module loaded" event
 			$this->_eventDispatcher->dispatch(

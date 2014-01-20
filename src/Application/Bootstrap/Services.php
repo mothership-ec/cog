@@ -346,7 +346,12 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Module\Loader($c['module.locator'], $c['bootstrap.loader'], $c['event.dispatcher']);
+			return new \Message\Cog\Module\Loader(
+				$c['module.locator'],
+				$c['bootstrap.loader'],
+				$c['event.dispatcher'],
+				$c['log.errors']
+			);
 		});
 
 		$serviceContainer['task.collection'] = $serviceContainer->share(function($c) {

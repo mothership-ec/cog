@@ -7,6 +7,8 @@ use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\HTTP\RequestAwareInterface;
 
+use RuntimeException;
+
 /**
  * Bootstrap loader, responsible for loading bootstraps from modules or Cog
  * itself.
@@ -42,12 +44,14 @@ class Loader implements LoaderInterface
 	 * @param  string $path      The directory to load from
 	 * @param  string $namespace The namespace for this directory
 	 *
+	 * @throws RuntimeException  If the given path does not exist
+	 *
 	 * @return Loader            Returns $this for chaining
 	 */
 	public function addFromDirectory($path, $namespace)
 	{
 		if (! file_exists($path) or ! is_dir($path)) {
-			return $this;
+			throw new RuntimeException(sprintf("No bootstrap directory found at %s", $path));
 		}
 
 		// Check the leading namespace slash is there
