@@ -13,6 +13,7 @@ class Extension extends AbstractExtension
         return array(
             new Type\DateType(),
             new Type\TimeType(),
+			new Type\DatalistType(),
         );
     }
 }
