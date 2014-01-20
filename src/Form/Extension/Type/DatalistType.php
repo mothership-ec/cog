@@ -2,9 +2,9 @@
 
 namespace Message\Cog\Form\Extension\Type;
 
-use \Symfony\Component\Form\FormView;
-use \Symfony\Component\Form\FormInterface;
-use \Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\FormView;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class DatalistType extends \Symfony\Component\Form\AbstractType
 {
