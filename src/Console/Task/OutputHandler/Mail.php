@@ -18,21 +18,33 @@ class Mail extends OutputHandler
 	}
 
 	/**
-	 * Enable this output handler
+	 * Set the recipients for the console mail output.
 	 *
-	 * @param  string|array $recipients The recipients this should be delivered to
-	 * @param  string $subject    The subject of the email to send
-	 * @param  string $body       The body to prepend to the output in the email.
-	 *
-	 * @return void
+	 * @param string|array $recipients The recipients this should be delivered to.
 	 */
-	public function enable($recipients, $subject = '', $body = '')
+	public function setRecipients($recipients)
 	{
 		$this->_recipients = $recipients;
-		$this->_subject    = $subject;
-		$this->_body       = $body;
+	}
 
-		parent::enable();
+	/**
+	 * Set the subject.
+	 *
+	 * @param string $subject The subject of the email to send.
+	 */
+	public function setSubject($subject)
+	{
+		$this->_subject = $subject;
+	}
+
+	/**
+	 * Set the body.
+	 *
+	 * @param string $body The body to prepend to the output in the email.
+	 */
+	public function setBody($body)
+	{
+		$this->_body = $body;
 	}
 
 	/**

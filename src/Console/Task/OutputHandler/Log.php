@@ -5,6 +5,9 @@ namespace Message\Cog\Console\Task\OutputHandler;
 
 class Log extends OutputHandler
 {
+	protected $_path;
+	protected $_append;
+
 	/**
 	 * {inheritDoc}
 	 */
@@ -14,19 +17,24 @@ class Log extends OutputHandler
 	}
 
 	/**
-	 * Enables this output handler
+	 * Set the path.
 	 *
-	 * @param  string  $path   The path to write output to
-	 * @param  boolean $append True to append the contents to the file rather than overwrite it
-	 *
-	 * @return void
+	 * @param string $path The path to write output to.
 	 */
-	public function enable($path, $append = false)
+	public function setPath($path)
 	{
-		$this->_path   = $path;
-		$this->_append = $append;
+		$this->_path = $path;
+	}
 
-		parent::enable();
+	/**
+	 * Set the append.
+	 *
+	 * @param boolean $append True to append the contents to the file rather
+	 *                        than overwrite it.
+	 */
+	public function setAppend($append)
+	{
+		$this->_append = $append;
 	}
 
 	/**
