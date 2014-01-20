@@ -2,11 +2,16 @@
 
 namespace Message\Cog\Console\Task\OutputHandler;
 
+use Psr\Log\LoggerInterface;
 
 class Log extends OutputHandler
 {
-	protected $_path;
-	protected $_append;
+	protected $_logger;
+
+	public function __construct(LoggerInterface $logger)
+	{
+		$this->_logger = $logger;
+	}
 
 	/**
 	 * {inheritDoc}
@@ -14,27 +19,6 @@ class Log extends OutputHandler
 	public function getName()
 	{
 		return 'log';
-	}
-
-	/**
-	 * Set the path.
-	 *
-	 * @param string $path The path to write output to.
-	 */
-	public function setPath($path)
-	{
-		$this->_path = $path;
-	}
-
-	/**
-	 * Set the append.
-	 *
-	 * @param boolean $append True to append the contents to the file rather
-	 *                        than overwrite it.
-	 */
-	public function setAppend($append)
-	{
-		$this->_append = $append;
 	}
 
 	/**
@@ -47,6 +31,8 @@ class Log extends OutputHandler
 		}
 
 		$output = $args[0];
+
+		$this->_logger->log();
 
 		if(!$this->_append && is_writable(dirname($this->_path))) {
 			file_put_contents($this->_path, $output);
