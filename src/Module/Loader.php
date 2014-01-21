@@ -6,7 +6,6 @@ use Message\Cog\Bootstrap\LoaderInterface as BootstrapLoaderInterface;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\Event\Event;
 
-use RuntimeException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -94,7 +93,6 @@ class Loader implements LoaderInterface
 	protected function _loadModules()
 	{
 		foreach ($this->_modules as $module) {
-
 			try {
 				// Load the bootstraps
 				$this->_bootstrapLoader
@@ -104,20 +102,19 @@ class Loader implements LoaderInterface
 					)
 					->load();
 
-			} catch (RuntimeException $e) {
+				// Fire the "module loaded" event
+				$this->_eventDispatcher->dispatch(
+					sprintf(
+						'module.%s.load.success',
+						strtolower(str_replace('\\', '.', $module))
+					),
+					new Event
+				);
+			} catch (\Exception $e) {
 				// Catch and log an exception if the directory is not found, to
 				// allow the application to continue since this is not fatal.
 				$this->_logger->warning($e->getMessage());
 			}
-
-			// Fire the "module loaded" event
-			$this->_eventDispatcher->dispatch(
-				sprintf(
-					'module.%s.load.success',
-					strtolower(str_replace('\\', '.', $module))
-				),
-				new Event
-			);
 		}
 
 		// Fire the "all modules loaded" event
