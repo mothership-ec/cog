@@ -4,7 +4,8 @@ namespace Message\Cog\Migration\Adapter\MySQL;
 
 use Message\Cog\Migration\Adapter\MigrationInterface;
 
-abstract class Migration implements MigrationInterface {
+abstract class Migration implements MigrationInterface
+{
 
 	protected $_query;
 	protected $_file;
