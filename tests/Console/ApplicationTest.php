@@ -4,14 +4,9 @@ namespace Message\Cog\Test\Console;
 
 use Message\Cog\Test\Service\FauxContainer;
 
-use Message\Cog\Console\Factory;
+use Message\Cog\Console\Application;
 
-class FactoryTest extends \PHPUnit_Framework_TestCase
+class ApplicationTest extends \PHPUnit_Framework_TestCase
 {
-	public function testAddingTask()
-	{
-		$app = Factory::create(new FauxContainer);
 
-		$this->assertInstanceOf('\\Message\\Cog\\Console\\Application', $app);
-	}
 }

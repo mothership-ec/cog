@@ -10,6 +10,7 @@ use Message\Cog\Application\Environment;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * Event listener for the Debug component.
@@ -49,13 +50,14 @@ class EventListener extends BaseListener implements SubscriberInterface
 			return false;
 		}
 
-		$contentType = $event->getResponse()->headers->get('Content-Type');
+		$response    = $event->getResponse();
+		$contentType = $response->headers->get('Content-Type');
 
 		if ($this->get('environment')->isLocal()
 		 && $this->get('environment')->context() != 'console'
-		 && (is_null($contentType) || 'text/html' === $contentType)) {
-			$html = $this->get('profiler')->renderHtml();
-			$event->getResponse()->setContent($event->getResponse()->getContent() . $html);
+		 && (is_null($contentType) || 'text/html' === $contentType)
+		 && !($response instanceof BinaryFileResponse)) {
+			$response->setContent($response->getContent() . $this->get('profiler')->renderHtml());
 		}
 	}
 

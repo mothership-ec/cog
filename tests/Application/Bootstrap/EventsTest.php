@@ -7,9 +7,12 @@ use Message\Cog\Debug\Profiler;
 use Message\Cog\Application\Environment;
 use Message\Cog\HTTP\CookieCollection;
 
+use Message\Cog\Test\Application\FauxLoader;
 use Message\Cog\Test\Event\FauxDispatcher;
 use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Routing\FauxRouter;
+
+use org\bovigo\vfs\vfsStream;
 
 class EventsTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,6 +51,11 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 		$this->_container['http.uri_signer'] = $this->_container->share(function() use ($uriSigner) {
 			return $uriSigner;
 		});
+
+		$classLoaderMock = $this->getMock('Composer\\Autoload\\ClassLoader');
+		$this->_container['app.loader'] = function($c) use ($classLoaderMock) {
+			return new FauxLoader($classLoaderMock, vfsStream::url('root'));
+		};
 
 		$this->_bootstrap->setContainer($this->_container);
 

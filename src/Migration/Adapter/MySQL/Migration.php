@@ -4,7 +4,8 @@ namespace Message\Cog\Migration\Adapter\MySQL;
 
 use Message\Cog\Migration\Adapter\MigrationInterface;
 
-abstract class Migration implements MigrationInterface {
+abstract class Migration implements MigrationInterface
+{
 
 	protected $_query;
 	protected $_file;
@@ -19,16 +20,6 @@ abstract class Migration implements MigrationInterface {
 	public function run($command)
 	{
 		$this->_query->run($command);
-	}
-
-	public function up()
-	{
-
-	}
-
-	public function down()
-	{
-
 	}
 
 	public function getFile()

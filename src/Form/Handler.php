@@ -513,9 +513,17 @@ class Handler
 		// Datetime object due to browser differences. This ensures all dates
 		// are instantiated correctly.
 		foreach ($this->_fields as $name => $field) {
-			if ('date' == $field['type'] and $value = $data[$name] and ! $value instanceof \DateTime) {
+			if (in_array($field['type'], ['date', 'datetime']) and $value = $data[$name] and ! $value instanceof \DateTime) {
+				// If the value is an array it's date and time separately, so smush them together
+				if (is_array($value)) {
+					$value = trim(implode(' ', $value));
+				}
+
 				$format = $this->_container['helper.date']->detectFormat($value);
-				$data[$name] = \DateTime::createFromFormat($format, $value);
+
+				// The ! character is important as it tells DateTime to default
+				// to epoch values where they are not defined in the value (i.e. if time is not set, default to 00:00:00)
+				$data[$name] = \DateTime::createFromFormat('!' . $format, $value);
 			}
 		}
 
