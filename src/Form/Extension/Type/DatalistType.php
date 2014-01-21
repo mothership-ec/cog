@@ -33,6 +33,7 @@ class DatalistType extends \Symfony\Component\Form\AbstractType
 	{
 		$resolver->setDefaults(array(
 			'choices'	=> array(),
+			'compound'	=> false,
 		));
 	}
 }
