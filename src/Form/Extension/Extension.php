@@ -8,11 +8,12 @@ use \Symfony\Component\PropertyAccess\PropertyAccess;
 
 class Extension extends AbstractExtension
 {
-    protected function loadTypes()
-    {
-        return array(
-            new Type\DateType(),
-            new Type\TimeType(),
-        );
-    }
+	protected function loadTypes()
+	{
+		return array(
+			new Type\DateType(),
+			new Type\TimeType(),
+			new Type\DatalistType(),
+		);
+	}
 }
