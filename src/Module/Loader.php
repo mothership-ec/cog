@@ -6,6 +6,7 @@ use Message\Cog\Bootstrap\LoaderInterface as BootstrapLoaderInterface;
 use Message\Cog\Event\DispatcherInterface;
 use Message\Cog\Event\Event;
 
+use RuntimeException;
 use Psr\Log\LoggerInterface;
 
 /**
