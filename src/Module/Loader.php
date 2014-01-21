@@ -110,7 +110,7 @@ class Loader implements LoaderInterface
 					),
 					new Event
 				);
-			} catch (\Exception $e) {
+			} catch (\RuntimeException $e) {
 				// Catch and log an exception if the directory is not found, to
 				// allow the application to continue since this is not fatal.
 				$this->_logger->warning($e->getMessage());
