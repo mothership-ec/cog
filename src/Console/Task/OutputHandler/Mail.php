@@ -41,16 +41,20 @@ class Mail extends OutputHandler
 			return;
 		}
 
-		// Get the output from the task
-		$content = $args[0];
+		// Get the first argument as the output
+		$content = array_shift($args);
 
 		// Set the subject to a default if not already set
-		if ("" == $this->_message->getSubject()) {
+		if (empty($this->_message->getSubject())) {
 			$this->_message->setSubject("Output of " . $this->_task->getName());
 		}
 
-		// Append the task output to any existing body
-		$this->_message->setBody($this->_message->getBody() . $content);
+		// Append the task output to any existing body, and then any remaining
+		// arguments
+		$this->_message->setBody($this->_message->getBody()
+			. "\n\n" . $content
+			. "\n\n" . var_export($args, true)
+		);
 
 		// Dispatch the message
 		$this->_dispatcher->send($this->_message);
