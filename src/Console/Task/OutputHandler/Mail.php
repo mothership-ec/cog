@@ -3,6 +3,7 @@
 namespace Message\Cog\Console\Task\OutputHandler;
 
 use Message\Cog\Mail\MailableInterface;
+use Message\Cog\Mail\Mailer;
 
 class Mail extends OutputHandler
 {
@@ -45,7 +46,7 @@ class Mail extends OutputHandler
 		$content = array_shift($args);
 
 		// Set the subject to a default if not already set
-		if (empty($this->_message->getSubject())) {
+		if ("" == $this->_message->getSubject()) {
 			$this->_message->setSubject("Output of " . $this->_task->getName());
 		}
 

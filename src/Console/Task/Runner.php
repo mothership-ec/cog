@@ -27,7 +27,7 @@ class Runner
 		$app->setContainer($container);
 
 		$command->addOutputHandler(new OutputHandler\Printer);
-		$command->addOutputHandler(new OutputHandler\Mail($container['mail.message']));
+		$command->addOutputHandler(new OutputHandler\Mail($container['mail.message'], $container['mail.dispatcher']));
 		$command->addOutputHandler(new OutputHandler\Log($container['log.errors']));
 
 		// Output to the console by default
