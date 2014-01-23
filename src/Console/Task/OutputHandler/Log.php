@@ -30,16 +30,10 @@ class Log extends OutputHandler
 			return false;
 		}
 
-		$output = $args[0];
+		// Get the first argument as the output
+		$output = array_shift($args);
 
-		$this->_logger->log();
-
-		if(!$this->_append && is_writable(dirname($this->_path))) {
-			file_put_contents($this->_path, $output);
-		} else if($this->_append && is_writable($this->_path)) {
-			file_put_contents($this->_path, $output, FILE_APPEND);
-		} else {
-			$this->_task->getRawOutput()->writeln('<error>Cannot write to '.$this->_path.'</error>');
-		}
+		// Log the output with any remaining arguments sent as the context
+		$this->_logger->info($output, $args);
 	}
 }
