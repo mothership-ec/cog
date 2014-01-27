@@ -261,7 +261,14 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['http.session'] = $serviceContainer->share(function($c) {
-			$storage = new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+			$namespace = isset($c['cfg']->app->sessionNamespace) ? $c['cfg']->app->sessionNamespace : 'cog';
+			$storage   = new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage(
+				array(),
+				null,
+				new \Symfony\Component\HttpFoundation\Session\Storage\MetadataBag(
+					sprintf('__%s_meta', $namespace)
+				)
+			);
 
 			// Use an array as the session storage when running unit tests
 			if ('test' === $c['env']) {
@@ -270,8 +277,12 @@ class Services implements ServicesInterface
 
 			return new \Message\Cog\HTTP\Session(
 				$storage,
-				null,
-				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag('__cog_flashes')
+				new \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag(
+					sprintf('__%s_attributes', $namespace)
+				),
+				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag(
+					sprintf('__%s_flashes', $namespace)
+				)
 			);
 		});
 
