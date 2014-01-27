@@ -53,9 +53,10 @@ class Mail extends OutputHandler
 
 		// Append the task output to any existing body, and then any remaining
 		// arguments
-		$this->_message->setBody($this->_message->getBody()
-			. "\n\n" . $content
-			. "\n\n" . var_export($args, true)
+		$this->_message->setBody(
+			  "MESSAGE         \n===\n" . $this->_message->getBody()
+			. "\n\n\nOUTPUT    \n===\n" . $content
+			. "\n\n\nARGUMENTS \n===\n" . var_export($args, true)
 		);
 
 		// Dispatch the message
