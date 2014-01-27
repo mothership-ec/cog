@@ -8,11 +8,12 @@ use Message\Cog\Mail\Mailer;
 class Mail extends OutputHandler
 {
 	protected $_message;
-	protected $_dispatch;
+	protected $_dispatcher;
 
-	public function __construct(MailableInterface $message, Mailer $dispatch)
+	public function __construct(MailableInterface $message, Mailer $dispatcher)
 	{
-		$this->_message = $message;
+		$this->_message    = $message;
+		$this->_dispatcher = $dispatcher;
 	}
 
 	/**

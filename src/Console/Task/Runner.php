@@ -30,7 +30,7 @@ class Runner
 		$mail = new OutputHandler\Mail($container['mail.message'], $container['mail.dispatcher']);
 		$mail->getMessage()
 			->setTo($container['cfg']->app->defaultContactEmail)
-			->setFrom($container['cfg']->app->defaultEmailFrom);
+			->setFrom($container['cfg']->app->defaultEmailFrom->email);
 
 		$command->addOutputHandler(new OutputHandler\Printer);
 		$command->addOutputHandler($mail);
