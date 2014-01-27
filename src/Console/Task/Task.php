@@ -39,6 +39,15 @@ abstract class Task extends Command
 		$this->_outputHandlers[$handler->getName()] = $handler;
 	}
 
+	final public function getOutputHandler($handler)
+	{
+		if (!isset($this->_outputHandlers[$handler])) {
+			throw new \RuntimeException(sprintf("Output handler '%s' does not exist on task", $handler));
+		}
+
+		return $this->_outputHandlers[$handler];
+	}
+
 	final public function schedule($expression, $env = array())
 	{
 		$env = (array) $env;
