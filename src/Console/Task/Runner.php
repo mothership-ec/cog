@@ -26,8 +26,14 @@ class Runner
 		$app = new Application('Cog task runner');
 		$app->setContainer($container);
 
+		// Configure the mail handler
+		$mail = new OutputHandler\Mail($container['mail.message'], $container['mail.dispatcher']);
+		$mail->getMessage()
+			->setTo($container['cfg']->app->defaultContactEmail)
+			->setFrom($container['cfg']->app->defaultEmailFrom);
+
 		$command->addOutputHandler(new OutputHandler\Printer);
-		$command->addOutputHandler(new OutputHandler\Mail($container['mail.message'], $container['mail.dispatcher']));
+		$command->addOutputHandler($mail);
 		$command->addOutputHandler(new OutputHandler\Log($container['log.errors']));
 
 		// Output to the console by default
