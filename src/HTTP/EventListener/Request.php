@@ -26,6 +26,7 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 			array('prepareRequest', 9999),
 			array('addRequestToServices', 9998),
 			array('validateRequestedFormats'),
+			array('addRefererHeader'),
 		));
 	}
 
@@ -135,5 +136,25 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 
 		// Otherwise, set the list of acceptable content types on the request for later use
 		$request->attributes->set('_allowedContentTypes', $allowedContentTypes);
+	}
+
+	/**
+	 * If there is a referer session and no header, add the session value
+	 * into the headers and delete the session.
+	 *
+	 * @param GetResponseEvent $event
+	 */
+	public function addRefererHeader(GetResponseEvent $event)
+	{
+		$request = $event->getRequest();
+		$session = $request->getSession();
+
+		if ($session->has('referer')) {
+			if (!$request->headers->has('referer')) {
+				$request->headers->set('referer', $session->get('referer'));
+			}
+
+			$session->remove('referer');
+		}
 	}
 }
