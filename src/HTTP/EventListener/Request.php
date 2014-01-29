@@ -26,7 +26,7 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 			array('prepareRequest', 9999),
 			array('addRequestToServices', 9998),
 			array('validateRequestedFormats'),
-			array('addRefererHeader'),
+			array('moveRefererSessionToHeader'),
 		));
 	}
 
@@ -144,7 +144,7 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 	 *
 	 * @param GetResponseEvent $event
 	 */
-	public function addRefererHeader(GetResponseEvent $event)
+	public function moveRefererSessionToHeader(GetResponseEvent $event)
 	{
 		$request = $event->getRequest();
 		$session = $request->getSession();
