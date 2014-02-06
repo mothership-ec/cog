@@ -26,15 +26,22 @@ class Runner
 		$app = new Application('Cog task runner');
 		$app->setContainer($container);
 
+		// Configure the printer handler
+		$print = new OutputHandler\Printer;
+
 		// Configure the mail handler
 		$mail = new OutputHandler\Mail($container['mail.message'], $container['mail.dispatcher']);
 		$mail->getMessage()
 			->setTo($container['cfg']->app->defaultContactEmail)
 			->setFrom($container['cfg']->app->defaultEmailFrom->email);
 
-		$command->addOutputHandler(new OutputHandler\Printer);
+		// Configure the log handler
+		$log = new OutputHandler\Log(new \Monolog\Logger('console'));
+
+		// Add handlers to command
+		$command->addOutputHandler($print);
 		$command->addOutputHandler($mail);
-		$command->addOutputHandler(new OutputHandler\Log($container['log.errors']));
+		$command->addOutputHandler($log);
 
 		// Output to the console by default
 		$command->output('print')->enable();
