@@ -440,6 +440,39 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Application\Context\Console($c);
 		});
 
+		// Fields
+		$serviceContainer['field.factory'] = function($c) {
+			$factory = new \Message\Cog\Field\Factory($c['validator'], $c);
+
+			return $factory;
+		};
+
+		$serviceContainer['field.form'] = function($c) {
+			return new \Message\Cog\Field\Form($c);
+		};
+
+		$serviceContainer['form.collection'] = function($c) {
+			return new \Message\Cog\Field\Collection(array(
+				new \Message\Cog\Field\Type\Boolean($c['validator']),
+				new \Message\Cog\Field\Type\Choice($c['validator']),
+				new \Message\Cog\Field\Type\Date($c['validator']),
+				new \Message\Cog\Field\Type\Datetime($c['validator']),
+				new \Message\Cog\Field\Type\Html($c['validator']),
+				new \Message\Cog\Field\Type\Integer($c['validator']),
+				new \Message\Cog\Field\Type\Richtext($c['validator']),
+				new \Message\Cog\Field\Type\Text($c['validator']),
+			));
+		};
+
+		//// For backwards compatibility with CMS
+		$serviceContainer['cms.field.factory'] = function($c) {
+			return $c['field.factory'];
+		};
+
+		//// For backwards compatibility with CMS
+		$serviceContainer['cms.field.form'] = function($c) {
+			return $c['field.form'];
+		};
 
 		// Forms
 		$serviceContainer['form'] = function($c) {
