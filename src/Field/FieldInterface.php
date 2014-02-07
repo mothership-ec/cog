@@ -63,4 +63,11 @@ interface FieldInterface
 	 * @param string $key The root translation key.
 	 */
 	public function setTranslationKey($key);
+
+	/**
+	 * Set options to pass to form
+	 *
+	 * @param array $options
+	 */
+	public function setOptions(array $options);
 }

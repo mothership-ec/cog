@@ -28,11 +28,11 @@ class Group implements FieldInterface, FieldContentInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(Validator $validator, $name, $label = null)
+	public function __construct(Validator $validator)
 	{
 		$this->_validator = $validator;
-		$this->_name      = $name;
-		$this->_label     = $label ?: $name;
+//		$this->_name      = $name;
+//		$this->_label     = $label ?: $name;
 	}
 
 	/**
@@ -51,6 +51,11 @@ class Group implements FieldInterface, FieldContentInterface
 		}
 
 		throw new \OutOfBoundsException(sprintf('Group field does not exist: `%s`', $name));
+	}
+
+	public function getFieldType()
+	{
+		return 'group';
 	}
 
 	/**
@@ -98,12 +103,26 @@ class Group implements FieldInterface, FieldContentInterface
 		return $this->_name;
 	}
 
+	public function setName($name)
+	{
+		$this->_name	= $name;
+
+		return $this;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getLabel()
 	{
 		return $this->_label;
+	}
+
+	public function setLabel($label)
+	{
+		$this->_label	= $label;
+
+		return $this;
 	}
 
 	/**

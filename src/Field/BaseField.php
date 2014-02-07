@@ -24,6 +24,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	protected $_validator;
 	protected $_group;
 	protected $_translationKey;
+	protected $_options = array();
 
 	/**
 	 * {@inheritDoc}
@@ -102,6 +103,14 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	public function getType()
 	{
 		return gettype($this->_value);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setOptions(array $options)
+	{
+		$this->_options	= $options;
 	}
 
 	/**

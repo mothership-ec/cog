@@ -451,7 +451,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Field\Form($c);
 		};
 
-		$serviceContainer['form.collection'] = function($c) {
+		$serviceContainer['field.collection'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Field\Collection(array(
 				new \Message\Cog\Field\Type\Boolean($c['validator']),
 				new \Message\Cog\Field\Type\Choice($c['validator']),
@@ -462,7 +462,7 @@ class Services implements ServicesInterface
 				new \Message\Cog\Field\Type\Richtext($c['validator']),
 				new \Message\Cog\Field\Type\Text($c['validator']),
 			));
-		};
+		});
 
 		//// For backwards compatibility with CMS
 		$serviceContainer['cms.field.factory'] = function($c) {

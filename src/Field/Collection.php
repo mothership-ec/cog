@@ -9,17 +9,18 @@ class Collection implements \IteratorAggregate, \Countable
 	public function __construct(array $fields)
 	{
 		foreach ($fields as $field) {
-			if (!$field instanceof FieldInterface) {
-				throw new \LogicException('Objects passed to Field\\Collection must be an instance of FieldInterface');
-			}
-
-			$this->_fields[$field->getFieldType()]	= $field;
+			$this->add($field);
 		}
 	}
 
 	public function __get($type)
 	{
 		return $this->get($type);
+	}
+
+	public function add(Field $field)
+	{
+		$this->_fields[$field->getFieldType()]	= $field;
 	}
 
 	public function get($type)
