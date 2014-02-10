@@ -3,7 +3,6 @@
 namespace Message\Cog\Console\Task\OutputHandler;
 
 use Psr\Log\LoggerInterface;
-use Monolog\Handler\HandlerInterface;
 
 class Log extends OutputHandler
 {
@@ -30,12 +29,6 @@ class Log extends OutputHandler
 	public function getLogger()
 	{
 		return $this->_logger;
-	}
-
-	public function setLogHandler(HandlerInterface $handler)
-	{
-		$this->_logger->popHandler();
-		$this->_logger->pushHandler($handler);
 	}
 
 	/**
