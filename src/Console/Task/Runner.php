@@ -37,6 +37,7 @@ class Runner
 
 		// Configure the log handler
 		$log = new OutputHandler\Log(new \Monolog\Logger('console'));
+		$log->setLogHandler(new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/console.log'))
 
 		// Add handlers to command
 		$command->addOutputHandler($print);
