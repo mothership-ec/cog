@@ -36,8 +36,7 @@ class Runner
 			->setFrom($container['cfg']->app->defaultEmailFrom->email);
 
 		// Configure the log handler
-		$log = new OutputHandler\Log(new \Monolog\Logger('console'));
-		$log->setLogHandler(new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/console.log'))
+		$log = new OutputHandler\Log($container['log.service']);
 
 		// Add handlers to command
 		$command->addOutputHandler($print);
