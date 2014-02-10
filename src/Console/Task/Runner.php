@@ -36,7 +36,7 @@ class Runner
 			->setFrom($container['cfg']->app->defaultEmailFrom->email);
 
 		// Configure the log handler
-		$log = new OutputHandler\Log($container['log.service']);
+		$log = new OutputHandler\Log($container['log.console']);
 
 		// Add handlers to command
 		$command->addOutputHandler($print);
