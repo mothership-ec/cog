@@ -18,7 +18,7 @@ class Collection implements \IteratorAggregate, \Countable
 		return $this->get($type);
 	}
 
-	public function add(Field $field)
+	public function add(FieldInterface $field)
 	{
 		$this->_fields[$field->getFieldType()]	= $field;
 	}

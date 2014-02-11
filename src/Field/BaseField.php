@@ -113,6 +113,11 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 		$this->_options	= $options;
 	}
 
+	public function getOptions()
+	{
+		return $this->_options;
+	}
+
 	/**
 	 * Get the validator instance.
 	 *

@@ -25,14 +25,14 @@ class Group implements FieldInterface, FieldContentInterface
 	protected $_fields = array();
 	protected $_idFieldName;
 
+	protected $_options = array();
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __construct(Validator $validator)
 	{
 		$this->_validator = $validator;
-//		$this->_name      = $name;
-//		$this->_label     = $label ?: $name;
 	}
 
 	/**
@@ -281,4 +281,15 @@ class Group implements FieldInterface, FieldContentInterface
 	{
 		$this->_translationKey = $key . '.' . $this->getName();
 	}
+
+	public function setOptions(array $options)
+	{
+		$this->_options	= $options;
+	}
+
+	public function getOptions()
+	{
+		return $this->_options;
+	}
+
 }
