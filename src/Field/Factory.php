@@ -115,6 +115,7 @@ class Factory implements \IteratorAggregate, \Countable
 	{
 		// Check if a field with this name already exists
 		if (isset($this->_fields[$field->getName()])) {
+			de($field->getName());
 			throw new \InvalidArgumentException(sprintf(
 				'A field with the name `%s` already exists on the field factory',
 				$field->getName()
@@ -158,7 +159,6 @@ class Factory implements \IteratorAggregate, \Countable
 			->get($type)
 			->setName($name)
 			->setLabel($label);
-
 		$field->setTranslationKey($this->_baseTransKey);
 
 		if ($field instanceof ContainerAwareInterface) {
@@ -187,9 +187,14 @@ class Factory implements \IteratorAggregate, \Countable
 		$groupValidator = clone $this->_validator;
 		$groupValidator->clear();
 
+		$label	= ($label) ?: $name;
+
 		$this->_validator->addField(new Validation\Field($name, $label))->validateAgainst($groupValidator);
 
-		$group = new Group($groupValidator, $name, $label);
+		$group = new Group($groupValidator);
+		$group->setName($name)
+			->setLabel($label);
+
 		$group->setTranslationKey($this->_baseTransKey);
 
 		return $group;
