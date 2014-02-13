@@ -2,9 +2,6 @@
 
 namespace Message\Cog\Field;
 
-use Message\Mothership\CMS\PageType\PageTypeInterface;
-
-use Message\Cog\Form\Handler;
 use Message\Cog\Validation;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
@@ -37,17 +34,18 @@ class Factory implements \IteratorAggregate, \Countable
 	/**
 	 * Build the fields for a given page type on this factory.
 	 *
-	 * @param  PageTypeInterface $pageType The page type to use
+	 * @param  ContentInterface $pageType The page type to use
 	 *
 	 * @return Factory                     Returns $this for chainability
 	 */
-	public function build(PageTypeInterface $pageType)
+	public function build(ContentInterface $content)
 	{
 		$this->clear();
 
-		$this->_baseTransKey = 'page.' . $pageType->getName();
+		// @todo not sure what to do with this line
+		$this->_baseTransKey = 'page.' . $content->getName();
 
-		$pageType->setFields($this);
+		$content->setFields($this);
 
 		return $this;
 	}
@@ -115,7 +113,6 @@ class Factory implements \IteratorAggregate, \Countable
 	{
 		// Check if a field with this name already exists
 		if (isset($this->_fields[$field->getName()])) {
-			de($field->getName());
 			throw new \InvalidArgumentException(sprintf(
 				'A field with the name `%s` already exists on the field factory',
 				$field->getName()
