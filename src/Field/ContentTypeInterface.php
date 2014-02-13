@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Field;
 
-interface ContentInterface
+interface ContentTypeInterface
 {
 	/**
 	 * Get the identifying name of this page type.
