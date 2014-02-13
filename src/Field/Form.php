@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Field;
 
-use Message\Mothership\CMS\Page\Content;
-
 use Message\Cog\Form\Handler;
 use Message\Cog\Service\ContainerInterface;
 
@@ -37,9 +35,14 @@ class Form
 	 *
 	 * @return Symfony\Component\Form\Form The generated form
 	 */
-	public function generate(Handler $form, Content $content)
+	public function generate(Handler $form, $content)
 	{
 		$defaultValues = array();
+
+		if (!is_array($content) && !$content instanceof \Traversable) {
+			throw new \Exception('Content must be traversable');
+		}
+
 		foreach ($content as $name => $contentPart) {
 			if ($contentPart instanceof Field) {
 				$defaultValues[$name] = $contentPart->getValue();
