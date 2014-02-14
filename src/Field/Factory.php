@@ -38,7 +38,7 @@ class Factory implements \IteratorAggregate, \Countable
 	 *
 	 * @return Factory                     Returns $this for chainability
 	 */
-	public function build(ContentInterface $content)
+	public function build(ContentTypeInterface $content)
 	{
 		$this->clear();
 
