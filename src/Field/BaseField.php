@@ -111,6 +111,8 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	public function setOptions(array $options)
 	{
 		$this->_options	= $options;
+
+		return $this;
 	}
 
 	public function getOptions()
