@@ -455,6 +455,7 @@ class Services implements ServicesInterface
 			return new \Message\Cog\Field\Collection(array(
 				new \Message\Cog\Field\Type\Boolean($c['validator']),
 				new \Message\Cog\Field\Type\Choice($c['validator']),
+				new \Message\Cog\Field\Type\Datalist($c['validator']),
 				new \Message\Cog\Field\Type\Date($c['validator']),
 				new \Message\Cog\Field\Type\Datetime($c['validator']),
 				new \Message\Cog\Field\Type\Html($c['validator']),
