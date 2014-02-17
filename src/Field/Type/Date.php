@@ -17,6 +17,15 @@ class Date extends Field
 		return 'date';
 	}
 
+	public function getValue()
+	{
+		if ($this->_value instanceof \DateTime) {
+			return $this->_value;
+		}
+
+		return new \DateTime(date('c', $this->_value));
+	}
+
 	public function getFormField(Handler $form)
 	{
 		$form->add($this->getName(), 'date', $this->getLabel(), array(
