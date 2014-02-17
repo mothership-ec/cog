@@ -5,3 +5,4 @@ default-email-from:
   email: noreply@default.com
   name: My Application
 csrf-secret: CHANGE THIS FOR EACH INSTALLATION
+session-namespace: cog
