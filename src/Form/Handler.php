@@ -301,6 +301,16 @@ class Handler
 	}
 
 	/**
+	 * Get array of fields
+	 *
+	 * @return array
+	 */
+	public function getFields()
+	{
+		return $this->_fields;
+	}
+
+	/**
 	 * @param $child
 	 * @param $type
 	 * @param $options

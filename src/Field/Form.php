@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Field;
 
+use Message\Mothership\CMS\Page\Content;
+
 use Message\Cog\Form\Handler;
 use Message\Cog\Service\ContainerInterface;
 
