@@ -244,7 +244,7 @@
 
 {% block datalist_widget %}
 	{% spaceless %}
-		<input id="{{ id }}" name="{{ full_name }}" list="{{ id }}list" {{ block('widget_attributes') }}>
+		<input id="{{ id }}" name="{{ full_name }}" list="{{ id }}list" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}>
 		<datalist id="{{ id }}list">
 			{% for choice in choices %}
 				<option value="{{ choice }}">
