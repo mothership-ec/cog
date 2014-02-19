@@ -90,6 +90,13 @@ class Handler
 	 */
 	protected $_fields = array();
 
+	/**
+	 * @var \Symfony\Component\Form\FormFactory
+	 */
+	protected $_factory;
+
+	protected $_initialised	= false;
+
 
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
@@ -137,7 +144,10 @@ class Handler
 	 */
 	public function setDefaultValues($values)
 	{
-		$this->_defaultValues = (array)$values;
+		if ($this->_initialised) {
+			throw new \Exception('You cannot add default values to an initialised form!');
+		}
+		$this->_defaultValues = (array) $values;
 
 		return $this;
 	}
@@ -403,6 +413,7 @@ class Handler
 	protected function _initialiseForm()
 	{
 		$form = $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_options);
+		$this->_initialised	= true;
 
 		return $form;
 	}
