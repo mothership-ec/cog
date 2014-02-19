@@ -65,7 +65,6 @@ class Form
 			}
 		}
 
-
 		return $this->_form;
 	}
 

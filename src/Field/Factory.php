@@ -152,10 +152,12 @@ class Factory implements \IteratorAggregate, \Countable
 	{
 		$label	= $label ?: $name;
 
-		$field	= $this->_services['field.collection']
-			->get($type)
-			->setName($name)
+		$field	= clone $this->_services['field.collection']
+			->get($type);
+
+		$field->setName($name)
 			->setLabel($label);
+		
 		$field->setTranslationKey($this->_baseTransKey);
 
 		if ($field instanceof ContainerAwareInterface) {
