@@ -133,23 +133,21 @@ The task system has some built-in output handlers which let you do the following
 
 ### Printing to the screen
 
-By default everything returned from your task will be printed to the screen. To prevent this from happening call `$this->output('print')->disable()` from within your task's `process()` or `configure()` method.
+By default everything returned from your task will be printed to the screen. To prevent this from happening call `$this->output('print')->disable()` from within your task's `process()` method.
 
 ### Saving to file
 
-The task's output can be saved to file by calling `$this->output('log')->enable('/path/to/file')`. `enable()` takes up to 2 parameters:
+To save the task's output to a file you should enable it with `$this->output('log')->enable()`.
 
-- First parameter is the full path to the file you want to write to e.g `/tmp/task.log`. This path must be writeable.
-- You can provide an optional second parameter, a boolean that indicates the file must be appended to rather than overwritten e.g `$this->output('log')->enable('/tmp/task.log', true)`.
+This uses the `log.console` service which by default has a single stream handler to `cog://logs/console.log`. To change this you can either extend / overwrite the `log.console` service or access the logger using `$this->output('log')->getLogger()`.
 
 ### Emailing recipients
 
-Lastly it's possible to email recipients the output of your task using `$this->output('mail')->enable()`. `enable()` takes up to 4 parameters, only the first is required:
+Lastly it's possible to email recipients the output of your task using `$this->output('mail')->enable()`.
 
-- Recipients.  An array where each key is an email address and the value is that recipients full name. e.g `array('jamie@message.co.uk' => 'Jamie Freeman')`. If you're only emailing a single recipient you can optionally provide just the email address as a string.
-- Subject. A string that will be displayed as the emails subject line in the recipients email client. If omitted it will automatically be generated from your task's name.
-- Body. Some text that will be prepended to the output of your task and displayed in the recipient's email client
-- Filename. If a filename is set, the task output will be attached to the email (rather than as the body of the email) as a file.
+The mail handler has an instance of `mail.message` that can be accessed with `$this->output('mail')->getMessage()`.
+
+By default the recipient is set to `$services['cfg']->app->defaultContactEmail` and the sender is `$services['cfg']->app->defaultEmailFrom->email`.
 
 ### Example
 
@@ -163,19 +161,24 @@ Lastly it's possible to email recipients the output of your task using `$this->o
 	    {
 	        // Run every 5 minutes
 	        $this->schedule('*/5 * * * *');
-
-	        // Email output to client
-	        $this->output('mail')->enable('info@tshirts.com', 'Order data');
-
-	        // Append to log file
-	        $this->output('log')->enable(LOG_PATH . 'order_data.log', true);
-
-	        // Don't display output in console
-	        $this->output('print')->disable();
 	    }
 
 		public function process()
 		{
+		    // Email output to client
+	        $this->output('mail')->enable()
+	        $this->output('mail')->getMessage()
+	            ->setTo('info@shirts.com')
+	            ->setSubject('Order data');
+
+	        // Append to log file
+	        $this->output('log')->enable();
+	        $this->output('log')->getLogger()
+	            ->pushHandler($someHandler);
+
+	        // Don't display output in console
+	        $this->output('print')->disable();
+
 			return 'The task has run';
 		}
 	}
