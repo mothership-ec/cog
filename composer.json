@@ -64,7 +64,8 @@
 		"zendframework/zend-debug"         : "~2.2"
 	},
 	"require-dev": {
-		"mikey179/vfsStream"              : "1.1.*"
+		"mikey179/vfsStream"              : "1.1.*",
+		"phpspec/phpspec"                 : "2.0.*@dev"
 	},
 	"suggest": {
 		"ext-apc"                : "The preferred caching system in Cog",
