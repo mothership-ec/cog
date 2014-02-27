@@ -645,6 +645,17 @@ class Services implements ServicesInterface
 			return $logger;
 		});
 
+		$serviceContainer['log.console'] = $serviceContainer->share(function($c) {
+			$logger = new \Monolog\Logger('console');
+
+			// Set up handler for logging to file (as default)
+			$logger->pushHandler(
+				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/console.log')
+			);
+
+			return $logger;
+		});
+
 		$serviceContainer['whoops'] = $serviceContainer->share(function($c) {
 			$run = new \Whoops\Run;
 			$run->allowQuit(false);
