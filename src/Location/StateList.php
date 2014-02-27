@@ -90,7 +90,7 @@ class StateList extends ChoiceList {
 			'GRO' => 'Guerrero',
 			'HID' => 'Hidalgo',
 			'JAL' => 'Jalisco',
-			'MEX' => 'México',
+			'MEX' => 'Estado de México',
 			'MIC' => 'Michoacán',
 			'MOR' => 'Morelos',
 			'NAY' => 'Nayarit',
