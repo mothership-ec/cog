@@ -2,12 +2,19 @@
 
 namespace Message\Cog\Console\Task\OutputHandler;
 
+use Message\Cog\Mail\MailableInterface;
+use Message\Cog\Mail\Mailer;
 
 class Mail extends OutputHandler
 {
-	protected $_recipients;
-	protected $_subject;
-	protected $_body;
+	protected $_message;
+	protected $_dispatcher;
+
+	public function __construct(MailableInterface $message, Mailer $dispatcher)
+	{
+		$this->_message    = $message;
+		$this->_dispatcher = $dispatcher;
+	}
 
 	/**
 	 * {inheritDoc}
@@ -18,21 +25,13 @@ class Mail extends OutputHandler
 	}
 
 	/**
-	 * Enable this output handler
+	 * Get the message instance.
 	 *
-	 * @param  string|array $recipients The recipients this should be delivered to
-	 * @param  string $subject    The subject of the email to send
-	 * @param  string $body       The body to prepend to the output in the email.
-	 *
-	 * @return void
+	 * @return MailableInterface
 	 */
-	public function enable($recipients, $subject = '', $body = '')
+	public function getMessage()
 	{
-		$this->_recipients = $recipients;
-		$this->_subject    = $subject;
-		$this->_body       = $body;
-
-		parent::enable();
+		return $this->_message;
 	}
 
 	/**
@@ -44,17 +43,23 @@ class Mail extends OutputHandler
 			return;
 		}
 
-		// if a single string is provided turn it into the format we expect
-		if(!is_array($this->_recipients)) {
-			$this->_recipients = array($this->_recipients => '');
+		// Get the first argument as the output
+		$content = array_shift($args);
+
+		// Set the subject to a default if not already set
+		if ("" == $this->_message->getSubject()) {
+			$this->_message->setSubject("Output of " . $this->_task->getName());
 		}
 
-		$content    = $args[0];
-		$recipients = $this->_recipients;
-		$subject    = $this->_subject ?: 'Output of '.$this->_task->getName();
-		$body       = $this->_body  . $content;
+		// Append the task output to any existing body, and then any remaining
+		// arguments
+		$this->_message->setBody(
+			  "MESSAGE         \n===\n" . $this->_message->getBody()
+			. "\n\n\nOUTPUT    \n===\n" . $content
+			. "\n\n\nARGUMENTS \n===\n" . var_export($args, true)
+		);
 
-		// Todo: use the email component when it's built
-		mail(implode(', ', array_keys($this->_recipients)), $subject, $body);
+		// Dispatch the message
+		$this->_dispatcher->send($this->_message);
 	}
 }

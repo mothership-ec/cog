@@ -261,7 +261,14 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['http.session'] = $serviceContainer->share(function($c) {
-			$storage = new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+			$namespace = isset($c['cfg']->app->sessionNamespace) ? $c['cfg']->app->sessionNamespace : 'cog';
+			$storage   = new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage(
+				array(),
+				null,
+				new \Symfony\Component\HttpFoundation\Session\Storage\MetadataBag(
+					sprintf('__%s_meta', $namespace)
+				)
+			);
 
 			// Use an array as the session storage when running unit tests
 			if ('test' === $c['env']) {
@@ -270,8 +277,12 @@ class Services implements ServicesInterface
 
 			return new \Message\Cog\HTTP\Session(
 				$storage,
-				null,
-				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag('__cog_flashes')
+				new \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag(
+					sprintf('__%s_attributes', $namespace)
+				),
+				new \Symfony\Component\HttpFoundation\Session\Flash\FlashBag(
+					sprintf('__%s_flashes', $namespace)
+				)
 			);
 		});
 
@@ -346,7 +357,12 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Module\Loader($c['module.locator'], $c['bootstrap.loader'], $c['event.dispatcher']);
+			return new \Message\Cog\Module\Loader(
+				$c['module.locator'],
+				$c['bootstrap.loader'],
+				$c['event.dispatcher'],
+				$c['log.errors']
+			);
 		});
 
 		$serviceContainer['task.collection'] = $serviceContainer->share(function($c) {
@@ -624,6 +640,17 @@ class Services implements ServicesInterface
 			// Set up handler for logging to file (as default)
 			$logger->pushHandler(
 				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
+			);
+
+			return $logger;
+		});
+
+		$serviceContainer['log.console'] = $serviceContainer->share(function($c) {
+			$logger = new \Monolog\Logger('console');
+
+			// Set up handler for logging to file (as default)
+			$logger->pushHandler(
+				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/console.log')
 			);
 
 			return $logger;

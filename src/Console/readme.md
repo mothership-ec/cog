@@ -6,7 +6,7 @@ The console component is split into two areas Tasks and Commands. This document 
 
 Tasks in Cog are units of work which run independently from a page request.  This might be via a cronjob at regular intervals, as part of a queue or message system, by a post-receive hook after a deploy, or just manually by a developer. In the past we managed these using adhoc scripts in `/utility_scripts` but the Task system provides a structured platform with helpful methods.
 
-Examples tasks could be: 
+Examples tasks could be:
 
 - Regenerating some cached content.
 - Requesting an resource or time intensive external API.
@@ -75,15 +75,15 @@ The `$tasks` parameter which is pass into the `registerTasks()` method is an ins
 Once you've created your task class and registered it in the bootstrap you should be able to run it by typing the following in your terminal:
 
     $ bin/cog task:run cms:clean_tmp_data
-    
+
 You should then see the following output (which is what gets returned from `SendOrderData`'s `process()` method):
 
     $ The task has run
-    
+
 You can see a list of all registered tasks by running:
 
     $ bin/cog task:list
-    
+
 If you can't see your task in the list then it's likely that you havent registered it properly.
 
 ## Scheduling tasks
@@ -101,7 +101,7 @@ The task system comes with a way of schduling tasks to run at certain, repeated 
 	        // Run every 5 minutes
 	        $this->schedule('*/5 * * * *');
 	    }
-	    
+
 		public function process()
 		{
 			return 'The task has run';
@@ -133,23 +133,21 @@ The task system has some built-in output handlers which let you do the following
 
 ### Printing to the screen
 
-By default everything returned from your task will be printed to the screen. To prevent this from happening call `$this->output('print')->disable()` from within your task's `process()` or `configure()` method.
+By default everything returned from your task will be printed to the screen. To prevent this from happening call `$this->output('print')->disable()` from within your task's `process()` method.
 
 ### Saving to file
 
-The task's output can be saved to file by calling `$this->output('log')->enable('/path/to/file')`. `enable()` takes up to 2 parameters:
+To save the task's output to a file you should enable it with `$this->output('log')->enable()`.
 
-- First parameter is the full path to the file you want to write to e.g `/tmp/task.log`. This path must be writeable.
-- You can provide an optional second parameter, a boolean that indicates the file must be appended to rather than overwritten e.g `$this->output('log')->enable('/tmp/task.log', true)`.
+This uses the `log.console` service which by default has a single stream handler to `cog://logs/console.log`. To change this you can either extend / overwrite the `log.console` service or access the logger using `$this->output('log')->getLogger()`.
 
 ### Emailing recipients
 
-Lastly it's possible to email recipients the output of your task using `$this->output('mail')->enable()`. `enable()` takes up to 4 parameters, only the first is required:
+Lastly it's possible to email recipients the output of your task using `$this->output('mail')->enable()`.
 
-- Recipients.  An array where each key is an email address and the value is that recipients full name. e.g `array('jamie@message.co.uk' => 'Jamie Freeman')`. If you're only emailing a single recipient you can optionally provide just the email address as a string.
-- Subject. A string that will be displayed as the emails subject line in the recipients email client. If omitted it will automatically be generated from your task's name.
-- Body. Some text that will be prepended to the output of your task and displayed in the recipient's email client
-- Filename. If a filename is set, the task output will be attached to the email (rather than as the body of the email) as a file.
+The mail handler has an instance of `mail.message` that can be accessed with `$this->output('mail')->getMessage()`.
+
+By default the recipient is set to `$services['cfg']->app->defaultContactEmail` and the sender is `$services['cfg']->app->defaultEmailFrom->email`.
 
 ### Example
 
@@ -163,19 +161,24 @@ Lastly it's possible to email recipients the output of your task using `$this->o
 	    {
 	        // Run every 5 minutes
 	        $this->schedule('*/5 * * * *');
-	        
-	        // Email output to client
-	        $this->output('mail')->enable('info@tshirts.com', 'Order data');
-	        
-	        // Append to log file
-	        $this->output('log')->enable(LOG_PATH . 'order_data.log', true);
-	        
-	        // Don't display output in console
-	        $this->output('print')->disable();
 	    }
-	    
+
 		public function process()
 		{
+		    // Email output to client
+	        $this->output('mail')->enable()
+	        $this->output('mail')->getMessage()
+	            ->setTo('info@shirts.com')
+	            ->setSubject('Order data');
+
+	        // Append to log file
+	        $this->output('log')->enable();
+	        $this->output('log')->getLogger()
+	            ->pushHandler($someHandler);
+
+	        // Don't display output in console
+	        $this->output('print')->disable();
+
 			return 'The task has run';
 		}
 	}
@@ -209,7 +212,7 @@ You can use a simple tagging feature similar to HTML to add colour to the output
 
             // Tags can be combined - Make text bold and yellow
             $output.= '<question><bold>foo</bold></question>';
-            
+
             return $output;
 		}
 	}
@@ -235,12 +238,12 @@ If you want to display progress to a user as it happens use the `write()` and `w
 		    $this->writeln('Done');
 		}
 	}
-    
+
 ## Advanced
 
 ### Internals
 
-Really a task is just an subclass of `Symfony\Component\Console\Command\Command`. It's `execute()` method has been proxied to `process()` so that it's signature can be simplified  for ease of use. 
+Really a task is just an subclass of `Symfony\Component\Console\Command\Command`. It's `execute()` method has been proxied to `process()` so that it's signature can be simplified  for ease of use.
 
 The `$input` and `$output` parameters found in a `execute()` method call have been added as protected properties at `$this->_input` and `$this->output` accordingly.  This means you can do things like adding new style formatters and user dialogs if you so wish from within your task.
 
@@ -256,10 +259,10 @@ The line in the cronjob might look like this:
 
 ### Commands vs Tasks
 
-A command is a top level part of the console, normally registered by something in `Message\Cog`. Examples of commands are `task:list`, `task:generate`, `task:run`, `module:list`. 
+A command is a top level part of the console, normally registered by something in `Message\Cog`. Examples of commands are `task:list`, `task:generate`, `task:run`, `module:list`.
 
 A task is more specific piece of work usually related to a business-rule within a module. e.g `cms:order_post_process`, `ecommerce:send_oia_orders`, `cms:twitter_cache`. Tasks can only be run by the `task:run` command. By design it's not possible to do:
 
     $ bin/cog cms:order_post_process
-    
+
 You'll just get a command not found error. It's possible for modules to register commands as well as tasks but this is generally discouraged.

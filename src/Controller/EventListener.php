@@ -45,14 +45,24 @@ class EventListener implements SubscriberInterface, ContainerAwareInterface
 	 */
 	public function dependencyInjectController(FilterControllerEvent $event)
 	{
-		$controller      = $event->getController();
-		$controllerClass = array_shift($controller);
+		$controller = $event->getController();
 
-		if ($controllerClass instanceof ContainerAwareInterface) {
-			$controllerClass->setContainer($this->_services);
+		// If the controller is a class/method reference, grab the class
+		if (is_array($controller)) {
+			$controller = array_shift($controller);
 		}
-		if ($controllerClass instanceof RequestAwareInterface) {
-			$controllerClass->setRequest($this->_services['request']);
+
+		// Skip if the controller isn't an object
+		if (!is_object($controller)) {
+			return false;
+		}
+
+		if ($controller instanceof ContainerAwareInterface) {
+			$controller->setContainer($this->_services);
+		}
+
+		if ($controller instanceof RequestAwareInterface) {
+			$controller->setRequest($this->_services['request']);
 		}
 	}
 }

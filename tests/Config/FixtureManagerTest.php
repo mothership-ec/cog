@@ -342,33 +342,9 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->will($this->returnValue('Message/Cog'));
 
 		$this->assertEquals(
-			__DIR__ . '/message/cog-cms/Message/Cog/fixtures/config/',
+			__DIR__ . '/message/cog-cms/Message/Cog/resources/fixtures/config/',
 			FixtureManager::getConfigFixtureDir($composer, $package)
 		);
-	}
-
-	public function testIsPackageCogModule()
-	{
-		$package = $this->getMock('Composer\Package\BasePackage', array('getPrettyName'));
-
-		$package
-			->expects($this->at(0))
-			->method('getPrettyName')
-			->will($this->returnValue('message/cog-wishlist'));
-
-		$package
-			->expects($this->at(1))
-			->method('getPrettyName')
-			->will($this->returnValue('somebodyelse/cog-custommodule'));
-
-		$package
-			->expects($this->at(2))
-			->method('getPrettyName')
-			->will($this->returnValue('message/nota-cog-module'));
-
-		$this->assertTrue(FixtureManager::isPackageCogModule($package));
-		$this->assertTrue(FixtureManager::isPackageCogModule($package));
-		$this->assertFalse(FixtureManager::isPackageCogModule($package));
 	}
 
 	public function testGetFixtures()

@@ -90,6 +90,13 @@ class Handler
 	 */
 	protected $_fields = array();
 
+	/**
+	 * @var \Symfony\Component\Form\FormFactory
+	 */
+	protected $_factory;
+
+	protected $_initialised	= false;
+
 
 	/**
 	 * Creates instance of SymfonyForm and Validator on construction
@@ -137,7 +144,10 @@ class Handler
 	 */
 	public function setDefaultValues($values)
 	{
-		$this->_defaultValues = (array)$values;
+		if ($this->_initialised) {
+			throw new \Exception('You cannot add default values to an initialised form!');
+		}
+		$this->_defaultValues = (array) $values;
 
 		return $this;
 	}
@@ -403,6 +413,7 @@ class Handler
 	protected function _initialiseForm()
 	{
 		$form = $this->_factory->createNamed($this->_name, 'form', $this->_defaultValues, $this->_options);
+		$this->_initialised	= true;
 
 		return $form;
 	}
@@ -513,9 +524,17 @@ class Handler
 		// Datetime object due to browser differences. This ensures all dates
 		// are instantiated correctly.
 		foreach ($this->_fields as $name => $field) {
-			if ('date' == $field['type'] and $value = $data[$name] and ! $value instanceof \DateTime) {
+			if (in_array($field['type'], ['date', 'datetime']) and $value = $data[$name] and ! $value instanceof \DateTime) {
+				// If the value is an array it's date and time separately, so smush them together
+				if (is_array($value)) {
+					$value = trim(implode(' ', $value));
+				}
+
 				$format = $this->_container['helper.date']->detectFormat($value);
-				$data[$name] = \DateTime::createFromFormat($format, $value);
+
+				// The ! character is important as it tells DateTime to default
+				// to epoch values where they are not defined in the value (i.e. if time is not set, default to 00:00:00)
+				$data[$name] = \DateTime::createFromFormat('!' . $format, $value);
 			}
 		}
 
