@@ -7,6 +7,7 @@ use Message\Cog\HTTP\Response;
 use Message\Cog\HTTP\RequestAwareInterface;
 use Message\Cog\Templating\EngineInterface;
 use Message\Cog\Form\Handler as FormHandler;
+use Symfony\Component\Form as SymfonyForm;
 
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 
@@ -68,6 +69,12 @@ class ResponseBuilder implements RequestAwareInterface
 		foreach ($params as $key => $val) {
 			if ($val instanceof FormHandler) {
 				$params[$key] = $val->getForm()->createView();
+			}
+			if($val instanceof SymfonyForm\FormBuilder) {
+				$params[$key] = $val->getForm()->createView();
+			}
+			if($val instanceof SymfonyForm\Form) {
+				$params[$key] = $val->createView();
 			}
 		}
 

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1bbb20e6383f02e413fb4c119f02bd42",
+    "hash": "1bc898ec1f6a66b19c979d9b619efbac",
     "packages": [
         {
             "name": "filp/whoops",
@@ -178,12 +178,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kriswallsmith/assetic.git",
-                "reference": "v1.1.2"
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/v1.1.2",
-                "reference": "v1.1.2",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f",
                 "shasum": ""
             },
             "require": {
@@ -609,7 +609,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Chris Corbyn"
@@ -625,7 +627,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
@@ -773,7 +775,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -786,7 +790,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
@@ -869,7 +873,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -882,17 +888,17 @@
         },
         {
             "name": "symfony/form",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Form",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Form.git",
-                "reference": "dea5d7b32c866ad25bdba5c7eb3d7b27bcf85865"
+                "reference": "50c2d2dcfd7826a181d01196d8c55a0517e24c04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Form/zipball/dea5d7b32c866ad25bdba5c7eb3d7b27bcf85865",
-                "reference": "dea5d7b32c866ad25bdba5c7eb3d7b27bcf85865",
+                "url": "https://api.github.com/repos/symfony/Form/zipball/50c2d2dcfd7826a181d01196d8c55a0517e24c04",
+                "reference": "50c2d2dcfd7826a181d01196d8c55a0517e24c04",
                 "shasum": ""
             },
             "require": {
@@ -939,7 +945,7 @@
             ],
             "description": "Symfony Form Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-11 14:26:59"
+            "time": "2014-02-15 11:03:01"
         },
         {
             "name": "symfony/http-foundation",
@@ -995,17 +1001,17 @@
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/HttpKernel",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpKernel.git",
-                "reference": "d5863ad159a4b5587b3e0a4eb17d1521df1f2290"
+                "reference": "9aef5f2ca801edb23175fbdd713d869381a09429"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/d5863ad159a4b5587b3e0a4eb17d1521df1f2290",
-                "reference": "d5863ad159a4b5587b3e0a4eb17d1521df1f2290",
+                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/9aef5f2ca801edb23175fbdd713d869381a09429",
+                "reference": "9aef5f2ca801edb23175fbdd713d869381a09429",
                 "shasum": ""
             },
             "require": {
@@ -1064,7 +1070,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-12 08:18:23"
+            "time": "2014-02-27 14:55:30"
         },
         {
             "name": "symfony/icu",
@@ -1276,7 +1282,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -1349,7 +1357,7 @@
         },
         {
             "name": "symfony/routing",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Routing",
             "source": {
                 "type": "git",
@@ -1438,7 +1446,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -1451,7 +1461,7 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Translation",
             "source": {
                 "type": "git",
@@ -1508,7 +1518,7 @@
         },
         {
             "name": "symfony/twig-bridge",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Bridge/Twig",
             "source": {
                 "type": "git",
@@ -1631,6 +1641,69 @@
             "time": "2014-02-04 07:13:29"
         },
         {
+            "name": "symfony/validator",
+            "version": "v2.3.11",
+            "target-dir": "Symfony/Component/Validator",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Validator.git",
+                "reference": "d7afab9f822eb75e589aa5832ea4ab512d31d1ce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Validator/zipball/d7afab9f822eb75e589aa5832ea4ab512d31d1ce",
+                "reference": "d7afab9f822eb75e589aa5832ea4ab512d31d1ce",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "symfony/translation": "~2.0"
+            },
+            "require-dev": {
+                "symfony/config": "~2.2",
+                "symfony/http-foundation": "~2.1",
+                "symfony/intl": "~2.3",
+                "symfony/yaml": "~2.0"
+            },
+            "suggest": {
+                "doctrine/common": "",
+                "symfony/config": "",
+                "symfony/http-foundation": "",
+                "symfony/intl": "",
+                "symfony/yaml": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.3-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Validator\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Validator Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-02-18 16:30:53"
+        },
+        {
             "name": "symfony/yaml",
             "version": "v2.1.13",
             "target-dir": "Symfony/Component/Yaml",
@@ -1661,7 +1734,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -1726,12 +1801,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "v1.13.2"
+                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/v1.13.2",
-                "reference": "v1.13.2",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/6d6a1009427d1f398c9d40904147bf9f723d5755",
+                "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755",
                 "shasum": ""
             },
             "require": {
@@ -1755,11 +1830,14 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Armin Ronacher",
-                    "email": "armin.ronacher@active-4.com"
+                    "email": "armin.ronacher@active-4.com",
+                    "role": "Project Founder"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",

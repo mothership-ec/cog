@@ -82,6 +82,33 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 		$this->_services = $container;
 	}
 
+	 /**
+     * Creates and returns a Form instance from the type of the form.
+     *
+     * @param string|FormTypeInterface $type    The built type of the form
+     * @param mixed                    $data    The initial data for the form
+     * @param array                    $options Options for the form
+     *
+     * @return Form
+     */
+    public function createForm($type, $data = null, array $options = array())
+    {
+        return $this->_services->get('form.factory')->create($type, $data, $options);
+    }
+
+    /**
+     * Creates and returns a form builder instance
+     *
+     * @param mixed $data    The initial data for the form
+     * @param array $options Options for the form
+     *
+     * @return FormBuilder
+     */
+    public function createFormBuilder($data = null, array $options = array())
+    {
+        return $this->_services->get('form.factory')->createBuilder('form', $data, $options);
+    }
+
 	/**
 	 * {@inheritdoc}
 	 *

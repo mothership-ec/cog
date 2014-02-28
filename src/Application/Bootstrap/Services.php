@@ -451,10 +451,14 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['form.builder'] = $serviceContainer->share(function($c) {
-			return $c['form.factory']->getFormFactory()->createBuilder();
+			return $c['form.factory']->createBuilder();
 		});
 
 		$serviceContainer['form.factory'] = $serviceContainer->share(function($c) {
+			return $c['form.factory.builder']->getFormFactory();
+		});
+
+		$serviceContainer['form.factory.builder'] = $serviceContainer->share(function($c) {
 			return new \Message\Cog\Form\Factory\Builder($c['form.extensions']);
 		});
 
@@ -465,8 +469,37 @@ class Services implements ServicesInterface
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
+				new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($c['symfony.validator']),
+				new \Message\Cog\Validator\Extension\ValidationMessageExtension($c['http.session']),
 			);
 		};
+
+		// $serviceContainer['form.builder'] = $serviceContainer->share(function($c) {
+		// 	return $c['form.factory']->createBuilder();
+		// });
+
+		// $serviceContainer['form.factory'] = $serviceContainer->share(function($c) {
+		// 	return $c['form.factory.builder']->getFormFactory();
+		// });
+
+		// $serviceContainer['form.factory.builder'] = $serviceContainer->share(function($c) {
+		// 	$factoryBuilder = new \Symfony\Component\Form\FormFactoryBuilder();
+		// 	$factoryBuilder->addExtensions($c['form.extensions']);
+
+		// 	return $factoryBuilder;
+		// });
+
+		// $serviceContainer['form.extensions'] = function($c) {
+		// 	return array(
+		// 		new \Message\Cog\Form\Extension\Extension,
+		// 		new \Symfony\Component\Form\Extension\Core\CoreExtension,
+		// 		new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
+		// 			new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret']),
+		// 			$c['translator']
+		// 		),
+		// 		new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($c['validator_new']),
+		// 	);
+		// };
 
 		$serviceContainer['form.csrf_secret'] = function($c) {
 			$parts = array(
@@ -553,6 +586,29 @@ class Services implements ServicesInterface
 			);
 		};
 
+		$serviceContainer['symfony.validator'] = $serviceContainer->share(function ($c) {
+		    if (isset($c['translator'])) {
+                $c['translator']->addResource('xliff', 'cog://vendor/symfony/validator/Symfony/Component/Validator/Resources/translations/validators.'.'en'.'.xlf', 'en', 'validators');
+            }
+
+            return new \Symfony\Component\Validator\Validator(
+                $c['symfony.validator.mapping.class_metadata_factory'],
+                $c['symfony.validator.validator_factory'],
+                isset($c['translator']) ? $c['translator'] : new \Symfony\Component\Validator\DefaultTranslator()
+            );
+        });
+
+        $serviceContainer['symfony.validator.mapping.class_metadata_factory'] = $serviceContainer->share(function ($c) {
+            return new \Symfony\Component\Validator\Mapping\ClassMetadataFactory(
+            	new \Symfony\Component\Validator\Mapping\Loader\StaticMethodLoader()
+            );
+        });
+
+        $serviceContainer['symfony.validator.validator_factory'] = $serviceContainer->share(function ($c) {
+            // @todo write our own one, to define how to load validators for a given constraints
+            return new \Symfony\Component\Validator\ConstraintValidatorFactory();
+        });
+
 		$serviceContainer['security.salt'] = $serviceContainer->share(function() {
 			return new \Message\Cog\Security\StringGenerator;
 		});
@@ -589,6 +645,7 @@ class Services implements ServicesInterface
 			}
 
 			$translator->addLoader('yml', $yml);
+			$translator->addLoader('xliff', new \Symfony\Component\Translation\Loader\XliffFileLoader);
 
 			$translator->loadCatalogue($id);
 
