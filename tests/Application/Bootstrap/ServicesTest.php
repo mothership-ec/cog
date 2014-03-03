@@ -133,6 +133,7 @@ session-namespace: cog');
 
 	public function testEventsDefinitions()
 	{
+		$this->assertFalse($this->_container->isShared('event'));
 		$this->assertInstanceOf('Message\Cog\Event\Event', $this->_container['event']);
 
 		$this->assertTrue($this->_container->isShared('event.dispatcher'));
@@ -147,7 +148,9 @@ session-namespace: cog');
 		$this->assertTrue($this->_container->isShared('routes'));
 		$this->assertInstanceOf('Message\Cog\Routing\CollectionManager', $this->_container['routes']);
 
+		$this->assertFalse($this->_container->isShared('routing.matcher'));
 		$this->assertInstanceOf('Message\Cog\Routing\UrlMatcher', $this->_container['routing.matcher']);
+		$this->assertFalse($this->_container->isShared('routing.generator'));
 		$this->assertInstanceOf('Message\Cog\Routing\UrlGenerator', $this->_container['routing.generator']);
 	}
 
@@ -209,6 +212,7 @@ session-namespace: cog');
 	}
 	public function testReferenceParserDefinitions()
 	{
+		$this->assertTrue($this->_container->isShared('reference_parser'));
 		$this->assertInstanceOf(
 			'Message\Cog\Module\ReferenceParserInterface',
 			$this->_container['reference_parser']
