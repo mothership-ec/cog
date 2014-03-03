@@ -627,7 +627,7 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
@@ -788,7 +788,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
@@ -884,17 +884,17 @@
         },
         {
             "name": "symfony/form",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Form",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Form.git",
-                "reference": "dea5d7b32c866ad25bdba5c7eb3d7b27bcf85865"
+                "reference": "50c2d2dcfd7826a181d01196d8c55a0517e24c04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Form/zipball/dea5d7b32c866ad25bdba5c7eb3d7b27bcf85865",
-                "reference": "dea5d7b32c866ad25bdba5c7eb3d7b27bcf85865",
+                "url": "https://api.github.com/repos/symfony/Form/zipball/50c2d2dcfd7826a181d01196d8c55a0517e24c04",
+                "reference": "50c2d2dcfd7826a181d01196d8c55a0517e24c04",
                 "shasum": ""
             },
             "require": {
@@ -941,7 +941,7 @@
             ],
             "description": "Symfony Form Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-11 14:26:59"
+            "time": "2014-02-15 11:03:01"
         },
         {
             "name": "symfony/http-foundation",
@@ -997,17 +997,17 @@
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/HttpKernel",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/HttpKernel.git",
-                "reference": "d5863ad159a4b5587b3e0a4eb17d1521df1f2290"
+                "reference": "9aef5f2ca801edb23175fbdd713d869381a09429"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/d5863ad159a4b5587b3e0a4eb17d1521df1f2290",
-                "reference": "d5863ad159a4b5587b3e0a4eb17d1521df1f2290",
+                "url": "https://api.github.com/repos/symfony/HttpKernel/zipball/9aef5f2ca801edb23175fbdd713d869381a09429",
+                "reference": "9aef5f2ca801edb23175fbdd713d869381a09429",
                 "shasum": ""
             },
             "require": {
@@ -1066,7 +1066,7 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "http://symfony.com",
-            "time": "2014-02-12 08:18:23"
+            "time": "2014-02-27 14:55:30"
         },
         {
             "name": "symfony/icu",
@@ -1351,7 +1351,7 @@
         },
         {
             "name": "symfony/routing",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Routing",
             "source": {
                 "type": "git",
@@ -1453,7 +1453,7 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Component/Translation",
             "source": {
                 "type": "git",
@@ -1510,7 +1510,7 @@
         },
         {
             "name": "symfony/twig-bridge",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Bridge/Twig",
             "source": {
                 "type": "git",
@@ -1578,7 +1578,7 @@
         },
         {
             "name": "symfony/twig-bundle",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "target-dir": "Symfony/Bundle/TwigBundle",
             "source": {
                 "type": "git",
