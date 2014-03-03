@@ -21,79 +21,76 @@ class Services implements ServicesInterface
 	/**
 	 * Register the services to the given service container.
 	 *
-	 * @param object $serviceContainer The service container
+	 * @param object $services The service container
 	 */
-	public function registerServices($serviceContainer)
+	public function registerServices($services)
 	{
-		$serviceContainer['profiler'] = $serviceContainer->share(function($s) {
-			return new \Message\Cog\Debug\Profiler(null, function() use ($s) {
+		$services['profiler'] = function($s) {
+			return new Cog\Debug\Profiler(null, function() use ($s) {
 				return $s['db']->getQueryCount();
 			}, false);
-		});
+		};
 
-		$serviceContainer['db.connection'] = $serviceContainer->share(function($s) {
-			return new \Message\Cog\DB\Adapter\MySQLi\Connection(array(
+		$services['db.connection'] = function($s) {
+			return new Cog\DB\Adapter\MySQLi\Connection(array(
 				'host'		=> $s['cfg']->db->hostname,
 				'user'		=> $s['cfg']->db->user,
 				'password' 	=> $s['cfg']->db->pass,
 				'db'		=> $s['cfg']->db->name,
 				'charset'	=> $s['cfg']->db->charset,
 			));
-		});
-
-		$serviceContainer['db.query'] = function($s) {
-			return new \Message\Cog\DB\Query($s['db.connection']);
 		};
+
+		$services['db.query'] = $services->factory(function($s) {
+			return new Cog\DB\Query($s['db.connection']);
+		});
 
 		// shortcut for easier access
-		$serviceContainer['db'] = function($s) {
-			return $s['db.query'];
-		};
+		$services['db'] = $services->raw('db.query');
 
-		$serviceContainer['db.transaction'] = function($s) {
-			return new \Message\Cog\DB\Transaction($s['db.connection']);
-		};
-
-		$serviceContainer['db.nested_set_helper'] = function($s) {
-			return new \Message\Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
-		};
-
-		$serviceContainer['event'] = function() {
-			return new \Message\Cog\Event\Event;
-		};
-
-		$serviceContainer['event.dispatcher'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Event\Dispatcher($c);
+		$services['db.transaction'] = $services->factory(function($s) {
+			return new Cog\DB\Transaction($s['db.connection']);
 		});
 
-		$serviceContainer['routes'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Routing\CollectionManager($c['reference_parser']);
+		$services['db.nested_set_helper'] = $services->factory(function($s) {
+			return new Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
 		});
 
-		$serviceContainer['routing.matcher'] = function($c) {
-			return new \Message\Cog\Routing\UrlMatcher($c['routes.compiled'], $c['http.request.context']);
+		$services['event'] = $services->factory(function() {
+			return new Cog\Event\Event;
+		});
+
+		$services['event.dispatcher'] = function($c) {
+			return new Cog\Event\Dispatcher($c);
 		};
 
-		$serviceContainer['routing.generator'] = function($c) {
+		$services['routes'] = function($c) {
+			return new Cog\Routing\CollectionManager($c['reference_parser']);
+		};
 
-			$generator = new \Message\Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
+		$services['routing.matcher'] = $services->factory(function($c) {
+			return new Cog\Routing\UrlMatcher($c['routes.compiled'], $c['http.request.context']);
+		});
+
+		$services['routing.generator'] = $services->factory(function($c) {
+			$generator = new Cog\Routing\UrlGenerator($c['routes.compiled'], $c['http.request.context']);
 			$generator->setCsrfSecrets($c['http.session'], $c['cfg']->app->csrfSecret);
 
 			return $generator;
-		};
+		});
 
 		// Service for the templating delegation engine
-		$serviceContainer['templating'] = function($c) {
-			return new \Message\Cog\Templating\DelegatingEngine(
+		$services['templating'] = $services->factory(function($c) {
+			return new Cog\Templating\DelegatingEngine(
 				array(
 					// Twig templating engine
 					$c['templating.engine.twig'],
 					$c['templating.engine.php'],
 				)
 			);
-		};
+		});
 
-		$serviceContainer['templating.formats'] = function($c) {
+		$services['templating.formats'] = $services->factory(function($c) {
 			$formats = array();
 
 			// If there is a request available
@@ -119,10 +116,10 @@ class Services implements ServicesInterface
 			}
 
 			return $formats;
-		};
+		});
 
-		$serviceContainer['templating.view_name_parser'] = function($c) {
-			$parser = new \Message\Cog\Templating\ViewNameParser(
+		$services['templating.view_name_parser'] = $services->factory(function($c) {
+			$parser = new Cog\Templating\ViewNameParser(
 				$c['reference_parser'],
 				$c['filesystem.finder'],
 				array(
@@ -135,22 +132,22 @@ class Services implements ServicesInterface
 			$parser->addDefaultDirectory($c['app.loader']->getBaseDir() . 'view/');
 
 			return $parser;
-		};
+		});
 
-		$serviceContainer['templating.actions_helper'] = function($c) {
-			return new \Message\Cog\Templating\Helper\Actions(
+		$services['templating.actions_helper'] = $services->factory(function($c) {
+			return new Cog\Templating\Helper\Actions(
 				$c['http.fragment_handler'],
 				$c['reference_parser']
 			);
-		};
+		});
 
-		$serviceContainer['templating.twig.loader'] = function($c) {
-			return new \Message\Cog\Templating\TwigFilesystemLoader(array(
+		$services['templating.twig.loader'] = $services->factory(function($c) {
+			return new Cog\Templating\TwigFilesystemLoader(array(
 				'/'
 			), $c['templating.view_name_parser']);
-		};
+		});
 
-		$serviceContainer['templating.twig.environment'] = function($c) {
+		$services['templating.twig.environment'] = $services->factory(function($c) {
 			$twigEnvironment = new \Twig_Environment(
 				$c['templating.twig.loader'],
 				array(
@@ -177,11 +174,11 @@ class Services implements ServicesInterface
 				)
 			);
 
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\Translation($c['translator']));
-			$twigEnvironment->addExtension(new \Message\Cog\Templating\Twig\Extension\PriceTwigExtension());
-			$twigEnvironment->addExtension(new \Message\Cog\Module\Templating\Twig\Extension\ModuleExists($c['module.loader']));
+			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
+			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
+			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\Translation($c['translator']));
+			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\PriceTwigExtension());
+			$twigEnvironment->addExtension(new Cog\Module\Templating\Twig\Extension\ModuleExists($c['module.loader']));
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
 			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
 			if ('live' !== $c['env']) {
@@ -190,42 +187,42 @@ class Services implements ServicesInterface
 			$twigEnvironment->addGlobal('app', $c['templating.globals']);
 
 			return $twigEnvironment;
-		};
+		});
 
-		$serviceContainer['templating.engine.php'] = function($c) {
-			$engine = new \Message\Cog\Templating\PhpEngine(
+		$services['templating.engine.php'] = $services->factory(function($c) {
+			$engine = new Cog\Templating\PhpEngine(
 				$c['templating.view_name_parser'],
 				$c['templating.filesystem.loader'],
 				array(
 					new \Symfony\Component\Templating\Helper\SlotsHelper,
 					$c['templating.actions_helper'],
-					new \Message\Cog\Templating\Helper\Routing($c['routing.generator']),
-					new \Message\Cog\Templating\Helper\Translation($c['translator']),
+					new Cog\Templating\Helper\Routing($c['routing.generator']),
+					new Cog\Templating\Helper\Translation($c['translator']),
 				)
 			);
 
 			$engine->addGlobal('app', $c['templating.globals']);
 
 			return $engine;
-		};
+		});
 
-		$serviceContainer['templating.filesystem.loader'] = function($c) {
+		$services['templating.filesystem.loader'] = $services->factory(function($c) {
 			return new \Symfony\Component\Templating\Loader\FilesystemLoader(
 				array(
 					$c['app.loader']->getBaseDir(),
 					'cog://Message:Cog::Form:View:Php',
 				)
 			);
-		};
+		});
 
-		$serviceContainer['templating.engine.twig'] = function($c) {
-			return new \Message\Cog\Templating\TwigEngine(
+		$services['templating.engine.twig'] = $services->factory(function($c) {
+			return new Cog\Templating\TwigEngine(
 				$c['templating.twig.environment'],
 				$c['templating.view_name_parser']
 			);
-		};
+		});
 
-		$serviceContainer['templating.globals'] = $serviceContainer->share(function($c) {
+		$services['templating.globals'] = function($c) {
 			$globals = new Cog\Templating\GlobalVariables($c);
 
 			$globals->set('session', function($services) {
@@ -247,20 +244,20 @@ class Services implements ServicesInterface
 			});
 
 			return $globals;
-		});
+		};
 
-		$serviceContainer['http.cache.esi'] = $serviceContainer->share(function($c) {
+		$services['http.cache.esi'] = function($c) {
 			return new \Symfony\Component\HttpKernel\HttpCache\Esi;
-		});
+		};
 
-		$serviceContainer['http.kernel'] = function($c) {
-			return new \Message\Cog\HTTP\Kernel(
+		$services['http.kernel'] = $services->factory(function($c) {
+			return new Cog\HTTP\Kernel(
 				$c['event.dispatcher'],
 				new \Symfony\Component\HttpKernel\Controller\ControllerResolver
 			);
-		};
+		});
 
-		$serviceContainer['http.session'] = $serviceContainer->share(function($c) {
+		$services['http.session'] = function($c) {
 			$namespace = isset($c['cfg']->app->sessionNamespace) ? $c['cfg']->app->sessionNamespace : 'cog';
 			$storage   = new \Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage(
 				array(),
@@ -275,7 +272,7 @@ class Services implements ServicesInterface
 				$storage = new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 			}
 
-			return new \Message\Cog\HTTP\Session(
+			return new Cog\HTTP\Session(
 				$storage,
 				new \Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag(
 					sprintf('__%s_attributes', $namespace)
@@ -284,53 +281,53 @@ class Services implements ServicesInterface
 					sprintf('__%s_flashes', $namespace)
 				)
 			);
-		});
+		};
 
-		$serviceContainer['http.cookies'] = $serviceContainer->share(function() {
-			return new \Message\Cog\HTTP\CookieCollection;
-		});
+		$services['http.cookies'] = function() {
+			return new Cog\HTTP\CookieCollection;
+		};
 
-		$serviceContainer['http.fragment_handler'] = $serviceContainer->share(function($c) {
+		$services['http.fragment_handler'] = function($c) {
 			$inlineRenderer = new \Symfony\Component\HttpKernel\Fragment\InlineFragmentRenderer($c['http.kernel']);
 
 			return new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array(
 				new \Symfony\Component\HttpKernel\Fragment\EsiFragmentRenderer($c['http.cache.esi'], $inlineRenderer),
 				$inlineRenderer
 			), ('local' === $c['env']));
-		});
+		};
 
-		$serviceContainer['http.uri_signer'] = $serviceContainer->share(function() {
+		$services['http.uri_signer'] = function() {
 			return new \Symfony\Component\HttpKernel\UriSigner(time());
-		});
+		};
 
-		$serviceContainer['response_builder'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Controller\ResponseBuilder(
+		$services['response_builder'] = function($c) {
+			return new Cog\Controller\ResponseBuilder(
 				$c['templating']
 			);
-		});
+		};
 
-		$serviceContainer['config.loader'] = $serviceContainer->share(function($c) {
+		$services['config.loader'] = function($c) {
 			if ('local' === $c['env']) {
 				// When running locally, don't use the cache loader
-				return new \Message\Cog\Config\Loader(
+				return new Cog\Config\Loader(
 					$c['app.loader']->getBaseDir() . 'config/',
 					$c['environment']
 				);
 			}
 			else {
-				return new \Message\Cog\Config\LoaderCache(
+				return new Cog\Config\LoaderCache(
 					$c['app.loader']->getBaseDir() . 'config/',
 					$c['environment'],
 					$c['cache']
 				);
 			}
-		});
+		};
 
-		$serviceContainer['cfg'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Config\Registry($c['config.loader']);
-		});
+		$services['cfg'] = function($c) {
+			return new Cog\Config\Registry($c['config.loader']);
+		};
 
-		$serviceContainer['module.locator'] = $serviceContainer->share(function($c) {
+		$services['module.locator'] = function($c) {
 			$classLoader = $c['class.loader'];
 			$prefixes    = array();
 
@@ -353,51 +350,51 @@ class Services implements ServicesInterface
 				}
 			}
 
-			return new \Message\Cog\Module\Locator($prefixes);
-		});
+			return new Cog\Module\Locator($prefixes);
+		};
 
-		$serviceContainer['module.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Module\Loader(
+		$services['module.loader'] = function($c) {
+			return new Cog\Module\Loader(
 				$c['module.locator'],
 				$c['bootstrap.loader'],
 				$c['event.dispatcher'],
 				$c['log.errors']
 			);
-		});
+		};
 
-		$serviceContainer['task.collection'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Console\Task\Collection;
-		});
+		$services['task.collection'] = function($c) {
+			return new Cog\Console\Task\Collection;
+		};
 
 		// Functions
-		$serviceContainer['fns.text'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Functions\Text;
-		});
-		$serviceContainer['fns.utility'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Functions\Utility($c['module.loader']);
-		});
-		$serviceContainer['fns.debug'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Functions\Debug;
-		});
+		$services['fns.text'] = function() {
+			return new Cog\Functions\Text;
+		};
+		$services['fns.utility'] = function($c) {
+			return new Cog\Functions\Utility($c['module.loader']);
+		};
+		$services['fns.debug'] = function($c) {
+			return new Cog\Functions\Debug;
+		};
 
-		$serviceContainer['reference_parser'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Module\ReferenceParser($c['module.locator'], $c['fns.utility']);
-		});
+		$services['reference_parser'] = function($c) {
+			return new Cog\Module\ReferenceParser($c['module.locator'], $c['fns.utility']);
+		};
 
 		// Filesystem
-		$serviceContainer['filesystem.stream_wrapper_manager'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Filesystem\StreamWrapperManager;
-		});
+		$services['filesystem.stream_wrapper_manager'] = function($c) {
+			return new Cog\Filesystem\StreamWrapperManager;
+		};
 
-		$serviceContainer['filesystem.stream_wrapper'] = function($c) {
-			$wrapper = new \Message\Cog\Filesystem\StreamWrapper;
+		$services['filesystem.stream_wrapper'] = $services->factory(function($c) {
+			$wrapper = new Cog\Filesystem\StreamWrapper;
 			$wrapper->setReferenceParser($c['reference_parser']);
 			$wrapper->setMapping($c['filesystem.stream_wrapper_mapping']);
 
 			return $wrapper;
-		};
+		});
 
-		$serviceContainer['filesystem.stream_wrapper_mapping'] = function($c) {
+		$services['filesystem.stream_wrapper_mapping'] = $services->factory(function($c) {
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
@@ -413,62 +410,62 @@ class Services implements ServicesInterface
 			);
 
 			return $mapping;
-		};
+		});
 
-		$serviceContainer['filesystem'] = function($c) {
-			return new \Message\Cog\Filesystem\Filesystem;
-		};
+		$services['filesystem'] = $services->factory(function($c) {
+			return new Cog\Filesystem\Filesystem;
+		});
 
-		$serviceContainer['filesystem.finder'] = function($c) {
-			return new \Message\Cog\Filesystem\Finder;
-		};
+		$services['filesystem.finder'] = $services->factory(function($c) {
+			return new Cog\Filesystem\Finder;
+		});
 
-		$serviceContainer['filesystem.conversion.pdf'] = function($c) {
-			return new \Message\Cog\Filesystem\Conversion\PDFConverter($c);
-		};
+		$services['filesystem.conversion.pdf'] = $services->factory(function($c) {
+			return new Cog\Filesystem\Conversion\PDFConverter($c);
+		});
 
-		$serviceContainer['filesystem.conversion.image'] = function($c) {
-			return new \Message\Cog\Filesystem\Conversion\ImageConverter($c);
-		};
+		$services['filesystem.conversion.image'] = $services->factory(function($c) {
+			return new Cog\Filesystem\Conversion\ImageConverter($c);
+		});
 
 		// Application Contexts
-		$serviceContainer['app.context.web'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Application\Context\Web($c);
-		});
+		$services['app.context.web'] = function($c) {
+			return new Cog\Application\Context\Web($c);
+		};
 
-		$serviceContainer['app.context.console'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Application\Context\Console($c);
-		});
+		$services['app.context.console'] = function($c) {
+			return new Cog\Application\Context\Console($c);
+		};
 
 
 		// Forms
-		$serviceContainer['form'] = function($c) {
-			return new \Message\Cog\Form\Handler($c);
-		};
+		$services['form'] = $services->factory(function($c) {
+			return new Cog\Form\Handler($c);
+		});
 
-		$serviceContainer['form.handler'] = function($c) {
-			return new \Message\Cog\Form\Handler($c);
-		};
+		$services['form.handler'] = $services->factory(function($c) {
+			return new Cog\Form\Handler($c);
+		});
 
-		$serviceContainer['form.builder'] = $serviceContainer->share(function($c) {
+		$services['form.builder'] = function($c) {
 			return $c['form.factory']->getFormFactory()->createBuilder();
-		});
+		};
 
-		$serviceContainer['form.factory'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Form\Factory\Builder($c['form.extensions']);
-		});
+		$services['form.factory'] = function($c) {
+			return new Cog\Form\Factory\Builder($c['form.extensions']);
+		};
 
-		$serviceContainer['form.extensions'] = function($c) {
+		$services['form.extensions'] = $services->factory(function($c) {
 			return array(
-				new \Message\Cog\Form\Extension\Extension,
+				new Cog\Form\Extension\Extension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
 			);
-		};
+		});
 
-		$serviceContainer['form.csrf_secret'] = function($c) {
+		$services['form.csrf_secret'] = $services->factory(function($c) {
 			$parts = array(
 				$c['cfg']->app->csrfSecret,							// Global CSRF secret key
 				$c['http.request.master']->headers->get('host'),	// HTTP host
@@ -478,12 +475,12 @@ class Services implements ServicesInterface
 			);
 
 			return serialize($parts);
-		};
+		});
 
-		$serviceContainer['form.helper.php'] = function($c) {
+		$services['form.helper.php'] = $services->factory(function($c) {
 			$engine = $c['templating.engine.php'];
 
-			$formHelper = new \Message\Cog\Form\Template\Helper(
+			$formHelper = new Cog\Form\Template\Helper(
 				new \Symfony\Component\Form\FormRenderer(
 					new \Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine(
 						$engine,
@@ -494,93 +491,91 @@ class Services implements ServicesInterface
 			);
 
 			return $formHelper;
+		});
 
-		};
-
-		$serviceContainer['form.helper.twig'] = $serviceContainer->share(function($c) {
-			$formHelper = new \Message\Cog\Form\Template\Helper(
+		$services['form.helper.twig'] = function($c) {
+			$formHelper = new Cog\Form\Template\Helper(
 				$c['form.renderer.twig']
 			);
 
 			return $formHelper;
-		});
+		};
 
-		$serviceContainer['form.renderer.twig'] = function($c) {
+		$services['form.renderer.twig'] = $services->factory(function($c) {
 			return new \Symfony\Bridge\Twig\Form\TwigRenderer(
 				new \Symfony\Bridge\Twig\Form\TwigRendererEngine(
 					$c['form.templates.twig']
 				)
 			);
-		};
+		});
 
-		$serviceContainer['form.renderer.engine.twig'] = function($c) {
+		$services['form.renderer.engine.twig'] = $services->factory(function($c) {
 			return new \Symfony\Bridge\Twig\Form\TwigRendererEngine($c['form.templates.twig']);
-		};
+		});
 
-		$serviceContainer['form.templates.twig'] = function($c) {
+		$services['form.templates.twig'] = $services->factory(function($c) {
 			return array(
 				'Message:Cog::form:twig:form_div_layout',
 			);
-		};
+		});
 
-		$serviceContainer['form.templates.php'] = function($c) {
+		$services['form.templates.php'] = $services->factory(function($c) {
 			return array(
 				'Message:Cog::form:php',
 			);
-		};
+		});
 
-		$serviceContainer['form.twig_form_extension'] = function($c) {
+		$services['form.twig_form_extension'] = $services->factory(function($c) {
 			return new \Symfony\Bridge\Twig\Extension\FormExtension($c['form.renderer.twig']);
-		};
+		});
 
 		// Validator
-		$serviceContainer['validator'] = function($c) {
-			return new \Message\Cog\Validation\Validator(
-				new \Message\Cog\Validation\Loader(
-					new \Message\Cog\Validation\Messages,
+		$services['validator'] = $services->factory(function($c) {
+			return new Cog\Validation\Validator(
+				new Cog\Validation\Loader(
+					new Cog\Validation\Messages,
 					array(
-						new \Message\Cog\Validation\Rule\Type,
-						new \Message\Cog\Validation\Rule\Date,
-						new \Message\Cog\Validation\Rule\Number,
-						new \Message\Cog\Validation\Rule\Iterable,
-						new \Message\Cog\Validation\Rule\Text,
-						new \Message\Cog\Validation\Rule\Other,
-						new \Message\Cog\Validation\Filter\Text,
-						new \Message\Cog\Validation\Filter\Type,
-						new \Message\Cog\Validation\Filter\Other,
+						new Cog\Validation\Rule\Type,
+						new Cog\Validation\Rule\Date,
+						new Cog\Validation\Rule\Number,
+						new Cog\Validation\Rule\Iterable,
+						new Cog\Validation\Rule\Text,
+						new Cog\Validation\Rule\Other,
+						new Cog\Validation\Filter\Text,
+						new Cog\Validation\Filter\Type,
+						new Cog\Validation\Filter\Other,
 					)
 				)
 			);
+		});
+
+		$services['security.salt'] = function() {
+			return new Cog\Security\StringGenerator;
 		};
 
-		$serviceContainer['security.salt'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Security\StringGenerator;
-		});
+		$services['security.string-generator'] = function() {
+			return new Cog\Security\StringGenerator;
+		};
 
-		$serviceContainer['security.string-generator'] = $serviceContainer->share(function() {
-			return new \Message\Cog\Security\StringGenerator;
-		});
-
-		$serviceContainer['security.hash'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Security\Hash\Bcrypt($c['security.string-generator']);
-		});
-
+		$services['security.hash'] = function($c) {
+			return new Cog\Security\Hash\Bcrypt($c['security.string-generator']);
+		};
 
 		// Hardcode to en_GB for the moment. In the future this can be determined
 		// from properties on the route or the session object
-		$serviceContainer['locale'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Localisation\Locale('en_GB');
-		});
+		$services['locale'] = function($c) {
+			return new Cog\Localisation\Locale('en_GB');
+		};
 
-		$serviceContainer['translator'] = $serviceContainer->share(function ($c) {
-			$selector = new \Message\Cog\Localisation\MessageSelector;
+		$services['translator'] = function ($c) {
+			$selector = new Cog\Localisation\MessageSelector;
 			$id       = $c['locale']->getId();
 
-			$translator = new \Message\Cog\Localisation\Translator($id, $selector);
+			$translator = new Cog\Localisation\Translator($id, $selector);
 			$translator->setFallbackLocale($c['locale']->getFallback());
 			$translator->setContainer($c);
 
-			$yml = new \Message\Cog\Localisation\YamlFileLoader(
+			$yml = new Cog\Localisation\YamlFileLoader(
 				new \Symfony\Component\Yaml\Parser
 			);
 
@@ -592,11 +587,10 @@ class Services implements ServicesInterface
 
 			$translator->loadCatalogue($id);
 
-
 			return $translator;
-		});
+		};
 
-		$serviceContainer['asset.manager'] = $serviceContainer->share(function($c) {
+		$services['asset.manager'] = function($c) {
 			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
 				'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig.environment']),
 			));
@@ -604,21 +598,21 @@ class Services implements ServicesInterface
 			$c['asset.factory']->setAssetManager($manager);
 
 			return $manager;
-		});
+		};
 
-		$serviceContainer['asset.filters'] = $serviceContainer->share(function($c) {
+		$services['asset.filters'] = function($c) {
 			$manager = new \Assetic\FilterManager;
 
-			$manager->set('csscogulerewrite', new \Message\Cog\AssetManagement\CssCoguleRewriteFilter);
+			$manager->set('csscogulerewrite', new Cog\AssetManagement\CssCoguleRewriteFilter);
 
 			$manager->set('cssmin', new \Assetic\Filter\CssMinFilter);
 			$manager->set('jsmin', new \Assetic\Filter\JSMinFilter);
 
 			return $manager;
-		});
+		};
 
-		$serviceContainer['asset.factory'] = $serviceContainer->share(function($c) {
-			$factory = new \Message\Cog\AssetManagement\Factory('cog://public/');
+		$services['asset.factory'] = function($c) {
+			$factory = new Cog\AssetManagement\Factory('cog://public/');
 
 			$factory->setReferenceParser($c['reference_parser']);
 			$factory->setFilterManager($c['asset.filters']);
@@ -628,96 +622,95 @@ class Services implements ServicesInterface
 			}
 
 			return $factory;
-		});
+		};
 
-		$serviceContainer['asset.writer'] = $serviceContainer->share(function($c) {
+		$services['asset.writer'] = function($c) {
 			return new \Assetic\AssetWriter('cog://public');
-		});
+		};
 
-		$serviceContainer['log.errors'] = $serviceContainer->share(function($c) {
+		$services['log.errors'] = function($c) {
 			$logger = new \Monolog\Logger('errors');
 
 			// Set up handler for logging to file (as default)
 			$logger->pushHandler(
-				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
+				new Cog\Logging\TouchingStreamHandler('cog://logs/error.log')
 			);
 
 			return $logger;
-		});
+		};
 
-		$serviceContainer['log.console'] = $serviceContainer->share(function($c) {
+		$services['log.console'] = function($c) {
 			$logger = new \Monolog\Logger('console');
 
 			// Set up handler for logging to file (as default)
 			$logger->pushHandler(
-				new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/console.log')
+				new Cog\Logging\TouchingStreamHandler('cog://logs/console.log')
 			);
 
 			return $logger;
-		});
+		};
 
-		$serviceContainer['whoops'] = $serviceContainer->share(function($c) {
+		$services['whoops'] = function($c) {
 			$run = new \Whoops\Run;
 			$run->allowQuit(false);
 			$run->pushHandler($c['whoops.page_handler']);
 
 			return $run;
-		});
+		};
 
-		$serviceContainer['whoops.page_handler'] = $serviceContainer->share(function($c) {
+		$services['whoops.page_handler'] = function($c) {
 			return new \Whoops\Handler\PrettyPageHandler;
-		});
+		};
 
-		$serviceContainer['migration.mysql'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Migration\Migrator(
+		$services['migration.mysql'] = function($c) {
+			return new Cog\Migration\Migrator(
 				$c['migration.mysql.loader'],
 				$c['migration.mysql.create'],
 				$c['migration.mysql.delete']
 			);
-		});
+		};
 
 		// Shortcut to mysql migration adapter
-		$serviceContainer['migration'] = $serviceContainer->share(function($c) {
+		$services['migration'] = function($c) {
 			return $c['migration.mysql'];
-		});
+		};
 
-		$serviceContainer['migration.mysql.loader'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Migration\Adapter\MySQL\Loader(
+		$services['migration.mysql.loader'] = function($c) {
+			return new Cog\Migration\Adapter\MySQL\Loader(
 				$c['db'],
 				$c['filesystem.finder'],
 				$c['filesystem'],
 				$c['reference_parser']
 			);
-		});
-
-		$serviceContainer['migration.mysql.create'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Migration\Adapter\MySQL\Create($c['db']);
-		});
-
-		$serviceContainer['migration.mysql.delete'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Migration\Adapter\MySQL\Delete($c['db']);
-		});
-
-		$serviceContainer['migration.collection'] = function($c) {
-			return new \Message\Cog\Migration\Collection\Collection();
 		};
 
-		$serviceContainer['helper.prorate'] = function() {
-			return new \Message\Cog\Helper\ProrateHelper;
+		$services['migration.mysql.create'] = function($c) {
+			return new Cog\Migration\Adapter\MySQL\Create($c['db']);
 		};
 
-		$serviceContainer['helper.date'] = function() {
-			return new \Message\Cog\Helper\DateHelper;
+		$services['migration.mysql.delete'] = function($c) {
+			return new Cog\Migration\Adapter\MySQL\Delete($c['db']);
 		};
 
-		$serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Mail\Transport\Mail();
+		$services['migration.collection'] = $services->factory(function($c) {
+			return new Cog\Migration\Collection\Collection();
 		});
 
-		$serviceContainer['mail.dispatcher'] = $serviceContainer->share(function($c) {
+		$services['helper.prorate'] = $services->factory(function() {
+			return new Cog\Helper\ProrateHelper;
+		});
 
+		$services['helper.date'] = $services->factory(function() {
+			return new Cog\Helper\DateHelper;
+		});
+
+		$services['mail.transport'] = function($c) {
+			return new Cog\Mail\Transport\Mail();
+		};
+
+		$services['mail.dispatcher'] = function($c) {
 			$swift = new \Swift_Mailer($c['mail.transport']);
-			$dispatcher = new \Message\Cog\Mail\Mailer($swift);
+			$dispatcher = new Cog\Mail\Mailer($swift);
 
 			$dispatcher->setWhitelistFallback('dev@message.co.uk');
 			$dispatcher->addToWhitelist('/.+@message\.co\.uk/');
@@ -729,9 +722,9 @@ class Services implements ServicesInterface
 			}
 
 			return $dispatcher;
-		});
+		};
 
-		$serviceContainer['mail.message'] = function($c) {
+		$services['mail.message'] = $services->factory(function($c) {
 			// This is all a bit hacky, but the only easy way I can think of
 			// First, change the formats allowed in templating for views
 			$origFormats = $c->raw('templating.formats');
@@ -744,7 +737,7 @@ class Services implements ServicesInterface
 			$engine = $c['templating'];
 
 			// Get an instance of Message
-			$message = new \Message\Cog\Mail\Message($engine, $c['templating.view_name_parser']);
+			$message = new Cog\Mail\Message($engine, $c['templating.view_name_parser']);
 
 			// Now replace the old templating formats
 			$c['templating.formats'] = $origFormats;
@@ -753,44 +746,44 @@ class Services implements ServicesInterface
 			$message->setFrom($c['cfg']->app->defaultEmailFrom->email, $c['cfg']->app->defaultEmailFrom->name);
 
 			return $message;
-		};
-
-		$serviceContainer['country.list'] = function($c) {
-			return new \Message\Cog\Location\CountryList;
-		};
-
-		$serviceContainer['country.event'] = $serviceContainer->share(function($c) {
-			return new \Message\Cog\Location\CountryEvent($c['country.list']);
 		});
 
-		$serviceContainer['state.list'] = function($c) {
-			return new \Message\Cog\Location\StateList;
+		$services['country.list'] = $services->factory(function($c) {
+			return new Cog\Location\CountryList;
+		});
+
+		$services['country.event'] = function($c) {
+			return new Cog\Location\CountryEvent($c['country.list']);
 		};
 
-		$serviceContainer['title.list'] = function($c) {
+		$services['state.list'] = $services->factory(function($c) {
+			return new Cog\Location\StateList;
+		});
+
+		$services['title.list'] = $services->factory(function($c) {
 			return array(
-				'Mr' => 'Mr',
-				'Mrs' => 'Mrs',
-				'Miss' => 'Miss',
-				'Ms' => 'Ms',
-				'Doctor' => 'Doctor'
+				'Mr'     => 'Mr',
+				'Mrs'    => 'Mrs',
+				'Miss'   => 'Miss',
+				'Ms'     => 'Ms',
+				'Doctor' => 'Doctor',
 			);
-		};
+		});
 
-		$serviceContainer['pagination'] = function($c) {
-			return new \Message\Cog\Pagination\Pagination($c['pagination.adapter.sql']);
-		};
+		$services['pagination'] = $services->factory(function($c) {
+			return new Cog\Pagination\Pagination($c['pagination.adapter.sql']);
+		});§
 
-		$serviceContainer['pagination.adapter.dbresult'] = function($c) {
-			return new \Message\Cog\Pagination\Adapter\DBResultAdapter();
-		};
+		$services['pagination.adapter.dbresult'] = $services->factory(function($c) {
+			return new Cog\Pagination\Adapter\DBResultAdapter();
+		});
 
-		$serviceContainer['pagination.adapter.sql'] = function($c) {
-			return new \Message\Cog\Pagination\Adapter\SQLAdapter($c['db.query']);
-		};
+		$services['pagination.adapter.sql'] = $services->factory(function($c) {
+			return new Cog\Pagination\Adapter\SQLAdapter($c['db.query']);
+		});
 
-		$serviceContainer['pagination.adapter.array'] = function($c) {
-			return new \Message\Cog\Pagination\Adapter\ArrayAdapter();
-		};
+		$services['pagination.adapter.array'] = $services->factory(function($c) {
+			return new Cog\Pagination\Adapter\ArrayAdapter();
+		});
 	}
 }
