@@ -442,10 +442,16 @@ class Services implements ServicesInterface
 
 
 		// Forms
+		/**
+		 * @deprecated Use symfony form directly instead (form.factory and form.builder).
+		 */
 		$serviceContainer['form'] = function($c) {
 			return new \Message\Cog\Form\Handler($c);
 		};
 
+		/**
+		 * @deprecated Use symfony form directly instead (form.factory and form.builder).
+		 */
 		$serviceContainer['form.handler'] = function($c) {
 			return new \Message\Cog\Form\Handler($c);
 		};
@@ -473,33 +479,6 @@ class Services implements ServicesInterface
 				new \Message\Cog\Validator\Extension\ValidationMessageExtension($c['http.session']),
 			);
 		};
-
-		// $serviceContainer['form.builder'] = $serviceContainer->share(function($c) {
-		// 	return $c['form.factory']->createBuilder();
-		// });
-
-		// $serviceContainer['form.factory'] = $serviceContainer->share(function($c) {
-		// 	return $c['form.factory.builder']->getFormFactory();
-		// });
-
-		// $serviceContainer['form.factory.builder'] = $serviceContainer->share(function($c) {
-		// 	$factoryBuilder = new \Symfony\Component\Form\FormFactoryBuilder();
-		// 	$factoryBuilder->addExtensions($c['form.extensions']);
-
-		// 	return $factoryBuilder;
-		// });
-
-		// $serviceContainer['form.extensions'] = function($c) {
-		// 	return array(
-		// 		new \Message\Cog\Form\Extension\Extension,
-		// 		new \Symfony\Component\Form\Extension\Core\CoreExtension,
-		// 		new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
-		// 			new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret']),
-		// 			$c['translator']
-		// 		),
-		// 		new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($c['validator_new']),
-		// 	);
-		// };
 
 		$serviceContainer['form.csrf_secret'] = function($c) {
 			$parts = array(
@@ -567,6 +546,9 @@ class Services implements ServicesInterface
 		};
 
 		// Validator
+		/**
+		 * @deprecated Use symfony's validation component (symfony.validator) instead.
+		 */
 		$serviceContainer['validator'] = function($c) {
 			return new \Message\Cog\Validation\Validator(
 				new \Message\Cog\Validation\Loader(
