@@ -51,9 +51,10 @@ class ValidationMessageTypeExtension extends AbstractTypeExtension
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        // set an 'errors_with_fields' variable that will be available when rendering this field
-        $view->vars['errors_with_fields'] = $options['errors_with_fields'];
+        // set an 'errors_with_fields' variable for the view to the root's option
+        $view->vars['errors_with_fields'] = $form->getRoot()->getConfig()->getOption('errors_with_fields');
     }
+
 
     /**
      * {@inheritDoc}
