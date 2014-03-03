@@ -40,7 +40,7 @@ interface ContainerInterface extends \ArrayAccess
 	 * @param  Closure $callable A closure to wrap for uniqueness
 	 * @return Closure           The wrapped closure
 	 */
-	public function share(Closure $callable);
+	public function share($callable);
 
 	/**
 	 * Extend a service definition without overwriting it.
@@ -49,5 +49,5 @@ interface ContainerInterface extends \ArrayAccess
 	 * @param  Closure $callable A closure to extend the original
 	 * @return Closure           The wrapped closure
 	 */
-	public function extend($id, Closure $callable);
+	public function extend($id, $callable);
 }
