@@ -588,7 +588,14 @@ class Services implements ServicesInterface
 
 		$serviceContainer['symfony.validator'] = $serviceContainer->share(function ($c) {
 		    if (isset($c['translator'])) {
-                $c['translator']->addResource('xliff', 'cog://vendor/symfony/validator/Symfony/Component/Validator/Resources/translations/validators.'.'en'.'.xlf', 'en', 'validators');
+		    	$language = \Locale::getPrimaryLanguage($c['locale']->getId());
+                $c['translator']
+                	->addResource(
+                		'xliff',
+                		'cog://vendor/symfony/validator/Symfony/Component/Validator/Resources/translations/validators.'.$language.'.xlf',
+                		'en',
+                		'validators'
+                	);
             }
 
             return new \Symfony\Component\Validator\Validator(
