@@ -14,6 +14,7 @@ class Extension extends AbstractExtension
 			new Type\DateType(),
 			new Type\TimeType(),
 			new Type\DatalistType(),
+			new Type\EntityType(),
 		);
 	}
 }
