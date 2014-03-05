@@ -58,7 +58,12 @@ class ValidationListener implements SubscriberInterface
 
     protected function _getErrors(FormInterface $field)
     {
-        $label = $this->_translator->trans($field->getConfig()->getOption('label')) ?: ucfirst($field->getName());
+        if($field->getConfig()->getOption('label')) {
+            $label = $this->_translator->trans($field->getConfig()->getOption('label'));
+        } else {
+            $label = ucfirst(trim(strtolower(preg_replace(array('/([A-Z])/', '/[_\s]+/'), array('_$1', ' '), $field->getName()))));
+        }
+
         $fieldErrors = array();
 
         foreach($field->getErrors() as $error) {
