@@ -57,7 +57,8 @@ class ValidationListener implements SubscriberInterface
         $fieldErrors = array();
 
         foreach($field->getErrors() as $error) {
-            $fieldErrors[] = $label . ': ' . $error->getMessage();
+            // don't show label if error is on the whole form
+            $fieldErrors[] = $field->isRoot() ? $error->getMessage() : $label . ': ' . $error->getMessage();
         }
 
         $this->_errors[] = $fieldErrors;
