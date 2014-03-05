@@ -513,17 +513,17 @@ class Services implements ServicesInterface
 			return new \Symfony\Bridge\Twig\Form\TwigRendererEngine($c['form.templates.twig']);
 		});
 
-		$services['form.templates.twig'] = $services->factory(function($c) {
+		$services['form.templates.twig'] = function($c) {
 			return array(
 				'Message:Cog::form:twig:form_div_layout',
 			);
-		});
+		};
 
-		$services['form.templates.php'] = $services->factory(function($c) {
+		$services['form.templates.php'] = function($c) {
 			return array(
 				'Message:Cog::form:php',
 			);
-		});
+		};
 
 		$services['form.twig_form_extension'] = $services->factory(function($c) {
 			return new \Symfony\Bridge\Twig\Extension\FormExtension($c['form.renderer.twig']);
