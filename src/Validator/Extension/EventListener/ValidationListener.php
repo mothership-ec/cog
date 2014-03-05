@@ -10,6 +10,9 @@ use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 use Message\Cog\HTTP\Session;
 
+use Message\Cog\Localisation\Translator;
+
+
 /**
  * @author Iris Schaffer <iris@message.co.uk>
  */
@@ -17,10 +20,12 @@ class ValidationListener implements SubscriberInterface
 {
     protected $_errors = array();
     protected $_session;
+    protected $_translator;
 
-    public function __construct(Session $session)
+    public function __construct(Session $session, Translator $translator)
     {
-        $this->_session = $session;
+        $this->_session    = $session;
+        $this->_translator = $translator;
     }
 
     /**
@@ -53,7 +58,7 @@ class ValidationListener implements SubscriberInterface
 
     protected function _getErrors(FormInterface $field)
     {
-        $label = $field->getConfig()->getOption('label') ?: ucfirst($field->getName());
+        $label = $this->_translator->trans($field->getConfig()->getOption('label')) ?: ucfirst($field->getName());
         $fieldErrors = array();
 
         foreach($field->getErrors() as $error) {

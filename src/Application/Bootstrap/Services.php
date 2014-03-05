@@ -476,7 +476,7 @@ class Services implements ServicesInterface
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
 				new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($c['symfony.validator']),
-				new \Message\Cog\Validator\Extension\ValidationMessageExtension($c['http.session']),
+				new \Message\Cog\Validator\Extension\ValidationMessageExtension($c['http.session'], $c['translator']),
 			);
 		};
 

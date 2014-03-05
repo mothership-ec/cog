@@ -6,11 +6,11 @@ use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Message\Cog\Validator\Extension\EventListener\ValidationListener;
 use Message\Cog\HTTP\Session;
+use Message\Cog\Localisation\Translator;
 
 /**
  * @author Iris Schaffer <iris@message.co.uk>
@@ -18,17 +18,19 @@ use Message\Cog\HTTP\Session;
 class ValidationMessageTypeExtension extends AbstractTypeExtension
 {
     protected $_session;
+    protected $_translator;
 
-    public function __construct(Session $session)
+    public function __construct(Session $session, Translator $translator)
     {
-        $this->_session = $session;
+        $this->_session    = $session;
+        $this->_translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
         $builder
-            ->addEventSubscriber(new ValidationListener($this->_session));
+            ->addEventSubscriber(new ValidationListener($this->_session, $this->_translator));
     }
 
     /**
