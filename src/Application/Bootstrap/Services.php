@@ -394,7 +394,7 @@ class Services implements ServicesInterface
 			return $wrapper;
 		});
 
-		$services['filesystem.stream_wrapper_mapping'] = $services->factory(function($c) {
+		$services['filesystem.stream_wrapper_mapping'] = function($c) {
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
@@ -410,7 +410,7 @@ class Services implements ServicesInterface
 			);
 
 			return $mapping;
-		});
+		};
 
 		$services['filesystem'] = $services->factory(function($c) {
 			return new Cog\Filesystem\Filesystem;
