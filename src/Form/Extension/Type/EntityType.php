@@ -2,13 +2,9 @@
 
 namespace Message\Cog\Form\Extension\Type;
 
+use Message\Cog\Form\Extension\ChoiceList\EntityChoiceList;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormView;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Form\Extension\Core\ChoiceList\ObjectChoiceList;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -45,7 +41,7 @@ class EntityType extends AbstractType
         $propertyAccessor = $this->_propertyAccessor;
 
         $resolver->setRequired(['choices']);
-        $resolver->setOptional(['property_path', 'value_path']);
+        $resolver->setOptional(['property', 'value']);
 
         $choiceList = function(Options $options) use (&$choiceListCache, $propertyAccessor) {
             $choiceHashes = $options['choices'];
@@ -75,14 +71,14 @@ class EntityType extends AbstractType
             }
 
             // Support for closures
-            $propertyHash = is_object($options['property_path'])
-                ? spl_object_hash($options['property_path'])
-                : $options['property_path'];
+            $propertyHash = is_object($options['property'])
+                ? spl_object_hash($options['property'])
+                : $options['property'];
 
             // Support for closures
-            $valueHash = is_object($options['value_path'])
-                ? spl_object_hash($options['value_path'])
-                : $options['value_path'];
+            $valueHash = is_object($options['value'])
+                ? spl_object_hash($options['value'])
+                : $options['value'];
 
             // hash for choicelist
             $hash = md5(json_encode([
@@ -93,12 +89,12 @@ class EntityType extends AbstractType
             ]));
 
             if (!isset($choiceListCache[$hash])) {
-                $choiceListCache[$hash] = new ObjectChoiceList(
+                $choiceListCache[$hash] = new EntityChoiceList(
                     $options['choices'],
-                    $options['property_path'],
+                    $options['property'],
                     $options['preferred_choices'],
                     null, // grouped by
-                    $options['value_path'],
+                    $options['value'],
                     $propertyAccessor
                 );
             }
@@ -107,9 +103,9 @@ class EntityType extends AbstractType
         };
 
         $resolver->setDefaults(array(
-            'property_path' => null,        // property used for labelling or closure
-            'choice_list'   => $choiceList,
-            'value_path'    => 'id',        // unique identifier property or closure
+            'property'    => null,        // property used for labelling or closure
+            'choice_list' => $choiceList,
+            'value'       => 'id',        // unique identifier property or closure
         ));
     }
 
