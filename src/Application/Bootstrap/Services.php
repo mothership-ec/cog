@@ -772,7 +772,7 @@ class Services implements ServicesInterface
 
 		$services['pagination'] = $services->factory(function($c) {
 			return new Cog\Pagination\Pagination($c['pagination.adapter.sql']);
-		});§
+		});
 
 		$services['pagination.adapter.dbresult'] = $services->factory(function($c) {
 			return new Cog\Pagination\Adapter\DBResultAdapter();
