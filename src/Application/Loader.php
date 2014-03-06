@@ -177,9 +177,9 @@ namespace Message\Cog\Application {
 
 			// Set up service definition for the autoloader
 			$autoloader = $this->_autoloader;
-			$this->_services['class.loader'] = $this->_services->share(function() use ($autoloader) {
+			$this->_services['class.loader'] = function() use ($autoloader) {
 				return $autoloader;
-			});
+			};
 
 			return $this;
 		}
@@ -194,11 +194,11 @@ namespace Message\Cog\Application {
 		{
 			// Add the application loader as a service
 			$appLoader = $this;
-			$this->_services['app.loader'] = $this->_services->share(function() use ($appLoader) {
+			$this->_services['app.loader'] = function() use ($appLoader) {
 				return $appLoader;
-			});
+			};
 
-			$this->_services['cache.adapter'] = $this->_services->share(function() use ($appLoader) {
+			$this->_services['cache.adapter'] = function() use ($appLoader) {
 				if (extension_loaded('apc') && ini_get('apc.enabled')) {
 					$adapter = new \Message\Cog\Cache\Adapter\APC;
 				}
@@ -209,9 +209,9 @@ namespace Message\Cog\Application {
 				}
 
 				return $adapter;
-			});
+			};
 
-			$this->_services['cache'] = $this->_services->share(function($c) {
+			$this->_services['cache'] = function($c) {
 				$cache = new \Message\Cog\Cache\Instance($c['cache.adapter']);
 
 				$cache->setPrefix(implode('.', array(
@@ -221,10 +221,10 @@ namespace Message\Cog\Application {
 				)));
 
 				return $cache;
-			});
+			};
 
 			// Register the service for the bootstrap loader
-			$this->_services['bootstrap.loader'] = function($c) {
+			$this->_services['bootstrap.loader'] = $this->_services->factory(function($c) {
 				// Can not call $this->_services['filesystem.finder'] as it has not yet been created.
 				$loader = new \Message\Cog\Bootstrap\Loader($c, new \Message\Cog\Filesystem\Finder());
 
@@ -233,16 +233,16 @@ namespace Message\Cog\Application {
 				}
 
 				return $loader;
-			};
+			});
 
 			// Register the service for the environment
 			$env = new Environment;
-			$this->_services['environment'] = $this->_services->share(function() use ($env) {
+			$this->_services['environment'] = function() use ($env) {
 				return $env;
-			});
-			$this->_services['env'] = function($c) {
-				return $c['environment']->get();
 			};
+			$this->_services['env'] = $this->_services->factory(function($c) {
+				return $c['environment']->get();
+			});
 
 			// Load the Cog bootstraps
 			$this->_services['bootstrap.loader']->addFromDirectory(
