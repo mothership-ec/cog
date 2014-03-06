@@ -135,14 +135,14 @@ namespace Message\Cog\Test\Application {
 			$serviceName = 'app.context.' . $contextName;
 
 			// Add the environment service
-			$container['environment'] = $container->share(function($c) {
+			$container['environment'] = function($c) {
 				return new FauxEnvironment;
-			});
+			};
 
 			// Add the context to the service container as expected by `setContext()`
-			$container[$serviceName] = $container->share(function($c) {
+			$container[$serviceName] = function($c) {
 				return new FauxContext;
-			});
+			};
 
 			// Force the context to change
 			$container['environment']->setContext($contextName);
@@ -162,9 +162,9 @@ namespace Message\Cog\Test\Application {
 			$container = new FauxContainer;
 
 			// Add the environment service
-			$container['environment'] = $container->share(function($c) {
+			$container['environment'] = function($c) {
 				return new FauxEnvironment;
-			});
+			};
 
 			// Force the context to change
 			$container['environment']->setContext('web');
@@ -182,14 +182,14 @@ namespace Message\Cog\Test\Application {
 			$container = new FauxContainer;
 
 			// Add the environment service
-			$container['environment'] = $container->share(function($c) {
+			$container['environment'] = function($c) {
 				return new FauxEnvironment;
-			});
+			};
 
 			// Add the invalid context class
-			$container['app.context.web'] = $container->share(function() {
+			$container['app.context.web'] = function() {
 				return new \stdClass;
-			});
+			};
 
 			// Force the context to change
 			$container['environment']->setContext('web');
@@ -276,9 +276,9 @@ namespace Message\Cog\Test\Application {
 
 			$loader->setServiceContainer($container)->initialise()->loadCog();
 
-			$container['module.loader'] = $container->share(function() {
+			$container['module.loader'] = function() {
 				return new FauxModuleLoader;
-			});
+			};
 
 			$loader->loadModules();
 
@@ -296,19 +296,19 @@ namespace Message\Cog\Test\Application {
 			$contextReturnVal = 'foobar';
 
 			// Add the event dispatcher service
-			$container['event.dispatcher'] = $container->share(function($c) use ($dispatcher) {
+			$container['event.dispatcher'] = function($c) use ($dispatcher) {
 				return $dispatcher;
-			});
-
-			// Add the event dispatcher service
-			$container['event'] = function($c) {
-				return new \Message\Cog\Event\Event;
 			};
 
-			// Add the environment service
-			$container['environment'] = $container->share(function($c) {
-				return new FauxEnvironment;
+			// Add the event dispatcher service
+			$container['event'] = $container->factory(function($c) {
+				return new \Message\Cog\Event\Event;
 			});
+
+			// Add the environment service
+			$container['environment'] = function($c) {
+				return new FauxEnvironment;
+			};
 
 			// Force the context to change
 			$container['environment']->setContext('web');
@@ -321,9 +321,9 @@ namespace Message\Cog\Test\Application {
 				->will($this->returnValue($contextReturnVal));
 
 			// Add the context to the service container as expected by `setContext()`
-			$container['app.context.web'] = $container->share(function($c) use ($contextMock) {
+			$container['app.context.web'] = function($c) use ($contextMock) {
 				return $contextMock;
-			});
+			};
 
 			$returnVal = $loader->setServiceContainer($container)->setContext()->execute();
 
@@ -342,9 +342,9 @@ namespace Message\Cog\Test\Application {
 			$this->assertEquals($loader, $loader->initialise());
 			$this->assertEquals($loader, $loader->loadCog());
 
-			$container['module.loader'] = $container->share(function() {
+			$container['module.loader'] = function() {
 				return new FauxModuleLoader;
-			});
+			};
 
 			$this->assertEquals($loader, $loader->loadModules());
 		}

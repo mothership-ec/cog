@@ -67,25 +67,25 @@ session-namespace: cog');
 
 		// Define services normally defined in Application\Loader
 	//	$classLoaderMock = $this->getMock('Composer\\Autoload\\ClassLoader');
-		$this->_container['class.loader'] = function($c) {
+		$this->_container['class.loader'] = $this->_container->factory(function($c) {
 			return require getcwd() . '/vendor/autoload.php';
-		};
+		});
 
-		$this->_container['app.loader'] = function($c) {
+		$this->_container['app.loader'] = $this->_container->factory(function($c) {
 			$loader = new AppFauxLoader($c['class.loader'], vfsStream::url('root'));
 			$loader->setServiceContainer($c);
 
 			return $loader;
-		};
+		});
 
 		$env = new FauxEnvironment;
 		$env->set('test');
-		$this->_container['environment'] = $this->_container->share(function() use ($env) {
+		$this->_container['environment'] = function() use ($env) {
 			return $env;
-		});
-		$this->_container['env'] = function($c) {
-			return $c['environment']->get();
 		};
+		$this->_container['env'] = $this->_container->factory(function($c) {
+			return $c['environment']->get();
+		});
 
 		$cacheAdapter = $this->getMockBuilder('Message\\Cog\\Cache\\Adapter\\Filesystem')
 			->disableOriginalConstructor()
@@ -95,11 +95,11 @@ session-namespace: cog');
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->_container['cache.adapter'] = $this->_container->share(function() use ($cacheAdapter) {
+		$this->_container['cache.adapter'] = function() use ($cacheAdapter) {
 			return $cacheAdapter;
-		});
+		};
 
-		$this->_container['cache'] = $this->_container->share(function($c) use ($cache) {
+		$this->_container['cache'] = function($c) use ($cache) {
 			$cache->setPrefix(implode('.', array(
 				$c['app.loader']->getAppName(),
 				$c['environment']->get(),
@@ -107,20 +107,20 @@ session-namespace: cog');
 			)));
 
 			return $cache;
+		};
+
+
+		$this->_container['bootstrap.loader'] = $this->_container->factory(function($c) {
+			return new BootstrapFauxLoader($c);
 		});
 
-
-		$this->_container['bootstrap.loader'] = function($c) {
-			return new BootstrapFauxLoader($c);
-		};
-
-		$this->_container['routes.compiled'] = function() use ($routeCollection) {
+		$this->_container['routes.compiled'] = $this->_container->factory(function() use ($routeCollection) {
 			return $routeCollection;
-		};
+		});
 
-		$this->_container['http.request.context'] = function() use ($requestContext) {
+		$this->_container['http.request.context'] = $this->_container->factory(function() use ($requestContext) {
 			return $requestContext;
-		};
+		});
 
 		$this->_bootstrap->registerServices($this->_container);
 	}
