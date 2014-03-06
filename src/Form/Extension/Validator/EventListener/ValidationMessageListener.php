@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Validator\Extension\EventListener;
+namespace Message\Cog\Form\Extension\Validator\EventListener;
 
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;

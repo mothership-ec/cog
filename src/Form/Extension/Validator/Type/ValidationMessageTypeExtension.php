@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Validator\Extension\Type;
+namespace Message\Cog\Form\Extension\Validator\Type;
 
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Message\Cog\Validator\Extension\EventListener\ValidationMessageListener;
+use Message\Cog\Form\Extension\Validator\EventListener\ValidationMessageListener;
 use Message\Cog\HTTP\Session;
 use Message\Cog\Localisation\Translator;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Message\Cog\Form\Extension\Type;
+namespace Message\Cog\Form\Extension\Core\Type;
 
-use \Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class TimeType extends \Symfony\Component\Form\Extension\Core\Type\TimeType
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Validator\Extension;
+namespace Message\Cog\Form\Extension\Validator;
 
 use Symfony\Component\Form\AbstractExtension;
 use Message\Cog\HTTP\Session;

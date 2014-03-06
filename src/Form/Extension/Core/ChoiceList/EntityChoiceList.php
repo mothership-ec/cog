@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Form\Extension\ChoiceList;
+namespace Message\Cog\Form\Extension\Core\ChoiceList;
 
 use Symfony\Component\Form\Extension\Core\ChoiceList\ObjectChoiceList;
 use Symfony\Component\PropertyAccess\PropertyAccess;

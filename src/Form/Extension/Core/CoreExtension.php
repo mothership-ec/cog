@@ -1,12 +1,12 @@
 <?php
 
-namespace Message\Cog\Form\Extension;
+namespace Message\Cog\Form\Extension\Core;
 
 use \Symfony\Component\Form\AbstractExtension;
 use \Symfony\Component\PropertyAccess\PropertyAccess;
 
 
-class Extension extends AbstractExtension
+class CoreExtension extends AbstractExtension
 {
 	protected function loadTypes()
 	{

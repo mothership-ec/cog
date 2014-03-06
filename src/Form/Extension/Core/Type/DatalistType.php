@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Form\Extension\Type;
+namespace Message\Cog\Form\Extension\Core\Type;
 
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;

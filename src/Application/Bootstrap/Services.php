@@ -469,15 +469,15 @@ class Services implements ServicesInterface
 		});
 
 		$serviceContainer['form.extensions'] = function($c) {
-			return array(
-				new \Message\Cog\Form\Extension\Extension,
+			return [
+				new \Message\Cog\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
 				new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($c['symfony.validator']),
-				new \Message\Cog\Validator\Extension\ValidatorExtension($c['http.session'], $c['translator']),
-			);
+				new \Message\Cog\Form\Extension\Validator\ValidatorExtension($c['http.session'], $c['translator']),
+			];
 		};
 
 		$serviceContainer['form.csrf_secret'] = function($c) {

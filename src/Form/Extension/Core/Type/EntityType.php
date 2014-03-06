@@ -1,8 +1,8 @@
 <?php
 
-namespace Message\Cog\Form\Extension\Type;
+namespace Message\Cog\Form\Extension\Core\Type;
 
-use Message\Cog\Form\Extension\ChoiceList\EntityChoiceList;
+use Message\Cog\Form\Extension\Core\ChoiceList\EntityChoiceList;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\OptionsResolver\Options;
@@ -10,8 +10,10 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Own entity choice list, because we don't use Doctrine.
+ * Own entity form type, because we don't use Doctrine.
  * @see https://github.com/symfony/symfony/blob/master/src/Symfony/Bridge/Doctrine/Form/Type/DoctrineType.php
+ *
+ * This type represents an array of entities in a form.
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */

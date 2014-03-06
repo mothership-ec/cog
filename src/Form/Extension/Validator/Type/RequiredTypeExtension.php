@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Validator\Extension\Type;
+namespace Message\Cog\Form\Extension\Validator\Type;
 
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
@@ -8,6 +8,9 @@ use Symfony\Component\OptionsResolver\Options;
 
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
+
+use Symfony\Component\Form\FormView;
+use Symfony\Component\Form\FormInterface;
 
 /**
  * Determines field's required-option, using constraints
@@ -50,7 +53,7 @@ class RequiredTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritDoc}
      */
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options)
     {
         // override required option in view
         $view->vars['required'] = $options['required'];
