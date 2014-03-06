@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-use Message\Cog\Validator\Extension\EventListener\ValidationListener;
+use Message\Cog\Validator\Extension\EventListener\ValidationMessageListener;
 use Message\Cog\HTTP\Session;
 use Message\Cog\Localisation\Translator;
 
@@ -28,9 +28,8 @@ class ValidationMessageTypeExtension extends AbstractTypeExtension
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder
-            ->addEventSubscriber(new ValidationListener($this->_session, $this->_translator));
+            ->addEventSubscriber(new ValidationMessageListener($this->_session, $this->_translator));
     }
 
     /**

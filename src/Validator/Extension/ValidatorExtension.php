@@ -27,6 +27,7 @@ class ValidatorExtension extends AbstractExtension
     {
         return array(
             new Type\ValidationMessageTypeExtension($this->_session, $this->_translator),
+            new Type\RequiredTypeExtension,
         );
     }
 }
