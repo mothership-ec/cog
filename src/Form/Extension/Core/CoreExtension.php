@@ -10,11 +10,17 @@ class CoreExtension extends AbstractExtension
 {
 	protected function loadTypes()
 	{
-		return array(
-			new Type\DateType(),
-			new Type\TimeType(),
-			new Type\DatalistType(),
-			new Type\EntityType(),
-		);
+		return [
+			new Type\DatalistType,
+			new Type\EntityType,
+		];
+	}
+
+	protected function loadTypeExtensions()
+	{
+		return [
+			new Type\DateTypeExtension,
+			new Type\TimeTypeExtension,
+		];
 	}
 }
