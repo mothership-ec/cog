@@ -16,7 +16,7 @@ use Message\Cog\Localisation\Translator;
 /**
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class ValidationListener implements SubscriberInterface
+class ValidationMessageListener implements SubscriberInterface
 {
     protected $_errors = array();
     protected $_session;
@@ -52,8 +52,6 @@ class ValidationListener implements SubscriberInterface
                 }
             }
         }
-
-        $event->setData($data);
     }
 
     protected function _getErrors(FormInterface $field)

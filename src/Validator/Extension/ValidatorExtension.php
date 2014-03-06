@@ -11,7 +11,7 @@ use Message\Cog\Localisation\Translator;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class ValidationMessageExtension extends AbstractExtension
+class ValidatorExtension extends AbstractExtension
 {
 
     protected $_session;
