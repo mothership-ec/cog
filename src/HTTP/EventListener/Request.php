@@ -56,9 +56,12 @@ class Request implements SubscriberInterface, ContainerAwareInterface
 	 */
 	public function addRequestToServices(GetResponseEvent $event)
 	{
-		$this->_services['request'] = $this->_services->share(function() use ($event) {
+		// The request service must be unset before it can be re-defined
+		unset($this->_services['request']);
+
+		$this->_services['request'] = function() use ($event) {
 			return $event->getRequest();
-		});
+		};
 
 		$this->_services['http.fragment_handler']->setRequest($this->_services['request']);
 	}
