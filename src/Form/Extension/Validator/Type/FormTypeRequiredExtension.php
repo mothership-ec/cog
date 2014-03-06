@@ -17,7 +17,7 @@ use Symfony\Component\Form\FormInterface;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class RequiredTypeExtension extends AbstractTypeExtension
+class FormTypeRequiredExtension extends AbstractTypeExtension
 {
     /**
      * {@inheritDoc}

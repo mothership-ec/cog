@@ -26,8 +26,8 @@ class ValidatorExtension extends AbstractExtension
     protected function loadTypeExtensions()
     {
         return array(
-            new Type\ValidationMessageTypeExtension($this->_session, $this->_translator),
-            new Type\RequiredTypeExtension,
+            new Type\FormTypeErrorsWithFieldsExtension($this->_session, $this->_translator),
+            new Type\FormTypeRequiredExtension,
         );
     }
 }

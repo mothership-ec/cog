@@ -19,7 +19,7 @@ use Message\Cog\Localisation\Translator;
  *
  * @author Iris Schaffer <iris@message.co.uk>
  */
-class ValidationMessageTypeExtension extends AbstractTypeExtension
+class FormTypeErrorsWithFieldsExtension extends AbstractTypeExtension
 {
     protected $_session;
     protected $_translator;
