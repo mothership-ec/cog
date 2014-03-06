@@ -14,6 +14,10 @@ use Message\Cog\Localisation\Translator;
 
 
 /**
+ * Event Subscriber that's called in the end of the submission process.
+ * If the option 'errors_with_fields' is false, it collects all form-
+ * errors and adds them as flash messages.
+ *
  * @author Iris Schaffer <iris@message.co.uk>
  */
 class ValidationMessageListener implements SubscriberInterface
@@ -54,6 +58,14 @@ class ValidationMessageListener implements SubscriberInterface
         }
     }
 
+    /**
+     * Gets all the errors in the current $field and adds them
+     * to $_errors, to get all errors in the form and its children
+     * recursively.
+     * Also adds display name to error-message.
+     *
+     * @param  FormInterface $field Field to get Errors from
+     */
     protected function _getErrors(FormInterface $field)
     {
         if($field->getConfig()->getOption('label')) {

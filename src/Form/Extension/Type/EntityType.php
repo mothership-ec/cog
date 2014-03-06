@@ -10,7 +10,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * Own entity choice list, as we don't use Doctrine.
+ * Own entity choice list, because we don't use Doctrine.
  * @see https://github.com/symfony/symfony/blob/master/src/Symfony/Bridge/Doctrine/Form/Type/DoctrineType.php
  *
  * @author Iris Schaffer <iris@message.co.uk>
@@ -33,7 +33,9 @@ class EntityType extends AbstractType
     }
 
     /**
-     * Adds the 'errors_with_fields'-option and sets a default for it.
+     * Builds EntityChoiceList from 'choice'-option.
+     * @see https://github.com/symfony/symfony/blob/master/src/Symfony/Bridge/Doctrine/Form/Type/DoctrineType.php
+     * @see https://github.com/symfony/Form/blob/master/Extension/Core/Type/ChoiceType.php
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
@@ -43,7 +45,10 @@ class EntityType extends AbstractType
         $resolver->setRequired(['choices']);
         $resolver->setOptional(['property', 'value']);
 
+        // this returns the actual EntityChoiceList
+        // and requires hashing of whole list for caching
         $choiceList = function(Options $options) use (&$choiceListCache, $propertyAccessor) {
+            // hash for choices
             $choiceHashes = $options['choices'];
 
             // Support for recursive arrays
@@ -63,6 +68,7 @@ class EntityType extends AbstractType
                 $choiceHashes = $hashes;
             }
 
+            // hash for preferred_choices
             $preferredChoiceHashes = $options['preferred_choices'];
             if (is_array($preferredChoiceHashes)) {
                 array_walk_recursive($preferredChoiceHashes, function (&$value) {
@@ -80,7 +86,7 @@ class EntityType extends AbstractType
                 ? spl_object_hash($options['value'])
                 : $options['value'];
 
-            // hash for choicelist
+            // hash for entire choiceList
             $hash = md5(json_encode([
                 $choiceHashes,
                 $propertyHash,

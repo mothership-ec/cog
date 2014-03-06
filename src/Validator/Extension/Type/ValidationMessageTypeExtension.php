@@ -13,6 +13,10 @@ use Message\Cog\HTTP\Session;
 use Message\Cog\Localisation\Translator;
 
 /**
+ * Extension adding 'errors_with_fields' variable to options.
+ * Adds an event listener which adds flashes if 'errors_with_fields'
+ * is false.
+ *
  * @author Iris Schaffer <iris@message.co.uk>
  */
 class ValidationMessageTypeExtension extends AbstractTypeExtension
