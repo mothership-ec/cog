@@ -693,10 +693,6 @@ class Services implements ServicesInterface
 			return new Cog\Migration\Adapter\MySQL\Delete($c['db']);
 		};
 
-		$services['migration.collection'] = $services->factory(function($c) {
-			return new Cog\Migration\Collection\Collection();
-		});
-
 		$services['helper.prorate'] = $services->factory(function() {
 			return new Cog\Helper\ProrateHelper;
 		});
