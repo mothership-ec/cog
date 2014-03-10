@@ -48,7 +48,7 @@
 		"symfony/filesystem"               : "2.3.*",
 		"symfony/finder"                   : "2.2.*",
 		"twig/twig"                        : "1.13.*",
-		"pimple/pimple"                    : "1.0.1",
+		"pimple/pimple"                    : "~2.0",
 		"monolog/monolog"                  : "1.7.*",
 		"mtdowling/cron-expression"        : "1.0.*",
 		"treasure-chest/treasure-chest"    : "0.1.*",

@@ -121,15 +121,13 @@ The first is to create a class that extends the `\Symfony\Component\Form\Abstrac
 
 You will then need to add this to the form factory builder. You do this via the service container within the module, by extending `form.factory` shared service:
 
-		$serviceContainer['form.factory'] = $serviceContainer->share(
-			$serviceContainer->extend('form.factory', function($factory, $c) {
-				$factory->addExtensions(array(
-					new MyFormExtension // Your new form extension class
-				));
+	$serviceContainer->extend('form.factory', function($factory, $c) {
+		$factory->addExtensions(array(
+			new MyFormExtension // Your new form extension class
+		));
 
-				return $factory;
-			})
-		);
+		return $factory;
+	});
 
 ### Creating the view files
 
@@ -139,20 +137,17 @@ You should create a separate directory for each, somewhere within the View folde
 
 Once the template files have been created, you need to register the references to these by extending 'form.templates.twig' and 'form.templates.php' services in the service container.
 
-		$serviceContainer['form.templates.twig'] = $serviceContainer->extend(
-			'form.templates.twig', function($templates, $c) {
-			$templates[] = 'Message:Module:Namespace::Form:Twig:form_div_layout';
+	$serviceContainer->extend('form.templates.twig', function($templates, $c) {
+		$templates[] = 'Message:Module:Namespace::Form:Twig:form_div_layout';
 
-			return $templates;
-		});
+		return $templates;
+	});
 
-		$serviceContainer['form.templates.php'] = $serviceContainer->extend(
-			'form.templates.php', function($templates, $c) {
-				$templates[] = 'Message:Module:Namespace::Form:Php';
+	$serviceContainer->extend('form.templates.php', function($templates, $c) {
+		$templates[] = 'Message:Module:Namespace::Form:Php';
 
-				return $templates;
-			}
-		);
+		return $templates;
+	});
 
 Note that with Twig you need to reference the file name, but with PHP you need to reference the directory. It's also worth noting that you do not need to reference the View directory.
 

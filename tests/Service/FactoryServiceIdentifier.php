@@ -6,16 +6,16 @@ use Message\Cog\Service\ContainerInterface;
 use Closure;
 
 /**
- * Identifier for Shared Services, used in the `FauxContainer` implementation of
+ * Identifier for factory services, used in the `FauxContainer` implementation of
  * `Service\ContainerInterface`.
  *
- * When calling `share()` on `FauxContainer` an instance of this class is
+ * When calling `factory()` on `FauxContainer` an instance of this class is
  * returned, so unit tests can check for an instance of this class to test that
- * a service was defined as shared.
+ * a service was defined as a factory.
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class SharedServiceIdentifier
+class FactoryServiceIdentifier
 {
 	protected $_callable;
 	protected $_invokeResult;
@@ -24,9 +24,10 @@ class SharedServiceIdentifier
 	/**
 	 * Constructor.
 	 *
-	 * @param Closure $callable The service definition callable
+     * @param Closure            $callable  The service definition callable
+     * @param ContainerInterface $container The service container
 	 */
-	public function __construct(Closure $callable, ContainerInterface $container)
+	public function __construct($callable, ContainerInterface $container)
 	{
 		$this->_callable  = $callable;
 		$this->_container = $container;

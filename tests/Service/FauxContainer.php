@@ -26,9 +26,9 @@ class FauxContainer extends Container
 	 */
 	public function offsetGet($id)
 	{
-		if ($this->isShared($id)) {
+		if (!$this->isShared($id)) {
 			$raw = $this->raw($id);
-			return $raw();
+			return $raw($this);
 		}
 
 		return parent::offsetGet($id);
@@ -42,7 +42,7 @@ class FauxContainer extends Container
 	 */
 	public function isShared($id)
 	{
-		return $this->raw($id) instanceof SharedServiceIdentifier;
+		return !($this->raw($id) instanceof FactoryServiceIdentifier);
 	}
 
 	/**
@@ -55,8 +55,8 @@ class FauxContainer extends Container
 	 * @param  Closure $callable The service definition
 	 * @return SharedServiceIdentifier
 	 */
-	public function share(Closure $callable)
+	public function factory($callable)
 	{
-		return new SharedServiceIdentifier($callable, $this);
+		return new FactoryServiceIdentifier($callable, $this);
 	}
 }

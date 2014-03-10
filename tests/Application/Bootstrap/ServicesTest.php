@@ -6,6 +6,7 @@ use Message\Cog\Application\Bootstrap\Services as ServicesBootstrap;
 
 use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Service\SharedServiceIdentifier;
+use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Application\FauxLoader as AppFauxLoader;
 use Message\Cog\Test\Bootstrap\FauxLoader as BootstrapFauxLoader;
 
@@ -19,6 +20,14 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 	protected $_container;
 	protected $_bootstrap;
 
+	/**
+	 * Set up everything that is assumed for this bootstrap to run.
+	 *
+	 * This is mostly services that are used by other services that are defined
+	 * earlier.
+	 *
+	 * @todo This is a god awful mess. Find a way to improve it.
+	 */
 	public function setUp()
 	{
 		// Set the command-line arguments (override the phpunit ones)
@@ -37,27 +46,81 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		vfsStream::newDirectory('translations')
 			->at(vfsStreamWrapper::getRoot());
 
+		vfsStream::newFile('db.yml', 0777)
+			->at(VfsStreamWrapper::getRoot()->getChild('config'))
+			->setContent('hostname: 127.0.0.1
+user: user
+pass: password
+name: table_name
+charset: utf8');
+
+		vfsStream::newFile('app.yml', 0777)
+			->at(VfsStreamWrapper::getRoot()->getChild('config'))
+			->setContent('name: My Application
+base-url: default.com
+default-contact-email: dev@message.co.uk
+default-email-from:
+  email: noreply@default.com
+  name: My Application
+csrf-secret: CHANGE THIS FOR EACH INSTALLATION
+session-namespace: cog');
+
 		// Define services normally defined in Application\Loader
-		$classLoaderMock = $this->getMock('Composer\\Autoload\\ClassLoader');
-		$this->_container['app.loader'] = function($c) use ($classLoaderMock) {
-			return new AppFauxLoader(vfsStream::url('root'), $classLoaderMock);
-		};
-
-		$this->_container['class.loader'] = function($c) {
+	//	$classLoaderMock = $this->getMock('Composer\\Autoload\\ClassLoader');
+		$this->_container['class.loader'] = $this->_container->factory(function($c) {
 			return require getcwd() . '/vendor/autoload.php';
+		});
+
+		$this->_container['app.loader'] = $this->_container->factory(function($c) {
+			$loader = new AppFauxLoader($c['class.loader'], vfsStream::url('root'));
+			$loader->setServiceContainer($c);
+
+			return $loader;
+		});
+
+		$env = new FauxEnvironment;
+		$env->set('test');
+		$this->_container['environment'] = function() use ($env) {
+			return $env;
+		};
+		$this->_container['env'] = $this->_container->factory(function($c) {
+			return $c['environment']->get();
+		});
+
+		$cacheAdapter = $this->getMockBuilder('Message\\Cog\\Cache\\Adapter\\Filesystem')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$cache = $this->getMockBuilder('Message\\Cog\\Cache\\Instance')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$this->_container['cache.adapter'] = function() use ($cacheAdapter) {
+			return $cacheAdapter;
 		};
 
-		$this->_container['bootstrap.loader'] = function($c) {
+		$this->_container['cache'] = function($c) use ($cache) {
+			$cache->setPrefix(implode('.', array(
+				$c['app.loader']->getAppName(),
+				$c['environment']->get(),
+				$c['environment']->installation(),
+			)));
+
+			return $cache;
+		};
+
+
+		$this->_container['bootstrap.loader'] = $this->_container->factory(function($c) {
 			return new BootstrapFauxLoader($c);
-		};
+		});
 
-		$this->_container['routes.compiled'] = function() use ($routeCollection) {
+		$this->_container['routes.compiled'] = $this->_container->factory(function() use ($routeCollection) {
 			return $routeCollection;
-		};
+		});
 
-		$this->_container['http.request.context'] = function() use ($requestContext) {
+		$this->_container['http.request.context'] = $this->_container->factory(function() use ($requestContext) {
 			return $requestContext;
-		};
+		});
 
 		$this->_bootstrap->registerServices($this->_container);
 	}
@@ -68,19 +131,9 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('Message\Cog\Debug\Profiler', $this->_container['profiler']);
 	}
 
-	public function testClassLoaderDefinition()
-	{
-		$this->assertInstanceOf('Composer\Autoload\ClassLoader', $this->_container['class.loader']);
-	}
-
-	public function testEnvironmentDefinitions()
-	{
-		$this->assertInstanceOf('Message\Cog\Application\Environment', $this->_container['environment']);
-		$this->assertInternalType('string', $this->_container['env']);
-	}
-
 	public function testEventsDefinitions()
 	{
+		$this->assertFalse($this->_container->isShared('event'));
 		$this->assertInstanceOf('Message\Cog\Event\Event', $this->_container['event']);
 
 		$this->assertTrue($this->_container->isShared('event.dispatcher'));
@@ -95,13 +148,15 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($this->_container->isShared('routes'));
 		$this->assertInstanceOf('Message\Cog\Routing\CollectionManager', $this->_container['routes']);
 
+		$this->assertFalse($this->_container->isShared('routing.matcher'));
 		$this->assertInstanceOf('Message\Cog\Routing\UrlMatcher', $this->_container['routing.matcher']);
+		$this->assertFalse($this->_container->isShared('routing.generator'));
 		$this->assertInstanceOf('Message\Cog\Routing\UrlGenerator', $this->_container['routing.generator']);
 	}
 
 	public function testTemplatingDefinition()
 	{
-		$this->assertTrue($this->_container->isShared('templating'));
+		$this->assertFalse($this->_container->isShared('templating'));
 		$this->assertInstanceOf(
 			'Message\Cog\Templating\EngineInterface',
 			$this->_container['templating']
@@ -151,12 +206,13 @@ class ServicesTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->assertTrue($this->_container->isShared('task.collection'));
 		$this->assertInstanceOf(
-			'Message\Cog\Console\TaskCollection',
+			'Message\\Cog\\Console\\Task\\Collection',
 			$this->_container['task.collection']
 		);
 	}
 	public function testReferenceParserDefinitions()
 	{
+		$this->assertTrue($this->_container->isShared('reference_parser'));
 		$this->assertInstanceOf(
 			'Message\Cog\Module\ReferenceParserInterface',
 			$this->_container['reference_parser']
