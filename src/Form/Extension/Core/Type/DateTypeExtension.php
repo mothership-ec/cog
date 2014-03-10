@@ -12,7 +12,7 @@ class DateTypeExtension extends AbstractTypeExtension
 {
 	/**
 	 * {@inheritdoc}
-     */
+	 */
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
 		$resolver->setDefaults([

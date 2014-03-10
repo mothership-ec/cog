@@ -24,14 +24,14 @@ class EntityChoiceList extends ObjectChoiceList
 	protected $_identifier;
 
 	/**
-     * all available choices
-     * @var array
-     */
+	 * all available choices
+	 * @var array
+	 */
 	protected $_choices;
 
 	/**
-     * {@inheritdoc}
-     */
+	 * {@inheritdoc}
+	 */
 	public function __construct(
 		$choices,
 		$labelPath = null,
@@ -52,12 +52,12 @@ class EntityChoiceList extends ObjectChoiceList
 	 * be strings. The values must be returned with the same keys and in the
 	 * same order as the corresponding choices in the given array.
 	 *
-     * This method is used by the form to determine checked/selected
-     * options.
-     *
-   	 * @param  array $choices choices to get values for
-     * @return array values for given choices
-     */
+	 * This method is used by the form to determine checked/selected
+	 * options.
+	 *
+	 * @param  array $choices choices to get values for
+	 * @return array values for given choices
+	 */
 	public function getValuesForChoices(array $choices)
 	{
 		$choices = $this->fixChoices($choices);
