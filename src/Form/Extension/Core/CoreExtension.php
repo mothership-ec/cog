@@ -2,9 +2,7 @@
 
 namespace Message\Cog\Form\Extension\Core;
 
-use \Symfony\Component\Form\AbstractExtension;
-use \Symfony\Component\PropertyAccess\PropertyAccess;
-
+use Symfony\Component\Form\AbstractExtension;
 
 class CoreExtension extends AbstractExtension
 {

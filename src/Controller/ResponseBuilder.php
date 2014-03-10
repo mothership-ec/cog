@@ -70,10 +70,10 @@ class ResponseBuilder implements RequestAwareInterface
 			if ($val instanceof FormHandler) {
 				$params[$key] = $val->getForm()->createView();
 			}
-			if($val instanceof SymfonyForm\FormBuilder) {
+			if ($val instanceof SymfonyForm\FormBuilder) {
 				$params[$key] = $val->getForm()->createView();
 			}
-			if($val instanceof SymfonyForm\Form) {
+			if ($val instanceof SymfonyForm\Form) {
 				$params[$key] = $val->createView();
 			}
 		}

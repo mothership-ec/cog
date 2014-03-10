@@ -19,51 +19,50 @@ use Symfony\Component\Form\FormInterface;
  */
 class FormTypeRequiredExtension extends AbstractTypeExtension
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
-        $resolver->setRequired(['constraints']);
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setDefaultOptions(OptionsResolverInterface $resolver)
+	{
+		$resolver->setRequired(['constraints']);
 
-        $required = function (Options $options) {
-            if($constraints = $options['constraints']) {
-                if(is_array($constraints)) {
-                    foreach($constraints as $constraint) {
-                        if($constraint instanceof Constraints\NotBlank) {
-                            return true;
-                        }
-                    }
-                } else {
-                    if($constraints instanceof Constraints\NotBlank) {
-                        return true;
-                    }
-                }
-            }
+		$required = function (Options $options) {
+			$constraints = $options['constraints'];
+			if (is_array($constraints)) {
+				foreach ($constraints as $constraint) {
+					if ($constraint instanceof Constraints\NotBlank) {
+						return true;
+					}
+				}
+			} else {
+				if ($constraints instanceof Constraints\NotBlank) {
+					return true;
+				}
+			}
 
-            return false;
-        };
+			return false;
+		};
 
-        $resolver->setDefaults([
-            'constraints' => array(),
-            'required'    => $required,
-        ]);
-    }
+		$resolver->setDefaults([
+			'constraints' => array(),
+			'required'	=> $required,
+		]);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public function finishView(FormView $view, FormInterface $form, array $options)
-    {
-        // override required option in view
-        $view->vars['required'] = $options['required'];
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public function finishView(FormView $view, FormInterface $form, array $options)
+	{
+		// override required option in view
+		$view->vars['required'] = $options['required'];
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getExtendedType()
-    {
-        return 'form';
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getExtendedType()
+	{
+		return 'form';
+	}
 }

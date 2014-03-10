@@ -569,34 +569,29 @@ class Services implements ServicesInterface
 		};
 
 		$serviceContainer['symfony.validator'] = $serviceContainer->share(function ($c) {
-		    if (isset($c['translator'])) {
-		    	$language = \Locale::getPrimaryLanguage($c['locale']->getId());
-                $c['translator']
-                	->addResource(
-                		'xliff',
-                		'cog://vendor/symfony/validator/Symfony/Component/Validator/Resources/translations/validators.'.$language.'.xlf',
-                		'en',
-                		'validators'
-                	);
-            }
+			if (isset($c['translator'])) {
+				$language = \Locale::getPrimaryLanguage($c['locale']->getId());
+				$c['translator']->addResource(
+					'xliff',
+					'cog://vendor/symfony/validator/Symfony/Component/Validator/Resources/translations/validators.'.$language.'.xlf',
+					'en',
+					'validators'
+				);
+			}
 
-            return new \Symfony\Component\Validator\Validator(
-                $c['symfony.validator.mapping.class_metadata_factory'],
-                $c['symfony.validator.validator_factory'],
-                isset($c['translator']) ? $c['translator'] : new \Symfony\Component\Validator\DefaultTranslator()
-            );
-        });
+			return new \Symfony\Component\Validator\Validator(
+				new \Symfony\Component\Validator\Mapping\ClassMetadataFactory(
+					new \Symfony\Component\Validator\Mapping\Loader\StaticMethodLoader()
+				),
+				$c['symfony.validator.validator_factory'],
+				isset($c['translator']) ? $c['translator'] : new \Symfony\Component\Validator\DefaultTranslator()
+			);
+		});
 
-        $serviceContainer['symfony.validator.mapping.class_metadata_factory'] = $serviceContainer->share(function ($c) {
-            return new \Symfony\Component\Validator\Mapping\ClassMetadataFactory(
-            	new \Symfony\Component\Validator\Mapping\Loader\StaticMethodLoader()
-            );
-        });
-
-        $serviceContainer['symfony.validator.validator_factory'] = $serviceContainer->share(function ($c) {
-            // @todo write our own one, to define how to load validators for a given constraints
-            return new \Symfony\Component\Validator\ConstraintValidatorFactory();
-        });
+		$serviceContainer['symfony.validator.validator_factory'] = $serviceContainer->share(function ($c) {
+			// @todo write our own one, to define how to load validators for a given constraint
+			return new \Symfony\Component\Validator\ConstraintValidatorFactory();
+		});
 
 		$serviceContainer['security.salt'] = $serviceContainer->share(function() {
 			return new \Message\Cog\Security\StringGenerator;
