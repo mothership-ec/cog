@@ -267,8 +267,9 @@ class Services implements ServicesInterface
 				)
 			);
 
-			// Use an array as the session storage when running unit tests
-			if ('test' === $c['env']) {
+			// Use an array as the session storage when running unit tests or from the command line
+			if ('test' === $c['env']
+             || 'cli' === php_sapi_name()) {
 				$storage = new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 			}
 
