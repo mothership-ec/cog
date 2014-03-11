@@ -31,7 +31,7 @@ We try to encourage the use of form classes for forms. These extend `Symfony\Com
 	}
 	
 The form is built in the `buildForm()`-method, and needs to have a name (`getName()`).
-The method `setDefaultOptions()` defines the default options for the whole form. Probably the most important one of thes is `data_class`:
+The method `setDefaultOptions()` defines the default options for the whole form. Probably the most important one of these is `data_class`:
 If a `data_class` is given, all form fields will be mapped to the given class. It is therefore important that the field name is the same as the name of the mapped property or the option `property_path` is set on the field.
 If a field should not be mapped, add the option `'mapped' => false`:
 
@@ -161,11 +161,14 @@ We wanted to have a form field type for entity collections, which automatically 
 To do that we implemented the `Message\Cog\Form\Extension\Core\Type\EntityType`. You can use it by just adding a field of type `entity`:
 
 	$builder->add('field_name', 'entity' [
-		'choices' => $this->_choices,
+		'choices'  => $this->_choices,
+		'property' => 'property used for labelling', \\ defaults to using __toString() of entity
+		'value'    => 'unique identifier', \\ defaults to 'id', can be getter or property name
 	]);
 	
-In the background a Choice List(`Message\Cog\Form\Extension\Core\ChoiceList\EntityChoiceList`) is generated from the `choices`-option.
-
+In the background a Choice List (`Message\Cog\Form\Extension\Core\ChoiceList\EntityChoiceList`) is generated from the `choices`-option.
+By default, the `id`-property of the entities will be used as an unique identifier for the entities. This behaviour can be changed using the `value`-option, which accepts names of properties, methods and closures.
+To display the entity in the form view, the `property`-option is used to determine the display name of the entity. This option defaults to the `__toString()`-method and accepts names of methods or properties and closures.
 
 # Deprecated Form Component
 
