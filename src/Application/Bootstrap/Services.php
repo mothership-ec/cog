@@ -442,30 +442,30 @@ class Services implements ServicesInterface
 		/**
 		 * @deprecated Use symfony form directly instead (form.factory and form.builder).
 		 */
-		$serviceContainer['form'] = $services->factory(function($c) {
+		$services['form'] = $services->factory(function($c) {
 			return new \Message\Cog\Form\Handler($c);
 		});
 
 		/**
 		 * @deprecated Use symfony form directly instead (form.factory and form.builder).
 		 */
-		$serviceContainer['form.handler'] = $services->factory(function($c) {
+		$services['form.handler'] = $services->factory(function($c) {
 			return new \Message\Cog\Form\Handler($c);
 		});
 
-		$serviceContainer['form.builder'] = $services->factory(function($c) {
+		$services['form.builder'] = $services->factory(function($c) {
 			return $c['form.factory']->createBuilder();
 		});
 
-		$serviceContainer['form.factory'] = function($c) {
+		$services['form.factory'] = function($c) {
 			return $c['form.factory.builder']->getFormFactory();
 		};
 
-		$serviceContainer['form.factory.builder'] = function($c) {
+		$services['form.factory.builder'] = function($c) {
 			return new \Message\Cog\Form\Factory\Builder($c['form.extensions']);
 		};
 
-		$serviceContainer['form.extensions'] = function($c) {
+		$services['form.extensions'] = function($c) {
 			return [
 				new \Message\Cog\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
@@ -545,7 +545,7 @@ class Services implements ServicesInterface
 		/**
 		 * @deprecated Use symfony's validation component (symfony.validator) instead.
 		 */
-		$serviceContainer['validator'] = $services->factory(function($c) {
+		$services['validator'] = $services->factory(function($c) {
 			return new Cog\Validation\Validator(
 				new Cog\Validation\Loader(
 					new Cog\Validation\Messages,
@@ -564,7 +564,7 @@ class Services implements ServicesInterface
 			);
 		});
 
-		$serviceContainer['symfony.validator'] = function($c) {
+		$services['symfony.validator'] = function($c) {
 			if (isset($c['translator'])) {
 				$language = \Locale::getPrimaryLanguage($c['locale']->getId());
 				$c['translator']->addResource(
@@ -584,7 +584,7 @@ class Services implements ServicesInterface
 			);
 		};
 
-		$serviceContainer['symfony.validator.validator_factory'] = function($c) {
+		$services['symfony.validator.validator_factory'] = function($c) {
 			// @todo write our own one, to define how to load validators for a given constraint
 			return new \Symfony\Component\Validator\ConstraintValidatorFactory();
 		};

@@ -70,7 +70,7 @@ class FormTypeRequiredExtension extends AbstractTypeExtension
 	 */
 	protected function _validateConstraint(Constraint $constraint)
 	{
-		if ($constraints instanceof Constraints\NotBlank) {
+		if ($constraint instanceof Constraints\NotBlank) {
 			return true;
 		}
 	}
