@@ -438,33 +438,44 @@ class Services implements ServicesInterface
 			return new Cog\Application\Context\Console($c);
 		};
 
-
 		// Forms
+		/**
+		 * @deprecated Use symfony form directly instead (form.factory and form.builder).
+		 */
 		$services['form'] = $services->factory(function($c) {
-			return new Cog\Form\Handler($c);
+			return new \Message\Cog\Form\Handler($c);
 		});
 
+		/**
+		 * @deprecated Use symfony form directly instead (form.factory and form.builder).
+		 */
 		$services['form.handler'] = $services->factory(function($c) {
-			return new Cog\Form\Handler($c);
+			return new \Message\Cog\Form\Handler($c);
 		});
 
-		$services['form.builder'] = function($c) {
-			return $c['form.factory']->getFormFactory()->createBuilder();
-		};
+		$services['form.builder'] = $services->factory(function($c) {
+			return $c['form.factory']->createBuilder();
+		});
 
 		$services['form.factory'] = function($c) {
-			return new Cog\Form\Factory\Builder($c['form.extensions']);
+			return $c['form.factory.builder']->getFormFactory();
 		};
 
-		$services['form.extensions'] = $services->factory(function($c) {
-			return array(
-				new Cog\Form\Extension\Extension,
+		$services['form.factory.builder'] = function($c) {
+			return new \Message\Cog\Form\Factory\Builder($c['form.extensions']);
+		};
+
+		$services['form.extensions'] = function($c) {
+			return [
+				new \Message\Cog\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
 				),
-			);
-		});
+				new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($c['symfony.validator']),
+				new \Message\Cog\Form\Extension\Validator\ValidatorExtension($c['http.session'], $c['translator']),
+			];
+		};
 
 		$services['form.csrf_secret'] = $services->factory(function($c) {
 			$parts = array(
@@ -531,6 +542,9 @@ class Services implements ServicesInterface
 		});
 
 		// Validator
+		/**
+		 * @deprecated Use symfony's validation component (symfony.validator) instead.
+		 */
 		$services['validator'] = $services->factory(function($c) {
 			return new Cog\Validation\Validator(
 				new Cog\Validation\Loader(
@@ -549,6 +563,31 @@ class Services implements ServicesInterface
 				)
 			);
 		});
+
+		$services['symfony.validator'] = function($c) {
+			if (isset($c['translator'])) {
+				$language = \Locale::getPrimaryLanguage($c['locale']->getId());
+				$c['translator']->addResource(
+					'xliff',
+					'cog://vendor/symfony/validator/Symfony/Component/Validator/Resources/translations/validators.'.$language.'.xlf',
+					'en',
+					'validators'
+				);
+			}
+
+			return new \Symfony\Component\Validator\Validator(
+				new \Symfony\Component\Validator\Mapping\ClassMetadataFactory(
+					new \Symfony\Component\Validator\Mapping\Loader\StaticMethodLoader()
+				),
+				$c['symfony.validator.validator_factory'],
+				isset($c['translator']) ? $c['translator'] : new \Symfony\Component\Validator\DefaultTranslator()
+			);
+		};
+
+		$services['symfony.validator.validator_factory'] = function($c) {
+			// @todo write our own one, to define how to load validators for a given constraint
+			return new \Symfony\Component\Validator\ConstraintValidatorFactory();
+		};
 
 		$services['security.salt'] = function() {
 			return new Cog\Security\StringGenerator;
@@ -585,6 +624,7 @@ class Services implements ServicesInterface
 			}
 
 			$translator->addLoader('yml', $yml);
+			$translator->addLoader('xliff', new \Symfony\Component\Translation\Loader\XliffFileLoader);
 
 			$translator->loadCatalogue($id);
 

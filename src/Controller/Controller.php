@@ -83,6 +83,20 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	}
 
 	/**
+	 * Creates and returns a Form instance from the type of the form.
+	 *
+	 * @param string|FormTypeInterface $type    The built type of the form
+	 * @param mixed                    $data    The initial data for the form
+	 * @param array                    $options Options for the form
+	 *
+	 * @return Form
+	 */
+	public function createForm($type, $data = null, array $options = array())
+	{
+		return $this->get('form.factory')->create($type, $data, $options);
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * This is used by `ResponseBuilder` to help determine the response format
@@ -230,7 +244,7 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function createNotFoundException($message = 'Not Found', \Exception $previous = null, $code = 0)
 	{
-	    return new NotFoundHttpException($message, $previous);
+		return new NotFoundHttpException($message, $previous);
 	}
 
 	/**
@@ -250,6 +264,6 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 */
 	public function createAccessDeniedException($message = 'Access Denied', \Exception $previous = null, $code = 0)
 	{
-	    return new AccessDeniedHttpException($message, $previous);
+		return new AccessDeniedHttpException($message, $previous);
 	}
 }
