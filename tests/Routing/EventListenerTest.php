@@ -34,15 +34,15 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 			false
 		);
 
-		$services['event.dispatcher'] = $services->share(function() {
+		$services['event.dispatcher'] = function() {
 			return new FauxDispatcher;
-		});
+		};
 
 		$generator = $this->getMock('Message\\Cog\\Routing\\UrlMatcher', array(), array(), '', false);
 
-		$services['routing.matcher'] = $services->share(function() use ($generator) {
+		$services['routing.matcher'] = function() use ($generator) {
 			return $generator;
-		});
+		};
 
 		$this->_modulePaths['UniformWares\\CustomModuleName'] = __DIR__.'/fixtures/module/example';
 
@@ -82,9 +82,9 @@ class EventListenerTest extends \PHPUnit_Framework_TestCase
 			->method('getRouteCollection')
 			->will($this->returnValue('my-route-collection'));
 
-		$services['routes'] = $services->share(function() use ($routes) {
+		$services['routes'] = function() use ($routes) {
 			return $routes;
-		});
+		};
 
 		$listener->mountRoutes();
 

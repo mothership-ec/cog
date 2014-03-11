@@ -28,34 +28,34 @@ class EventsTest extends \PHPUnit_Framework_TestCase
 		$uriSigner         = $this->getMock('Symfony\Component\HttpKernel\UriSigner', array(), array('123'));
 
 		// Set up services used when registering these events
-		$this->_container['router'] = $this->_container->share(function() {
+		$this->_container['router'] = function() {
 			return new FauxRouter;
-		});
+		};
 
-		$this->_container['profiler'] = $this->_container->share(function() {
+		$this->_container['profiler'] = function() {
 			return new Profiler;
-		});
+		};
 
-		$this->_container['environment'] = $this->_container->share(function() {
+		$this->_container['environment'] = function() {
 			return new Environment;
-		});
+		};
 
-		$this->_container['http.cookies'] = $this->_container->share(function() {
+		$this->_container['http.cookies'] = function() {
 			return new CookieCollection;
-		});
+		};
 
-		$this->_container['http.fragment_handler'] = $this->_container->share(function() use ($fragmentHandler) {
+		$this->_container['http.fragment_handler'] = function() use ($fragmentHandler) {
 			return $fragmentHandler;
-		});
+		};
 
-		$this->_container['http.uri_signer'] = $this->_container->share(function() use ($uriSigner) {
+		$this->_container['http.uri_signer'] = function() use ($uriSigner) {
 			return $uriSigner;
-		});
+		};
 
 		$classLoaderMock = $this->getMock('Composer\\Autoload\\ClassLoader');
-		$this->_container['app.loader'] = function($c) use ($classLoaderMock) {
+		$this->_container['app.loader'] = $this->_container->factory(function($c) use ($classLoaderMock) {
 			return new FauxLoader($classLoaderMock, vfsStream::url('root'));
-		};
+		});
 
 		$this->_bootstrap->setContainer($this->_container);
 

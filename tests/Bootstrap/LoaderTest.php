@@ -67,9 +67,9 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testAddFromDirectory()
 	{
-		$this->_services['request'] = $this->_services->share(function() {
+		$this->_services['request'] = function() {
 			return new Request;
-		});
+		};
 
 		$this->_loader->addFromDirectory(dirname(__FILE__) . '/Mocks', 'Message\Cog\Test\Bootstrap\Mocks');
 
@@ -101,24 +101,24 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 			'registerEvents',
 		);
 
-		$this->_services['routes'] = function() use ($routesMock) {
+		$this->_services['routes'] = $this->_services->factory(function() use ($routesMock) {
 			return $routesMock;
-		};
+		});
 
-		$this->_services['event.dispatcher'] = function() {
+		$this->_services['event.dispatcher'] = $this->_services->factory(function() {
 			return new FauxDispatcher;
-		};
+		});
 
-		$this->_services['task.collection'] = function() {
+		$this->_services['task.collection'] = $this->_services->factory(function() {
 			return array();
-		};
+		});
 
-		$this->_services['environment'] = $this->_services->share(function() use ($context) {
+		$this->_services['environment'] = function() use ($context) {
 			$env = new FauxEnvironment;
 			$env->setContext($context);
 
 			return $env;
-		});
+		};
 
 		// If in console, add expectations for task registration
 		if ('console' === $context) {

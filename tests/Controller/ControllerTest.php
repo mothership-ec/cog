@@ -37,9 +37,9 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 			->with($routeName, $params)
 			->will($this->returnValue($returnVal));
 
-		$container['routing.generator'] = $container->share(function() use ($generator) {
+		$container['routing.generator'] = function() use ($generator) {
 			return $generator;
-		});
+		};
 
 		$this->_controller->setContainer($container);
 		$this->assertEquals($returnVal, $this->_controller->generateUrl($routeName, $params));
@@ -110,13 +110,13 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 			return $request;
 		};
 
-		$container['reference_parser'] = $container->share(function() use ($parser) {
+		$container['reference_parser'] = function() use ($parser) {
 			return $parser;
-		});
+		};
 
-		$container['http.kernel'] = $container->share(function() use ($kernel) {
+		$container['http.kernel'] = function() use ($kernel) {
 			return $kernel;
-		});
+		};
 
 		$this->_controller->setContainer($container);
 
@@ -144,9 +144,9 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 			->with($reference, $params)
 			->will($this->returnValue($returnVal));
 
-		$container['response_builder'] = $container->share(function() use ($responseBuilder) {
+		$container['response_builder'] = function() use ($responseBuilder) {
 			return $responseBuilder;
-		});
+		};
 
 		$this->_controller->setContainer($container);
 		$this->_controller->setRequest($request);

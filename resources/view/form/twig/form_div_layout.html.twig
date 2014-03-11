@@ -193,7 +193,9 @@
 	{% spaceless %}
 		<div class="add-on">
         	<p>%</p>
-      		{{ block('form_widget_simple') }}
+        	<div>
+	      		{{ block('form_widget_simple') }}
+      		</div>
     	</div>
 	{% endspaceless %}
 {% endblock percent_widget %}
