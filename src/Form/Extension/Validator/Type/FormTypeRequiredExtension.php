@@ -30,14 +30,10 @@ class FormTypeRequiredExtension extends AbstractTypeExtension
 			$constraints = $options['constraints'];
 			if (is_array($constraints)) {
 				foreach ($constraints as $constraint) {
-					if ($constraint instanceof Constraints\NotBlank) {
-						return true;
-					}
+					$this->_validateConstraint($constraint);
 				}
 			} else {
-				if ($constraints instanceof Constraints\NotBlank) {
-					return true;
-				}
+				$this->_validateConstraint($constraints);
 			}
 
 			return false;
@@ -64,5 +60,18 @@ class FormTypeRequiredExtension extends AbstractTypeExtension
 	public function getExtendedType()
 	{
 		return 'form';
+	}
+
+	/**
+	 * Validates constraint
+	 *
+	 * @param  Constraint $constraint
+	 * @return true       if constraint is Constraints\NotBlank
+	 */
+	protected function _validateConstraint(Constraint $constraint)
+	{
+		if ($constraints instanceof Constraints\NotBlank) {
+			return true;
+		}
 	}
 }
