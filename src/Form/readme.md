@@ -1,4 +1,173 @@
-# Form
+
+Because of major refactoring, this document consists of two parts: `New Form Component` and `Deprecated Form Component`. We use the new form component for new forms and try to slowly move existing forms from the old system to the new one. However, for backwards compatability, we have left the documentation of the deprecated form component in this document.
+
+# New Form Component
+
+We use Symfony Form with custom form extensions. For more resources, have a look at Symfony's documentation ([[1](http://symfony.com/doc/current/book/forms.html)], [[2](http://symfony.com/doc/current/cookbook/form/index.html)], [[3](http://symfony.com/doc/current/reference/forms/types.html)]).
+
+## General Usage
+We try to encourage the use of form classes for forms. These extend `Symfony\Component\Form\AbstractType`:
+
+	class FormClass extends \Symfony\Component\Form\AbstractType
+	{
+	
+		public function buildForm(Form\FormBuilderInterface $builder, array $options)
+		{
+
+			$builder->add('field_name', 'field_type');
+		}
+
+		public function setDefaultOptions(OptionsResolverInterface $resolver)
+		{
+			$resolver->setDefaults([
+				'data_class' => 'Class\\Represented\\By\\FormClass',
+			]);
+		}
+
+		public function getName()
+		{
+			return 'form_class';
+		}
+	}
+	
+The form is built in the `buildForm()`-method, and needs to have a name (`getName()`).
+The method `setDefaultOptions()` defines the default options for the whole form. Probably the most important one of thes is `data_class`:
+If a `data_class` is given, all form fields will be mapped to the given class. It is therefore important that the field name is the same as the name of the mapped property or the option `property_path` is set on the field.
+If a field should not be mapped, add the option `'mapped' => false`:
+
+	$builder->add('field_name', 'field_type' [
+		'mapped' => false,
+	]);
+	$builder->add('field_name2', 'field_type' [
+		'property_path' => 'name_of_property_in_underlying_class',
+	]);
+
+Other important options of the fields include `label` (label in view) and `data` (data the field should be populated with). The `label`-option also accepts translations:
+
+	$builder->add('field_name', 'field_type' [
+		'label' => 'translation.key.for.field', // or just a string like 'Field Name'
+	]);
+
+For more informaiton on different form field types and their options, have a look at [Symfony's Form Type Reference](http://symfony.com/doc/current/reference/forms/types.html).
+
+## Validation
+For validation we now use Symfony's Validator component. Adding validation to a form is as easy as adding the `constraints`-option:
+
+	use Symfony\Component\Validator\Constraints;
+	
+	...
+	
+	$builder->add('field_name', 'field_type' [
+		'constraints' => new Constraints\NotBlank
+	]);
+	
+	$builder->add('field_name', 'field_type' [
+		'constraints' => [
+			new Constraints\GreaterThan(['value' => 0]),
+			new Constraints\LessThanOrEqual(['value' => 100]),
+		]
+	]);
+
+For a full list of all validation constraints refer to [Symfony's Validation Constraints Reference](http://symfony.com/doc/current/reference/constraints.html).
+
+A way of adding custom validation is using [Form Events](http://symfony.com/doc/current/cookbook/form/dynamic_form_modification.html):
+
+	use use Symfony\Component\Form;
+	
+	...
+	
+	$builder->addEventListener(Form\FormEvents::POST_SUBMIT, [$this, 'onPostSubmit']);
+	
+	...
+	
+	public function onPostSubmit(Form\FormEvent $event)
+	{
+		$form = $event->getForm(); // Form\FormInterface
+		$model = $form->getData(); // submitted data, already bound to the model
+		
+		if (...) {
+			$form->addError(new Form\FormError('Form Error!'));
+		}
+		
+		$field = $form->get('field_name'); // e.g. for fields that are not mapped
+		$fieldData = $field->getData();
+		
+		if (...) {
+			$field->addError(new Form\FormError('Error on field `field_name`'));
+		}
+	}
+	
+## Form Extensions
+
+We have added a number of form extensions to the form componenet, many of which are part of our core form funcionality and therefore live in cog. However, in this readme only cog's form extension and details on writing an own form extension are covered.
+
+### Writing an own form extension
+Form extensions are basically a way of adding form types, form type extensions (and form type guessers) to the form component.
+In cog they can be found in `Form\Extension\` and have to extend `Symfony\Component\Form\AbstractExtension`:
+
+	namespace Message\Cog\Form\Extension\MyExtension;
+
+	use Symfony\Component\Form\AbstractExtension;
+
+	class MyExtension extends Symfony\Component\Form\AbstractExtension
+	{
+		protected function loadTypes();
+		protected function loadTypeExtensions();
+	}
+
+The methods `loadTypes()` and `loadTypeExtensions()` (and `loadTypeGuessers()`, which we don't use) return an array of all form types and field type extensions added by the extension.
+
+A form type is basically a representation of a property in a form (e.g. strings, dates, numbers…). One example for these is our Entity Type.
+
+Form type extensions on the other hand extend one or more existing form types (e.g. to add options or functionality). We use them to change the defaults of Date and Time Types (`Message\Cog\Form\Extension\Core\Type\DateTypeExtension`).
+
+For more information check out Symfony's Tutorials on [Custom Form Types](http://symfony.com/doc/current/cookbook/form/create_custom_field_type.html) and [Custom Form Type Extensions](http://symfony.com/doc/current/cookbook/form/create_form_type_extension.html).
+
+To add a form extension to the form component in cog, just add it to the `form.extensions`-service. In other cogules, you can extend the `form.factory.builder`-service:
+
+	$services->extend('form.factory.builder', function($factory, $c) {
+		$factory->addExtension(new MyExtension);
+		
+		// to add more than one at the same time:
+		$factory->addExtensions([
+			new MyExtension1,
+			new MyExtension2,
+		]);
+		
+		return $factory;
+	});
+
+
+### Required Field Extension
+Symfony offers the possibility to add HTML5-required-attributes to form fields. Normally using the option `'required' => true/false` is responsible for adding or not adding this attribute.
+Because we also use Symfony's Validation component, we decided to add an extension which automatically adds the `required`-option depending on the constraints added to the field.
+It should therefore **never be necessary to add the `required`-option manually**.
+
+This works by adding the `Message\Cog\Form\Extension\Validator\Type\FormTypeRequiredExtension`, which analyses the constraints on the form (fields) and sets the `required`-option accordingly.
+
+### Validation messages in flashes / with form fields
+Symfony add validation messages directly to the form fields. Because we have former added our validation errors to the flashes, we wanted to have an option of also doing this with the new validation component.
+We implemented `Message\Cog\Form\Extension\Validator\Type\FormTypeErrorsWithFieldsExtension`: With an event listener all form errors are collected and added to the flashes if the option `errors_with_fields` is set to `false` (which is the default for now). Otherwise they will be rendered with the form fields:
+
+	public function setDefaultOptions(OptionsResolverInterface $resolver)
+	{
+		$resolver->setDefaults([
+			'errors_with_fields' => true,
+		]);
+	}
+
+### Entity Type
+We wanted to have a form field type for entity collections, which automatically converts between arrays or collections of objects and a `choice`-type (dropdown, checkboxes or radio buttons).
+To do that we implemented the `Message\Cog\Form\Extension\Core\Type\EntityType`. You can use it by just adding a field of type `entity`:
+
+	$builder->add('field_name', 'entity' [
+		'choices' => $this->_choices,
+	]);
+	
+In the background a Choice List(`Message\Cog\Form\Extension\Core\ChoiceList\EntityChoiceList`) is generated from the `choices`-option.
+
+
+# Deprecated Form Component
 
 The form integrates the Symfony Form component with the rest of the framework, specifically templating and validation.
 
