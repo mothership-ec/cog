@@ -1,4 +1,6 @@
-# Validation
+**We are now using Symfony Validation, for information on validation have a look at [our form component](https://github.com/messagedigital/cog/tree/master/src/Form) and check out [Symfony's documentation](http://symfony.com/doc/current/book/validation.html).**
+
+# Deprecated Validation
 
 The validation component makes it easy to ensure that an associative array matches a known, valid format. It also makes
 it possible to modify the data to ensure it passes validation (e.g adding `http://` before all URLs).

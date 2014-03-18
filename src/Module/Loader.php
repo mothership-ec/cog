@@ -99,8 +99,7 @@ class Loader implements LoaderInterface
 					->addFromDirectory(
 						$this->_locator->getPath($module) . 'Bootstrap',
 						$module . '\\Bootstrap'
-					)
-					->load();
+					);
 
 				// Fire the "module loaded" event
 				$this->_eventDispatcher->dispatch(
@@ -116,6 +115,8 @@ class Loader implements LoaderInterface
 				$this->_logger->warning($e->getMessage());
 			}
 		}
+
+		$this->_bootstrapLoader->load();
 
 		// Fire the "all modules loaded" event
 		$this->_eventDispatcher->dispatch('modules.load.success', new Event);
