@@ -12,8 +12,6 @@ use Message\Cog\Form\Handler;
  */
 class Choice extends Field
 {
-	protected $_options;
-
 	public function getFieldType()
 	{
 		return 'choice';
@@ -21,22 +19,19 @@ class Choice extends Field
 
 	public function getFormField(Handler $form)
 	{
-		$form->add($this->getName(), 'choice', $this->getLabel(), array(
-			'attr'    => array('data-help-key' => $this->_getHelpKeys()),
-			'choices' => $this->_options,
-		));
+		$form->add($this->getName(), 'choice', $this->getLabel(), $this->getFieldOptions());
 	}
 
 	/**
 	 * Set the options available on this select menu.
 	 *
-	 * @param array $options Array of options
+	 * @param array $choices Array of options
 	 *
-	 * @return SelectMenu    Returns $this for chainability
+	 * @return Choice    Returns $this for chainability
 	 */
-	public function setOptions(array $options)
+	public function setOptions(array $choices)
 	{
-		$this->_options = $options;
+		$this->_options['choices'] = $choices;
 
 		return $this;
 	}

@@ -282,12 +282,12 @@ class Group implements FieldInterface, FieldContentInterface
 		$this->_translationKey = $key . '.' . $this->getName();
 	}
 
-	public function setOptions(array $options)
+	public function setFieldOptions(array $options)
 	{
 		$this->_options	= $options;
 	}
 
-	public function getOptions()
+	public function getFieldOptions()
 	{
 		return $this->_options;
 	}

@@ -33,8 +33,6 @@ class Datetime extends Field
 
 	public function getFormField(Handler $form)
 	{
-		$form->add($this->getName(), 'datetime', $this->getLabel(), array(
-			'attr' => array('data-help-key' => $this->_getHelpKeys()),
-		));
+		$form->add($this->getName(), 'datetime', $this->getLabel(), $this->getFieldOptions());
 	}
 }

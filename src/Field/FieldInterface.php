@@ -65,9 +65,17 @@ interface FieldInterface
 	public function setTranslationKey($key);
 
 	/**
-	 * Set options to pass to form
+	 * Set options to pass to form. Called setFieldOptions() as some classes already have a setOptions() method
 	 *
 	 * @param array $options
+	 * @param bool $setHelpKey
 	 */
-	public function setOptions(array $options);
+	public function setFieldOptions(array $options);
+
+	/**
+	 * Retrieve field options from the form
+	 *
+	 * @return array
+	 */
+	public function getFieldOptions();
 }

@@ -24,7 +24,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	protected $_validator;
 	protected $_group;
 	protected $_translationKey;
-	protected $_options = array();
+	protected $_options = [];
 
 	/**
 	 * {@inheritDoc}
@@ -32,6 +32,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	public function __construct(Validation\Validator $validator)
 	{
 		$this->_validator = $validator;
+		$this->_setHelpAttribute();
 	}
 
 	/**
@@ -108,14 +109,14 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setOptions(array $options)
+	public function setFieldOptions(array $options)
 	{
 		$this->_options	= $options;
 
 		return $this;
 	}
 
-	public function getOptions()
+	public function getFieldOptions()
 	{
 		return $this->_options;
 	}
@@ -179,6 +180,16 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 		$className = trim(strrchr($className, '\\'), '\\');
 
 		return $this->_translationKey . '.help';
+	}
+
+	protected function _setHelpAttribute()
+	{
+		if (empty($options['attr'])) {
+			$options['attr'] = [];
+		}
+		if (empty($options['attr']['data-help-key'])) {
+			$options['attr']['data-help-key'] = $this->_getHelpKeys();
+		}
 	}
 
 	/**

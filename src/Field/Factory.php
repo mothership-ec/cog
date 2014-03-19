@@ -157,7 +157,7 @@ class Factory implements \IteratorAggregate, \Countable
 
 		$field->setName($name)
 			->setLabel($label);
-		
+
 		$field->setTranslationKey($this->_baseTransKey);
 
 		if ($field instanceof ContainerAwareInterface) {
