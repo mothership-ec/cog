@@ -4,8 +4,8 @@ namespace Message\Cog\Field;
 
 use Message\Mothership\CMS\Page\Content;
 
-use Message\Cog\Form\Handler;
 use Message\Cog\Service\ContainerInterface;
+use Symfony\Component\Form\FormFactory;
 
 /**
  * Generates a form for given content fields.
@@ -18,6 +18,8 @@ class Form
 	protected $_services;
 	protected $_content;
 	protected $_form;
+	protected $_factory;
+	protected $_builder;
 
 	/**
 	 * Constructor.
@@ -37,9 +39,10 @@ class Form
 	 *
 	 * @return Symfony\Component\Form\Form The generated form
 	 */
-	public function generate(Handler $form, $content)
+	public function generate($content)
 	{
-		$defaultValues = array();
+		$defaultValues  = [];
+		$this->_factory = $this->_services['form.factory'];
 
 		if (!is_array($content) && !$content instanceof \Traversable) {
 			throw new \Exception('Content must be traversable');
@@ -51,9 +54,7 @@ class Form
 			}
 		}
 
-		$this->_form = $form
-			->setValidator($content->getValidator())
-			->setDefaultValues($defaultValues);
+		$this->_builder = $this->_factory->createBuilder('form', $defaultValues, $this->_options);
 
 		foreach ($content as $fieldName => $field) {
 			if ($field instanceof Group) {
@@ -75,7 +76,7 @@ class Form
 	 */
 	protected function _addField(BaseField $field)
 	{
-		$field->getFormField($this->_form);
+		$field->getFormField($this->_builder);
 	}
 
 	/**
@@ -91,19 +92,17 @@ class Form
 			$values[$name] = $field->getValue();
 		}
 
-		$groupHandler = $this->_services['form']
-			->setName($group->getName())
-			->setDefaultValues($values)
-			->setValidator($group->getValidator())
-			->addOptions(array(
-				'auto_initialize' => false,
-			));
+		$builder = $this->_factory->createBuilder('form', $values, [
+			'name' => $group->getName(),
+		]);
 
-		foreach ($group->getFields() as $fieldName => $field) {
-			$field->getFormField($groupHandler);
+		foreach ($group->getFields() as $field) {
+			$field->getFormField($builder);
 		}
 
-		$this->_form->add($groupHandler, 'form', $group->getLabel());
+		$this->_builder->add($builder, 'form', [
+			'label' => $group->getLabel(),
+		]);
 	}
 
 	/**
@@ -114,23 +113,21 @@ class Form
 	 */
 	protected function _addRepeatableGroup($name, RepeatableContainer $group)
 	{
-		// Create form for group
-		$groupHandler = $this->_services['form']
-			->setName($name)
-			->setRepeatable()
-			->setValidator($group->getValidator())
-			->setDefaultValues($this->_getDefaultValuesForRepeatableGroup($group))
-			->addOptions(array(
-				'auto_initialize' => false,
-			));
+		$groupBuilder = $this->_factory->createBuilder(
+			'form',
+			$this->_getDefaultValuesForRepeatableGroup($group)
+		);
 
 		// Add each field as a collection
-		foreach ($group->getFields() as $fieldName => $field) {
-			$field->getFormField($groupHandler);
+		foreach ($group->getFields() as $field) {
+			$field->getFormField($groupBuilder);
 		}
 
 		// Add the form to the main form
-		$this->_form->add($groupHandler, 'form', $group->getLabel());
+		$this->_builder->add($name, 'collection', [
+			'label' => $group->getLabel(),
+			'type'  => $groupBuilder->getForm(),
+		]);
 	}
 
 	/**

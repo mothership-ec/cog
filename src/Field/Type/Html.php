@@ -3,7 +3,7 @@
 namespace Message\Cog\Field\Type;
 
 use Message\Cog\Field\Field;
-use Message\Cog\Form\Handler;
+use Symfony\Component\Form\FormBuilder;
 
 /**
  * A field for some raw HTML.
@@ -17,8 +17,8 @@ class Html extends Field
 		return 'html';
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'textarea', $this->getLabel(), $this->getFieldOptions());
+		$form->add($this->getName(), 'textarea', $this->getFieldOptions());
 	}
 }

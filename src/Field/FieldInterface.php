@@ -20,7 +20,7 @@ interface FieldInterface
 	 * @param string $name  Identifier name for this field (unique to the page type)
 	 * @param string $label An optional human-readable label for this field
 	 */
-	public function __construct(Validator $validator);
+	public function __construct();
 
 	/**
 	 * @return string

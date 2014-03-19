@@ -3,7 +3,7 @@
 namespace Message\Cog\Field\Type;
 
 use Message\Cog\Field\Field;
-use Message\Cog\Form\Handler;
+use Symfony\Component\Form\FormBuilder;
 
 /**
  * A field for plain text.
@@ -17,8 +17,8 @@ class Text extends Field
 		return 'text';
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'text', $this->getLabel(), $this->getFieldOptions());
+		$form->add($this->getName(), 'text', $this->getFieldOptions());
 	}
 }

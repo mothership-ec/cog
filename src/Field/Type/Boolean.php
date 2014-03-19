@@ -3,7 +3,8 @@
 namespace Message\Cog\Field\Type;
 
 use Message\Cog\Field\Field;
-use Message\Cog\Form\Handler;
+use Symfony\Component\Form\FormBuilder;
+
 
 /**
  * A field for a boolean toggle.
@@ -17,8 +18,8 @@ class Boolean extends Field
 		return 'boolean';
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'checkbox', $this->getLabel(), $this->getFieldOptions());
+		$form->add($this->getName(), 'checkbox', $this->getFieldOptions());
 	}
 }

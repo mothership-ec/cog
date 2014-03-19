@@ -150,9 +150,9 @@ class Factory implements \IteratorAggregate, \Countable
 	 */
 	public function getField($type, $name, $label = null)
 	{
-		$label	= $label ?: $name;
+		$label = $label ?: $name;
 
-		$field	= clone $this->_services['field.collection']
+		$field = clone $this->_services['field.collection']
 			->get($type);
 
 		$field->setName($name)
@@ -187,8 +187,6 @@ class Factory implements \IteratorAggregate, \Countable
 		$groupValidator->clear();
 
 		$label	= ($label) ?: $name;
-
-		$this->_validator->addField(new Validation\Field($name, $label))->validateAgainst($groupValidator);
 
 		$group = new Group($groupValidator);
 		$group->setName($name)

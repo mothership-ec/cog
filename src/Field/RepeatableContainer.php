@@ -11,7 +11,6 @@ class RepeatableContainer implements \IteratorAggregate, \Countable, FieldConten
 {
 	protected $_group;
 	protected $_groups = array();
-	protected $_validator;
 
 	/**
 	 * Constructor.
@@ -21,17 +20,6 @@ class RepeatableContainer implements \IteratorAggregate, \Countable, FieldConten
 	public function __construct(Group $group)
 	{
 		$this->_group 	  = $group;
-		$this->_validator = clone $group->getValidator();
-
-		foreach($this->_validator->getFields() as $field) {
-			$field->repeatable = true;
-			$this->_validator->addField($field);
-		}
-	}
-
-	public function getValidator()
-	{
-		return $this->_validator;
 	}
 
 	/**

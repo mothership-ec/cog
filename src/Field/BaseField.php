@@ -3,7 +3,7 @@
 namespace Message\Cog\Field;
 
 use Message\Cog\Validation;
-use Message\Cog\Form\Handler;
+use Symfony\Component\Form\FormBuilder;
 
 /**
  * Base field object that should be inherited by both a normal field and a
@@ -21,7 +21,6 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	protected $_label;
 	protected $_localisable = false;
 	protected $_value;
-	protected $_validator;
 	protected $_group;
 	protected $_translationKey;
 	protected $_options = [];
@@ -29,10 +28,10 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(Validation\Validator $validator)
+	public function __construct()
 	{
-		$this->_validator = $validator;
 		$this->_setHelpAttribute();
+		$this->_options['label'] = $this->getLabel();
 	}
 
 	/**
@@ -122,16 +121,6 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	}
 
 	/**
-	 * Get the validator instance.
-	 *
-	 * @return Validator
-	 */
-	public function val()
-	{
-		return $this->_validator->addField(new Validation\Field($this->getName(), $this->getLabel()));
-	}
-
-	/**
 	 * Checks if this field is localisable.
 	 *
 	 * @return boolean True if this field is localisable, false otherwise
@@ -197,5 +186,5 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	 *
 	 * @param Handler $form The form handler instance
 	 */
-	abstract public function getFormField(Handler $form);
+	abstract public function getFormField(FormBuilder $form);
 }

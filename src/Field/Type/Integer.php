@@ -3,7 +3,8 @@
 namespace Message\Cog\Field\Type;
 
 use Message\Cog\Field\Field;
-use Message\Cog\Form\Handler;
+use Symfony\Component\Form\FormBuilder;
+
 
 /**
  * A field for an integer.
@@ -17,8 +18,8 @@ class Integer extends Field
 		return 'integer';
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'number', $this->getLabel(), $this->getFieldOptions());
+		$form->add($this->getName(), 'number', $this->getFieldOptions());
 	}
 }

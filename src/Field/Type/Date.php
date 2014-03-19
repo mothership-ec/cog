@@ -3,7 +3,7 @@
 namespace Message\Cog\Field\Type;
 
 use Message\Cog\Field\Field;
-use Message\Cog\Form\Handler;
+use Symfony\Component\Form\FormBuilder;
 
 /**
  * A field for a single date.
@@ -26,8 +26,8 @@ class Date extends Field
 		return new \DateTime(date('c', $this->_value));
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'date', $this->getLabel(), $this->getFieldOptions());
+		$form->add($this->getName(), 'date', $this->getFieldOptions());
 	}
 }

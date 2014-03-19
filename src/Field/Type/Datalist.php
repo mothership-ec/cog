@@ -3,7 +3,7 @@
 namespace Message\Cog\Field\Type;
 
 use Message\Cog\Field\Field;
-use Message\Cog\Form\Handler;
+use Symfony\Component\Form\FormBuilder;
 
 class Datalist extends Field
 {
@@ -12,8 +12,8 @@ class Datalist extends Field
 		return 'datalist';
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'datalist', $this->getLabel(), $this->getFieldOptions());
+		$form->add($this->getName(), 'datalist', $this->getFieldOptions());
 	}
 }

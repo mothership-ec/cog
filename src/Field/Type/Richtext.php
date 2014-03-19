@@ -7,6 +7,8 @@ use Message\Cog\Form\Handler;
 
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
+use Symfony\Component\Form\FormBuilder;
+
 
 /**
  * A field for text written in a rich text markup language.
@@ -46,9 +48,9 @@ class Richtext extends Field implements ContainerAwareInterface
 		$this->_services = $container;
 	}
 
-	public function getFormField(Handler $form)
+	public function getFormField(FormBuilder $form)
 	{
-		$form->add($this->getName(), 'textarea', $this->getLabel(), $this->getFieldOptions());
+		$form->add($this->getName(), 'textarea', $this->getFieldOptions());
 	}
 
 	/**
