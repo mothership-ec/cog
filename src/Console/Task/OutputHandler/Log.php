@@ -2,9 +2,17 @@
 
 namespace Message\Cog\Console\Task\OutputHandler;
 
+use Psr\Log\LoggerInterface;
 
 class Log extends OutputHandler
 {
+	protected $_logger;
+
+	public function __construct(LoggerInterface $logger)
+	{
+		$this->_logger = $logger;
+	}
+
 	/**
 	 * {inheritDoc}
 	 */
@@ -14,19 +22,13 @@ class Log extends OutputHandler
 	}
 
 	/**
-	 * Enables this output handler
+	 * Get the logger instance.
 	 *
-	 * @param  string  $path   The path to write output to
-	 * @param  boolean $append True to append the contents to the file rather than overwrite it
-	 *
-	 * @return void
+	 * @return LoggerInterface
 	 */
-	public function enable($path, $append = false)
+	public function getLogger()
 	{
-		$this->_path   = $path;
-		$this->_append = $append;
-
-		parent::enable();
+		return $this->_logger;
 	}
 
 	/**
@@ -38,14 +40,10 @@ class Log extends OutputHandler
 			return false;
 		}
 
-		$output = $args[0];
+		// Get the first argument as the output
+		$output = array_shift($args);
 
-		if(!$this->_append && is_writable(dirname($this->_path))) {
-			file_put_contents($this->_path, $output);
-		} else if($this->_append && is_writable($this->_path)) {
-			file_put_contents($this->_path, $output, FILE_APPEND);
-		} else {
-			$this->_task->getRawOutput()->writeln('<error>Cannot write to '.$this->_path.'</error>');
-		}
+		// Log the output with any remaining arguments sent as the context
+		$this->_logger->info($output, $args);
 	}
 }

@@ -37,6 +37,7 @@
 		"symfony/console"                  : "2.3.*",
 		"symfony/event-dispatcher"         : "2.1.*",
 		"symfony/form"                     : "2.3.*",
+		"symfony/validator"                : "2.3.*",
 		"symfony/http-kernel"              : "2.3.*",
 		"symfony/process"                  : "2.1.*",
 		"symfony/routing"                  : "2.3.*",
@@ -48,7 +49,7 @@
 		"symfony/filesystem"               : "2.3.*",
 		"symfony/finder"                   : "2.2.*",
 		"twig/twig"                        : "1.13.*",
-		"pimple/pimple"                    : "1.0.1",
+		"pimple/pimple"                    : "~2.0",
 		"monolog/monolog"                  : "1.7.*",
 		"mtdowling/cron-expression"        : "1.0.*",
 		"treasure-chest/treasure-chest"    : "0.1.*",
@@ -61,7 +62,7 @@
 		"message/wkhtmltopdf"              : "1.0.*",
 		"itbz/fpdf"                        : "1.7.*",
 		"itbz/fpdi"                        : "1.4.*",
-		"zendframework/zend-debug"         : "~2.2"
+		"zendframework/zend-debug"         : "~2.2.6"
 	},
 	"require-dev": {
 		"mikey179/vfsStream"              : "1.1.*"

@@ -26,22 +26,22 @@ class Web implements ContextInterface
 	{
 		$this->_services = $container;
 
-		$this->_services['http.request.master'] = $this->_services->share(function() {
+		$this->_services['http.request.master'] = function() {
 			return \Message\Cog\HTTP\Request::createFromGlobals();
-		});
+		};
 
-		$this->_services['request'] = $this->_services->share(function($c) {
+		$this->_services['request'] = function($c) {
 			return $c['http.request.master'];
-		});
+		};
 
 		$this->_services['http.fragment_handler']->setRequest($this->_services['request']);
 
-		$this->_services['http.request.context'] = function($c) {
+		$this->_services['http.request.context'] = $this->_services->factory(function($c) {
 			$context = new \Message\Cog\Routing\RequestContext;
 			$context->fromRequest(isset($c['request']) ? $c['request'] : $c['http.request.master']);
 
 			return $context;
-		};
+		});
 	}
 
 	/**

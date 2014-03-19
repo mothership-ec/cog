@@ -23,6 +23,7 @@ class Response implements SubscriberInterface
 	{
 		return array(KernelEvents::RESPONSE => array(
 			array('setCookies', -100),
+			array('setRefererSession'),
 		));
 	}
 
@@ -50,6 +51,26 @@ class Response implements SubscriberInterface
 
 		foreach ($this->_cookieCollection as $cookie) {
 			$event->getResponse()->headers->setCookie($cookie);
+		}
+	}
+
+	/**
+	 * If the response is a redirect, set a referer session.
+	 *
+	 * @param FilterResponseEvent $event
+	 */
+	public function setRefererSession(FilterResponseEvent $event)
+	{
+		// Skip if this isn't the master request
+		if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+			return false;
+		}
+
+		$response = $event->getResponse();
+		$request = $event->getRequest();
+
+		if ($response->isRedirect()) {
+			$request->getSession()->set('referer', $request->getUri());
 		}
 	}
 }

@@ -113,7 +113,7 @@ class Handler
 	{
 		$this->_container   = $container;
 
-		$this->_factory     = $this->_container['form.factory']->getFormFactory();
+		$this->_factory     = $this->_container['form.factory'];
 		$this->_builder     = $this->_container['form.builder'];
 		$this->_validator   = $this->_container['validator'];
 		$this->_request     = $this->_container['request'];
