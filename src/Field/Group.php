@@ -15,7 +15,6 @@ class Group implements FieldInterface, FieldContentInterface
 {
 	protected $_name;
 	protected $_label;
-	protected $_validator;
 	protected $_translationKey;
 
 	protected $_repeatable = false;
@@ -26,14 +25,6 @@ class Group implements FieldInterface, FieldContentInterface
 	protected $_idFieldName;
 
 	protected $_options = array();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function __construct(Validator $validator)
-	{
-		$this->_validator = $validator;
-	}
 
 	/**
 	 * Get a field in this group.
@@ -83,16 +74,6 @@ class Group implements FieldInterface, FieldContentInterface
 		foreach ($this->_fields as $name => $field) {
 			$this->_fields[$name] = clone $field;
 		}
-	}
-
-	public function val()
-	{
-		return $this->getValidator();
-	}
-
-	public function getValidator()
-	{
-		return $this->_validator;
 	}
 
 	/**
@@ -176,8 +157,6 @@ class Group implements FieldInterface, FieldContentInterface
 		))) {
 			$this->setIdentifierField($field->getName());
 		}
-
-		$this->_validator->addField(new ValidatorField($field->getName(), $field->getLabel()));
 
 		return $this;
 	}

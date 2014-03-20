@@ -54,7 +54,7 @@ class Form
 			}
 		}
 
-		$this->_builder = $this->_factory->createBuilder('form', $defaultValues, $this->_options);
+		$this->_builder = $this->_factory->createBuilder('form', $defaultValues);
 
 		foreach ($content as $fieldName => $field) {
 			if ($field instanceof Group) {
@@ -66,7 +66,7 @@ class Form
 			}
 		}
 
-		return $this->_form;
+		return $this->_builder->getForm();
 	}
 
 	/**
@@ -133,19 +133,15 @@ class Form
 	/**
 	 * Get an array of default values for a repeatable group.
 	 *
-	 * Because of the way the Form component expects these values (grouped by
-	 * field), the array needs to be structured as field => array of values.
-	 *
-	 * So, consider a repeatable group with the fields "title" and "colour", the
-	 * returned array would look something like:
+	 * This method returns an array of values for each individual group
 	 *
 	 * <code>
-	 * [title]
-	 *    [0] => 'This colour is red'
-	 *    [1] => 'This colour is blue'
-	 * [colour]
-	 *    [0] => 'Red'
-	 *    [1] => 'Blue'
+	 * [0]
+	 *    [colour] => 'Red'
+	 *    [size] => 'Large'
+	 * [1]
+	 *    [colour] => 'Blue'
+	 *    [size] => 'Small'
 	 * </code>
 	 *
 	 * @param  RepeatableContainer $repeatable The repeatable group
@@ -154,12 +150,14 @@ class Form
 	 */
 	public function _getDefaultValuesForRepeatableGroup(RepeatableContainer $repeatable)
 	{
-		$values = array();
+		$values = [];
 
 		foreach ($repeatable as $i => $group) {
+			$groupValues = [];
 			foreach ($group->getFields() as $field) {
-				$values[$field->getName()][$i] = $field->getValue();
+				$groupValues[$field->getName()] = $field->getValue();
 			}
+			$values[$i] = $groupValues;
 		}
 
 		return $values;
