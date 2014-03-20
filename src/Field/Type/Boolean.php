@@ -18,6 +18,11 @@ class Boolean extends Field
 		return 'boolean';
 	}
 
+	public function getFormType()
+	{
+		return 'checkbox';
+	}
+
 	public function getFormField(FormBuilder $form)
 	{
 		$form->add($this->getName(), 'checkbox', $this->getFieldOptions());

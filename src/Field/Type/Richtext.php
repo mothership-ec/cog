@@ -40,6 +40,11 @@ class Richtext extends Field implements ContainerAwareInterface
 		return 'richtext';
 	}
 
+	public function getFormType()
+	{
+		return 'textarea';
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */

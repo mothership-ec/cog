@@ -152,6 +152,11 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 		$this->_translationKey = $key . '.' . $this->getName();
 	}
 
+	public function getFormType()
+	{
+		return $this->getFieldType();
+	}
+
 	/**
 	 * Get the contextual help keys for this field, separated with a colon.
 	 *
@@ -186,5 +191,8 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	 *
 	 * @param Handler $form The form handler instance
 	 */
-	abstract public function getFormField(FormBuilder $form);
+	public function getFormField(FormBuilder $form)
+	{
+		$form->add($this->getName(), $this->getFormType(), $this->getFieldOptions());
+	}
 }

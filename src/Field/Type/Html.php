@@ -17,6 +17,11 @@ class Html extends Field
 		return 'html';
 	}
 
+	public function getFormType()
+	{
+		return 'textarea';
+	}
+
 	public function getFormField(FormBuilder $form)
 	{
 		$form->add($this->getName(), 'textarea', $this->getFieldOptions());

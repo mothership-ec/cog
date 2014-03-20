@@ -113,20 +113,26 @@ class Form
 	 */
 	protected function _addRepeatableGroup($name, RepeatableContainer $group)
 	{
-		$groupBuilder = $this->_factory->createBuilder(
-			'form',
-			$this->_getDefaultValuesForRepeatableGroup($group)
-		);
+//		$groupBuilder = $this->_factory->createNamedBuilder(
+//			$name,
+//			'form'
+//		);
+
+		$dynamic = new DynamicFormType;
 
 		// Add each field as a collection
 		foreach ($group->getFields() as $field) {
-			$field->getFormField($groupBuilder);
+//			$field->getFormField($groupBuilder);
+			$dynamic->add($field->getName(), $field->getFormType(), $field->getFieldOptions());
 		}
 
 		// Add the form to the main form
 		$this->_builder->add($name, 'collection', [
 			'label' => $group->getLabel(),
-			'type'  => $groupBuilder->getForm(),
+			'type'  => $dynamic,
+			'allow_add' => true,
+			'allow_delete' => true,
+			'data' => $this->_getDefaultValuesForRepeatableGroup($group)
 		]);
 	}
 
