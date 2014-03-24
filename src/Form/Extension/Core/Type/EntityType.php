@@ -111,12 +111,11 @@ class EntityType extends AbstractType
 			return $choiceListCache[$hash];
 		};
 
-		$resolver->setDefaults(array(
-			'property'    => null,	// property used for labelling or closure
+		$resolver->setDefaults([
+			'property'    => null,	// property used for labelling or closure, dafaults to toString()
 			'choice_list' => $choiceList,
 			'value'       => 'id',	// unique identifier property or closure
-			)
-		);
+		]);
 	}
 
 
