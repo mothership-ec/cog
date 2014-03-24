@@ -2,7 +2,6 @@
 
 namespace Message\Cog\Field;
 
-use Message\Cog\Validation;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 
@@ -13,7 +12,6 @@ use Message\Cog\Service\ContainerAwareInterface;
  */
 class Factory implements \IteratorAggregate, \Countable
 {
-	protected $_validator;
 	protected $_services;
 
 	protected $_baseTransKey;
@@ -25,9 +23,8 @@ class Factory implements \IteratorAggregate, \Countable
 	 * @param Validator          $validator The validator to use for fields
 	 * @param ContainerInterface $container The service container
 	 */
-	public function __construct(Validation\Validator $validator, ContainerInterface $services)
+	public function __construct(ContainerInterface $services)
 	{
-		$this->_validator = $validator;
 		$this->_services  = $services;
 	}
 
@@ -53,11 +50,11 @@ class Factory implements \IteratorAggregate, \Countable
 	/**
 	 * Get the validator set on this factory.
 	 *
-	 * @return Validator
+	 * @throws \LogicException
 	 */
 	public function getValidator()
 	{
-		return $this->_validator;
+		throw new \LogicException('Validator is no longer used on field factory');
 	}
 
 	/**
@@ -182,13 +179,9 @@ class Factory implements \IteratorAggregate, \Countable
 	 */
 	public function getGroup($name, $label = null)
 	{
-		// Create a new blank validator
-		$groupValidator = clone $this->_validator;
-		$groupValidator->clear();
-
 		$label	= ($label) ?: $name;
 
-		$group = new Group($groupValidator);
+		$group = new Group;
 		$group->setName($name)
 			->setLabel($label);
 

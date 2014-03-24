@@ -431,7 +431,7 @@ class Services implements ServicesInterface
 
 		// Fields
 		$services['field.factory'] = $services->factory(function($c) {
-			$factory = new \Message\Cog\Field\Factory($c['validator'], $c);
+			$factory = new \Message\Cog\Field\Factory($c);
 
 			return $factory;
 		});
