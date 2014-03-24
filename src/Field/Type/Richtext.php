@@ -3,12 +3,9 @@
 namespace Message\Cog\Field\Type;
 
 use Message\Cog\Field\Field;
-use Message\Cog\Form\Handler;
 
-use Message\Cog\Service\ContainerInterface;
-use Message\Cog\Service\ContainerAwareInterface;
 use Symfony\Component\Form\FormBuilder;
-
+use dflydev\markdown\MarkdownParser;
 
 /**
  * A field for text written in a rich text markup language.
@@ -18,18 +15,23 @@ use Symfony\Component\Form\FormBuilder;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Richtext extends Field implements ContainerAwareInterface
+class Richtext extends Field
 {
-	protected $_services;
+	protected $_parser;
 	protected $_engine  = 'markdown';
 	protected $_engines = array(
 		'markdown',
 	);
 
+	public function __construct(MarkdownParser $parser)
+	{
+		$this->_parser = $parser;
+	}
+
 	public function __toString()
 	{
 		if ('markdown' === $this->_engine) {
-			return $this->_services['markdown.parser']->transformMarkdown($this->_value);
+			return $this->_parser->transformMarkdown($this->_value);
 		}
 
 		return parent::__toString();
@@ -43,14 +45,6 @@ class Richtext extends Field implements ContainerAwareInterface
 	public function getFormType()
 	{
 		return 'textarea';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setContainer(ContainerInterface $container)
-	{
-		$this->_services = $container;
 	}
 
 	public function getFormField(FormBuilder $form)

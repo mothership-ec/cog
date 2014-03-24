@@ -442,15 +442,15 @@ class Services implements ServicesInterface
 
 		$services['field.collection'] = function($c) {
 			return new \Message\Cog\Field\Collection(array(
-				new \Message\Cog\Field\Type\Boolean($c['validator']),
-				new \Message\Cog\Field\Type\Choice($c['validator']),
-				new \Message\Cog\Field\Type\Datalist($c['validator']),
-				new \Message\Cog\Field\Type\Date($c['validator']),
-				new \Message\Cog\Field\Type\Datetime($c['validator']),
-				new \Message\Cog\Field\Type\Html($c['validator']),
-				new \Message\Cog\Field\Type\Integer($c['validator']),
-				new \Message\Cog\Field\Type\Richtext($c['validator']),
-				new \Message\Cog\Field\Type\Text($c['validator']),
+				new \Message\Cog\Field\Type\Boolean,
+				new \Message\Cog\Field\Type\Choice,
+				new \Message\Cog\Field\Type\Datalist,
+				new \Message\Cog\Field\Type\Date,
+				new \Message\Cog\Field\Type\Datetime,
+				new \Message\Cog\Field\Type\Html,
+				new \Message\Cog\Field\Type\Integer,
+				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
+				new \Message\Cog\Field\Type\Text,
 			));
 		};
 
@@ -463,6 +463,10 @@ class Services implements ServicesInterface
 		$services['cms.field.form'] = function($c) {
 			return $c['field.form'];
 		};
+
+		$services['markdown.parser'] = $services->factory(function() {
+			return new \dflydev\markdown\MarkdownParser;
+		});
 
 		// Application Contexts
 		$services['app.context.web'] = function($c) {
