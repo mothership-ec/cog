@@ -60,8 +60,8 @@ class EntityChoiceList extends ObjectChoiceList
 
 		foreach ($choices as $i => $givenChoice) {
 			foreach ($this->_choices as $j => $choice) {
-				if ($givenChoice && $this->_propertyAccessor->getValue($choice, $this->_identifier)
-					=== $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)) {
+				if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
+					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
 					$values[$i] = $this->getValues()[$j];
 					unset($choices[$i]);
 
