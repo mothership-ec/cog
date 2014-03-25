@@ -789,9 +789,9 @@ class Services implements ServicesInterface
 			return new Cog\Location\CountryList;
 		});
 
-		$services['country.event'] = function($c) {
+		$services['country.event'] = $services->factory(function($c) {
 			return new Cog\Location\CountryEvent($c['country.list']);
-		};
+		});
 
 		$services['state.list'] = $services->factory(function($c) {
 			return new Cog\Location\StateList;
