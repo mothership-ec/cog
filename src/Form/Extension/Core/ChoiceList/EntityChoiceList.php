@@ -48,15 +48,10 @@ class EntityChoiceList extends ObjectChoiceList
 	}
 
 	/**
-	 * Returns the values corresponding to the given choices. The values must
-	 * be strings. The values must be returned with the same keys and in the
-	 * same order as the corresponding choices in the given array.
-	 *
 	 * This method is used by the form to determine checked/selected
 	 * options.
 	 *
-	 * @param  array $choices choices to get values for
-	 * @return array values for given choices
+	 * {@inheritdoc}
 	 */
 	public function getValuesForChoices(array $choices)
 	{
@@ -65,7 +60,7 @@ class EntityChoiceList extends ObjectChoiceList
 
 		foreach ($choices as $i => $givenChoice) {
 			foreach ($this->_choices as $j => $choice) {
-				if ($this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
+				if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
 					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
 					$values[$i] = $this->getValues()[$j];
 					unset($choices[$i]);
