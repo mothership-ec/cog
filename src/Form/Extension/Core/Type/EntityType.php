@@ -112,7 +112,7 @@ class EntityType extends AbstractType
 		};
 
 		$resolver->setDefaults([
-			'property'    => null,	// property used for labelling or closure, dafaults to toString()
+			'property'    => null,	// property used for labelling or closure, defaults to toString()
 			'choice_list' => $choiceList,
 			'value'       => 'id',	// unique identifier property or closure
 		]);
