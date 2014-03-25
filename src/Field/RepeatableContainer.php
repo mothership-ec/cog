@@ -124,4 +124,12 @@ class RepeatableContainer implements \IteratorAggregate, \Countable, FieldConten
 	{
 		return __CLASS__;
 	}
+
+	public function debugGroupList()
+	{
+		foreach ($this->_groups as $name => $group) {
+			d('(' . gettype($name) . ') ' . $name . ' => ' . (is_object($group) ? get_class($group) : gettype($group)));
+		}
+		die();
+	}
 }

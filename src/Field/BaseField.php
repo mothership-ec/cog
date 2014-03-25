@@ -31,7 +31,6 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	public function __construct()
 	{
 		$this->_setHelpAttribute();
-		$this->_options['label'] = $this->getLabel();
 	}
 
 	/**
@@ -67,7 +66,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	 */
 	public function getLabel()
 	{
-		return $this->_label;
+		return $this->_options['label'];
 	}
 
 	/**
@@ -75,7 +74,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	 */
 	public function setLabel($label)
 	{
-		$this->_label	= $label;
+		$this->_options['label'] = $label;
 
 		return $this;
 	}
