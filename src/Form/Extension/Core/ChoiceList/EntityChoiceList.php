@@ -70,28 +70,28 @@ class EntityChoiceList extends ObjectChoiceList
 	}
 
 	/**
-     * {@inheritdoc}
-     */
-    public function getIndicesForChoices(array $choices)
-    {
-        $choices = $this->fixChoices($choices);
-        $indices = array();
+	 * {@inheritdoc}
+	 */
+	public function getIndicesForChoices(array $choices)
+	{
+		$choices = $this->fixChoices($choices);
+		$indices = array();
 
-        foreach ($choices as $i => $givenChoice) {
+		foreach ($choices as $i => $givenChoice) {
 			foreach ($this->getChoices() as $j => $choice) {
-                if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
+				if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
 					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
 
-                    $indices[$i] = $j;
-                    unset($choices[$i]);
+					$indices[$i] = $j;
+					unset($choices[$i]);
 
-                    if (0 === count($choices)) {
-                        break 2;
-                    }
-                }
-            }
-        }
+					if (0 === count($choices)) {
+						break 2;
+					}
+				}
+			}
+		}
 
-        return $indices;
-    }
+		return $indices;
+	}
 }
