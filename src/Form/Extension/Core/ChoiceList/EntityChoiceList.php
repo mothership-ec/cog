@@ -53,9 +53,7 @@ class EntityChoiceList extends ObjectChoiceList
 
 		foreach ($choices as $i => $givenChoice) {
 			foreach ($this->getChoices() as $j => $choice) {
-				if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
-					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
-
+				if ($this->areChoicesEqual($givenChoice, $choice)) {
 					$values[$i] = $this->getValues()[$j];
 					unset($choices[$i]);
 
@@ -79,9 +77,7 @@ class EntityChoiceList extends ObjectChoiceList
 
 		foreach ($choices as $i => $givenChoice) {
 			foreach ($this->getChoices() as $j => $choice) {
-				if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
-					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
-
+				if ($this->areChoicesEqual($givenChoice, $choice)) {
 					$indices[$i] = $j;
 					unset($choices[$i]);
 
@@ -93,5 +89,21 @@ class EntityChoiceList extends ObjectChoiceList
 		}
 
 		return $indices;
+	}
+
+	/**
+	 * Method comparing two choices.
+	 *
+	 * @param  mixed   $choice1   First choice
+	 * @param  mixed   $choice2   Second choice
+	 * @return boolean            True if the first and second choice have the same
+	 *                            $_identifier-property (and are therefore considered equal).
+	 */
+	protected function areChoicesEqual($choice1, $choice2)
+	{
+		// make sure both choices are not null, then compare their values
+		return $choice1 && $choice2
+			&& $this->_propertyAccessor->getValue($choice1, $this->_identifier)
+			=== $this->_propertyAccessor->getValue($choice2, $this->_identifier);
 	}
 }
