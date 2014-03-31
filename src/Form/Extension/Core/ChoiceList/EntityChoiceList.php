@@ -24,12 +24,6 @@ class EntityChoiceList extends ObjectChoiceList
 	protected $_identifier;
 
 	/**
-	 * all available choices
-	 * @var array
-	 */
-	protected $_choices;
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function __construct(
@@ -40,7 +34,6 @@ class EntityChoiceList extends ObjectChoiceList
 		$valuePath = null,
 		PropertyAccessorInterface $propertyAccessor = null)
 	{
-		$this->_choices          = $choices;
 		$this->_propertyAccessor = $propertyAccessor ?: PropertyAccess::createPropertyAccessor();
 		$this->_identifier       = null !== $valuePath ? new PropertyPath($valuePath) : null;
 
@@ -59,9 +52,10 @@ class EntityChoiceList extends ObjectChoiceList
 		$values = array();
 
 		foreach ($choices as $i => $givenChoice) {
-			foreach ($this->_choices as $j => $choice) {
+			foreach ($this->getChoices() as $j => $choice) {
 				if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
 					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
+
 					$values[$i] = $this->getValues()[$j];
 					unset($choices[$i]);
 
@@ -74,4 +68,30 @@ class EntityChoiceList extends ObjectChoiceList
 
 		return $values;
 	}
+
+	/**
+     * {@inheritdoc}
+     */
+    public function getIndicesForChoices(array $choices)
+    {
+        $choices = $this->fixChoices($choices);
+        $indices = array();
+
+        foreach ($choices as $i => $givenChoice) {
+			foreach ($this->getChoices() as $j => $choice) {
+                if ($givenChoice && $this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
+					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
+
+                    $indices[$i] = $j;
+                    unset($choices[$i]);
+
+                    if (0 === count($choices)) {
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        return $indices;
+    }
 }
