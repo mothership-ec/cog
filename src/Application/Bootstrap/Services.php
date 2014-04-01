@@ -48,8 +48,8 @@ class Services implements ServicesInterface
 		// shortcut for easier access
 		$services['db'] = $services->raw('db.query');
 
-		$services['db.transaction'] = $services->factory(function($s) {
-			return new Cog\DB\Transaction($s['db.connection']);
+		$services['db.transaction'] = $services->factory(function($c) {
+			return new Cog\DB\Transaction($c['db.connection'], $c['event.dispatcher']);
 		});
 
 		$services['db.nested_set_helper'] = $services->factory(function($s) {
