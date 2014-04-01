@@ -86,7 +86,7 @@ class Group implements FieldInterface, FieldContentInterface
 
 	public function setName($name)
 	{
-		$this->_name	= $name;
+		$this->_name = $name;
 
 		return $this;
 	}
@@ -101,7 +101,7 @@ class Group implements FieldInterface, FieldContentInterface
 
 	public function setLabel($label)
 	{
-		$this->_label	= $label;
+		$this->_label = $label;
 
 		return $this;
 	}

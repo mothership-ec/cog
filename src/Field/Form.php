@@ -92,9 +92,7 @@ class Form
 			$values[$name] = $field->getValue();
 		}
 
-		$builder = $this->_factory->createBuilder('form', $values, [
-			'name' => $group->getName(),
-		]);
+		$builder = $this->_factory->createNamedBuilder($group->getName(), 'form', $values);
 
 		foreach ($group->getFields() as $field) {
 			$field->getFormField($builder);

@@ -56,7 +56,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	 */
 	public function setName($name)
 	{
-		$this->_name	= $name;
+		$this->_name = $name;
 
 		return $this;
 	}
@@ -78,7 +78,6 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 
 		return $this;
 	}
-
 
 	/**
 	 * {@inheritdoc}
@@ -110,6 +109,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	public function setFieldOptions(array $options)
 	{
 		$this->_options	= $options;
+		$this->_setHelpAttribute();
 
 		return $this;
 	}
@@ -178,10 +178,10 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	protected function _setHelpAttribute()
 	{
 		if (empty($options['attr'])) {
-			$options['attr'] = [];
+			$this->_options['attr'] = [];
 		}
 		if (empty($options['attr']['data-help-key'])) {
-			$options['attr']['data-help-key'] = $this->_getHelpKeys();
+			$this->_options['attr']['data-help-key'] = $this->_getHelpKeys();
 		}
 	}
 
