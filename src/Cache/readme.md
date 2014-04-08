@@ -37,7 +37,7 @@ The methods and their signatures generally match the functionality defined in th
 
 The service definition for the cache is set to use APC if it is available, otherwise the filesystem cache is used. A global prefix of the application name; the environment name and the installation name (if set) is used, so that caches are unique to the installation.
 
-	$serviceContainer['cache'] = $serviceContainer->share(function($s) {
+	$serviceContainer['cache'] = function($s) {
 		$adapterClass = (extension_loaded('apc') && ini_get('apc.enabled')) ? 'APC' : 'Filesystem';
 		$adapterClass = '\Message\Cog\Cache\Adapter\\' . $adapterClass;
 		$cache        = new \Message\Cog\Cache\Instance(
@@ -50,7 +50,7 @@ The service definition for the cache is set to use APC if it is available, other
 		)));
 
 		return $cache;
-	});
+	};
 
 ### Creating a custom cache store service
 
@@ -58,11 +58,11 @@ If you need to use a cache store with different settings than the `cache` servic
 
 For example, you may wish to create a shared cache between all installations of this application on this server that only uses APC:
 
-	$serviceContainer['cache.shared'] = $serviceContainer->share(function($s) {
+	$serviceContainer['cache.shared'] = function($s) {
 		$cache = new \Message\Cog\Cache\Instance(
 			new \Message\Cog\Cache\Adapter\APC
 		);
 		$cache->setPrefix($s['app.loader']->appName);
 
 		return $cache;
-	});
+	};

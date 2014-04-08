@@ -28,7 +28,7 @@ class Text implements CollectionInterface
 		$loader->registerRule('alnum', array($this, 'alnum'), '%s must%s be alphanumeric.')
 			->registerRule('alpha', array($this, 'alpha'), '%s must%s be alphabetical.')
 			->registerRule('digit', array($this, 'digit'), '%s must%s only contain digits.')
-			->registerRule('length', array($this, 'length'), '%s must%s be between %s and %s characters.')
+			->registerRule('length', array($this, 'length'), '%s must%s be %s characters long.')
 			->registerRule('minLength', array($this, 'minLength'), '%s must%s be at least %s characters.')
 			->registerRule('maxLength', array($this, 'maxLength'), '%s must%s be no more than %s characters.')
 			->registerRule('email', array($this, 'email'), '%s must%s be a valid email address.')
@@ -76,25 +76,13 @@ class Text implements CollectionInterface
 	 * Checks that a string is a certain length
 	 *
 	 * @param string $var           The variable to validate
-	 * @param int|string $min       The minimum length of $var
-	 * @param null|int|string $max  The maximum length of $var. If set to null, method will check for the exact length
-	 * @throws \Exception           Throws exception is $min is greater than $max
+	 * @param int|string $length    The length the string should have
 	 *
-	 * @return bool                 Returns true if $var is a longer than $min and shorter than $max
+	 * @return bool                 Returns true if $var is of length $length
 	 */
-	public function length($var, $min, $max = null)
+	public function length($var, $length)
 	{
-		$len = strlen($var);
-
-		// Overloaded option if one param is specified, checks exact length
-		if ($max === null) {
-			return $len === $min;
-		}
-		elseif ($min >= $max) {
-			throw new \Exception(__CLASS__ . '::' . __METHOD__ . ' - $max must be greater than $min');
-		}
-
-		return ($len >= $min && $len <= $max);
+		return strlen($var) === $length;
 	}
 
 	/**

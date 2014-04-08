@@ -1,12 +1,13 @@
 <?php
 
-namespace Message\Cog\Form\Extension\Type;
+namespace Message\Cog\Form\Extension\Core\Type;
 
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\AbstractType;
 
-class DatalistType extends \Symfony\Component\Form\AbstractType
+class DatalistType extends AbstractType
 {
 	protected $_choices;
 

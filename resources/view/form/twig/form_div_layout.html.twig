@@ -193,7 +193,9 @@
 	{% spaceless %}
 		<div class="add-on">
         	<p>%</p>
-      		{{ block('form_widget_simple') }}
+        	<div>
+	      		{{ block('form_widget_simple') }}
+      		</div>
     	</div>
 	{% endspaceless %}
 {% endblock percent_widget %}
@@ -364,12 +366,14 @@
 
 {% block form_errors %}
 	{% spaceless %}
-		{% if errors|length > 0 %}
-			<ul>
-				{% for error in errors %}
-					<li>{{ error.message }}</li>
-				{% endfor %}
-			</ul>
+		{% if errors_with_fields %}
+			{% if errors|length > 0 %}
+				<ul>
+					{% for error in errors %}
+						<li>{{ error.message }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
 		{% endif %}
 	{% endspaceless %}
 {% endblock form_errors %}
@@ -397,7 +401,7 @@
 {% block widget_attributes %}
 	{% spaceless %}
 		id="{{ id }}" name="{{ full_name }}"{% if read_only %} readonly="readonly"{% endif %}{% if disabled %} disabled="disabled"{% endif %}{% if required %} required="required"{% endif %}{% if max_length %} maxlength="{{ max_length }}"{% endif %}{% if pattern %} pattern="{{ pattern }}"{% endif %}
-		{% for attrname, attrvalue in attr %}{% if attrname in ['placeholder', 'title'] %}{{ attrname }}="{{ attrvalue|trans({}, translation_domain) }}" {% else %}{{ attrname }}="{{ attrvalue }}" {% endif %}{% endfor %}
+		{% for attrname, attrvalue in attr %}{% if attrname in ['placeholder', 'title'] %}{{ attrname }}="{{ attrvalue|trans({}, translation_domain) }}" {% else %}{{ attrname }}="{{ attrvalue|escape('html_attr') }}" {% endif %}{% endfor %}
 	{% endspaceless %}
 {% endblock widget_attributes %}
 

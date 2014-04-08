@@ -41,12 +41,12 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 	public function testEnvironmentOptionSetsCorrectly($option, $expectedEnvironment)
 	{
 		$environment = new Environment;
-		$this->_container['environment'] = function() use ($environment) {
+		$this->_container['environment'] = $this->_container->factory(function() use ($environment) {
 			return $environment;
-		};
-		$this->_container['env'] = function($c) {
+		});
+		$this->_container['env'] = $this->_container->factory(function($c) {
 			return $c['environment']->get();
-		};
+		});
 
 		$this->setUpContextClass(array_merge(array('/usr/bin/php', 'foo:bar1'), $option));
 
@@ -67,9 +67,9 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 			->expects($this->once())
 			->method('run');
 
-		$this->_container['app.console'] = $this->_container->share(function() use ($console) {
+		$this->_container['app.console'] = function() use ($console) {
 			return $console;
-		});
+		};
 
 		ob_start();
 		$this->_context->run();

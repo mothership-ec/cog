@@ -42,20 +42,20 @@ See Swiftmailer docs here:
 
     // Mail
 
-        $serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
+        $serviceContainer['mail.transport'] = function($c) {
             return new \Message\Cog\Mail\Transport\Mail();
-        });
+        };
 
     // SMTP
 
-        $serviceContainer['mail.transport'] = $serviceContainer->share(function($c) {
+        $serviceContainer['mail.transport'] = function($c) {
             $transport = new \Message\Cog\Mail\Transport\SMTP('mail.message.co.uk', 25);
 
             $transport->setUsername('test');
             $transport->setPassword('testpw');
 
             return $transport;
-        });
+        };
 
 
 

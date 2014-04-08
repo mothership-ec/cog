@@ -42,9 +42,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 */
 	public function mountRoutes()
 	{
-		$this->_services['routes.compiled'] = $this->_services->share(function($c) {
+		$this->_services['routes.compiled'] = function($c) {
 			return $c['routes']->compileRoutes()->getRouteCollection();
-		});
+		};
 
 		// Now the routes are compiled, we can add the routing event listener for HTTP requests
 		$this->_services['event.dispatcher']->addSubscriber(
@@ -53,7 +53,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	}
 
 	/**
-	 * Checks if the matched route has had CSRF protection enabled. If it 
+	 * Checks if the matched route has had CSRF protection enabled. If it
 	 * does then it checks that the hash is present and correct.
 	 *
 	 * @param  GetResponseEvent $event The incoming response

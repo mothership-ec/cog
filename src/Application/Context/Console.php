@@ -35,7 +35,7 @@ class Console implements ContextInterface
 	{
 		$this->_services = $container;
 
-		$this->_services['console.commands'] = $this->_services->share(function() {
+		$this->_services['console.commands'] = function() {
 			return new CommandCollection(array(
 				new Command\EventList,
 				new Command\ModuleGenerate,
@@ -59,9 +59,9 @@ class Console implements ContextInterface
 				new Command\DeployEvent,
 				new Command\DeployPermissions,
 			));
-		});
+		};
 
-		$this->_services['console.app'] = $this->_services->share(function($c) {
+		$this->_services['console.app'] = function($c) {
 			$app = new Application;
 			$app->setContainer($c);
 
@@ -75,7 +75,7 @@ class Console implements ContextInterface
 			}
 
 			return $app;
-		});
+		};
 
 		if (null === $arguments) {
 			$arguments = $_SERVER['argv'];
