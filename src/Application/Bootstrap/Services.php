@@ -637,9 +637,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['asset.manager'] = function($c) {
-			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
-			//	'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig.environment']),
-			));
+			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory']);
 
 			if (!$c['asset.factory']->getAssetManager()) {
 				$c['asset.factory']->setAssetManager($manager);
