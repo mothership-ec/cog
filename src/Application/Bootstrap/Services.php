@@ -48,8 +48,8 @@ class Services implements ServicesInterface
 		// shortcut for easier access
 		$services['db'] = $services->raw('db.query');
 
-		$services['db.transaction'] = $services->factory(function($s) {
-			return new Cog\DB\Transaction($s['db.connection']);
+		$services['db.transaction'] = $services->factory(function($c) {
+			return new Cog\DB\Transaction($c['db.connection'], $c['event.dispatcher']);
 		});
 
 		$services['db.nested_set_helper'] = $services->factory(function($s) {
@@ -789,9 +789,9 @@ class Services implements ServicesInterface
 			return new Cog\Location\CountryList;
 		});
 
-		$services['country.event'] = function($c) {
+		$services['country.event'] = $services->factory(function($c) {
 			return new Cog\Location\CountryEvent($c['country.list']);
-		};
+		});
 
 		$services['state.list'] = $services->factory(function($c) {
 			return new Cog\Location\StateList;

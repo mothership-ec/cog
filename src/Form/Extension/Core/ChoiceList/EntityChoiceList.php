@@ -24,12 +24,6 @@ class EntityChoiceList extends ObjectChoiceList
 	protected $_identifier;
 
 	/**
-	 * all available choices
-	 * @var array
-	 */
-	protected $_choices;
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function __construct(
@@ -40,7 +34,6 @@ class EntityChoiceList extends ObjectChoiceList
 		$valuePath = null,
 		PropertyAccessorInterface $propertyAccessor = null)
 	{
-		$this->_choices          = $choices;
 		$this->_propertyAccessor = $propertyAccessor ?: PropertyAccess::createPropertyAccessor();
 		$this->_identifier       = null !== $valuePath ? new PropertyPath($valuePath) : null;
 
@@ -48,15 +41,10 @@ class EntityChoiceList extends ObjectChoiceList
 	}
 
 	/**
-	 * Returns the values corresponding to the given choices. The values must
-	 * be strings. The values must be returned with the same keys and in the
-	 * same order as the corresponding choices in the given array.
-	 *
 	 * This method is used by the form to determine checked/selected
 	 * options.
 	 *
-	 * @param  array $choices choices to get values for
-	 * @return array values for given choices
+	 * {@inheritdoc}
 	 */
 	public function getValuesForChoices(array $choices)
 	{
@@ -64,9 +52,8 @@ class EntityChoiceList extends ObjectChoiceList
 		$values = array();
 
 		foreach ($choices as $i => $givenChoice) {
-			foreach ($this->_choices as $j => $choice) {
-				if ($this->_propertyAccessor->getValue($givenChoice, $this->_identifier)
-					=== $this->_propertyAccessor->getValue($choice, $this->_identifier)) {
+			foreach ($this->getChoices() as $j => $choice) {
+				if ($this->areChoicesEqual($givenChoice, $choice)) {
 					$values[$i] = $this->getValues()[$j];
 					unset($choices[$i]);
 
@@ -78,5 +65,45 @@ class EntityChoiceList extends ObjectChoiceList
 		}
 
 		return $values;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getIndicesForChoices(array $choices)
+	{
+		$choices = $this->fixChoices($choices);
+		$indices = array();
+
+		foreach ($choices as $i => $givenChoice) {
+			foreach ($this->getChoices() as $j => $choice) {
+				if ($this->areChoicesEqual($givenChoice, $choice)) {
+					$indices[$i] = $j;
+					unset($choices[$i]);
+
+					if (0 === count($choices)) {
+						break 2;
+					}
+				}
+			}
+		}
+
+		return $indices;
+	}
+
+	/**
+	 * Method comparing two choices.
+	 *
+	 * @param  mixed   $choice1   First choice
+	 * @param  mixed   $choice2   Second choice
+	 * @return boolean            True if the first and second choice have the same
+	 *                            $_identifier-property (and are therefore considered equal).
+	 */
+	protected function areChoicesEqual($choice1, $choice2)
+	{
+		// make sure both choices are not null, then compare their values
+		return $choice1 && $choice2
+			&& $this->_propertyAccessor->getValue($choice1, $this->_identifier)
+			=== $this->_propertyAccessor->getValue($choice2, $this->_identifier);
 	}
 }
