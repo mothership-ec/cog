@@ -91,7 +91,7 @@ class SQLAdapter implements AdapterInterface
 	{
 		// Append a limit slice to the select query.
 		$sql = $this->_sql . ' LIMIT ' . $offset . ',' . $length;
-
+		
 		$slice = $this->_query->run($sql, $this->_params);
 
 		return $slice;

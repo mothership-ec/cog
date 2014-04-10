@@ -111,16 +111,10 @@ class Form
 	 */
 	protected function _addRepeatableGroup($name, RepeatableContainer $group)
 	{
-//		$groupBuilder = $this->_factory->createNamedBuilder(
-//			$name,
-//			'form'
-//		);
-
 		$dynamic = new DynamicFormType;
 
 		// Add each field as a collection
 		foreach ($group->getFields() as $field) {
-//			$field->getFormField($groupBuilder);
 			$dynamic->add($field->getName(), $field->getFormType(), $field->getFieldOptions());
 		}
 
