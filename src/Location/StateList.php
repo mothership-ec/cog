@@ -6,8 +6,8 @@ use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 
 class StateList extends ChoiceList {
 
-	protected $_states = array(
-		'US' => array(
+	protected $_states = [
+		'US' => [
 			'AL' => 'Alabama',
 			'AK' => 'Alaska',
 			'AZ' => 'Arizona',
@@ -59,8 +59,8 @@ class StateList extends ChoiceList {
 			'WV' => 'West Virginia',
 			'WI' => 'Wisconsin',
 			'WY' => 'Wyoming',
-		),
-		'CA' => array(
+		],
+		'CA' => [
 			'AB' => 'Alberta',
 			'BC' => 'British Columbia',
 			'MB' => 'Manitoba',
@@ -74,8 +74,42 @@ class StateList extends ChoiceList {
 			'QC' => 'Quebec',
 			'SK' => 'Saskatchewan',
 			'YT' => 'Yukon Territory',
-		)
-	);
+		],
+		'MX' => [
+			'DF' => 'Distrito Federal',
+			'AG' => 'Aguascalientes',
+			'BC' => 'Baja California',
+			'BS' => 'Baja California Sur',
+			'CM' => 'Campeche',
+			'CO' => 'Coahuila',
+			'CL' => 'Colima',
+			'CS' => 'Chiapas',
+			'CH' => 'Chihuahua',
+			'DG' => 'Durango',
+			'GT' => 'Guanajuato',
+			'GR' => 'Guerrero',
+			'HG' => 'Hidalgo',
+			'JA' => 'Jalisco',
+			'ME' => 'Estado de México',
+			'MI' => 'Michoacán',
+			'MO' => 'Morelos',
+			'NA' => 'Nayarit',
+			'NL' => 'Nuevo León',
+			'OA' => 'Oaxaca',
+			'PU' => 'Puebla',
+			'QE' => 'Querétaro',
+			'QR' => 'Quintana Roo',
+			'SL' => 'San Luis Potosí',
+			'SI' => 'Sinaloa',
+			'SO' => 'Sonora',
+			'TB' => 'Tabasco',
+			'TM' => 'Tamaulipas',
+			'TL' => 'Tlaxcala',
+			'VE' => 'Veracruz',
+			'YU' => 'Yucatán',
+			'ZA' => 'Zacatecas',
+		],
+	];
 
 	public function __construct(array $options = array(), array $preferredChoices = array())
 	{
