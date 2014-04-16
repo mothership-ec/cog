@@ -39,7 +39,7 @@ class Form
 	 *
 	 * @return Symfony\Component\Form\Form The generated form
 	 */
-	public function generate($content)
+	public function generate($content, $options = [])
 	{
 		$defaultValues  = [];
 		$this->_factory = $this->_services['form.factory'];
@@ -54,7 +54,7 @@ class Form
 			}
 		}
 
-		$this->_builder = $this->_factory->createBuilder('form', $defaultValues);
+		$this->_builder = $this->_factory->createBuilder('form', $defaultValues, $options);
 
 		foreach ($content as $fieldName => $field) {
 			if ($field instanceof Group) {
