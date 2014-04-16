@@ -23,7 +23,7 @@ class Date extends Field
 			return $this->_value;
 		}
 
-		return new \DateTime(date('c', $this->_value));
+		return ($this->_value) ? new \DateTime(date('c', $this->_value)) : null;
 	}
 
 	public function getFormField(FormBuilder $form)
