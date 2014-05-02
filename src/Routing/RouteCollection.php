@@ -29,23 +29,24 @@ class RouteCollection
 	/**
 	 * Constructor.
 	 *
-	 * @param ReferenceParserInterface $referenceParser	The reference parser to
-	 *												  parse controller refs
-	 * @param string				   $name			The name for this collection
+	 * @param ReferenceParserInterface $referenceParser The reference parser to
+	 *                                                  parse controller refs
+	 * @param string                   $name            The name for this collection
 	 */
 	public function __construct(ReferenceParserInterface $referenceParser, $name = '')
 	{
 		$this->_referenceParser = $referenceParser;
-		$this->_name			= $name;
-		$this->_collection	  = new SFRouteCollection;
+		$this->_name            = $name;
+		$this->_collection      = new SFRouteCollection;
 	}
 
 	/**
 	 * Add a route to the underlying RouteCollection.
 	 *
-	 * @param string $name	   A valid route name
-	 * @param string $url		A route URL
-	 * @param string $controller The controller/method to execute upon a successful match
+	 * @param string $name       A valid route name
+	 * @param string $url        A route URL
+	 * @param string $controller The controller/method to execute upon a
+	 *                           successful match
 	 *
 	 * @return Route The newly added route
 	 */
