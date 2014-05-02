@@ -135,6 +135,16 @@ class RouteCollection
 	}
 
 	/**
+	 * @see setMethods
+	 *
+	 * @param string $method
+	 */
+	public function setMethod($method)
+	{
+		return $this->setMethods($method);
+	}
+
+	/**
 	 * Set the response format for the routes in this collection.
 	 *
 	 * @param string $format
