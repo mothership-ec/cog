@@ -168,22 +168,18 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 				continue;
 			}
 
-			// Get the name of the parent
-			$parent = $collection->getParent();
-
-			// Get prefix we want to use and the collection we need to add to
-			$prefix           = $collection->getPrefix();
+			// Get the parent
+			$parent           = $collection->getParent();
 			$parentCollection = $this->_collections[$parent]->getRouteCollection();
 
-			$symfonyCollection = $collection->getRouteCollection();
-			$symfonyCollection->addPrefix($prefix);
+			$symfonyCollection = $this->_convertCollectionToSymfonyCollection($collection);
 
 			// Add it to Symfony's underlying RouteCollection
 			$parentCollection->addCollection($symfonyCollection);
 			$this->_collections[$parent]->getRouteCollection()->addCollection($symfonyCollection);
 		}
 
-		// sort all base collections according to their priority
+		// Sort all base collections according to their priority
 		uasort($baseCollections, function($a, $b) {
 			return $b->getPriority() - $a->getPriority();
 		});
@@ -193,8 +189,7 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		$rootCollection = $root->getRouteCollection();
 
 		foreach($baseCollections as $name => $collection) {
-			$symfonyCollection = $collection->getRouteCollection();
-			$symfonyCollection->addPrefix($collection->getPrefix());
+			$symfonyCollection = $this->_convertCollectionToSymfonyCollection($collection);
 
 			$rootCollection->addCollection($symfonyCollection);
 		}
@@ -288,5 +283,43 @@ class CollectionManager implements \ArrayAccess, \IteratorAggregate
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Convert a Cog `RouteCollection` to a Symfony `RouteCollection`, copying
+	 * across all properties such as host, schemes, methods, defaults &
+	 * requirements.
+	 *
+	 * @param  RouteCollection $collection The Cog route collection
+	 *
+	 * @return \Symfony\Component\Routing\RouteCollection
+	 */
+	protected function _convertCollectionToSymfonyCollection(RouteCollection $collection)
+	{
+		$symfonyCollection = $collection->getRouteCollection();
+
+		$symfonyCollection->addPrefix($collection->getPrefix());
+
+		if ($host = $collection->getHost()) {
+			$symfonyCollection->setHost($host);
+		}
+
+		if ($schemes = $collection->getSchemes()) {
+			$symfonyCollection->setSchemes($schemes);
+		}
+
+		if ($methods = $collection->getMethods()) {
+			$symfonyCollection->setMethods($methods);
+		}
+
+		if ($defaults = $collection->getDefaults()) {
+			$symfonyCollection->addDefaults($defaults);
+		}
+
+		if ($requirements = $collection->getRequirements()) {
+			$symfonyCollection->addRequirements($requirements);
+		}
+
+		return $symfonyCollection;
 	}
 }
