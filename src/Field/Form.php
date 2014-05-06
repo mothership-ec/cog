@@ -15,7 +15,6 @@ use Symfony\Component\Form\FormFactory;
  */
 class Form
 {
-	protected $_services;
 	protected $_content;
 	protected $_form;
 	protected $_factory;
@@ -24,11 +23,11 @@ class Form
 	/**
 	 * Constructor.
 	 *
-	 * @param ContainerInterface $services The service container
+	 * @param Factory $services The service container
 	 */
-	public function __construct(ContainerInterface $services)
+	public function __construct(FormFactory $factory)
 	{
-		$this->_services = $services;
+		$this->_factory = $factory;
 	}
 
 	/**
@@ -42,7 +41,6 @@ class Form
 	public function generate($content, $options = [])
 	{
 		$defaultValues  = [];
-		$this->_factory = $this->_services['form.factory'];
 
 		if (!is_array($content) && !$content instanceof \Traversable) {
 			throw new \Exception('Content must be traversable');
