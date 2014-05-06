@@ -91,11 +91,6 @@ class Handler
 	protected $_fields = array();
 
 	/**
-	 * @var array a list of all the fields and their types
-	 */
-	protected $_fieldList	= array();
-
-	/**
 	 * @var \Symfony\Component\Form\FormFactory
 	 */
 	protected $_factory;
@@ -277,7 +272,6 @@ class Handler
 		$fieldName = $this->_getChildName($child);
 		$fieldLabel = (isset($options['label']) ? $options['label'] : false);
 		$this->_fields[$fieldName] = $field;
-		$this->_addToFieldList($fieldName, $type, $options);
 
 		$validatorField = new Field($fieldName, $fieldLabel);
 		if($handler) {
@@ -288,26 +282,6 @@ class Handler
 		$this->getValidator()->addField($validatorField);
 
 		return $this;
-	}
-
-	/**
-	 * Get a list of all registered fields, and their types. Primarily for debugging purposes
-	 *
-	 * @return array
-	 */
-	public function getFieldList()
-	{
-		return $this->_fieldList;
-	}
-
-	/**
-	 * Get array of fields
-	 *
-	 * @return array
-	 */
-	public function getFields()
-	{
-		return $this->_fields;
 	}
 
 	/**
@@ -656,20 +630,4 @@ class Handler
 
 		return $errors;
 	}
-
-	/**
-	 * Add a simple representation of the field to the field list
-	 *
-	 * @param $fieldName
-	 * @param null $type
-	 * @param array $options
-	 */
-	protected function _addToFieldList($fieldName, $type = null, $options = array())
-	{
-		$this->_fieldList[$fieldName]	= [
-			'type'		=> $type ?: 'text',
-			'options'	=> $options,
-		];
-	}
-
 }
