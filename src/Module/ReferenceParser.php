@@ -252,6 +252,11 @@ class ReferenceParser implements ReferenceParserInterface
 		$this->_inLibrary = true;
 	}
 
+	public function isValidReference($reference)
+	{
+		return 1 === preg_match('/^([A-Za-z\:\@]+)::(.+)$/', $reference);
+	}
+
 	/**
 	 * Parses the method from the reference and sets it on $this->_method.
 	 *

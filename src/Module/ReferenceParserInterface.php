@@ -23,4 +23,13 @@ interface ReferenceParserInterface
 	public function getAllParts();
 
 	public function parse($reference);
+
+	/**
+	 * Check if a given string is a reference.
+	 *
+	 * @param  string  $reference The string to check
+	 *
+	 * @return boolean
+	 */
+	public function isValidReference($reference);
 }
