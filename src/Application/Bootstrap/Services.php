@@ -454,16 +454,6 @@ class Services implements ServicesInterface
 			));
 		};
 
-		//// For backwards compatibility with CMS
-		$service['cms.field.factory'] = function($c) {
-			return $c['field.factory'];
-		};
-
-		//// For backwards compatibility with CMS
-		$services['cms.field.form'] = function($c) {
-			return $c['field.form'];
-		};
-
 		$services['markdown.parser'] = $services->factory(function() {
 			return new \dflydev\markdown\MarkdownParser;
 		});
