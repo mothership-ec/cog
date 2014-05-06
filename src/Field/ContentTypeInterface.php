@@ -5,12 +5,12 @@ namespace Message\Cog\Field;
 interface ContentTypeInterface
 {
 	/**
-	 * Get the identifying name of this page type.
+	 * Get the identifying name of this content type.
 	 *
-	 * These must be unique: if there is more than one page type registered with
+	 * These must be unique: if there is more than one content type registered with
 	 * the same name, an error will be thrown.
 	 *
-	 * @return string The page type name
+	 * @return string The content type name
 	 */
 	public function getName();
 
@@ -18,14 +18,14 @@ interface ContentTypeInterface
 	 * Get a nicely formatted name for this content that can be displayed to
 	 * the user.
 	 *
-	 * @return string The page type name
+	 * @return string The content type name
 	 */
 	public function getDisplayName();
 
 	/**
 	 * Get a description for this content.
 	 *
-	 * @return string The page type description
+	 * @return string The content type description
 	 */
 	public function getDescription();
 
