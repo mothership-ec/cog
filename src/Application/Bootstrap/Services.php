@@ -174,13 +174,18 @@ class Services implements ServicesInterface
 				)
 			);
 
+			$assetFactory = $c['asset.factory'];
+			$assetManager = $c['asset.manager'];
+			$assetManager->setLoader('twig', new \Assetic\Extension\Twig\TwigFormulaLoader($twigEnvironment));
+			$assetFactory->setAssetManager($c['asset.manager']);
+
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\Translation($c['translator']));
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\PriceTwigExtension());
 			$twigEnvironment->addExtension(new Cog\Module\Templating\Twig\Extension\ModuleExists($c['module.loader']));
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
-			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
+			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($assetFactory));
 			if ('live' !== $c['env']) {
 				$twigEnvironment->addExtension(new \Twig_Extension_Debug);
 			}
@@ -661,11 +666,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['asset.manager'] = function($c) {
-			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
-				'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig.environment']),
-			));
+			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory']);
 
-			$c['asset.factory']->setAssetManager($manager);
+			if (!$c['asset.factory']->getAssetManager()) {
+				$c['asset.factory']->setAssetManager($manager);
+			}
 
 			return $manager;
 		};

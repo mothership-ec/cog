@@ -50,6 +50,11 @@ class EventListener extends BaseListener implements SubscriberInterface
 			return false;
 		}
 
+		// Ignore for Ajax requests
+		if ($event->getRequest()->isXmlHttpRequest()) {
+			return false;
+		}
+
 		$response    = $event->getResponse();
 		$contentType = $response->headers->get('Content-Type');
 
