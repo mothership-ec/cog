@@ -19,7 +19,7 @@ class RepeatableContainer implements \IteratorAggregate, \Countable, FieldConten
 	 */
 	public function __construct(Group $group)
 	{
-		$this->_group 	  = $group;
+		$this->_group = $group;
 	}
 
 	/**
@@ -49,9 +49,14 @@ class RepeatableContainer implements \IteratorAggregate, \Countable, FieldConten
 	/**
 	 * Add a clone of the group to this repeatable set
 	 */
-	public function add()
+	public function add($key = null)
 	{
-		$this->_groups[] = clone $this->_group;
+		if ($key) {
+			$this->_groups[$key] = clone $this->_group;
+		}
+		else {
+			$this->_groups[] = clone $this->_group;
+		}
 	}
 
 	public function clear()
