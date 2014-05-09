@@ -18,6 +18,11 @@ class Integer extends Field
 		return 'integer';
 	}
 
+	public function getFormType()
+	{
+		return 'number';
+	}
+
 	public function getFormField(FormBuilder $form)
 	{
 		$form->add($this->getName(), 'number', $this->getFieldOptions());
