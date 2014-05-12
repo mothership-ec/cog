@@ -5,7 +5,6 @@ namespace Message\Cog\Field\Type;
 use Message\Cog\Field\Field;
 use Symfony\Component\Form\FormBuilder;
 
-
 /**
  * A field for an integer.
  *
