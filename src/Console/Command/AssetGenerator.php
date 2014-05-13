@@ -36,10 +36,14 @@ class AssetGenerator extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		// Service to work with files
-		$fileSystem = $this->get('filesystem.finder');
+		// Call the twig environment. This seems bizarre but is important,
+		// otherwise the AssetManager won't know how to load Twig files. It is
+		// the only way we could get around a crazy dependency loop for the time being.
+		$this->get('templating.twig.environment');
 
-		$twigLoader = $this->get('templating.twig.loader');
+		$assetManager = $this->get('asset.manager');
+		$fileSystem   = $this->get('filesystem.finder');
+		$twigLoader   = $this->get('templating.twig.loader');
 
 		// Get list of loaded codules
 		$modules = $this->get('module.loader')->getModules();
@@ -69,7 +73,7 @@ class AssetGenerator extends Command
 					continue;
 				}
 
-				$this->_services['asset.manager']->addResource(new TwigResource(
+				$assetManager->addResource(new TwigResource(
 					$twigLoader,
 					new TemplateReference($file->getPathname(), $file->getExtension())
 				), 'twig');
