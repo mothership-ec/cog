@@ -434,6 +434,35 @@ class Services implements ServicesInterface
 			return new Cog\Filesystem\Conversion\ImageConverter($c);
 		});
 
+		// Fields
+		$services['field.factory'] = $services->factory(function($c) {
+			$factory = new \Message\Cog\Field\Factory($c);
+
+			return $factory;
+		});
+
+		$services['field.form'] = $services->factory(function($c) {
+			return new \Message\Cog\Field\Form($c['form.factory']);
+		});
+
+		$services['field.collection'] = function($c) {
+			return new \Message\Cog\Field\Collection(array(
+				new \Message\Cog\Field\Type\Boolean,
+				new \Message\Cog\Field\Type\Choice,
+				new \Message\Cog\Field\Type\Datalist,
+				new \Message\Cog\Field\Type\Date,
+				new \Message\Cog\Field\Type\Datetime,
+				new \Message\Cog\Field\Type\Html,
+				new \Message\Cog\Field\Type\Integer,
+				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
+				new \Message\Cog\Field\Type\Text,
+			));
+		};
+
+		$services['markdown.parser'] = $services->factory(function() {
+			return new \dflydev\markdown\MarkdownParser;
+		});
+
 		// Application Contexts
 		$services['app.context.web'] = function($c) {
 			return new Cog\Application\Context\Web($c);
