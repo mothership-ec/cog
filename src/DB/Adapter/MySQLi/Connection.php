@@ -21,6 +21,22 @@ class Connection implements ConnectionInterface
 		}
 	}
 
+	public function __sleep()
+	{
+		$this->_handle = null;
+
+		return [
+			'_params',
+		];
+	}
+
+	public function __wakeup()
+	{
+		if (isset($this->_params['lazy']) && $this->_params['lazy'] === false) {
+			$this->_connect();
+		}
+	}
+
 	protected function _connect()
 	{
 		// If we've already got a connection handle we don't
