@@ -24,7 +24,7 @@ class CaptchaType extends Form\AbstractType
 
 	public function __construct($apiKey, Session $session)
 	{
-		$this->_key = $apiKey;
+		$this->_key     = $apiKey;
 		$this->_session = $session;
 	}
 
