@@ -255,6 +255,12 @@
 	{% endspaceless %}
 {% endblock %}
 
+{% block captcha_widget %}
+	{% spaceless %}
+		{{ block('form_widget_simple') }}
+	{% endspaceless %}
+{% endblock %}
+
 {# Labels #}
 
 {% block form_label %}
