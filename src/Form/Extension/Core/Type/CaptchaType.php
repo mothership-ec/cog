@@ -5,6 +5,7 @@ namespace Message\Cog\Form\Extension\Core\Type;
 use Message\Cog\Http\Session;
 use Message\Cog\Form\Extension\Core\EventListener\CaptchaEventListener;
 
+use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Form;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -51,6 +52,9 @@ class CaptchaType extends Form\AbstractType
 		$resolver->setDefaults([
 			'label'    => $this->_getQuestion(),
 			'required' => true,
+			'constraints' => [
+				new Constraints\NotBlank
+			]
 		]);
 	}
 
