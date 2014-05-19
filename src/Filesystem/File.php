@@ -50,7 +50,7 @@ class File extends \SplFileInfo
 			throw new \Exception(sprintf('`%s` is not publicly accessible', $this->_reference));
 		}
 
-		$path = self::COG_PREFIX . '://' . self::PUBLIC_DIR;
+		$path = $this->_getPublicRef();
 
 		return '/' . substr($this->_reference, strlen($path));
 	}
@@ -62,10 +62,10 @@ class File extends \SplFileInfo
 	 */
 	public function isPublic()
 	{
-		$path = self::COG_PREFIX . '://' . self::PUBLIC_DIR;
+		$path = $this->_getRealPublicPath();
 
 		// Ensure our URL starts with PUBLIC_PATH
-		return !strncmp($this->_reference, $path, strlen($path));
+		return !strncmp($this->getRealPath(), $path, strlen($path));
 	}
 
 	/**
@@ -92,5 +92,27 @@ class File extends \SplFileInfo
 	public function getFilenameWithoutExtension()
 	{
 		return $this->getBasename('.' . $this->getExtension());
+	}
+
+	/**
+	 * Get the reference for the public path
+	 *
+	 * @return string
+	 */
+	private function _getPublicRef()
+	{
+		return self::COG_PREFIX . '://' . self::PUBLIC_DIR;
+	}
+
+	/**
+	 * Get the real path to the public directory
+	 *
+	 * @return bool|string
+	 */
+	private function _getRealPublicPath()
+	{
+		$wrapper = new StreamWrapper;
+
+		return $wrapper->getLocalPath($this->_getPublicRef());
 	}
 }
