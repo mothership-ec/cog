@@ -111,10 +111,7 @@ class File extends \SplFileInfo
 
 	/**
 	 * Get the real path to the public directory
-	 *
-	 * @todo This method sucks and I hate it, because it's essentially a hack, creating a new File instance just to use
-	 * the method in File to get the real path. I'm sure there's a less stupid way to get it but at least it works!
-	 *
+	 * 
 	 * @return bool|string
 	 */
 	private function _getRealPublicPath()
