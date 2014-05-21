@@ -47,7 +47,8 @@ class File extends \SplFileInfo
 	public function getPublicUrl()
 	{
 		if (!$this->isPublic()) {
-			throw new \Exception(sprintf('`%s` is not publicly accessible', $this->_reference));
+			$path = ($this->_reference) ?: $this->getRealPath();
+			throw new \Exception(sprintf('`%s` is not publicly accessible', $path));
 		}
 
 		$path = $this->_getRealPublicPath();
