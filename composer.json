@@ -62,6 +62,7 @@
 		"message/wkhtmltopdf"              : "1.0.*",
 		"itbz/fpdf"                        : "1.7.*",
 		"itbz/fpdi"                        : "1.4.*",
+		"dflydev/markdown"                 : "~1.0",
 		"zendframework/zend-debug"         : "~2.2.6"
 	},
 	"require-dev": {
