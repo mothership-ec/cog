@@ -5,20 +5,22 @@ namespace Message\Cog\Filesystem;
 use Symfony\Component\HttpFoundation\File\File as BaseFile;
 
 /**
-* An extension of SplFileInfo that enables us to add our own customisations.
-*
-* @author  James Moss <james@message.co.uk>
-*/
+ * An extension of SplFileInfo that enables us to add our own customisations.
+ *
+ * @author  James Moss <james@message.co.uk>
+ */
 class File extends \SplFileInfo
 {
 	const PUBLIC_DIR = 'public/';
 	const COG_PREFIX = 'cog';
 
 	protected $_reference;
+	protected $_public;
 
 	public function __construct($fileName)
 	{
 		$prefix = self::COG_PREFIX . '://';
+
 		if(substr($fileName, 0, strlen($prefix)) === $prefix) {
 			$this->_reference = $fileName;
 		}
@@ -42,13 +44,16 @@ class File extends \SplFileInfo
 	 * @todo  Don't hardcode the cog:// handler at the top of this class
 	 * @todo  Be able to handle URLs that might be on a different hostname
 	 *
+	 * @throws \LogicException
+	 *
 	 * @return string The public path to the file.
 	 */
 	public function getPublicUrl()
 	{
 		if (!$this->isPublic()) {
 			$path = ($this->_reference) ?: $this->getRealPath();
-			throw new \Exception(sprintf('`%s` is not publicly accessible', $path));
+
+			throw new \LogicException(sprintf('`%s` is not publicly accessible', $path));
 		}
 
 		$path = $this->_getRealPublicPath();
@@ -57,16 +62,17 @@ class File extends \SplFileInfo
 	}
 
 	/**
-	 * Check if a file is publically accessible
+	 * Check if a file is publicly accessible
 	 *
 	 * @return boolean Returns true if the file can be reached publicly, false if not.
 	 */
 	public function isPublic()
 	{
-		$path = $this->_getRealPublicPath();
+		if (null === $this->_public) {
+			$this->_setPublic();
+		}
 
-		// Ensure our URL starts with PUBLIC_PATH
-		return !strncmp($this->getRealPath(), $path, strlen($path));
+		return $this->_public;
 	}
 
 	/**
@@ -77,9 +83,7 @@ class File extends \SplFileInfo
 	public function getRealPath()
 	{
 		if($this->_reference) {
-			$handler = StreamWrapperManager::getHandler(self::COG_PREFIX);
-
-			return $handler->getLocalPath($this->_reference, self::COG_PREFIX);
+			return $this->_getPathFromRef($this->_reference);
 		}
 
 		return parent::getRealPath();
@@ -115,8 +119,29 @@ class File extends \SplFileInfo
 	 */
 	private function _getRealPublicPath()
 	{
-		$fakeFileHack = new File($this->_getPublicRef());
+		return $this->_getPathFromRef($this->_getPublicRef());
+	}
 
-		return $fakeFileHack->getRealPath();
+	/**
+	 * Check the file's real path  and set $this->_public to true if it contains the public path
+	 */
+	private function _setPublic()
+	{
+		$path = $this->_getRealPublicPath();
+
+		$this->_public = !strncmp($this->getRealPath(), $path, strlen($path));
+	}
+
+	/**
+	 * Convert a cog:// reference to a real path
+	 *
+	 * @param $ref
+	 * @return mixed
+	 */
+	private function _getPathFromRef($ref)
+	{
+		$handler = StreamWrapperManager::getHandler(self::COG_PREFIX);
+
+		return $handler->getLocalPath($ref, self::COG_PREFIX);
 	}
 }
