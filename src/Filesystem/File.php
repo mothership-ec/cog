@@ -111,7 +111,7 @@ class File extends \SplFileInfo
 
 	/**
 	 * Get the real path to the public directory
-	 * 
+	 *
 	 * @return bool|string
 	 */
 	private function _getRealPublicPath()
