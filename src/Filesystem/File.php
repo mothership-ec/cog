@@ -38,6 +38,11 @@ class File extends \SplFileInfo
 		return md5_file($this->getRealPath());
 	}
 
+	public function getReference()
+	{
+		return $this->_reference;
+	}
+
 	/**
 	 * Gets the publically accessible URL to a file.
 	 *
