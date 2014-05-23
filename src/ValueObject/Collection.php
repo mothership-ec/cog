@@ -2,18 +2,15 @@
 
 namespace Message\Cog\ValueObject;
 
-
-// TODO: add tests to ensure add/set methods return $this
-// TODO: add tests for sort by value
-// TODO: add tests for sort by key
-// TODO: add tests for calling setSort() with a "by" that is not valid
-// TODO: add tests for calling validators (that will both fail and succeed)
-// TODO: add test to ensure setting sorting after adding some items triggers a re-sort
-// TODO: docblock new stuff
-// TODO: test configure is called at the start of __construct
+/**
+ * Represents a collection.
+ *
+ * @author Eleanor Shakeshaft <eleanor@message.co.uk>
+ * @author Joe Holdcroft <joe@message.co.uk>
+ */
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-	const SORT_KEY   = 'sort';
+	const SORT_KEY   = 'key';
 	const SORT_VALUE = 'value';
 
 	private $_key;
@@ -84,9 +81,21 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 		return $this;
 	}
 
+	/**
+	 * Set how the collection is sorted.
+	 *
+	 * @param  callable $sorter
+	 * @param  string   $by
+	 *
+	 * @return Collection
+	 *
+	 * @throws  \LogicException If sort by is not by key or value
+	 */
 	public function setSort(callable $sorter, $by = self::SORT_VALUE)
 	{
-		// TODO: check $type == 'key' or 'value'
+		if ($by != self::SORT_VALUE and $by != self::SORT_KEY) {
+			throw new \LogicException('Sort by value must either be key or value');
+		}
 
 		$this->_sort   = $sorter;
 		$this->_sortBy = $by;
@@ -96,10 +105,17 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 		return $this;
 	}
 
+	/**
+	 * Adds validation rules to the collection.
+	 *
+	 * @param  callable $validator
+	 *
+	 * @return Collection
+	 */
 	public function addValidator(callable $validator)
 	{
 		if ($this->count() > 0) {
-			throw new \LogicException(sprintf('Cannot set type "%s" on a non-empty collection', $this->_type));
+			throw new \LogicException('Cannot set validation rules on a non-empty collection');
 		}
 
 		$this->_validators[] = $validator;
@@ -287,7 +303,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	/**
 	 * Checks validation rules.
 	 *
-	 * @return
+	 * @return bool
 	 */
 	private function _validate($item)
 	{
@@ -300,8 +316,13 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 		return true;
 	}
 
+	/**
+	 * Sorts the collection by the defined comparison function.
+	 * If sort by key use uksort, else use uasort to sort array & maintain index association.
+	 */
 	private function _sort()
 	{
+
 		if (self::SORT_KEY === $this->_sortBy) {
 			uksort($this->_items, $this->_sort);
 		}
@@ -349,51 +370,3 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 		throw new \InvalidArgumentException('Item must be array or object to have a key');
 	}
 }
-
-// $collection = new Collection;
-// $collection->setType('\\Message\\Mothership\\Epos\\Branch\\Branch'); // or setHint() or setTypeHint()
-// $collection->setSort(function($a, $b) {
-// 	$aKey = $a->authorship->createdAt();
-// 	$bKey = $b->authorship->createdAt();
-
-// 	if ($aKey === $bKey) {
-// 		return 0;
-// 	}
-
-// 	return ($aKey < $bKey) ? -1 : 1;
-// });
-
-// $collection->addValidation(function($item) {
-// 	if ($item->thing == 'somthing') {
-// 		throw new Exception();
-// 	}
-// });
-
-// $collection->setKey(function ($item) {
-// 	return $item->getSpecialIdentifier();
-// });
-
-// $collection->setKey('id');
-
-// class MyCollection extends Collection
-// {
-// 	protected function _configure()
-// 	{
-// 		$this->setKey('id')
-// 		$this->setType('\\Message\\Mothership\\Epos\\Branch\\Branch');
-// 		$this->setValidate(function($item) {
-// 			if (!$item->method) {
-// 				return false;
-// 			}
-// 		});
-
-// 		$this->setValidate([$this, '_myspecialsort']);
-// 	}
-
-// 	protected function _myspecialsort($item)
-// 	{
-// 		if (!$item->method) {
-// 			return false;
-// 		}
-// 	}
-// }
