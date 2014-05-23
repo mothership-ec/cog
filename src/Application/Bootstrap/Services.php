@@ -436,7 +436,7 @@ class Services implements ServicesInterface
 
 		// Fields
 		$services['field.factory'] = $services->factory(function($c) {
-			return new \Message\Cog\Field\Factory($c['field.collection']);
+			return new \Message\Cog\Field\Factory(/*$c['field.collection']*/);
 		});
 
 		$services['field.form'] = $services->factory(function($c) {
