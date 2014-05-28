@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\Test\ValueObjects;
+namespace Message\Cog\Test\ValueObject;
 
 use Message\Cog\ValueObject\Collection;
 
@@ -12,10 +12,18 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * Checks configure is called in __construct.
 	 */
-	// public function testConfigureCalledInConstruct()
-	// {
+	public function testConfigureCalledInConstruct()
+	{
+		$mock = $this->getMockBuilder('\Message\Cog\ValueObject\Collection')
+			->setMethods(array('_configure'))
+			->disableOriginalConstructor()
+			->getMock();
 
-	// }
+		$mock->expects($this->once())
+			->method('_configure');
+
+		$mock->__construct();
+	}
 
 	/**
 	 *
