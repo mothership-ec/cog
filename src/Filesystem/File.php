@@ -47,7 +47,7 @@ class File extends \SplFileInfo
 	public function getPublicUrl()
 	{
 		if (!$this->isPublic()) {
-			throw new \Exception(sprintf('`%s` is not publically accessible', $this->_reference));
+			throw new \Exception(sprintf('`%s` is not publicly accessible', $this->_reference));
 		}
 
 		$path = self::COG_PREFIX . '://' . self::PUBLIC_DIR;
@@ -58,7 +58,7 @@ class File extends \SplFileInfo
 	/**
 	 * Check if a file is publically accessible
 	 *
-	 * @return boolean Returns true if the file can be reached publically, false if not.
+	 * @return boolean Returns true if the file can be reached publicly, false if not.
 	 */
 	public function isPublic()
 	{

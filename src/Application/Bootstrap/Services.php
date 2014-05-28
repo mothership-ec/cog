@@ -48,8 +48,8 @@ class Services implements ServicesInterface
 		// shortcut for easier access
 		$services['db'] = $services->raw('db.query');
 
-		$services['db.transaction'] = $services->factory(function($s) {
-			return new Cog\DB\Transaction($s['db.connection']);
+		$services['db.transaction'] = $services->factory(function($c) {
+			return new Cog\DB\Transaction($c['db.connection'], $c['event.dispatcher']);
 		});
 
 		$services['db.nested_set_helper'] = $services->factory(function($s) {
@@ -174,13 +174,18 @@ class Services implements ServicesInterface
 				)
 			);
 
+			$assetFactory = $c['asset.factory'];
+			$assetManager = $c['asset.manager'];
+			$assetManager->setLoader('twig', new \Assetic\Extension\Twig\TwigFormulaLoader($twigEnvironment));
+			$assetFactory->setAssetManager($c['asset.manager']);
+
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\HttpKernel($c['templating.actions_helper']));
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\Routing($c['routing.generator']));
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\Translation($c['translator']));
 			$twigEnvironment->addExtension(new Cog\Templating\Twig\Extension\PriceTwigExtension());
 			$twigEnvironment->addExtension(new Cog\Module\Templating\Twig\Extension\ModuleExists($c['module.loader']));
 			$twigEnvironment->addExtension($c['form.twig_form_extension']);
-			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($c['asset.factory']));
+			$twigEnvironment->addExtension(new \Assetic\Extension\Twig\AsseticExtension($assetFactory));
 			if ('live' !== $c['env']) {
 				$twigEnvironment->addExtension(new \Twig_Extension_Debug);
 			}
@@ -429,6 +434,33 @@ class Services implements ServicesInterface
 			return new Cog\Filesystem\Conversion\ImageConverter($c);
 		});
 
+		// Fields
+		$services['field.factory'] = $services->factory(function($c) {
+			return new \Message\Cog\Field\Factory(/*$c['field.collection']*/);
+		});
+
+		$services['field.form'] = $services->factory(function($c) {
+			return new \Message\Cog\Field\Form($c['form.factory']);
+		});
+
+		$services['field.collection'] = function($c) {
+			return new \Message\Cog\Field\Collection(array(
+				new \Message\Cog\Field\Type\Boolean,
+				new \Message\Cog\Field\Type\Choice,
+				new \Message\Cog\Field\Type\Datalist,
+				new \Message\Cog\Field\Type\Date,
+				new \Message\Cog\Field\Type\Datetime,
+				new \Message\Cog\Field\Type\Html,
+				new \Message\Cog\Field\Type\Integer,
+				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
+				new \Message\Cog\Field\Type\Text,
+			));
+		};
+
+		$services['markdown.parser'] = $services->factory(function() {
+			return new \dflydev\markdown\MarkdownParser;
+		});
+
 		// Application Contexts
 		$services['app.context.web'] = function($c) {
 			return new Cog\Application\Context\Web($c);
@@ -632,11 +664,11 @@ class Services implements ServicesInterface
 		};
 
 		$services['asset.manager'] = function($c) {
-			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory'], array(
-				'twig' => new \Assetic\Extension\Twig\TwigFormulaLoader($c['templating.twig.environment']),
-			));
+			$manager = new \Assetic\Factory\LazyAssetManager($c['asset.factory']);
 
-			$c['asset.factory']->setAssetManager($manager);
+			if (!$c['asset.factory']->getAssetManager()) {
+				$c['asset.factory']->setAssetManager($manager);
+			}
 
 			return $manager;
 		};
@@ -789,9 +821,9 @@ class Services implements ServicesInterface
 			return new Cog\Location\CountryList;
 		});
 
-		$services['country.event'] = function($c) {
+		$services['country.event'] = $services->factory(function($c) {
 			return new Cog\Location\CountryEvent($c['country.list']);
-		};
+		});
 
 		$services['state.list'] = $services->factory(function($c) {
 			return new Cog\Location\StateList;

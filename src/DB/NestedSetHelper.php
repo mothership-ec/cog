@@ -13,7 +13,7 @@ namespace Message\Cog\DB;
  * @author James Moss <james@message.co.uk>
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class NestedSetHelper
+class NestedSetHelper implements TransactionalInterface
 {
 	protected $_query;
 	protected $_trans;
@@ -33,6 +33,11 @@ class NestedSetHelper
 	public function __construct(Query $query, Transaction $transaction)
 	{
 		$this->_query = $query;
+		$this->_trans = $transaction;
+	}
+
+	public function setTransaction(Transaction $transaction)
+	{
 		$this->_trans = $transaction;
 	}
 

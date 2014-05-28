@@ -13,18 +13,25 @@ class RouteCollection
 {
 	const DEFAULT_PRIORITY = 0;
 
+	protected $_prefix       = '';
+	protected $_defaults     = [];
+	protected $_requirements = [];
+	protected $_host         = null;
+	protected $_schemes      = [];
+	protected $_methods      = [];
+	protected $_format       = null;
+
 	protected $_name;
 	protected $_collection;
-	protected $_prefix = '';
 	protected $_parent;
 	protected $_priority;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param ReferenceParserInterface $referenceParser	The reference parser to
+	 * @param ReferenceParserInterface $referenceParser The reference parser to
 	 *                                                  parse controller refs
-	 * @param string                   $name	        The name for this collection
+	 * @param string                   $name            The name for this collection
 	 */
 	public function __construct(ReferenceParserInterface $referenceParser, $name = '')
 	{
@@ -38,7 +45,8 @@ class RouteCollection
 	 *
 	 * @param string $name       A valid route name
 	 * @param string $url        A route URL
-	 * @param string $controller The controller/method to execute upon a successful match
+	 * @param string $controller The controller/method to execute upon a
+	 *                           successful match
 	 *
 	 * @return Route The newly added route
 	 */
@@ -52,7 +60,7 @@ class RouteCollection
 		$defaults = array(
 			'_controller' => $controller,
 		);
-		
+
 		$route = new Route($url, $defaults);
 
 		$this->_collection->add($name, $route);
@@ -85,6 +93,160 @@ class RouteCollection
 	}
 
 	/**
+	 * Set the host that the routes in this collection apply to.
+	 *
+	 * @param string $host
+	 *
+	 * @return RouteCollection
+	 */
+	public function setHost($host)
+	{
+		$this->_host = $host;
+
+		return $this;
+	}
+
+	/**
+	 * Set the schemes that the routes in this collection are mounted on.
+	 *
+	 * @param string|array $schemes
+	 *
+	 * @return RouteCollection
+	 */
+	public function setSchemes($schemes)
+	{
+		$this->_schemes = $schemes;
+
+		return $this;
+	}
+
+	/**
+	 * Set the methods that the routes in this collection are mounted on.
+	 *
+	 * @param string|array $methods
+	 *
+	 * @return RouteCollection
+	 */
+	public function setMethods($methods)
+	{
+		$this->_methods = $methods;
+
+		return $this;
+	}
+
+	/**
+	 * @see setMethods
+	 *
+	 * @param string $method
+	 */
+	public function setMethod($method)
+	{
+		return $this->setMethods($method);
+	}
+
+	/**
+	 * Set the response format for the routes in this collection.
+	 *
+	 * @param string $format
+	 *
+	 * @return RouteCollection
+	 */
+	public function setFormat($format)
+	{
+		return $this->setDefault('_format', $format);
+	}
+
+	/**
+	 * Set defaults for all routes in this collection.
+	 *
+	 * @param array $defaults
+	 *
+	 * @return RouteCollection
+	 */
+	public function setDefaults(array $defaults)
+	{
+		$this->_defaults = [];
+
+		return $this->addDefaults($defaults);
+	}
+
+	/**
+	 * Add a new default for all routes in this collection.
+	 *
+	 * @param string $name
+	 * @param string $default
+	 *
+	 * @return RouteCollection
+	 */
+	public function setDefault($name, $default)
+	{
+		$this->_defaults[$name] = $default;
+
+		return $this;
+	}
+
+	/**
+	 * Add some defaults for all routes in this collection.
+	 *
+	 * @param array $defaults
+	 *
+	 * @return RouteCollection
+	 */
+	public function addDefaults(array $defaults)
+	{
+		foreach ($defaults as $name => $default) {
+			$this->setDefault($name, $default);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Set requirements for all routes in this collection.
+	 *
+	 * @param array $requirements
+	 *
+	 * @return RouteCollection
+	 */
+	public function setRequirements(array $requirements)
+	{
+		$this->_requirements = [];
+
+		return $this->addRequirements($requirements);
+	}
+
+	/**
+	 * Add a new requirement for all routes in this collection.
+	 *
+	 * @param string $name
+	 * @param string $requirement
+	 *
+	 * @return RouteCollection
+	 */
+	public function setRequirement($name, $requirement)
+	{
+		$this->_requirements[$name] = $requirement;
+
+		return $this;
+	}
+
+	/**
+	 * Add some requirements for all routes in this collection.
+	 *
+	 * @param array $requirements
+	 *
+	 * @return RouteCollection
+	 */
+	public function addRequirements(array $requirements)
+	{
+		foreach ($requirements as $name => $requirement) {
+			$this->setRequirement($name, $requirement);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Get the URL prefix set for this collection.
 	 *
 	 * @return string The prefix set for this collection (if any)
@@ -92,6 +254,68 @@ class RouteCollection
 	public function getPrefix()
 	{
 		return $this->_prefix;
+	}
+
+	/**
+	 * Get the host that routes in this collection are bound to, if set.
+	 *
+	 * @return null|string
+	 */
+	public function getHost()
+	{
+		return $this->_host;
+	}
+
+	/**
+	 * Get the schemes that routes in this collection are mounted on, if set.
+	 *
+	 * @return array
+	 */
+	public function getSchemes()
+	{
+		return $this->_schemes;
+	}
+
+	/**
+	 * Get the methods that routes in this collection are mounted on, if set.
+	 *
+	 * @return array
+	 */
+	public function getMethods()
+	{
+		return $this->_methods;
+	}
+
+	/**
+	 * Get the response format that for routes in this collection, if set.
+	 *
+	 * @return string|null
+	 */
+	public function getFormat()
+	{
+		return array_key_exists('_format', $this->_defaults)
+			? $this->_defaults['_format']
+			: null;
+	}
+
+	/**
+	 * Get the defaults for routes in this collection, if set.
+	 *
+	 * @return array
+	 */
+	public function getDefaults()
+	{
+		return $this->_defaults;
+	}
+
+	/**
+	 * Get the requirements for routes in this collection, if set.
+	 *
+	 * @return array
+	 */
+	public function getRequirements()
+	{
+		return $this->_defaults;
 	}
 
 	/**
@@ -134,7 +358,7 @@ class RouteCollection
 	 * Make this collection a child of another one.
 	 *
 	 * @param string $collectionName The name of the parent to attach this
-	 *                               collection to.
+	 *							   collection to.
 	 */
 	public function setParent($collectionName)
 	{

@@ -47,6 +47,10 @@ class Factory extends AssetFactory
 
 		// Store the cog namespace against each asset for use in the cogule filter
 		foreach ($collection as $asset) {
+			if (!isset($namespaces[$asset->getSourceRoot() . '/' .$asset->getSourcePath()])) {
+				continue;
+			}
+
 			$asset->cogNamespace = $namespaces[$asset->getSourceRoot() . '/' .$asset->getSourcePath()];
 		}
 
@@ -132,6 +136,11 @@ class Factory extends AssetFactory
 		$parsed = array();
 
 		foreach ($inputs as $key => $input) {
+			// Skip if it doesn't look like a Cog reference
+			if (!$this->_referenceParser->isValidReference($input)) {
+				continue;
+			}
+
 			if (! isset($this->_parsed[$input])) {
 				// Parse the input, has to be cloned else the last parsed reference
 				// will override all previous
