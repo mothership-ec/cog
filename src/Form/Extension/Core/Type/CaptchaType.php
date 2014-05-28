@@ -38,6 +38,13 @@ class CaptchaType extends Form\AbstractType
 		return 'text';
 	}
 
+	public function buildView(Form\FormView $view, Form\FormInterface $form, array $options)
+	{
+		if ($options['label_prefix']) {
+			$view->vars['label'] = $options['label_prefix'] . ': ' . $view->vars['label'];
+		}
+	}
+
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
 	{
 		if ($options['label'] !== $this->_getQuestion()) {
@@ -50,9 +57,10 @@ class CaptchaType extends Form\AbstractType
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
 		$resolver->setDefaults([
-			'label'    => $this->_getQuestion(),
-			'required' => true,
-			'constraints' => [
+			'label'        => $this->_getQuestion(),
+			'label_prefix' => null,
+			'required'     => true,
+			'constraints'  => [
 				new Constraints\NotBlank
 			]
 		]);
