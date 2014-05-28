@@ -22,9 +22,14 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	private $_items = [];
 
 	/**
-	 * Configure collection.
+	 * Constructor.
 	 *
-	 * @param array $items
+	 * Sorting defaults to sort by key ascending. Then `_configure()` is called
+	 * to allow a subclass to configure the collection before the initial items
+	 * are added.
+	 *
+	 * @param array $items Optional array of items to instantiate the collection
+	 *                     with
 	 */
 	public function __construct(array $items = [])
 	{
@@ -44,17 +49,24 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	/**
 	 * Set the collection key.
 	 *
-	 * If the key is passed as a callable, the callable will be passed the item
+	 * If a string or integer is passed, this value will be used as the key if
+	 * the collection values are arrays to retrieve the item's key. If the
+	 * values are objects, the string or integer passed will be used as the
+	 * property name to get the key from.
+	 *
+	 * If the key is passed as a Closure, the Closure will be passed the item
 	 * each time we need to get the key and the return value will be used as
 	 * the key.
 	 *
-	 * @param  mixed $key
+	 * @param  string|int|Closure $key
+	 *
+	 * @return Collection       Returns $this for chainability
 	 *
 	 * @throws \LogicException If collection is not empty
 	 */
 	public function setKey($key)
 	{
-		if ($this->count() > 0 ) {
+		if ($this->count() > 0) {
 			throw new \LogicException(sprintf('Cannot set key "%s" on a non-empty collection', $this->_key));
 		}
 
@@ -64,15 +76,18 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
-	 * Set the collection type.
+	 * Set the collection type. This must be a fully-qualified class name if the
+	 * collection values will be instances of this class.
 	 *
-	 * @param   mixed $key
+	 * @param  string $type Fully-qualified class name
 	 *
-	 * @throws  \LogicException If collection is not empty
+	 * @return Collection       Returns $this for chainability
+	 *
+	 * @throws \LogicException If collection is not empty
 	 */
 	public function setType($type)
 	{
-		if ($this->count() > 0 ) {
+		if ($this->count() > 0) {
 			throw new \LogicException(sprintf('Cannot set type "%s" on a non-empty collection', $this->_type));
 		}
 
@@ -84,10 +99,11 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	/**
 	 * Set how the collection is sorted.
 	 *
-	 * @param  callable $sorter
-	 * @param  string   $by
+	 * @param  callable $sorter Callable to sort the values, passed an $a and $b
+	 *                          value
+	 * @param  string   $by     What to sort by: `key` or `value`
 	 *
-	 * @return Collection
+	 * @return Collection       Returns $this for chainability
 	 *
 	 * @throws  \LogicException If sort by is not by key or value
 	 */
@@ -106,11 +122,19 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
-	 * Adds validation rules to the collection.
+	 * Add some validation rules to this collection.
 	 *
-	 * @param  callable $validator
+	 * The `$validator` argument will be executed each time a new value is added
+	 * to this collection, with the first and only argument as the new value.
 	 *
-	 * @return Collection
+	 * If the validator wants to reject the value, it can either throw an
+	 * exception or return false (which will throw an exception).
+	 *
+	 * @param  callable $validator Callable for the validator
+	 *
+	 * @return Collection          Returns $this for chainability
+	 *
+	 * @throws \LogicException If collection is not empty
 	 */
 	public function addValidator(callable $validator)
 	{
@@ -130,9 +154,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	 *
 	 * @return Collection
 	 *
-	 * @throws \InvalidArgumentException If validation is false
-	 * @throws \InvalidArgumentException If key already set
-	 * @throws \InvalidArgumentException If key isn't an instance of type
+	 * @throws \InvalidArgumentException If any validator returns false
+	 * @throws \InvalidArgumentException If key is already set
+	 * @throws \InvalidArgumentException If the value does not match the type
 	 */
 	public function add($item)
 	{
@@ -165,9 +189,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	/**
 	 * Remove an item from the collection.
 	 *
-	 * @param  mixed $key
+	 * @param  mixed $key Key of the item to be removed
 	 *
-	 * @return Collection
+	 * @return Collection Returns $this for chainability
 	 *
 	 * @throws \InvalidArgumentException If key does not exist
 	 */
@@ -185,9 +209,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	/**
 	 * Get an item from the collection at the given key.
 	 *
-	 * @param  mixed $key
+	 * @param  mixed $key Key of the item to get
 	 *
-	 * @return mixed
+	 * @return mixed      Value of the item
 	 *
 	 * @throws \InvalidArgumentException If key does not exist
 	 */
@@ -201,7 +225,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
-	 * Checks if there are items with the given key.
+	 * Checks if there is an item with the given key.
 	 *
 	 * @param  mixed $key
 	 *
@@ -229,7 +253,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	 *
 	 * @param  mixed $key
 	 *
-	 * @return mixed
+	 * @return boolean
 	 */
 	public function offsetExists($key)
 	{
@@ -249,7 +273,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
-	 * This is not allowed.
+	 * Setting a value on the collection using array notation is not allowed.
 	 *
 	 * @param  mixed $key
 	 * @param  mixed $value
@@ -264,7 +288,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	/**
 	 * Get all items in collection.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	public function all()
 	{
@@ -272,7 +296,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
-	 * Count the items in the collection.
+	 * Get the number of items in the collection
 	 *
 	 * @return int
 	 */
@@ -292,8 +316,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
+	 * A blank method which is called in the constructor after the default
+	 * sorting has been applied.
 	 *
-	 *
+	 * This method is only here to allow subclasses to extend it to configure
+	 * the collection earlier than the initial items passed in the constructor
+	 * are added.
 	 */
 	protected function _configure()
 	{
@@ -303,7 +331,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	/**
 	 * Checks validation rules.
 	 *
-	 * @return bool
+	 * @param  mixed $item The item to validate
+	 *
+	 * @return bool False if any validator returns false
 	 */
 	private function _validate($item)
 	{
@@ -318,11 +348,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
 	/**
 	 * Sorts the collection by the defined comparison function.
-	 * If sort by key use uksort, else use uasort to sort array & maintain index association.
+	 *
+	 * If the "sort by" is set to `key`, the `uksort` sorting function is used,
+	 * otherwise `uasort` is used.
 	 */
 	private function _sort()
 	{
-
 		if (self::SORT_KEY === $this->_sortBy) {
 			uksort($this->_items, $this->_sort);
 		}
@@ -338,8 +369,13 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	 *
 	 * @return mixed|false
 	 *
-	 * @throws \InvalidArgumentException If
-	 * @throws \InvalidArgumentException If
+	 * @throws \InvalidArgumentException If the item is an array and does not
+	 *                                   have the defined key
+	 * @throws \InvalidArgumentException If the item is an object and does not
+	 *                                   have the defined key as a property
+	 * @throws \InvalidArgumentException If a key is defined as anything but a
+	 *                                   callable and the value is neither an
+	 *                                   array or an object
 	 */
 	private function _getKey($item)
 	{
