@@ -2,13 +2,17 @@
 
 namespace Message\Cog\ValueObject;
 
+use Jeremeamia\SuperClosure\SerializableClosure;
+
+use Closure;
+
 /**
  * Represents a collection.
  *
  * @author Eleanor Shakeshaft <eleanor@message.co.uk>
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
+class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Serializable
 {
 	const SORT_KEY   = 'key';
 	const SORT_VALUE = 'value';
@@ -43,6 +47,59 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
 		foreach ($items as $item) {
 			$this->add($item);
+		}
+	}
+
+	/**
+	 * Get the data to be serialized when this class is serialized.
+	 *
+	 * All object properties are serialized. The `_key` property value, the
+	 * `_sort` property value and the values of the `_validators` property are
+	 * wrapped in `SerializableClosure` if they are an instance of `Closure`.
+	 * This is because `Closure`'s can't be serialized.
+	 *
+	 * @see http://www.php.net/manual/en/class.serializable.php
+	 *
+	 * @return string Serialized data
+	 */
+	public function serialize()
+	{
+		if ($this->_key instanceof Closure) {
+			$this->_key = new SerializableClosure($this->_key);
+		}
+
+		if ($this->_sort instanceof Closure) {
+			$this->_sort = new SerializableClosure($this->_sort);
+		}
+
+		foreach ($this->_validators as $key => $validator) {
+			if ($validator instanceof Closure) {
+				$this->_validators[$key] = new SerializableClosure($validator);
+			}
+		}
+
+		return serialize(get_object_vars($this));
+	}
+
+	/**
+	 * Unserialize the data that was serialized and re-populate an instance of
+	 * this class.
+	 *
+	 * Note that instances of `SerializableClosure` are left as they are and not
+	 * converted back to `Closure` instances. This is because the
+	 * `SerializableClosure` library doesn't seem to allow you to re-retrieve
+	 * the original `Closure` properly.
+	 *
+	 * @see http://www.php.net/manual/en/class.serializable.php
+	 *
+	 * @param  string $data Serialized data
+	 */
+	public function unserialize($data)
+	{
+		$data = unserialize($data);
+
+		foreach ($data as $name => $value) {
+			$this->{$name} = $value;
 		}
 	}
 
@@ -383,7 +440,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 			return false;
 		}
 
-		if ($this->_key instanceof \Closure) {
+		if ($this->_key instanceof Closure || $this->_key instanceof SerializableClosure) {
 			return call_user_func($this->_key, $item);
 		}
 
