@@ -20,7 +20,7 @@ class CaptchaEventListener implements SubscriberInterface
 	public static function getSubscribedEvents()
 	{
 		return array(
-			Form\FormEvents::POST_SUBMIT => ['postSubmit', -900],
+			Form\FormEvents::POST_SUBMIT => ['postSubmit'],
 		);
 	}
 
