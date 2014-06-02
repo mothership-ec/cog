@@ -2,6 +2,7 @@
 
 namespace Message\Cog\Field;
 
+use Message\Cog\Service\Container;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 
@@ -12,7 +13,7 @@ use Message\Cog\Service\ContainerAwareInterface;
  */
 class Factory implements \IteratorAggregate, \Countable
 {
-	protected $_services;
+	// protected $_fieldCollection;
 
 	protected $_baseTransKey;
 	protected $_fields = array();
@@ -20,12 +21,11 @@ class Factory implements \IteratorAggregate, \Countable
 	/**
 	 * Constructor.
 	 *
-	 * @param Validator          $validator The validator to use for fields
-	 * @param ContainerInterface $container The service container
+	 * @param Collection $fieldCollection Collection of available field types
 	 */
-	public function __construct(ContainerInterface $services)
+	public function __construct(/*Collection $fieldCollection*/)
 	{
-		$this->_services  = $services;
+		// $this->_fieldCollection = $fieldCollection;
 	}
 
 	/**
@@ -149,8 +149,7 @@ class Factory implements \IteratorAggregate, \Countable
 	{
 		$label = $label ?: $name;
 
-		$field = clone $this->_services['field.collection']
-			->get($type);
+		$field = clone Container::get('field.collection')->get($type);
 
 		$field->setName($name)
 			->setLabel($label);
@@ -162,11 +161,6 @@ class Factory implements \IteratorAggregate, \Countable
 		}
 
 		return $field;
-	}
-
-	public function getServices($service = '')
-	{
-		return $this->_services[$service];
 	}
 
 	/**

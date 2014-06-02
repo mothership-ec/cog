@@ -15,61 +15,61 @@
 			<directory>./tests/</directory>
 		</testsuite>
 		<testsuite name="Application">
-			<directory>./tests/Message/Cog/Test/Application/</directory>
+			<directory>./tests/Application/</directory>
 		</testsuite>
 		<testsuite name="Bootstrap">
-			<directory>./tests/Message/Cog/Test/Bootstrap/</directory>
+			<directory>./tests/Bootstrap/</directory>
 		</testsuite>
 		<testsuite name="Config">
-			<directory>./tests/Message/Cog/Test/Config/</directory>
+			<directory>./tests/Config/</directory>
 		</testsuite>
 		<testsuite name="Console">
-			<directory>./tests/Message/Cog/Test/Console/</directory>
+			<directory>./tests/Console/</directory>
 		</testsuite>
 		<testsuite name="Controller">
-			<directory>./tests/Message/Cog/Test/Controller/</directory>
+			<directory>./tests/Controller/</directory>
 		</testsuite>
 		<testsuite name="DB">
-			<directory>./tests/Message/Cog/Test/DB/</directory>
+			<directory>./tests/DB/</directory>
 		</testsuite>
 		<testsuite name="Debug">
-			<directory>./tests/Message/Cog/Test/Debug/</directory>
+			<directory>./tests/Debug/</directory>
 		</testsuite>
 		<testsuite name="Event">
-			<directory>./tests/Message/Cog/Test/Event/</directory>
+			<directory>./tests/Event/</directory>
 		</testsuite>
 		<testsuite name="Filesystem">
-			<directory>./tests/Message/Cog/Test/Filesystem/</directory>
+			<directory>./tests/Filesystem/</directory>
 		</testsuite>
 		<testsuite name="Form">
-			<directory>./tests/Message/Cog/Test/Form/</directory>
+			<directory>./tests/Form/</directory>
 		</testsuite>
 		<testsuite name="Functions">
-			<directory>./tests/Message/Cog/Test/Functions/</directory>
+			<directory>./tests/Functions/</directory>
 		</testsuite>
 		<testsuite name="HTTP">
-			<directory>./tests/Message/Cog/Test/HTTP/</directory>
+			<directory>./tests/HTTP/</directory>
 		</testsuite>
 		<testsuite name="Localisation">
-			<directory>./tests/Message/Cog/Test/Localisation/</directory>
+			<directory>./tests/Localisation/</directory>
 		</testsuite>
 		<testsuite name="Module">
-			<directory>./tests/Message/Cog/Test/Module/</directory>
+			<directory>./tests/Module/</directory>
 		</testsuite>
 		<testsuite name="Routing">
-			<directory>./tests/Message/Cog/Test/Routing/</directory>
+			<directory>./tests/Routing/</directory>
 		</testsuite>
 		<testsuite name="Service">
-			<directory>./tests/Message/Cog/Test/Service/</directory>
+			<directory>./tests/Service/</directory>
 		</testsuite>
 		<testsuite name="Templating">
-			<directory>./tests/Message/Cog/Test/Templating/</directory>
+			<directory>./tests/Templating/</directory>
 		</testsuite>
 		<testsuite name="Validation">
-			<directory>./tests/Message/Cog/Test/Validation/</directory>
+			<directory>./tests/Validation/</directory>
 		</testsuite>
 		<testsuite name="ValueObject">
-			<directory>./tests/Message/Cog/Test/ValueObject/</directory>
+			<directory>./tests/ValueObject/</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
@@ -78,7 +78,7 @@
 			<exclude>
 				<directory>./vendor</directory>
 				<directory>./tests</directory>
-				<directory>./src/Message/Cog/Form/Views</directory>
+				<directory>./src/Form/Views</directory>
 			</exclude>
 		</whitelist>
 	</filter>
