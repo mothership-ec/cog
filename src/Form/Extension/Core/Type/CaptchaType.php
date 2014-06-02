@@ -40,8 +40,8 @@ class CaptchaType extends Form\AbstractType
 
 	public function buildView(Form\FormView $view, Form\FormInterface $form, array $options)
 	{
-		if ($options['label_prefix']) {
-			$view->vars['label'] = $options['label_prefix'] . ': ' . $view->vars['label'];
+		if ($options['label']) {
+			$view->vars['label'] = $options['label'] . ': ' . $this->_getQuestion();
 		}
 	}
 
@@ -57,8 +57,7 @@ class CaptchaType extends Form\AbstractType
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
 		$resolver->setDefaults([
-			'label'        => $this->_getQuestion(),
-			'label_prefix' => null,
+			'label'        => null,
 			'required'     => true,
 			'constraints'  => [
 				new Constraints\NotBlank
