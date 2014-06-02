@@ -47,10 +47,6 @@ class CaptchaType extends Form\AbstractType
 
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
 	{
-		if ($options['label'] !== $this->_getQuestion()) {
-			throw new \LogicException('Do not overwrite the `captcha` label!');
-		}
-
 		$builder->addEventSubscriber(new CaptchaEventListener($this->_session));
 	}
 
