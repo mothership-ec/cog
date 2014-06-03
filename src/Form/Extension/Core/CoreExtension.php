@@ -23,7 +23,7 @@ class CoreExtension extends AbstractExtension
 		return [
 			new Type\DatalistType,
 			new Type\EntityType,
-			new Type\CaptchaType($this->_cfg->captcha->apiKey, $this->_session)
+			new Type\CaptchaType($this->_cfg->captcha->textcaptchaKey, $this->_session)
 		];
 	}
 
