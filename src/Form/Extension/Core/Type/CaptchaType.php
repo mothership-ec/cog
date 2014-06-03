@@ -40,9 +40,7 @@ class CaptchaType extends Form\AbstractType
 
 	public function buildView(Form\FormView $view, Form\FormInterface $form, array $options)
 	{
-		if ($options['label']) {
-			$view->vars['label'] = $options['label'] . ': ' . $this->_getQuestion();
-		}
+		$view->vars['label'] = ($options['label'] ? $options['label'] . ': ' : '') . $this->_getQuestion();
 	}
 
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
