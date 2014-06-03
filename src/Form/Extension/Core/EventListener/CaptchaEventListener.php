@@ -31,7 +31,7 @@ class CaptchaEventListener implements SubscriberInterface
 		// If nothing is submitted, it should be caught by the NotBlank constraint
 		if ($data && !$this->_isCorrect($data)) {
 			$event->getForm()->addError(
-				new Form\FormError('Captcha answer is incorrect')
+				new Form\FormError('Captcha answer is incorrect.')
 			);
 		}
 
