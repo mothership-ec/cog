@@ -499,7 +499,7 @@ class Services implements ServicesInterface
 
 		$services['form.extensions'] = function($c) {
 			return [
-				new \Message\Cog\Form\Extension\Core\CoreExtension,
+				new \Message\Cog\Form\Extension\Core\CoreExtension($c['http.session'], $c['cfg']),
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
