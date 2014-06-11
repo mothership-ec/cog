@@ -20,10 +20,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'cog.deploy.after.deploy' => array(
+			Deploy\Events::AFTER_COMPOSER_INSTALL => array(
 				array('runMigrations')
 			),
-			'cog.deploy.after.complete' => array(
+			Deploy\Events::AFTER_COMPLETE => array(
 				array('runMigrations')
 			),
 		);
