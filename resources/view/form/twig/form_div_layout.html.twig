@@ -255,6 +255,12 @@
 	{% endspaceless %}
 {% endblock %}
 
+{% block captcha_widget %}
+	{% spaceless %}
+		{{ block('form_widget_simple') }}
+	{% endspaceless %}
+{% endblock %}
+
 {# Labels #}
 
 {% block form_label %}
@@ -401,7 +407,7 @@
 {% block widget_attributes %}
 	{% spaceless %}
 		id="{{ id }}" name="{{ full_name }}"{% if read_only %} readonly="readonly"{% endif %}{% if disabled %} disabled="disabled"{% endif %}{% if required %} required="required"{% endif %}{% if max_length %} maxlength="{{ max_length }}"{% endif %}{% if pattern %} pattern="{{ pattern }}"{% endif %}
-		{% for attrname, attrvalue in attr %}{% if attrname in ['placeholder', 'title'] %}{{ attrname }}="{{ attrvalue|trans({}, translation_domain) }}" {% else %}{{ attrname }}="{{ attrvalue }}" {% endif %}{% endfor %}
+		{% for attrname, attrvalue in attr %}{% if attrname in ['placeholder', 'title'] %}{{ attrname }}="{{ attrvalue|trans({}, translation_domain) }}" {% else %}{{ attrname }}="{{ attrvalue|escape('html_attr') }}" {% endif %}{% endfor %}
 	{% endspaceless %}
 {% endblock widget_attributes %}
 

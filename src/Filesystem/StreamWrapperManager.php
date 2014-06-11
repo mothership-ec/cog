@@ -75,7 +75,7 @@ class StreamWrapperManager
 	}
 
 	/**
-	 * Gets an array of all registered handlers. Due to the way php works we have to use a static 
+	 * Gets an array of all registered handlers. Due to the way php works we have to use a static
 	 *
 	 * @return array The array of handlers, the key is the prefix.
 	 */
@@ -90,18 +90,19 @@ class StreamWrapperManager
 	 * The class that is returned from the callback must implement StreamWrapperInterface.
 	 *
 	 * @param  string $prefix The prefix to get the ballback for
+	 * @throws \LogicException
 	 *
 	 * @return StreamWrapperInterface
 	 */
 	static public function getHandler($prefix)
 	{
 		if(!isset(static::$handlers[$prefix])) {
-			throw new \Exception(sprintf('No handler registered for `%s://`', $prefix));
+			throw new \LogicException(sprintf('No handler registered for `%s://`', $prefix));
 		}
 
 		$handler = call_user_func(static::$handlers[$prefix]);
 		$handler->prefix = $prefix;
-		
+
 		if(!($handler instanceof StreamWrapperInterface)) {
 			throw new \LogicException(sprintf('StreamWrapper for `%s` must implement StreamWrapperInterface', $prefix));
 		}
@@ -111,7 +112,7 @@ class StreamWrapperManager
 
 	/**
 	 * Creates a temporary class that extends the shim which knows its prefix. This is the only way to get data
-	 * into the instance of the stream wrapper. 
+	 * into the instance of the stream wrapper.
 	 *
 	 * @param  string $prefix The prefix to create a temporary wrapper for.
 	 *
@@ -135,7 +136,7 @@ class StreamWrapperManager
 
 		if(!class_exists($fullClassName)) {
 			throw new \RuntimeException(sprintf(
-				'Could not create temporary class for stream wrapper `%s`. eval() is possibly disabled.', 
+				'Could not create temporary class for stream wrapper `%s`. eval() is possibly disabled.',
 				$prefix
 			));
 		}
