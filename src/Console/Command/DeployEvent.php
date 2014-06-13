@@ -40,7 +40,6 @@ class DeployEvent extends Command
 		$event->setOutput($output);
 		$event->setCommandCollection($this->_services['console.commands']);
 
-		mail('laurence@message.co.uk', 'deploy event', 'deploy.' . $task);
 		$this->get('event.dispatcher')->dispatch('deploy.' . $task, $event);
 	}
 }

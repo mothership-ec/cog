@@ -49,7 +49,6 @@ class Event extends BaseEvent {
 			$command .= ' --env=' . $env;
 		}
 
-		$this->writeln("bin/cog $command");
 		$result = `bin/cog $command`;
 		// $this->_commandCollection->get($command)->run($input, $this->_output);
 	}
