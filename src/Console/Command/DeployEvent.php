@@ -36,10 +36,9 @@ class DeployEvent extends Command
 
 		$event = new Deploy\Event\Event();
 
-		$event
-			->setInput($input)
-			->setOutput($output)
-			->setCommandCollection($this->_services['console.commands']);
+		$event->setInput($input);
+		$event->setOutput($output);
+		$event->setCommandCollection($this->_services['console.commands']);
 
 		mail('laurence@message.co.uk', 'deploy event', 'deploy.' . $task);
 		$this->get('event.dispatcher')->dispatch('deploy.' . $task, $event);
