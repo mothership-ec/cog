@@ -451,4 +451,44 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 
 		$collection->add("hi");
 	}
+
+	public function testSerialization()
+	{
+		$collection = new Collection;
+
+		$collection->setKey(function($item) {
+			return $item['id'];
+		});
+
+		$collection->setSort(function($a, $b) {
+			return ($a > $b) ? -1 : 1;
+		}, $collection::SORT_KEY);
+
+		$collection->addValidator(function($item) {
+			return array_key_exists('id', $item);
+		});
+
+		$this->assertInstanceOf('Serializable', $collection);
+
+		$serialized   = serialize($collection);
+		$unserialized = unserialize($serialized);
+
+		$item1 = ['id' => 1, 'hello' => 'word'];
+		$item2 = ['id' => 2, 'hello' => 'word'];
+
+		$unserialized->add($item1);
+		$unserialized->add($item2);
+
+		$this->assertSame($item1, $unserialized->get(1));
+		$this->assertSame([2 => $item2, 1 => $item1], $unserialized->all());
+
+		try {
+			$unserialized->add(['hey' => 'i dont have an id!']);
+		}
+		catch (\InvalidArgumentException $e) {
+			return true;
+		}
+
+		$this->fail('Validation did not fail after being serialized.');
+	}
 }

@@ -117,7 +117,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 *
 	 * @param  string|int|Closure $key
 	 *
-	 * @return Collection       Returns $this for chainability
+	 * @return Collection              Returns $this for chainability
 	 *
 	 * @throws \LogicException If collection is not empty
 	 */
@@ -136,7 +136,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 * Set the collection type. This must be a fully-qualified class name if the
 	 * collection values will be instances of this class.
 	 *
-	 * @param  string $type Fully-qualified class name
+	 * @param  string $type     Fully-qualified class name
 	 *
 	 * @return Collection       Returns $this for chainability
 	 *
