@@ -156,10 +156,6 @@ class Factory implements \IteratorAggregate, \Countable
 
 		$field->setTranslationKey($this->_baseTransKey);
 
-		if ($field instanceof ContainerAwareInterface) {
-			$field->setContainer($this->_services);
-		}
-
 		return $field;
 	}
 
