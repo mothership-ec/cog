@@ -32,8 +32,8 @@ class Loader implements LoaderInterface
 	 */
 	public function __construct($dir, EnvironmentInterface $env)
 	{
-		$this->_dir      = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
-		$this->_env      = $env;
+		$this->_dir = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$this->_env = $env;
 
 		if (!file_exists($this->_dir)) {
 			throw new Exception(sprintf('Config directory `%s` does not exist', $this->_dir));
