@@ -375,7 +375,7 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$dispatcher = Mockery::mock('Message\Cog\Event\DispatcherInterface');
+		$dispatcher = $this->getMock('Message\Cog\Event\DispatcherInterface');
 		$query  = new \Message\Cog\DB\Transaction($connection, $dispatcher);
 		$result = $query->add("SELECT * FROM staff")->commit();
 
