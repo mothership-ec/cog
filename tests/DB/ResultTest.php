@@ -2,6 +2,7 @@
 
 namespace Message\Cog\Test\DB;
 
+use Mockery;
 
 class ResultTest extends \PHPUnit_Framework_TestCase
 {
@@ -374,7 +375,8 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$query = new \Message\Cog\DB\Transaction($connection);
+		$dispatcher = Mockery::mock('Message\Cog\Event\DispatcherInterface');
+		$query  = new \Message\Cog\DB\Transaction($connection, $dispatcher);
 		$result = $query->add("SELECT * FROM staff")->commit();
 
 		$this->assertTrue($result->isFromTransaction());
