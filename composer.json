@@ -67,7 +67,8 @@
 		"jeremeamia/superclosure"          : "~1.0"
 	},
 	"require-dev": {
-		"mikey179/vfsStream"              : "1.1.*"
+		"mikey179/vfsStream"              : "1.1.*",
+		"mockery/mockery"                 : "dev-master"
 	},
 	"suggest": {
 		"ext-apc"                : "The preferred caching system in Cog",
