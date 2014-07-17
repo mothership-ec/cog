@@ -84,6 +84,9 @@ class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->fail('Exception should be raised when no view can be rendered or generated');
 	}
 
+	/**
+	 * @expectedException Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException
+	 */
 	public function testGeneratedResponses()
 	{
 		$reference   = '::ViewDir:ViewName';
