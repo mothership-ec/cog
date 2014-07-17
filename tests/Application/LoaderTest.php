@@ -41,6 +41,8 @@ namespace Message\Cog\Test\Application {
 		{
 			// Set the command-line arguments (override the phpunit ones)
 			$_SERVER['argv'] = array('/usr/bin/php', 'foo:bar1');
+			$root = vfsStream::setup('root/tmp');
+			// d(vfsStream::url('root/tmp'));
 		}
 
 		public function tearDown()
