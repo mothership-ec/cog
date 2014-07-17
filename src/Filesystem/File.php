@@ -121,6 +121,7 @@ class File extends \SplFileInfo
 	 */
 	private function _getRealPublicPath()
 	{
+		$v = $this->_getPathFromRef($this->_getPublicRef());
 		return $this->_getPathFromRef($this->_getPublicRef());
 	}
 
@@ -130,6 +131,7 @@ class File extends \SplFileInfo
 	private function _setPublic()
 	{
 		$path = $this->_getRealPublicPath();
+		$rp = $this->getRealPath();
 
 		$this->_public = !strncmp($this->getRealPath(), $path, strlen($path));
 	}
@@ -143,7 +145,7 @@ class File extends \SplFileInfo
 	private function _getPathFromRef($ref)
 	{
 		$handler = StreamWrapperManager::getHandler(self::COG_PREFIX);
-
+		$v = $handler->getLocalPath($ref, self::COG_PREFIX);
 		return $handler->getLocalPath($ref, self::COG_PREFIX);
 	}
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Message\Cog\Test\Console;
+// namespace Message\Cog\Test\Console;
 
-use Message\Cog\Test\Service\FauxContainer;
+// use Message\Cog\Test\Service\FauxContainer;
 
-use Message\Cog\Console\Application;
+// use Message\Cog\Console\Application;
 
-class ApplicationTest extends \PHPUnit_Framework_TestCase
-{
+// class ApplicationTest extends \PHPUnit_Framework_TestCase
+// {
 
-}
+// }

@@ -14,7 +14,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 		$this->manager->register('cog', function(){
 			$wrapper = new StreamWrapper;
 			$wrapper->setMapping(array(
-				"/^\/public\/(.*)/us" => __DIR__.'/fixtures/tmp/$1',
+				"/^\/public\/(.*)/us" => __DIR__.'/fixtures/public/$1',
 				"/^\/tmp\/(.*)/us" => __DIR__.'/fixtures/tmp/$1',
 			));
 
@@ -32,7 +32,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 		$path = __DIR__.'/fixtures/tmp/hello.txt';
 		$file = new File($path);
 
-		$this->assertSame('7d793037a0760186574b0282f2f435e7', $file->getChecksum());
+		$this->assertSame('5d41402abc4b2a76b9719d911017c592', $file->getChecksum());
 	}
 
 	public function testGettingPublicUrl()
