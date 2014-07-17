@@ -33,7 +33,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertInstanceOf('Message\Cog\Event\SubscriberInterface', $this->_handler);
 		$this->assertArrayHasKey(KernelEvents::RESPONSE, $subscriptions);
-		$this->assertContains(array('setCookies'), $subscriptions[KernelEvents::RESPONSE]);
+		$this->assertContains(array('setCookies', -100), $subscriptions[KernelEvents::RESPONSE]);
+		$this->assertContains(array('setRefererSession'), $subscriptions[KernelEvents::RESPONSE]);
 	}
 
 	public function testSetResponseCookies()
