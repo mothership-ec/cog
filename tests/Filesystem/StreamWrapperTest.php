@@ -63,7 +63,7 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 		});
 
 		$contents = file_get_contents('bob://tmp/hello.txt');
-		$this->assertSame('world', $contents);
+		$this->assertSame('hello', $contents);
 
 		$path = 'bob://tmp/poem.txt';
 		file_put_contents($path, 'A short poem');
