@@ -57,7 +57,7 @@
 		"lmammino/jsmin4assetic"           : "1.0.*",
 		"natxet/CssMin"                    : "3.0.*",
 		"filp/whoops"                      : "1.0.*",
-		"swiftmailer/swiftmailer"          : "5.0.*",
+		"swiftmailer/swiftmailer"          : "~5.2.1 | ~5.3",
 		"knplabs/knp-snappy"               : "0.1.*",
 		"message/wkhtmltopdf"              : "1.0.*",
 		"itbz/fpdf"                        : "1.7.*",
