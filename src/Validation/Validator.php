@@ -83,9 +83,9 @@ class Validator
 	/**
 	 * Gets field by given name or field current field
 	 * @param  string $name name of field, defaults to null
-	 * 
+	 *
 	 * @throws \Exception   If no field with name $name exists
-	 * 
+	 *
 	 * @return Field        Field with name $name or $_fieldPointer
 	 */
 	public function getField($name = null)
