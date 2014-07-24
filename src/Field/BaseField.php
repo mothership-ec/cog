@@ -149,6 +149,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	public function setTranslationKey($key)
 	{
 		$this->_translationKey = $key . '.' . $this->getName();
+		$this->_setHelpAttribute();
 	}
 
 	public function getFormType()
@@ -169,20 +170,12 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	 */
 	protected function _getHelpKeys()
 	{
-		$className = strtolower(get_class($this));
-		$className = trim(strrchr($className, '\\'), '\\');
-
 		return $this->_translationKey . '.help';
 	}
 
 	protected function _setHelpAttribute()
 	{
-		if (empty($options['attr'])) {
-			$this->_options['attr'] = [];
-		}
-		if (empty($options['attr']['data-help-key'])) {
-			$this->_options['attr']['data-help-key'] = $this->_getHelpKeys();
-		}
+		$this->_options['attr']['data-help-key'] = $this->_getHelpKeys();
 	}
 
 	/**
