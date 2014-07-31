@@ -13,10 +13,7 @@
 {% block form_widget_simple %}
 	{% spaceless %}
 		{% set type = type|default('text') %}
-		{# `value` is parsed through Twig's `escape` filter. Symfony form doesn't do this by default, and so it seems
-		 very possible to me that the value is supposed to be filtered elsewhere. see https://github.com/messagedigital/cog/issues/370
-		  for the issue #}
-		<input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value | escape}}" {% endif %}/>
+		<input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 	{% endspaceless %}
 {% endblock form_widget_simple %}
 
