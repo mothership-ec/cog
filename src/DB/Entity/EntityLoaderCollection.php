@@ -1,9 +1,7 @@
 <?php
 
 namespace Message\Cog\DB\Entity;
-
-use Message\Cog\ValueObject\Collection;
-
+ 
 /**
  * A collection of entity loaders used for lazy loading entities.
  * Puts together pairs of the plural name of the entity and its loader, e.g.
