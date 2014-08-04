@@ -155,6 +155,7 @@ class Services implements ServicesInterface
 					'auto_reload' => true,
 					'debug'       => 'live' !== $c['env'],
 					'autoescape'  => function($name) {
+						
 						// Trim off the .twig file extension
 						if ('.twig' === substr($name, -5)) {
 							$name = substr($name, 0, -5);
@@ -163,13 +164,18 @@ class Services implements ServicesInterface
 						// Get the actual file extension (format)
 						$format = substr($name, strrpos($name, '.') + 1);
 
+						// if txt, don't escape
+						if ($format === 'txt') {
+							return false;
+						}
+
 						// If the format is html, css or js, set that as the autoescape strategy
-						if (in_array($format, array('html', 'js', 'css'))) {
+						if (in_array($format, array('js', 'css'))) {
 							return $format;
 						}
 
-						// Otherwise, turn off autoescaping (for example, .txt files for plaintext emails)
-						return false;
+						// Default html
+						return 'html';
 					}
 				)
 			);

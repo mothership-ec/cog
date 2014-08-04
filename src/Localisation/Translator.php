@@ -66,8 +66,10 @@ class Translator extends BaseTranslator implements ContainerAwareInterface
 
 			// Load application translation files
 			$dir = $this->_container['app.loader']->getBaseDir().'translations';
-			foreach ($this->_container['filesystem.finder']->in($dir) as $file) {
-				$this->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+			if (file_exists($dir)){	
+				foreach ($this->_container['filesystem.finder']->in($dir) as $file) {
+					$this->addResource('yml', $file->getPathname(), $file->getFilenameWithoutExtension());
+				}
 			}
 
 			parent::loadCatalogue($locale);

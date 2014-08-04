@@ -57,6 +57,7 @@ class Console implements ContextInterface
 				new Command\MigrateRefresh,
 				new Command\MigrateRun,
 				new Command\DeployEvent,
+				new Command\ModuleNamespace,
 			));
 		};
 
