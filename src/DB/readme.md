@@ -1,8 +1,10 @@
-# DB component
+# DB component and Lazy Loading
 
-## Usage
+## DB component
 
-### Create a connection
+### Usage
+
+#### Create a connection
 
 	// Create a connection
 	$connection = new DB\MySQLi\Connection(array(
@@ -12,14 +14,14 @@
 		'db'	=> 'test',
 	));
 
-### Run a query
+#### Run a query
 
 	$query = new DB\Query($connection);
 
 	$result = $query->run("SELECT iso_code, name, population, gdp FROM countries");
 
 
-### Work with the results
+#### Work with the results
 
 Calling `DB\Query::run` returns an instance of the `DB\Result` class. This class is flexible; it's an object and has methods to get at result datasets but it can also be accessed and iterated over like an array:
 
@@ -52,7 +54,7 @@ Notice how there's no `numRows()` method? Because the result acts like an array,
 
 
 
-### Transactions
+#### Transactions
 
 	$trans = new DB\Transaction($connection);
 
@@ -70,7 +72,7 @@ Notice how there's no `numRows()` method? Because the result acts like an array,
 	var_dump($result->value()); // 6
 	var_dump($result->isFromTransaction()); // true
 
-## Query parameters
+### Query parameters
 
 For security and to prevent SQL inject attacks **developers must never directly insert variables into query strings**. The following example shows how to do things the bad way:
 
@@ -139,11 +141,11 @@ You can also specify key names explicitly in your placeholders. This is useful i
 Key names can only contain a-z, A-Z, 0-9, _ and -.
 
 
-## Under the hood
+### Under the hood
 
 The DB component makes heavy use of the composite and proxy patterns as well as PHP's inbuilt `Iterator` and `ArrayAccess` interfaces.
 
-### Adapters
+#### Adapters
 
 Adapters abstract away the differences between storage engines so that the `DB\Result`, and `DB\Query` classes don't need to know how the underlying DB APIs work. An adapter is made up of two classes:
 
@@ -152,17 +154,17 @@ Adapters abstract away the differences between storage engines so that the `DB\R
 
 Currently there are only two wrappers, `MySQLi` and `Faux`. In the future this could be expanded to cover `PostgreSQL`, `SQLite` or `Mongo`.
 
-### Query object
+#### Query object
 
 The `DB\Query` object is responsible for parsing query parameters, running a query against the data store and returning a response. Multiple queries can be run against one object each returning new result sets.
 
-### Result object
+#### Result object
 
 The `DB\Result` object uses PHP5's `ArrayAccess`, `Iterator` and `Countable` interfaces to make itself behave like an array. This allows developers to loop over, `count()` and access the result using indexes (e.g `$result[3]`).
 
 `DB\Result` extends `DB\ResultArrayAccess` which provides the implements the offset accessor functionality. This class in turn extends `DB\ResultIterator` which implements the methods needed for iteration and counting. These two classes would have been great as traits but we can't use them in PHP 5.3.
 
-## Faux Connections
+### Faux Connections
 
 For unit testing it's possible to create a connection that always returns a user defined array, what ever query is run against it.
 
@@ -261,3 +263,136 @@ You can use a series of CSV files with `setSequence` too
 	$query = new DB\Query($connection);
 	$result = $query->run("SELECT * FROM staff");
 	$result = $query->run("SELECT * FROM countries");
+	
+	
+## Lazy Loading
+
+### Model and Proxy
+
+The general idea behind our lazy loading system is to use ghost proxies for the models. These ghost proxies are classes, living in the same namespaces as their models, with the name `{Model}Proxy`. The proxies extend the models and override the models' getters. To ensure the lazy loaded property will never be accessed without loading the entities first, we make the property protected and add getters and setters. The ghost proxy makes it possible for us to use the model just as we normally would and logic for getting certain entities can still be in the model. Depending on the entity that is lazy loaded, we can either use a normal array or a collection for storing the entities.
+It is also possible to load one-to-one relationships lazily using the same approach, by simply storing the entity in a protected member variable.
+ 
+To be able to lazy load entities, we have to pass in the necessary entity loaders to the model proxy. This happens using constructor injection, using either the loader itself (if only one entity is lazy loaded), or using `Cog\DB\Entity\EntityLoaderCollection`, as in the following example:
+
+	namespace Message\Mothership\Commerce\Product;
+
+	use Message\Cog\DB\Entity\EntityLoaderCollection;
+
+	class ProductProxy extends Product
+	{
+		protected $_loaders;
+		protected $_loaded = [];
+
+		public function __construct(EntityLoaderCollection $loaders)
+		{
+			$this->_loaders = $loaders;
+		}
+
+		public function getUnits()
+		{
+			$this->_load('units');
+
+			return parent::getUnits();
+		}
+
+		public function getImages($type, array $options)
+		{
+			$this->_load('images');
+
+			return parent::getImages($type, $options);
+		}
+
+		...
+
+		protected function _load($entityName)
+		{
+			if (in_array($entityName, $this->_loaded)) {
+				return;
+			}
+
+			$entities = $this->_loaders
+				->get($entityName)
+				->getByProduct($this);
+			
+			if ($entities !== false) {
+				foreach ($entities as $entity) {
+			 		$this->{'_' . $entityName}->add($entity);
+				}
+			}
+
+			$this->_loaded[] = $entityName;
+		}
+	}
+
+All the loaders used for lazy loading entities should implement `Cog\DB\Entity\EntityLoaderInterface` or an interface extending this interface, so we can type hint the loaders in the `EntityLoaderCollection`.
+In the above example, we use the `ProductEntityLoaderInterface`, to also be able to use the method `getByProduct` and set the product loader on the entity loader:
+
+	...
+	interface ProductEntityLoaderInterface extends EntityLoaderInterface
+	{
+		public function getByProduct(Product $product);
+		public function setProductLoader(Loader $productLoader);
+	}
+
+### Model Loader
+
+The model loader now, instead of directly returning instances of the model, returns instances of the model proxy with the entity loader collection set:
+
+	$products = $result->bindTo(
+		'Message\\Mothership\\Commerce\\Product\\ProductProxy',
+		[$this->_entityLoaders]
+	);
+
+### Services
+
+The entity loader collection has to be passed into the model loader. This happens in the service container. Depending on the use case, we can either define them directly in the loader's service or in it's own service:
+
+	$services['cms.page.loader'] = $services->factory(function($c) {
+		return new CMS\Page\Loader(
+			...
+			new EntityLoaderCollection([
+				'content' => $c['cms.page.content_loader'],
+				'tags'    => $c['cms.page.tag.loader'],
+			])
+		);
+	});
+	
+Or:
+
+	$services['product.entity_loaders'] = $services->factory(function($c) {
+		return 	new EntityLoaderCollection([
+			'units'  => new Commerce\Product\Unit\Loader(...),
+			'images' => new Commerce\Product\Image\Loader(...),
+		]);
+	});
+
+	$services['product.loader'] = $services->factory(function($c) {
+		return new Commerce\Product\Loader(
+			...
+			$c['product.entity_loaders']
+		);
+	});
+	
+#### Bidirectional relationships
+As in the second code example for the service container, the unit loader needs to know the product loader and vice versa. To account for these bidirectional relationships, without ending up with an endless loop, we define the loader in the `EntityLoaderCollection` and access the loader via the model loader:
+	
+	$services['product.entity_loaders'] = $services->factory(function($c) {
+		return 	new EntityLoaderCollection([
+			'units'  => new Commerce\Product\Unit\Loader(...),
+			...
+		]);
+	});
+
+	$services['product.unit.loader'] = $services->factory(function($c) {
+		return $c['product.loader']->getEntityLoader('units');
+	});
+	
+The model then has a method for getting the entity loader, which sets the model loader on the entity loader and returns it:
+
+	public function getEntityLoader($entityName)
+	{
+		$loader = $this->_entityLoaders->get($entityName);
+		$loader->setProductLoader($this);
+
+		return $loader;
+	}
