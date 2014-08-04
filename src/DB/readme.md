@@ -310,9 +310,7 @@ To be able to lazy load entities, we have to pass in the necessary entity loader
 				return;
 			}
 
-			$entities = $this->_loaders
-				->get($entityName)
-				->getByProduct($this);
+			$entities = $this->_loaders->get($entityName)->getByProduct($this);
 			
 			if ($entities !== false) {
 				foreach ($entities as $entity) {
@@ -372,6 +370,7 @@ Or:
 			$c['product.entity_loaders']
 		);
 	});
+
 	
 #### Bidirectional relationships
 As in the second code example for the service container, the unit loader needs to know the product loader and vice versa. To account for these bidirectional relationships, without ending up with an endless loop, we define the loader in the `EntityLoaderCollection` and access the loader via the model loader:
