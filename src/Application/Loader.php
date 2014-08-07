@@ -30,6 +30,16 @@ namespace {
 
 		return call_user_func_array($dumper, func_get_args());
 	}
+
+	function dQueries()
+	{
+		d(\Message\Cog\Service\Container::get('db.query')->getQueryList());
+	}
+
+	function deQueries()
+	{
+		de(\Message\Cog\Service\Container::get('db.query')->getQueryList());
+	}
 }
 
 namespace Message\Cog\Application {
