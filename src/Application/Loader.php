@@ -38,7 +38,7 @@ namespace {
 	 */
 	function dQueries()
 	{
-		d(\Message\Cog\Service\Container::get('db.query')->getQueryList());
+		return d(\Message\Cog\Service\Container::get('db.query')->getQueryList());
 	}
 
 	/**
@@ -49,7 +49,7 @@ namespace {
 	 */
 	function deQueries()
 	{
-		de(\Message\Cog\Service\Container::get('db.query')->getQueryList());
+		return de(\Message\Cog\Service\Container::get('db.query')->getQueryList());
 	}
 }
 
