@@ -30,6 +30,27 @@ namespace {
 
 		return call_user_func_array($dumper, func_get_args());
 	}
+
+	/**
+	 * Short form function for dumping all queries that are run up to the point it is called
+	 *
+	 * @return \Message\Cog\Debug\Dumper The variable dumper
+	 */
+	function dQueries()
+	{
+		return d(\Message\Cog\Service\Container::get('db.query')->getQueryList());
+	}
+
+	/**
+	 * Short form function for dumping all queries that are run up to the point it is called, and then
+	 * quitting execution
+	 *
+	 * @return \Message\Cog\Debug\Dumper The variable dumper
+	 */
+	function deQueries()
+	{
+		return de(\Message\Cog\Service\Container::get('db.query')->getQueryList());
+	}
 }
 
 namespace Message\Cog\Application {
