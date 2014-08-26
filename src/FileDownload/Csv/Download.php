@@ -2,7 +2,7 @@
 
 namespace Message\Cog\FileDownload\Csv;
 
-use Message\Cog\FileDownload\DownloadInterface;
+use Message\Cog\FileDownload\AbstractDownload;
 use Message\Cog\HTTP\StreamedResponse;
 
 /**
@@ -13,7 +13,7 @@ use Message\Cog\HTTP\StreamedResponse;
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class Download implements DownloadInterface
+class Download extends AbstractDownload
 {
 	const EXT = 'csv';
 
@@ -23,14 +23,9 @@ class Download implements DownloadInterface
 	protected $_table;
 
 	/**
-	 * @var StreamedResponse
-	 */
-	private $_response;
-
-	/**
 	 * @var string
 	 */
-	private $_filename = 'download';
+	protected $_type = 'text/csv';
 
 	public function __construct(Table $table)
 	{
@@ -53,54 +48,23 @@ class Download implements DownloadInterface
 		return $this->_response;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setFilename($filename)
+	public function getExt()
 	{
-		$this->_filename = $this->_parseFilename($filename);
+		return 'csv';
 	}
 
-	/**
-	 * Instanciate the `StreamedResponse` object to create CSV file to download
-	 */
-	private function _setResponse()
+	public function getClosure()
 	{
-		$table    = $this->_table;
-		$fileName = $this->_filename . '.csv';
+		$table = $this->_table;
 
-		$response = new StreamedResponse(function() use ($table) {
+		return function() use ($table) {
 			$handle = fopen('php://output', 'w');
 			foreach ($table as $row) {
 				fputcsv($handle, $row->getColumns());
 			}
 			fclose($handle);
-		});
-
-		$response->headers->set('Content-Type', 'text/csv');
-		$response->headers->set('Content-Disposition','attachment; filename="' . $fileName . '"');
-
-		$this->_response = $response;
+		};
 	}
 
-	/**
-	 * Add csv extension onto filename if it is not already there
-	 *
-	 * @param $filename
-	 *
-	 * @return string
-	 */
-	private function _parseFilename($filename)
-	{
-		$filename = (string) $filename;
 
-		$parts = explode($filename, '.');
-		$last  = array_pop($parts);
-
-		if ($last === self::EXT) {
-			$parts[] = $last;
-		}
-
-		return implode($filename, '.');
-	}
 }

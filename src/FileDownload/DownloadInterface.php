@@ -24,4 +24,21 @@ interface DownloadInterface
 	 * @param $filename
 	 */
 	public function setFilename($filename);
+
+	/**
+	 * @return string
+	 */
+	public function getFilename();
+
+	/**
+	 * Get the extension of the file
+	 *
+	 * @return string
+	 */
+	public function getExt();
+
+	/**
+	 * @return \Closure
+	 */
+	public function getClosure();
 }
