@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\FileType;
+namespace Message\Cog\FileDownload;
 
 use Message\Cog\HTTP\StreamedResponse;
 

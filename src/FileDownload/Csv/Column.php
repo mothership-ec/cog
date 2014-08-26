@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\FileType\Csv;
+namespace Message\Cog\FileDownload\Csv;
 
 class Column
 {

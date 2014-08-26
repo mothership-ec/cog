@@ -1,6 +1,6 @@
 <?php
 
-namespace Message\Cog\FileType\Csv;
+namespace Message\Cog\FileDownload\Csv;
 
 class Row implements \IteratorAggregate, \Countable
 {
@@ -14,11 +14,17 @@ class Row implements \IteratorAggregate, \Countable
 		$this->setColumns($columns);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getColumns()
 	{
 		return $this->_columns;
 	}
 
+	/**
+	 * @param array $columns
+	 */
 	public function setColumns(array $columns)
 	{
 		$this->_parseColumns($columns);
@@ -42,6 +48,11 @@ class Row implements \IteratorAggregate, \Countable
 		return new \ArrayIterator($this->_columns);
 	}
 
+	/**
+	 * Cast all columns as a Column object
+	 *
+	 * @param array $columns
+	 */
 	private function _parseColumns(array &$columns)
 	{
 		array_walk($columns, function (&$column) {

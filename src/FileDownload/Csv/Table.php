@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Message\Cog\FileType\Csv;
+namespace Message\Cog\FileDownload\Csv;
 
 class Table implements \IteratorAggregate, \Countable
 {
@@ -12,11 +12,19 @@ class Table implements \IteratorAggregate, \Countable
 		$this->setRows($rows);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getRows()
 	{
 		return $this->_rows;
 	}
 
+	/**
+	 * @param array $rows
+	 *
+	 * @throws \InvalidArgumentException throws exception if a row is not an instance of Row
+	 */
 	public function setRows(array $rows)
 	{
 		foreach ($rows as $row) {

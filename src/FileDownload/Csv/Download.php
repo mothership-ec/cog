@@ -1,10 +1,18 @@
 <?php
 
-namespace Message\Cog\FileType\Csv;
+namespace Message\Cog\FileDownload\Csv;
 
-use Message\Cog\FileType\DownloadInterface;
+use Message\Cog\FileDownload\DownloadInterface;
 use Message\Cog\HTTP\StreamedResponse;
 
+/**
+ * Class for creating and force downloading a CSV file
+ *
+ * Class Download
+ * @package Message\Cog\FileDownload\Csv
+ *
+ * @author Thomas Marchant <thomas@message.co.uk>
+ */
 class Download implements DownloadInterface
 {
 	const EXT = 'csv';
@@ -58,7 +66,7 @@ class Download implements DownloadInterface
 	 */
 	private function _setResponse()
 	{
-		$table = $this->_table;
+		$table    = $this->_table;
 		$fileName = $this->_filename . '.csv';
 
 		$response = new StreamedResponse(function() use ($table) {
@@ -76,7 +84,10 @@ class Download implements DownloadInterface
 	}
 
 	/**
+	 * Add csv extension onto filename if it is not already there
+	 *
 	 * @param $filename
+	 *
 	 * @return string
 	 */
 	private function _parseFilename($filename)
