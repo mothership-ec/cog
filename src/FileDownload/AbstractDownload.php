@@ -49,15 +49,9 @@ abstract class AbstractDownload implements DownloadInterface
 	protected function _parseFilename($filename)
 	{
 		$filename = (string) $filename;
+		$filename = str_replace($this->getExt(), '', $filename);
 
-		$parts = explode($filename, '.');
-		$last  = array_pop($parts);
-
-		if ($last === $this->getExt()) {
-			$parts[] = $last;
-		}
-
-		return implode($filename, '.');
+		return $filename;
 	}
 
 	/**
