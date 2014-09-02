@@ -4,6 +4,7 @@ namespace Message\Cog\Filesystem\FileType;
 
 use Exception;
 use Message\Cog\Filesystem\File;
+use Message\Cog\Filesystem\Exception\InvalidFileException;
 
 /**
  * Read a file as a csv.
@@ -41,7 +42,7 @@ class CSVFile extends \SplFileObject {
 		$this->rewind();
 
 		if (null !== $expected and $this->_columns != $expected) {
-			throw new Exception("Columns did not match those expected on the first line");
+			throw new InvalidFileException("Columns did not match those expected on the first line");
 		}
 
 		return $this->getColumns();

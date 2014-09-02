@@ -48,6 +48,17 @@ class Row implements \IteratorAggregate, \Countable
 		return new \ArrayIterator($this->_columns);
 	}
 
+	public function getSimpleColumns()
+	{
+		$columns = $this->_columns;
+
+		array_walk($columns, function(&$column) {
+			$column = $column->getValue();
+		});
+
+		return $columns;
+	}
+
 	/**
 	 * Cast all columns as a Column object
 	 *
