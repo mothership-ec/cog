@@ -83,4 +83,9 @@ class CSVFile extends \SplFileObject {
 		return $this->_columns;
 	}
 
+	public function __toString()
+	{
+		return $this->getRealPath();
+	}
+
 }
