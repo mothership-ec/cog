@@ -16,10 +16,23 @@ interface QueryBuilderInterface
 	 * times will build up with union
 	 * @param  string                $tableName  Name of the table
 	 * @param  QueryBuilderInterface $builder    QueryBuilder to provide data
-	 * @param  boolean               $unionAll   use UNION ALL if multiple from
 	 * @return QueryBuilderInterface             $this
 	 */
-	public function from($tableName, QueryBuilderInterface $builder = null, $unionAll = true);
+	public function from($tableName, QueryBuilderInterface $builder = null);
+
+	/**
+	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being 
+	 * string or QueryBuilder
+	 * @return QueryBuilderInterface $this
+	 */
+	public function union();
+
+	/**
+	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being 
+	 * string or QueryBuilder
+	 * @return QueryBuilderInterface $this
+	 */
+	public function unionAll();
 
 	/**
 	 * Joins the current query to table $tableName or data specified by
@@ -30,6 +43,16 @@ interface QueryBuilderInterface
 	 * @return QueryBuilderInterface              $this            
 	 */
 	public function join($tableName, $onStatement, QueryBuilderInterface $builder = null);
+
+	/**
+	 * Joins the current query to table $tableName or data specified by
+	 * $builder as $tableName on $onStatement.
+	 * @param  string                $tableName   name of the table
+	 * @param  string                $onStatement statement to join on
+	 * @param  QueryBuilderInterface $builder     optional way 
+	 * @return QueryBuilderInterface              $this            
+	 */
+	public function leftJoin($tableName, $onStatement, QueryBuilderInterface $builder = null);
 
 	/**
 	 * Limits query to $limit rows
@@ -51,7 +74,6 @@ interface QueryBuilderInterface
 	 * @return QueryBuilderInterface           $this
 	 */
 	public function orderBy($orderBy);
-
 
 	/**
 	 * Builds into the where statement using and as default.
