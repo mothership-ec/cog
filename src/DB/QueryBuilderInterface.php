@@ -56,18 +56,20 @@ interface QueryBuilderInterface
 	/**
 	 * Builds into the where statement using and as default.
 	 * @param  string | closure  $statement the statement to append
+	 * @param  mixed             $variable  variable to substitute in
 	 * @param  boolean           $and       append using and if true, or if false
 	 * @return QueryBuilderInterface         $this
 	 */
-	public function where($statement, $and = true);
+	public function where($statement, $variable = null, $and = true);
 
 	/**
 	 * Builds into the having statement using and as default.
 	 * @param  string | closure  $statement the statement to append
+	 * @param  mixed             $variable  variable to substitute in
 	 * @param  boolean           $and       append using and if true, or if false
 	 * @return QueryBuilderInterface           $this
 	 */
-	public function having($statement, $and = true);
+	public function having($statement, $variable = null, $and = true);
 
 	/**
 	 * Creates and returns the Query object to execute
