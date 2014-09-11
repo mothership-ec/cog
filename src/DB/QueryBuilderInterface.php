@@ -76,4 +76,16 @@ interface QueryBuilderInterface
 	 * @return Query
 	 */
 	public function getQuery();
+
+	/**
+	 * Gets the query as an unparsed string
+	 * @return QueryBuilderInterface $this
+	 */
+	public function getQueryString();
+
+	/**
+	 * Clears all properties
+	 * @return QueryBuilderInterface $this
+	 */
+	public function clear();
 }
