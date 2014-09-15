@@ -147,7 +147,7 @@ class Factory implements \IteratorAggregate, \Countable
 	 */
 	public function getField($type, $name, $label = null)
 	{
-		$label = $label ?: $name;
+		$label = $label ?: ucfirst($name);
 
 		$field = clone Container::get('field.collection')->get($type);
 
@@ -169,7 +169,7 @@ class Factory implements \IteratorAggregate, \Countable
 	 */
 	public function getGroup($name, $label = null)
 	{
-		$label	= ($label) ?: $name;
+		$label	= ($label) ?: ucfirst($name);
 
 		$group = new Group;
 		$group->setName($name)
