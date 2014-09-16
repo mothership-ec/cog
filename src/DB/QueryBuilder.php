@@ -97,13 +97,13 @@ class QueryBuilder implements QueryBuilder
 		}
 
 		if ($table) {
-			$this->_join .= [
+			$this->_join[] = [
 				'table_reference' => $table_reference,
 				'on_statement'    => $onStatement,
 				'alias'           => $alias,
 			];
 		} else {
-			$this->_join .= [
+			$this->_join[] = [
 				'table_reference' => $alias,
 				'on_statement'    => $onStatement,
 			];
@@ -132,13 +132,13 @@ class QueryBuilder implements QueryBuilder
 		}
 
 		if ($table) {
-			$this->_leftJoin .= [
+			$this->_leftJoin[] = [
 				'table_reference' => $table_reference,
 				'on_statement'    => $onStatement,
 				'alias'           => $alias,
 			];
 		} else {
-			$this->_leftJoin .= [
+			$this->_leftJoin[] = [
 				'table_reference' => $alias,
 				'on_statement'    => $onStatement,
 			];
@@ -156,7 +156,7 @@ class QueryBuilder implements QueryBuilder
 	 *
 	 * @return QueryBuilder                 $this
 	 */
-	public function where($statement, $variable = null, $and = true)
+	public function where($statement, array $variable = null, $and = true)
 	{
 		if (empty($this->_where)) {
 			$this->_where = $this->_parser->parse($statement, $variable);
@@ -237,13 +237,16 @@ class QueryBuilder implements QueryBuilder
 	 */
 	public function union()
 	{
-		if ($this->_validateQueryBuilder($item)) {
-			$unions = FUNC_GET_ARGS();
-
+		foreach (func_get_args() as $union) {
+			if($this->_validateQueryBuilder($union)) {
+				$this->_union = $union;
+			}
 		}
 
 		return $this;
 	}
+
+
 
 	/**
 	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
@@ -253,9 +256,10 @@ class QueryBuilder implements QueryBuilder
 	 */
 	public function unionAll()
 	{
-		if ($this->_validateQueryBuilder($item)) {
-			$unions = func_get_args();
-
+		foreach (func_get_args() as $union) {
+			if($this->_validateQueryBuilder($union)) {
+				$this->_unionAll = $union;
+			}
 		}
 
 		return $this;
@@ -280,13 +284,6 @@ class QueryBuilder implements QueryBuilder
 	public function getQuery()
 	{
 
-	// CHECK IF QUERY HAS A DATA MANIPULATION STATEMENT
-	// if (!$this->_queryType) {
-	// 	throw new \InvalidArgumentException('The query must start with a data manipulation statement.');
-	// }
-
-	// IF SELECT
-
 		// SELECT (and optional DISTINCT)
 		$this->_query = self::SELECT . " " . if $this->_distinct :? self::DISTINCT;
 
@@ -294,87 +291,94 @@ class QueryBuilder implements QueryBuilder
 		if (empty($this->_selectExpr)) {
 			throw new \InvalidArgumentException('The query must have at least one select expression.');
 		}
-		$this->_query = " /n" . implode(", /n", $this->_selectExpr);
+		$this->_query .= PHP_EOL . implode("," . PHP_EOL . $this->_selectExpr);
 
 		// FROM
-		$this->_query = "/n" . self::FROM;
+		$this->_query .= PHP_EOL . self::FROM;
 
 		// TABLE_REFERENCE
 		if ($this->_from['table_reference'] instanceof QueryBuilder) {
-			$this->_query = " (" . $this->_from['table_reference'] . ")";
+			$this->_query .= " (" . $this->_from['table_reference'] . ")";
 		} else {
-			$this->_query = " " . $this->_from['table_reference'];
+			$this->_query .= " " . $this->_from['table_reference'];
 		}
 			// TABLE_ALIAS
 		if ($this->_from['alias']) {
-			$this->_query = " " . $this->_from['alias'];
+			$this->_query .= " " . $this->_from['alias'];
 		}
 
 		// JOIN
 		foreach ($this->_join as $join) {
-			$this->_query = " /n" . self::JOIN;
+			$this->_query .= PHP_EOL . self::JOIN;
 
 			if ($join['table_reference'] instanceof QueryBuilder) {
-				$this->_query = " (" . $join['table_reference'] . ")";
+				$this->_query .= " (" . $join['table_reference'] . ")";
 			} else {
-				$this->_query = " " . $join['table_reference'];
+				$this->_query .= " " . $join['table_reference'];
 			}
 
 			// TABLE_ALIAS
 			if ($join['alias']) {
-				$this->_query = " " . $join['alias'];
+				$this->_query .= " " . $join['alias'];
 			}
 
-			$this->_query = " ON " . $join['on_statement'];
+			$this->_query .= " ON " . $join['on_statement'];
 		}
 
 		// LEFT JOIN
 		foreach ($this->_leftJoin as $join) {
-			$this->_query = " /n" . self::LEFT_JOIN;
+			$this->_query .= PHP_EOL . self::LEFT_JOIN;
 
 			if ($join['table_reference'] instanceof QueryBuilder) {
-				$this->_query = " (" . $join['table_reference'] . ")";
+				$this->_query .= " (" . $join['table_reference'] . ")";
 			} else {
-				$this->_query = " " . $join['table_reference'];
+				$this->_query .= " " . $join['table_reference'];
 			}
 
 			// TABLE_ALIAS
 			if ($join['alias']) {
-				$this->_query = " " . $join['alias'];
+				$this->_query .= " " . $join['alias'];
 			}
 
-			$this->_query = " ON " . $join['on_statement'];
+			$this->_query .= PHP_EOL . $join['on_statement'];
 		}
 
 		// WHERE
 		if ($this->_where) {
-			$this->_query = " /n" . self::WHERE . $this->_where;
+			$this->_query .= PHP_EOL . self::WHERE . $this->_where;
 		}
 
 		// GROUP BY
 		if (!empty($this->_groupBy)) {
-			$this->_query = " /n" . self::GROUP_BY;
-			$this->_query = " " . implode(", ", $this->_groupBy);
+			$this->_query .= PHP_EOL . self::GROUP_BY;
+			$this->_query .= " " . implode(", ", $this->_groupBy);
 		}
 
 		// WHERE
 		if ($this->_having) {
-			$this->_query = " /n" . self::HAVING . $this->_having;
+			$this->_query .= PHP_EOL . self::HAVING . $this->_having;
 		}
 
 		// ORDER BY
 		if (!empty($this->_orderBy)) {
-			$this->_query = " /n" . self::ORDER_BY;
-			$this->_query = " " . implode(", ", $this->_orderBy);
+			$this->_query .= PHP_EOL . self::ORDER_BY;
+			$this->_query .= " " . implode(", ", $this->_orderBy);
 		}
 
 		// LIMIT
 		if ($this->_limit) {
-			$this->_query = " /n" . self::LIMIT . " " . $this->_limit;
+			$this->_query .= PHP_EOL . self::LIMIT . " " . $this->_limit;
 		}
 
+		// UNION
+		foreach ($this->_union as $union) {
+			$this->_query .= PHP_EOL . self::UNION . PHP_EOL . $union->getQueryString();
+		}
 
-
+		// UNION ALL
+		foreach ($this->_unionAll as $union) {
+			$this->_query .= PHP_EOL . self::UNION_ALL . PHP_EOL . $union->getQueryString();
+		}
 
 		return new Query($this->getQueryString());
 	}

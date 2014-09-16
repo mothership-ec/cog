@@ -51,12 +51,12 @@ interface QueryBuilderInterface
 	 * Builds into the where statement using "AND" as default.
 	 *
 	 * @param  string | closure  $statement the statement to append
-	 * @param  mixed             $variable  variable to substitute in
+	 * @param  array             $variables variables to substitute in
 	 * @param  boolean           $and       append using and if true, or if false
 	 *
 	 * @return QueryBuilderInterface         $this
 	 */
-	public function where($statement, $variable = null, $and = true);
+	public function where($statement, array $variable = null, $and = true);
 
 	/**
 	 * Groups by fields in $groupBy
@@ -71,12 +71,12 @@ interface QueryBuilderInterface
 	 * Builds into the having statement using "AND" as default.
 	 *
 	 * @param  string | closure  $statement the statement to append
-	 * @param  mixed             $variable  variable to substitute in
+	 * @param  array             $variables variables to substitute in
 	 * @param  boolean           $and       append using and if true, or if false
 	 *
 	 * @return QueryBuilderInterface           $this
 	 */
-	public function having($statement, $variable = null, $and = true);
+	public function having($statement, array $variables = null, $and = true);
 
 	/**
 	 * Orders by fields in $orderBy
