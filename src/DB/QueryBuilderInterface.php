@@ -4,64 +4,48 @@ namespace Message\Cog\DB;
 
 interface QueryBuilderInterface
 {
+
 	/**
 	 * Adds items used to build up select statement
 	 *
-	 * @param  string | array        $select Item(s) to add to select statement
+	 * @param  string | array        $select    Item(s) to add to select statement
+	 * @param  boolean               $distinct  exclude duplicates if true
 	 *
-	 * @return QueryBuilderInterface         $this
+	 * @return QueryBuilderInterface            $this
 	 */
-	public function select($select);
+	public function select($select, $distinct = false);
 
 	/**
-	 * Table name and optional query to select from
+	 * Table name alias and the table reference. If left blank it'll use the alias.
 	 *
-	 * @param  string                $tableName  Name of the table
-	 * @param  QueryBuilderInterface $builder    QueryBuilder to provide data
+	 * @param  string                           $alias   Name of the table or table alias
+	 * @param  QueryBuilderInterface | string   $table   Data / table
 	 *
-	 * @return QueryBuilderInterface             $this
+	 * @return QueryBuilderInterface            $this
 	 */
-	public function from($tableName, QueryBuilderInterface $builder = null);
+	public function from($alias, $table = null);
 
 	/**
-	 * Joins the current query to table $tableName or data specified by
-	 * $builder as $tableName using $onStatement.
+	 * Joins $table as $alias using $onStatement.
 	 *
-	 * @param  string                $tableName   name of the table
-	 * @param  string                $onStatement statement to join on
-	 * @param  QueryBuilderInterface $builder     optional way
+	 * @param  string                           $alias       Name of the table or table alias
+	 * @param  string                           $onStatement Statement to join on
+	 * @param  QueryBuilderInterface | string   $table       Data / table
 	 *
-	 * @return QueryBuilderInterface              $this
+	 * @return QueryBuilderInterface            $this
 	 */
-	public function join($tableName, $onStatement, QueryBuilderInterface $builder = null);
+	public function join($alias, $onStatement, $table = null);
 
 	/**
-	 * Joins the current query to table $tableName or data specified by
-	 * $builder as $tableName using $onStatement.
+	 * Joins $table as $alias using $onStatement.
 	 *
-	 * @param  string                $tableName   name of the table
-	 * @param  string                $onStatement statement to join on
-	 * @param  QueryBuilderInterface $builder     optional way
+	 * @param  string                           $alias       Name of the table or table alias
+	 * @param  string                           $onStatement Statement to join on
+	 * @param  QueryBuilderInterface | string   $table       Data / table
 	 *
-	 * @return QueryBuilderInterface              $this
+	 * @return QueryBuilderInterface            $this
 	 */
-	public function leftJoin($tableName, $onStatement, QueryBuilderInterface $builder = null);
-
-	/**
-	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
-	 * string or QueryBuilder
-	 *
-	 * @return QueryBuilderInterface $this
-	 */
-	public function union();
-
-	/**
-	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
-	 * string or QueryBuilder
-	 *
-	 * @return QueryBuilderInterface $this
-	 */
-	public function unionAll();
+	public function leftJoin($alias, $onStatement, $table = null);
 
 	/**
 	 * Builds into the where statement using "AND" as default.
@@ -84,16 +68,7 @@ interface QueryBuilderInterface
 	public function groupBy($groupBy);
 
 	/**
-	 * Orders by fields in $orderBy
-	 *
-	 * @param  string | array        $orderBy Fields to order by
-	 *
-	 * @return QueryBuilderInterface           $this
-	 */
-	public function orderBy($orderBy);
-
-	/**
-	 * Builds into the having statement using and as default.
+	 * Builds into the having statement using "AND" as default.
 	 *
 	 * @param  string | closure  $statement the statement to append
 	 * @param  mixed             $variable  variable to substitute in
@@ -104,6 +79,15 @@ interface QueryBuilderInterface
 	public function having($statement, $variable = null, $and = true);
 
 	/**
+	 * Orders by fields in $orderBy
+	 *
+	 * @param  string | array        $orderBy Fields to order by
+	 *
+	 * @return QueryBuilderInterface           $this
+	 */
+	public function orderBy($orderBy);
+
+	/**
 	 * Limits query to $limit rows
 	 *
 	 * @param  int $limit the limit
@@ -111,6 +95,22 @@ interface QueryBuilderInterface
 	 * @return QueryBuilderInterface $this
 	 */
 	public function limit($limit);
+
+	/**
+	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
+	 * string or QueryBuilder
+	 *
+	 * @return QueryBuilderInterface $this
+	 */
+	public function union();
+
+	/**
+	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
+	 * string or QueryBuilder
+	 *
+	 * @return QueryBuilderInterface $this
+	 */
+	public function unionAll();
 
 	/**
 	 * Creates and returns the Query object to execute
