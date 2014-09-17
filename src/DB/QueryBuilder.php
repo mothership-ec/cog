@@ -2,6 +2,8 @@
 
 namespace Message\Cog\DB;
 
+use Message\Cog\DB\Adapter\ConnectionInterface;
+
 class QueryBuilder implements QueryBuilder
 {
 	const SELECT    = 'SELECT';
@@ -31,6 +33,12 @@ class QueryBuilder implements QueryBuilder
 	private $_limit;
 	private $_query;
 
+	public function __construct()
+	{
+
+
+
+	}
 
 	/**
 	 * Adds items used to build up select statement
@@ -246,8 +254,6 @@ class QueryBuilder implements QueryBuilder
 		return $this;
 	}
 
-
-
 	/**
 	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
 	 * string or QueryBuilder
@@ -272,6 +278,21 @@ class QueryBuilder implements QueryBuilder
 	 */
 	public function clear()
 	{
+		unset(
+			$_selectExpr,
+			$_distinct,
+			$_from,
+			$_join = [];
+			$_leftJoin = [];
+			$_union = [];
+			$_unionAll = [];
+			$_where;
+			$_groupBy = [];
+			$_orderBy = [];
+			$_having;
+			$_limit;
+			$_query;
+		);
 
 		return $this;
 	}
@@ -283,7 +304,16 @@ class QueryBuilder implements QueryBuilder
 	 */
 	public function getQuery()
 	{
+		return new Query($this->_connection, $this->getQueryString());
+	}
 
+	/**
+	 * Gets the query as an string
+	 *
+	 * @return string
+	 */
+	public function getQueryString()
+	{
 		// SELECT (and optional DISTINCT)
 		$this->_query = self::SELECT . " " . if $this->_distinct :? self::DISTINCT;
 
@@ -296,13 +326,13 @@ class QueryBuilder implements QueryBuilder
 		// FROM
 		$this->_query .= PHP_EOL . self::FROM;
 
-		// TABLE_REFERENCE
+		// TABLE REFERENCE
 		if ($this->_from['table_reference'] instanceof QueryBuilder) {
 			$this->_query .= " (" . $this->_from['table_reference'] . ")";
 		} else {
 			$this->_query .= " " . $this->_from['table_reference'];
 		}
-			// TABLE_ALIAS
+			// TABLE ALIAS
 		if ($this->_from['alias']) {
 			$this->_query .= " " . $this->_from['alias'];
 		}
@@ -380,19 +410,7 @@ class QueryBuilder implements QueryBuilder
 			$this->_query .= PHP_EOL . self::UNION_ALL . PHP_EOL . $union->getQueryString();
 		}
 
-		return new Query($this->getQueryString());
-	}
-
-	/**
-	 * Gets the query as an unparsed string
-	 *
-	 * @return QueryBuilder  $this
-	 */
-	public function getQueryString()
-	{
-
-		$str .= $queryBuilder->getQueryString();
-		return $this;
+		return $this->_query;
 	}
 
 	/**
