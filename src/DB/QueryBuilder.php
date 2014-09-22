@@ -64,7 +64,7 @@ class QueryBuilder implements QueryBuilder
 	/**
 	 * Table name alias and the table reference. If left blank it'll use the alias.
 	 *
-	 * @param  string                           $tableName  Name of the table or table alias
+	 * @param  string                           $alias      Name of the table or table alias
 	 * @param  QueryBuilder | string            $table      QueryBuilder to provide data
 	 *
 	 * @return QueryBuilder                     $this
@@ -159,7 +159,7 @@ class QueryBuilder implements QueryBuilder
 	 * Builds into the where statement using "AND" as default.
 	 *
 	 * @param  string | closure  $statement the statement to append
-	 * @param  mixed             $variable  variable to substitute in
+	 * @param  array             $variable  variable to substitute in
 	 * @param  boolean           $and       append using and if true, or if false
 	 *
 	 * @return QueryBuilder                 $this
@@ -184,7 +184,11 @@ class QueryBuilder implements QueryBuilder
 	 */
 	public function groupBy($groupBy)
 	{
-		$this->_groupBy[] .= $groupBy;
+		if (is_array($groupBy)) {
+			array_merge($this->_groupBy[], $groupBy);
+		} else {
+			$this->_groupBy[] .= $groupBy;
+		}
 
 		return $this;
 	}
@@ -218,10 +222,13 @@ class QueryBuilder implements QueryBuilder
 	 */
 	public function orderBy($orderBy);
 	{
-		$this->_orderBy[] .= $orderBy;
+		if (is_array($orderBy)) {
+			array_merge($this->_orderBy[], $orderBy);
+		} else {
+			$this->_orderBy[] .= $orderBy;
+		}
 
-		return $this;
-	}
+		return $this;	}
 
 	/**
 	 * Limits query to $limit rows
