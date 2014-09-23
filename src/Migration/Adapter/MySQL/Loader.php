@@ -103,12 +103,17 @@ class Loader implements LoaderInterface {
 
 	public function resolve(File $file, $reference)
 	{
-		// Load the migration class
-		include_once $file->getRealpath();
-
-		// Get the class name
+		$path = $file->getRealpath();
 		$classname = str_replace('.php', '', $file->getBasename());
 
+		if (!file_exists($path)) {
+			return null;
+		}
+
+		// Load the migration class
+		include_once $path;
+
+		// Get the class name
 		return new $classname($reference, $file, $this->_connector);
 	}
 
