@@ -23,7 +23,7 @@ class QueryParser
 
 	public function __construct(ConnectionInterface $connection)
 	{
-		$this->_connection = $connection;
+		$this->setConnection($connection);
 	}
 
 	/**

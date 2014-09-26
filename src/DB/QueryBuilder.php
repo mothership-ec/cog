@@ -3,8 +3,16 @@
 namespace Message\Cog\DB;
 
 use Message\Cog\DB\Adapter\ConnectionInterface;
+use Message\Cog\DB\QueryBuilderInterface;
+use Message\Cog\DB\QueryParser;
+use Message\Cog\DB\Query;
 
-class QueryBuilder implements QueryBuilder
+/**
+ * Builds a database query by concatinating query elements given.
+ *
+ * @author Eleanor Shakeshaft <eleanor@message.co.uk>
+ */
+class QueryBuilder implements QueryBuilderInterface
 {
 	const SELECT    = 'SELECT';
 	const DISTINCT  = 'DISTINCT';
@@ -33,11 +41,10 @@ class QueryBuilder implements QueryBuilder
 	private $_limit;
 	private $_query;
 
-	public function __construct()
+	public function __construct(ConnectionInterface $connection, QueryParser $parser)
 	{
-
-
-
+		$this->_connection = $connection;
+		$this->_parser = $parser;
 	}
 
 	/**
@@ -285,21 +292,19 @@ class QueryBuilder implements QueryBuilder
 	 */
 	public function clear()
 	{
-		unset(
-			$_selectExpr,
-			$_distinct,
-			$_from,
-			$_join = [];
-			$_leftJoin = [];
-			$_union = [];
-			$_unionAll = [];
-			$_where;
-			$_groupBy = [];
-			$_orderBy = [];
-			$_having;
-			$_limit;
-			$_query;
-		);
+		$this->_selectExpr   = NULL;
+		$this->_distinct     = NULL;
+		$this->_from         = NULL;
+		$this->_join         = [];
+		$this->_leftJoin     = [];
+		$this->_union        = [];
+		$this->_unionAll     = [];
+		$this->_where        = NULL;
+		$this->_groupBy      = [];
+		$this->_orderBy      = [];
+		$this->_having       = NULL;
+		$this->_limit        = NULL;
+		$this->_query        = NULL;
 
 		return $this;
 	}
