@@ -76,7 +76,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder                     $this
 	 */
-	public function from($alias, $table = null);
+	public function from($alias, $table = null)
 	{
 		if ($this->_validateQueryBuilder($alias)) {
 			throw new \InvalidArgumentException('Alias must not be an instance of QueryBuilder');
@@ -87,6 +87,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$this->_from['alias'] = $alias;
 		} else {
 			$this->_from['table_reference'] = $alias;
+			$this->_from['alias'] = false;
 		}
 
 		return $this;
@@ -171,13 +172,13 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder                 $this
 	 */
-	public function where($statement, array $variable = null, $and = true)
+	public function where($statement, array $variables = null, $and = true)
 	{
 		if (empty($this->_where)) {
-			$this->_where = $this->_parser->parse($statement, $variable);
+			$this->_where = $this->_parser->parse($statement, $variables);
 		}
 
-		$this->_where .= "/n" . $and ? 'AND ' : 'OR ' . $this->_parser->parse($statement, $variable);
+		$this->_where .= "/n" . $and ? 'AND ' : 'OR ' . $this->_parser->parse($statement, $variables);
 
 		return $this;
 	}
@@ -204,18 +205,18 @@ class QueryBuilder implements QueryBuilderInterface
 	 * Builds into the having statement using and as default.
 	 *
 	 * @param  string | closure  $statement the statement to append
-	 * @param  mixed             $variable  variable to substitute in
+	 * @param  array             $variable  variable to substitute in
 	 * @param  boolean           $and       append using and if true, or if false
 	 *
 	 * @return QueryBuilder                 $this
 	 */
-	public function having($statement, $variable = null, $and = true)
+	public function having($statement, array $variables = null, $and = true)
 	{
 		if (empty($this->_having)) {
-			$this->_having = $this->_parser->parse($statement, $variable);
+			$this->_having = $this->_parser->parse($statement, $variables);
 		}
 
-		$this->_having .= "/n" . $and ? 'AND ' : 'OR ' . $this->_parser->parse($statement, $variable);
+		$this->_having .= "/n" . $and ? 'AND ' : 'OR ' . $this->_parser->parse($statement, $variables);
 
 		return $this;
 	}
@@ -227,7 +228,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder                   $this
 	 */
-	public function orderBy($orderBy);
+	public function orderBy($orderBy)
 	{
 		if (is_array($orderBy)) {
 			array_merge($this->_orderBy[], $orderBy);
@@ -327,13 +328,13 @@ class QueryBuilder implements QueryBuilderInterface
 	public function getQueryString()
 	{
 		// SELECT (and optional DISTINCT)
-		$this->_query = self::SELECT . " " . if $this->_distinct :? self::DISTINCT;
+		$this->_query = self::SELECT . ($this->_distinct ? " " . self::DISTINCT : '');
 
 		// SELECT_EXPRs, there must be at least one.
 		if (empty($this->_selectExpr)) {
 			throw new \InvalidArgumentException('The query must have at least one select expression.');
 		}
-		$this->_query .= PHP_EOL . implode("," . PHP_EOL . $this->_selectExpr);
+		$this->_query .= PHP_EOL . implode("," . PHP_EOL, $this->_selectExpr);
 
 		// FROM
 		$this->_query .= PHP_EOL . self::FROM;
