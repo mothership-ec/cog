@@ -172,14 +172,13 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder                 $this
 	 */
-	public function where($statement, array $variables = null, $and = true)
+	public function where($statement, array $variables = [], $and = true)
 	{
 		if (empty($this->_where)) {
 			$this->_where = $this->_parser->parse($statement, $variables);
+		} else {
+			$this->_where .= PHP_EOL . ($and ? 'AND ' : 'OR ') . $this->_parser->parse($statement, $variables);
 		}
-
-		$this->_where .= "/n" . $and ? 'AND ' : 'OR ' . $this->_parser->parse($statement, $variables);
-
 		return $this;
 	}
 
@@ -254,13 +253,16 @@ class QueryBuilder implements QueryBuilderInterface
 
 	/**
 	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
-	 * string or QueryBuilder
+	 * QueryBuilder
 	 *
 	 * @return QueryBuilder  $this
 	 */
 	public function union()
 	{
 		foreach (func_get_args() as $union) {
+			if (!($union instanceof QueryBuilder)) {
+				throw new \InvalidArgumentException('Union args must be of type QueryBuilder');
+			}
 			if($this->_validateQueryBuilder($union)) {
 				$this->_union = $union;
 			}
@@ -271,13 +273,16 @@ class QueryBuilder implements QueryBuilderInterface
 
 	/**
 	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
-	 * string or QueryBuilder
+	 * QueryBuilder
 	 *
 	 * @return QueryBuilder  $this
 	 */
 	public function unionAll()
 	{
 		foreach (func_get_args() as $union) {
+			if (!($union instanceof QueryBuilder)) {
+				throw new \InvalidArgumentException('Union all args must be of type QueryBuilder');
+			}
 			if($this->_validateQueryBuilder($union)) {
 				$this->_unionAll = $union;
 			}
@@ -388,7 +393,7 @@ class QueryBuilder implements QueryBuilderInterface
 
 		// WHERE
 		if ($this->_where) {
-			$this->_query .= PHP_EOL . self::WHERE . $this->_where;
+			$this->_query .= PHP_EOL . self::WHERE . PHP_EOL . $this->_where;
 		}
 
 		// GROUP BY

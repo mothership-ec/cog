@@ -98,7 +98,7 @@ interface QueryBuilderInterface
 
 	/**
 	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
-	 * string or QueryBuilder
+	 * QueryBuilder
 	 *
 	 * @return QueryBuilderInterface $this
 	 */
@@ -106,7 +106,7 @@ interface QueryBuilderInterface
 
 	/**
 	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
-	 * string or QueryBuilder
+	 * QueryBuilder
 	 *
 	 * @return QueryBuilderInterface $this
 	 */
