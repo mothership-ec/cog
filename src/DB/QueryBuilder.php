@@ -114,7 +114,7 @@ class QueryBuilder implements QueryBuilderInterface
 
 		if ($table) {
 			$this->_join[] = [
-				'table_reference' => $table_reference,
+				'table_reference' => $table,
 				'on_statement'    => $onStatement,
 				'alias'           => $alias,
 			];
@@ -149,7 +149,7 @@ class QueryBuilder implements QueryBuilderInterface
 
 		if ($table) {
 			$this->_leftJoin[] = [
-				'table_reference' => $table_reference,
+				'table_reference' => $table,
 				'on_statement'    => $onStatement,
 				'alias'           => $alias,
 			];
@@ -370,13 +370,13 @@ class QueryBuilder implements QueryBuilderInterface
 				$this->_query .= PHP_EOL . self::JOIN;
 
 				if ($join['table_reference'] instanceof QueryBuilder) {
-					$this->_query .= " (" . $join['table_reference'] . ")";
+					$this->_query .= " (" . $join['table_reference']->getQueryString() . ")";
 				} else {
 					$this->_query .= " " . $join['table_reference'];
 				}
 
 				// TABLE_ALIAS
-				if ($join['alias']) {
+				if (isset($join['alias'])) {
 					$this->_query .= " " . $join['alias'];
 				}
 
@@ -388,17 +388,17 @@ class QueryBuilder implements QueryBuilderInterface
 				$this->_query .= PHP_EOL . self::LEFT_JOIN;
 
 				if ($join['table_reference'] instanceof QueryBuilder) {
-					$this->_query .= " (" . $join['table_reference'] . ")";
+					$this->_query .= " (" . $join['table_reference']->getQueryString() . ")";
 				} else {
 					$this->_query .= " " . $join['table_reference'];
 				}
 
 				// TABLE_ALIAS
-				if ($join['alias']) {
+				if (isset($join['alias'])) {
 					$this->_query .= " " . $join['alias'];
 				}
 
-				$this->_query .= PHP_EOL . $join['on_statement'];
+				$this->_query .= " ON " . $join['on_statement'];
 			}
 		}
 

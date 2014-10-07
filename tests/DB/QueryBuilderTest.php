@@ -302,24 +302,130 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetQuery()
 	{
-		$this->_connect->shouldReceive('query')->once()
-			->andReturn(true)
+		$result = m::mock('Message\Cog\DB\Adapter\ResultInterface');
+		$result
+			->shouldReceive('getAffectedRows')->once()
+			->andReturn([])
+			->shouldReceive('getLastInsertId')->once()
+			->andReturn(1)
 		;
+
+		$this->_connect->shouldReceive('query')->once()
+			->andReturn($result)
+		;
+
 		$this->_parser->shouldReceive('parse')->once()
 			->passthru()
 		;
 
-
 		$query = $this->_builder
 			->select("*")
 			->from('table')
-			->having('col = variable')
+			->where('col = variable')
 			->getQuery()
-			->run()	
 		;
+
+		$query->run();
+		$query = $query->getParsedQuery();
 
 		$expected = "SELECT * FROM table WHERE col = variable";
 
-		$this->assertEquals($expected, $query->getParsedQueryString());
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testJoinSimple()
+	{
+		$query = $this->_builder
+			->select("*")
+			->from('table_a')
+			->join('table_b', 'id = id')
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table_a JOIN table_b ON id = id";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testJoinAlias()
+	{
+		$query = $this->_builder
+			->select("*")
+			->from('table_a')
+			->join('alias', 'id = id', 'table_b')
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table_a JOIN table_b alias ON id = id";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testLeftJoinSimple()
+	{
+		$query = $this->_builder
+			->select("*")
+			->from('table_a')
+			->leftJoin('table_b', 'id = id')
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table_a LEFT JOIN table_b ON id = id";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testLeftJoinAlias()
+	{
+		$query = $this->_builder
+			->select("*")
+			->from('table_a')
+			->leftJoin('alias', 'id = id', 'table_b')
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table_a LEFT JOIN table_b alias ON id = id";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testJoinQB()
+	{
+		$table_a = new QueryBuilder($this->_connect, $this->_parser);
+		$table_a
+			->select('*')
+			->from('table_b')
+		;
+
+		$query =  $this->_builder
+			->select("*")
+			->from('table_a')
+			->join('alias', 'id = id', $table_a)
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table_a JOIN (SELECT * FROM table_b) alias ON id = id";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testLeftJoinQB()
+	{
+		$table_a = new QueryBuilder($this->_connect, $this->_parser);
+		$table_a
+			->select('*')
+			->from('table_b')
+		;
+
+		$query =  $this->_builder
+			->select("*")
+			->from('table_a')
+			->leftJoin('alias', 'id = id', $table_a)
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table_a LEFT JOIN (SELECT * FROM table_b) alias ON id = id";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 }
