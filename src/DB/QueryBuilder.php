@@ -179,6 +179,7 @@ class QueryBuilder implements QueryBuilderInterface
 		} else {
 			$this->_where .= PHP_EOL . ($and ? 'AND ' : 'OR ') . $this->_parser->parse($statement, $variables);
 		}
+
 		return $this;
 	}
 
@@ -209,13 +210,13 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder                 $this
 	 */
-	public function having($statement, array $variables = null, $and = true)
+	public function having($statement, array $variables = [], $and = true)
 	{
 		if (empty($this->_having)) {
 			$this->_having = $this->_parser->parse($statement, $variables);
+		} else {		
+			$this->_having .= PHP_EOL . ($and ? 'AND ' : 'OR ') . $this->_parser->parse($statement, $variables);
 		}
-
-		$this->_having .= "/n" . $and ? 'AND ' : 'OR ' . $this->_parser->parse($statement, $variables);
 
 		return $this;
 	}
@@ -257,14 +258,14 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder  $this
 	 */
-	public function union()
+	public function union(QueryBuilderInterface $queryBuilder)
 	{
 		foreach (func_get_args() as $union) {
 			if (!($union instanceof QueryBuilder)) {
 				throw new \InvalidArgumentException('Union args must be of type QueryBuilder');
 			}
 			if($this->_validateQueryBuilder($union)) {
-				$this->_union = $union;
+				$this->_union[] = $union;
 			}
 		}
 
@@ -277,14 +278,14 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder  $this
 	 */
-	public function unionAll()
+	public function unionAll(QueryBuilderInterface $queryBuilder)
 	{
 		foreach (func_get_args() as $union) {
 			if (!($union instanceof QueryBuilder)) {
 				throw new \InvalidArgumentException('Union all args must be of type QueryBuilder');
 			}
 			if($this->_validateQueryBuilder($union)) {
-				$this->_unionAll = $union;
+				$this->_unionAll[] = $union;
 			}
 		}
 
@@ -332,63 +333,73 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function getQueryString()
 	{
-		// SELECT (and optional DISTINCT)
-		$this->_query = self::SELECT . ($this->_distinct ? " " . self::DISTINCT : '');
 
 		// SELECT_EXPRs, there must be at least one.
 		if (empty($this->_selectExpr)) {
-			throw new \InvalidArgumentException('The query must have at least one select expression.');
-		}
-		$this->_query .= PHP_EOL . implode("," . PHP_EOL, $this->_selectExpr);
+			if (!empty($this->_union)) {
+				$select = array_shift($this->_union);
+			} elseif(!empty($this->_unionAll)){
+				$select = array_shift($this->_unionAll);
+			}else{
+				throw new \InvalidArgumentException('The query must have at least one select expression.');
+			}
 
-		// FROM
-		$this->_query .= PHP_EOL . self::FROM;
-
-		// TABLE REFERENCE
-		if ($this->_from['table_reference'] instanceof QueryBuilder) {
-			$this->_query .= " (" . $this->_from['table_reference'] . ")";
+			$this->_query = $select->getQueryString();
 		} else {
-			$this->_query .= " " . $this->_from['table_reference'];
-		}
-			// TABLE ALIAS
-		if ($this->_from['alias']) {
-			$this->_query .= " " . $this->_from['alias'];
-		}
+			// SELECT (and optional DISTINCT)
+			$this->_query = self::SELECT . ($this->_distinct ? " " . self::DISTINCT : '');
 
-		// JOIN
-		foreach ($this->_join as $join) {
-			$this->_query .= PHP_EOL . self::JOIN;
+			$this->_query .= PHP_EOL . implode("," . PHP_EOL, $this->_selectExpr);
 
-			if ($join['table_reference'] instanceof QueryBuilder) {
-				$this->_query .= " (" . $join['table_reference'] . ")";
+			// FROM
+			$this->_query .= PHP_EOL . self::FROM;
+
+			// TABLE REFERENCE
+			if ($this->_from['table_reference'] instanceof QueryBuilder) {
+				$this->_query .= " (" . $this->_from['table_reference']->getQueryString() . ")";
 			} else {
-				$this->_query .= " " . $join['table_reference'];
+				$this->_query .= " " . $this->_from['table_reference'];
+			}
+				// TABLE ALIAS
+			if ($this->_from['alias']) {
+				$this->_query .= " " . $this->_from['alias'];
 			}
 
-			// TABLE_ALIAS
-			if ($join['alias']) {
-				$this->_query .= " " . $join['alias'];
+			// JOIN
+			foreach ($this->_join as $join) {
+				$this->_query .= PHP_EOL . self::JOIN;
+
+				if ($join['table_reference'] instanceof QueryBuilder) {
+					$this->_query .= " (" . $join['table_reference'] . ")";
+				} else {
+					$this->_query .= " " . $join['table_reference'];
+				}
+
+				// TABLE_ALIAS
+				if ($join['alias']) {
+					$this->_query .= " " . $join['alias'];
+				}
+
+				$this->_query .= " ON " . $join['on_statement'];
 			}
 
-			$this->_query .= " ON " . $join['on_statement'];
-		}
+			// LEFT JOIN
+			foreach ($this->_leftJoin as $join) {
+				$this->_query .= PHP_EOL . self::LEFT_JOIN;
 
-		// LEFT JOIN
-		foreach ($this->_leftJoin as $join) {
-			$this->_query .= PHP_EOL . self::LEFT_JOIN;
+				if ($join['table_reference'] instanceof QueryBuilder) {
+					$this->_query .= " (" . $join['table_reference'] . ")";
+				} else {
+					$this->_query .= " " . $join['table_reference'];
+				}
 
-			if ($join['table_reference'] instanceof QueryBuilder) {
-				$this->_query .= " (" . $join['table_reference'] . ")";
-			} else {
-				$this->_query .= " " . $join['table_reference'];
+				// TABLE_ALIAS
+				if ($join['alias']) {
+					$this->_query .= " " . $join['alias'];
+				}
+
+				$this->_query .= PHP_EOL . $join['on_statement'];
 			}
-
-			// TABLE_ALIAS
-			if ($join['alias']) {
-				$this->_query .= " " . $join['alias'];
-			}
-
-			$this->_query .= PHP_EOL . $join['on_statement'];
 		}
 
 		// WHERE
@@ -403,8 +414,8 @@ class QueryBuilder implements QueryBuilderInterface
 		}
 
 		// WHERE
-		if ($this->_having) {
-			$this->_query .= PHP_EOL . self::HAVING . $this->_having;
+		if (!empty($this->_having)) {
+			$this->_query .= PHP_EOL . self::HAVING . PHP_EOL . $this->_having;
 		}
 
 		// ORDER BY

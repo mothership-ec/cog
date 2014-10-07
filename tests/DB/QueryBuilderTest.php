@@ -31,6 +31,22 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
+	public function testMultiipleSelect()
+	{
+		$query = $this->_builder
+			->select("col_1")
+			->select("col_2")
+			->select("col_3")
+			->select("col_4")
+			->from('table')
+			->getQueryString()
+		;
+
+		$expected = "SELECT col_1, col_2, col_3, col_4 FROM table";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
 	public function testSelectDistinct()
 	{
 		$query = $this->_builder
@@ -180,24 +196,130 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
-	public function testUnion()
+	public function testFromAlias()
 	{
-		$unionQuery = new QueryBuilder($this->_connect, $this->_parser);
-		$unionQuery
-			->select('*')
-			->from('union_table')
-		;
-
 		$query = $this->_builder
 			->select("*")
-			->from('table')
-			->union()
+			->from('alias', 'from_table')
 			->getQueryString()
 		;
 
 
-		$expected = "SELECT * FROM table UNION (SELECT * FROM union_table)";
+		$expected = "SELECT * FROM from_table alias";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testFromAliasWithQB()
+	{
+		$fromTable = new QueryBuilder($this->_connect, $this->_parser);
+		$fromTable
+			->select('*')
+			->from('from_table')
+		;
+
+		$query = $this->_builder
+			->select("*")
+			->from('alias', $fromTable)
+			->getQueryString()
+		;
+
+
+		$expected = "SELECT * FROM (SELECT * FROM from_table) alias";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testFromWithUnion()
+	{
+
+		$table_b = new QueryBuilder($this->_connect, $this->_parser);
+		$table_b
+			->select('*')
+			->from('table_b')
+		;
+
+		$table_a = new QueryBuilder($this->_connect, $this->_parser);
+		$table_a
+			->select('*')
+			->from('table_a')
+		;
+
+		$fromTable = new QueryBuilder($this->_connect, $this->_parser);
+		$fromTable
+			->union($table_a)
+			->union($table_b)
+		;
+
+		$query = $this->_builder
+			->select("*")
+			->from('alias', $fromTable)
+			->getQueryString()
+		;
+
+
+		$expected = "SELECT * FROM (SELECT * FROM table_a UNION SELECT * FROM table_b) alias";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testHaving()
+	{
+		$this->_parser->shouldReceive('parse')->once()
+			->with('col = variable', [])
+			->passthru();
+	
+		$query = $this->_builder
+			->select("*")
+			->from('table')
+			->having('col = variable')
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table HAVING col = variable";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testHavingMulti()
+	{
+		$this->_parser->shouldReceive('parse')->times(3)
+			->passthru();
+	
+		$query = $this->_builder
+			->select("*")
+			->from('table')
+			->having('col_a = a')
+			->having('col_b = b')
+			->having('col_c = c', [], false)
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table HAVING col_a = a AND col_b = b OR col_c = c";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testGetQuery()
+	{
+		$this->_connect->shouldReceive('query')->once()
+			->andReturn(true)
+		;
+		$this->_parser->shouldReceive('parse')->once()
+			->passthru()
+		;
+
+
+		$query = $this->_builder
+			->select("*")
+			->from('table')
+			->having('col = variable')
+			->getQuery()
+			->run()	
+		;
+
+		$expected = "SELECT * FROM table WHERE col = variable";
+
+		$this->assertEquals($expected, $query->getParsedQueryString());
 	}
 }

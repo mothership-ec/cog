@@ -97,20 +97,20 @@ interface QueryBuilderInterface
 	public function limit($limit);
 
 	/**
-	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
+	 * Builds UNION block takes $var [$var1, [$var2, [$var3...]...]...] each being
 	 * QueryBuilder
 	 *
 	 * @return QueryBuilderInterface $this
 	 */
-	public function union();
+	public function union(QueryBuilderInterface $queryBuilder);
 
 	/**
-	 * Builds UNION block takes [$var1, [$var2, [$var3...]...]...] each being
+	 * Builds UNION block takes $var [$var1, [$var2, [$var3...]...]...] each being
 	 * QueryBuilder
 	 *
 	 * @return QueryBuilderInterface $this
 	 */
-	public function unionAll();
+	public function unionAll(QueryBuilderInterface $queryBuilder);
 
 	/**
 	 * Creates and returns the Query object to execute
