@@ -411,8 +411,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function testLeftJoinQB()
 	{
-		$table_a = new QueryBuilder($this->_connect, $this->_parser);
-		$table_a
+		$table_a = new QueryBuilder($this->_connect, $this->_parser)
 			->select('*')
 			->from('table_b')
 		;
@@ -427,5 +426,52 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$expected = "SELECT * FROM table_a LEFT JOIN (SELECT * FROM table_b) alias ON id = id";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testElanorsQuery()
+	{
+		$forQuerys = [];
+
+		$q = new QueryBuilder($this->_connect, $this->_parser)
+		$forQuerys[] = $q
+			->select('item.created_at AS date')
+			->select('(IFNULL(item.net, 0)) AS net')
+			->select('(IFNULL(item.tax, 0)) AS tax')
+			->select('(IFNULL(item.gross, 0)) AS gross')
+			->select('CONCAT(order_summary.type," Sale") AS `type`')
+			->select('item.item_id AS item_id')
+			->select('item.order_id AS order_id')
+			->select('item.product_name AS product')
+			->select('item.options AS `option`')
+			->from('order_item AS item')
+			->join('order_summary', 'item.order_id = order_summary.order_id')
+			->leftJoin('return_item', 'return_item.exchange_item_id = item.item_id')
+			->where('order_summary.status_code >= 0')
+			->where('item.product_id NOT IN (9)')
+			->where('return_item.exchange_item_id IS NULL')
+			->where('item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())')
+		;
+
+		$q = new QueryBuilder($this->_connect, $this->_parser)
+		$forQuerys[] = $q
+			->select('order_summary.created_at AS date')
+			->select('(IFNULL(item.net, 0)) AS net')
+			->select('(IFNULL(item.tax, 0)) AS tax')
+			->select('(IFNULL(item.gross, 0)) AS gross')
+			
+			->select('"Shipping In" AS `type`')
+			->select('"" AS item_id')
+			->select('item.order_id AS order_id')
+			->select('item.product_name AS product')
+			->select('item.options AS `option`')
+			->from('order_item AS item')
+			->join('order_summary', 'item.order_id = order_summary.order_id')
+			->leftJoin('return_item', 'return_item.exchange_item_id = item.item_id')
+			->where('order_summary.status_code >= 0')
+			->where('item.product_id NOT IN (9)')
+			->where('return_item.exchange_item_id IS NULL')
+			->where('item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())')
+		;
+
 	}
 }
