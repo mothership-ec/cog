@@ -458,11 +458,11 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->select('(IFNULL(item.net, 0)) AS net')
 			->select('(IFNULL(item.tax, 0)) AS tax')
 			->select('(IFNULL(item.gross, 0)) AS gross')
-			
 			->select('"Shipping In" AS `type`')
 			->select('"" AS item_id')
-			->select('item.order_id AS order_id')
-			->select('item.product_name AS product')
+			->select('order_shipping.order_id AS order_id')
+			->select('"" AS product')
+			
 			->select('item.options AS `option`')
 			->from('order_item AS item')
 			->join('order_summary', 'item.order_id = order_summary.order_id')
