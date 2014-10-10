@@ -2128,9 +2128,7 @@
             "time": "2014-09-03 10:11:10"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [
 
@@ -2145,7 +2143,5 @@
         "ext-mysqli": "*",
         "ext-intl": "*"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
