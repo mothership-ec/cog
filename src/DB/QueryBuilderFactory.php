@@ -21,7 +21,7 @@ class QueryBuilderFactory
 		$this->_parser = $parser;
 	}
 
-	public function newQueryBuilder()
+	public function getQueryBuilder()
 	{
 		return new QueryBuilder($this->_connection, $this->_parser);
 	}
