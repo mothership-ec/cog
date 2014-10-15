@@ -41,7 +41,7 @@ class Services implements ServicesInterface
 			));
 		};
 
-		$sevices['db.query.parser'] = function($s) {
+		$services['db.query.parser'] = function($s) {
 			return new Cog\DB\QueryParser($s['db.connection']);
 		};
 
