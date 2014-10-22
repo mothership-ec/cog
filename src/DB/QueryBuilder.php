@@ -323,7 +323,7 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function getQuery()
 	{
-		return new Query($this->_connection, $this->getQueryString());
+		return new Query($this->_connection, $this->_parser, $this->getQueryString());
 	}
 
 	/**

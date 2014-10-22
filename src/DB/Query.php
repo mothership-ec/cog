@@ -15,6 +15,7 @@ class Query implements QueryableInterface
 	protected $_params;
 	protected $_query;
 	protected $_parsedQuery;
+	protected $_queryParser;
 
 	protected static $_queryList = [];
 
@@ -28,10 +29,11 @@ class Query implements QueryableInterface
 
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)\??([a-z]*)?)|(\?([a-z]*))/us';
 
-	public function __construct(ConnectionInterface $connection, $query = null)
+	public function __construct(ConnectionInterface $connection, QueryParser $queryParser, $query = null)
 	{
 		$this->setConnection($connection);
 		$this->_query = $query;
+		$this->_queryParser = $queryParser;
 	}
 
 	/**
@@ -108,73 +110,15 @@ class Query implements QueryableInterface
 	 * Replaces placeholders in the query with safe, escaped parameters. Used
 	 * to prevent SQL injection attacks.
 	 *
-	 * @todo Move this into it's own class.
-	 *
 	 * @return boolean Indicates if any parsing had to be performed.
 	 */
 	private function _parseParams()
 	{
-		if(!count($this->_params)) {
-			$this->_parsedQuery = $this->_query;
-
+		if($this->_parsedQuery = $this->_queryParser->parse($this->_query, $this->_params)){
+			return true;
+		} else {
 			return false;
 		}
-
-		$counter = 0;
-
-		// PHP 5.3 hack
-		$connection = $this->_connection;
-		$fields     = $this->_params;
-		$types      = $this->_typeTokens;
-		$self       = $this;
-		$query 		= $this->_query;
-
-		$this->_parsedQuery = preg_replace_callback(
-			self::TOKEN_REGEX,
-			function($matches) use($self, $fields, $types, &$counter, $connection, $query) {
-
-				// parse and validate the token
-				$full  = $matches[0];
-				$param = substr($full, 0, 1) == ':' ? substr($matches[2], 1) : false; // The var after the colon.
-				$flagIndex = $param === false ? 5 : 3;
-				$flags = $matches[$flagIndex] ?: 'sn'; // data casting flags
-				$type  = str_replace('n', '', $flags, $useNull);
-				$type  = str_replace('j', '', $type, $useJoin);
-
-				if(!isset($types[$type])) {
-					throw new Exception(sprintf('Unknown type `%s` in token `%s`', $type, $full), $query);
-				}
-
-				// decide what data to use
-				$data = null;
-				if($param !== false && isset($fields[$param])) {
-					$data = $fields[$param];
-				} else if($param === false  && $counter < count($fields)) {
-					$data = array_slice($fields, $counter, 1);
-					$data = reset($data);
-				}
-				$counter++;
-
-				if ($useJoin) {
-					if (!is_array($data)) {
-						throw new Exception(
-							sprintf('Cannot use join in token `%s` as it is not an array.', $full),
-							$query
-						);
-					}
-
-					foreach ($data as $key => $value) {
-						$data[$key] = $self->castValue($value, $type, $useNull);
-					}
-
-					return implode(', ', $data);
-				}
-
-				return $self->castValue($data, $type, $useNull);
-			},
-		$this->_query);
-
-		return true;
 	}
 
 	public function castValue($value, $type, $useNull)

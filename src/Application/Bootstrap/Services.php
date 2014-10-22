@@ -46,7 +46,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['db.query'] = $services->factory(function($s) {
-			return new Cog\DB\Query($s['db.connection']);
+			return new Cog\DB\Query($s['db.connection'], $c['db.query.parser']);
 		});
 
 		$services['db.query.builder'] = $services->factory(function($s) {
