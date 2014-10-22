@@ -41,8 +41,21 @@ class Services implements ServicesInterface
 			));
 		};
 
+		$services['db.query.parser'] = function($s) {
+			return new Cog\DB\QueryParser($s['db.connection']);
+		};
+
 		$services['db.query'] = $services->factory(function($s) {
 			return new Cog\DB\Query($s['db.connection']);
+		});
+
+		$services['db.query.builder'] = $services->factory(function($s) {
+			return new Cog\DB\QueryBuilder($s['db.connection'], $s['db.query.parser']);
+		});
+
+
+		$services['db.query.builder.factory'] = $services->factory(function($c) {
+			return new Cog\DB\QueryBuilderFactory($c['db.connection'], $c['db.query.parser']);
 		});
 
 		// shortcut for easier access
