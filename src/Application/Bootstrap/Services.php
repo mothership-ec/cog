@@ -46,7 +46,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['db.query'] = $services->factory(function($s) {
-			return new Cog\DB\Query($s['db.connection'], $c['db.query.parser']);
+			return new Cog\DB\Query($s['db.connection'], $s['db.query.parser']);
 		});
 
 		$services['db.query.builder'] = $services->factory(function($s) {
@@ -62,7 +62,7 @@ class Services implements ServicesInterface
 		$services['db'] = $services->raw('db.query');
 
 		$services['db.transaction'] = $services->factory(function($c) {
-			return new Cog\DB\Transaction($c['db.connection'], $c['event.dispatcher']);
+			return new Cog\DB\Transaction($c['db.connection'], $c['db.query.parser'], $c['event.dispatcher']);
 		});
 
 		$services['db.nested_set_helper'] = $services->factory(function($s) {
