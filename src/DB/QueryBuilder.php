@@ -60,9 +60,9 @@ class QueryBuilder implements QueryBuilderInterface
 		$this->_distinct = $distinct;
 
 		if (is_array($select)) {
-			array_merge($this->_selectExpr[], $select);
+			$this->_selectExpr = array_merge($this->_selectExpr, $select);
 		} else {
-			$this->_selectExpr[] .= $select;
+			$this->_selectExpr[] = $select;
 		}
 
 		return $this;

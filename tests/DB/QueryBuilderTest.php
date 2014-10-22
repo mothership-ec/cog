@@ -47,6 +47,19 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
+	public function testSelectArray()
+	{
+		$query = $this->_builder
+			->select(["col_1", "col_2", "col_3", "col_4"])
+			->from('table')
+			->getQueryString()
+		;
+
+		$expected = "SELECT col_1, col_2, col_3, col_4 FROM table";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
 	public function testSelectDistinct()
 	{
 		$query = $this->_builder
