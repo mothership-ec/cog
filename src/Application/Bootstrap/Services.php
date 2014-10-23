@@ -155,7 +155,7 @@ class Services implements ServicesInterface
 					'auto_reload' => true,
 					'debug'       => 'live' !== $c['env'],
 					'autoescape'  => function($name) {
-						
+
 						// Trim off the .twig file extension
 						if ('.twig' === substr($name, -5)) {
 							$name = substr($name, 0, -5);
@@ -859,6 +859,10 @@ class Services implements ServicesInterface
 
 		$services['pagination.adapter.array'] = $services->factory(function($c) {
 			return new Cog\Pagination\Adapter\ArrayAdapter();
+		});
+
+		$services['serializer.array_to_xml'] = $services->factory(function($c) {
+			return new Cog\Serialization\ArrayToXml();
 		});
 	}
 }
