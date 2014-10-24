@@ -29,7 +29,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		$expected   = self::PREFIX .
 			'<xml><hello>there</hello><good>bye</good></xml>';
 
-		$this->assertSame($serialized, $expected);
+		$this->assertSame($expected, $serialized);
 	}
 
 	public function testSerializeWithRoot()
@@ -45,7 +45,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		$expected   = self::PREFIX .
 			'<data><hello>there</hello><good>bye</good></data>';
 
-		$this->assertSame($serialized, $expected);
+		$this->assertSame($expected, $serialized);
 	}
 
 	public function testSerializeWithBool()
@@ -59,7 +59,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		$expected = self::PREFIX .
 			'<xml><yes>true</yes><no>false</no></xml>';
 
-		$this->assertSame($serialized, $expected);
+		$this->assertSame($expected, $serialized);
 	}
 
 	public function testSerializeMultiDimensional()
@@ -78,7 +78,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		$expected = self::PREFIX .
 			'<xml><first><hello>there</hello></first><second><good>bye</good><key>value</key></second></xml>';
 
-		$this->assertSame($serialized, $expected);
+		$this->assertSame($expected, $serialized);
 	}
 
 	/**
@@ -106,7 +106,43 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		$expected   = self::PREFIX .
 			'<food><hello>there</hello><good>bye</good></food>';
 
-		$this->assertSame($serialized, $expected);
+		$this->assertSame($expected, $serialized);
+	}
+
+	public function testSerializeWithMultipleSimilarElements()
+	{
+		$data = [
+			'hello' => [
+				'there',
+				'everyone',
+			],
+			'goodbye' => [
+				'bye',
+			]
+		];
+
+		$serialized = $this->_serializer->serialize($data);
+		$expected   = self::PREFIX .
+			'<xml><hello>there</hello><hello>everyone</hello><goodbye>bye</goodbye></xml>';
+
+		$this->assertSame($expected, $serialized);
+	}
+
+	public function testSerializeWithMultipleSimilarElementsMultiDimensional()
+	{
+		$data = [
+			'hello' => [
+				['there' => 'here'],
+				['everyone' => 'everything'],
+			],
+			'good' => 'bye',
+		];
+
+		$serialized = $this->_serializer->serialize($data);
+		$expected   = self::PREFIX .
+			'<xml><hello><there>here</there></hello><hello><everyone>everything</everyone></hello><good>bye</good></xml>';
+
+		$this->assertSame($expected, $serialized);
 	}
 
 	public function testDeserializeBasicArray()
@@ -120,7 +156,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 		$deserialized = $this->_serializer->deserialize($xml);
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	public function testDeserializeWithRoot()
@@ -136,7 +172,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			]
 		];
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	public function testDeserializeWithBool()
@@ -150,7 +186,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			'no'  => false,
 		];
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	public function testDeserializeMultiDimensional()
@@ -169,7 +205,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			],
 		];
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	public function testDeserializeInteger()
@@ -182,7 +218,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			'one' => (int) 1,
 		];
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	public function testDeserializeFloat()
@@ -195,7 +231,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			'onepointone' => (float) 1.1,
 		];
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	public function testDeserializeWithSimpleXMLElement()
@@ -209,7 +245,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 		$deserialized = $this->_serializer->deserialize($xml);
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	public function testDeserializeNoPrefix()
@@ -222,7 +258,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 		$deserialized = $this->_serializer->deserialize($xml);
 
-		$this->assertSame($deserialized, $expected);
+		$this->assertSame($expected, $deserialized);
 	}
 
 	/**

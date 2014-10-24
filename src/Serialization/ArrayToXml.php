@@ -58,28 +58,36 @@ class ArrayToXml implements ArraySerializerInterface
 	private function _buildXML(array $data)
 	{
 		if (!$this->_isAssoc($data)) {
-			throw new \LogicException('Data array must be associative');
+			throw new \LogicException('Top level array must be associative!');
 		}
 
 		foreach ($data as $key => $value) {
-			$key = (string) $key;
-			$this->_xml .= '<' . $key . '>';
-
 			if (is_bool($value)) {
-				$this->_xml .= $value ? 'true' : 'false';
+				$value = $value ? 'true' : 'false';
+				$this->_xml .= $this->_addTags($value, $key);
+			}
+			elseif (is_array($value) && !$this->_isAssoc($value)) {
+				foreach ($value as $val) {
+					$this->_buildXML([$key => $val]);
+				}
 			}
 			elseif (is_array($value)) {
+				$this->_xml .= '<' . $key . '>';
 				$this->_buildXML($value);
+				$this->_xml .= '</' . $key . '>';
 			}
 			elseif (is_object($value)) {
 				throw new \LogicException('Objects not currently supported by ArrayToXml serializer');
 			}
 			else {
-				$this->_xml .= (string) $value;
+				$this->_xml .= $this->_addTags($value, $key);
 			}
-
-			$this->_xml .= '</' . $key . '>';
 		}
+	}
+
+	private function _addTags($value, $tag)
+	{
+		return '<' . $tag . '>' . $value . '</' . $tag . '>';
 	}
 
 	private function _xmlToArray(\SimpleXMLElement $xml)
