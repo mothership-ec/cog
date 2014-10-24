@@ -29,7 +29,7 @@ class ArrayToXml implements ArraySerializerInterface
 	public function deserialize($xml)
 	{
 		if (!is_string($xml) && !$xml instanceof \SimpleXMLElement) {
-			throw new \LogicException('XML must be either a string or an instance of \SimpleXMLElement');
+			throw new \InvalidArgumentException('XML must be either a string or an instance of \SimpleXMLElement');
 		}
 
 		if (!$xml instanceof \SimpleXMLElement) {

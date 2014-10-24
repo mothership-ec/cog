@@ -198,6 +198,20 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($deserialized, $expected);
 	}
 
+	public function testDeserializeWithSimpleXMLElement()
+	{
+		$xml = new \SimpleXMLElement(self::PREFIX .
+			'<xml><hello>there</hello><good>bye</good></xml>');
+
+		$expected = [
+			'hello' => 'there',
+			'good'  => 'bye',
+		];
+		$deserialized = $this->_serializer->deserialize($xml);
+
+		$this->assertSame($deserialized, $expected);
+	}
+
 	public function testDeserializeNoPrefix()
 	{
 		$xml = '<xml><hello>there</hello><good>bye</good></xml>';
