@@ -85,40 +85,56 @@ class ArrayToXml implements ArraySerializerInterface
 		}
 	}
 
-	private function _addTags($value, $tag)
+	private function _xmlToArray($xml)
 	{
-		return '<' . $tag . '>' . $value . '</' . $tag . '>';
-	}
+		if (!is_array($xml) && !$xml instanceof \SimpleXMLElement) {
+			return $this->_parseXMLValue($xml);
+		}
 
-	private function _xmlToArray(\SimpleXMLElement $xml)
-	{
 		$parsed = [];
 		$xml = (array) $xml;
 
 		foreach ($xml as $key => $value) {
-			if ($value instanceof \SimpleXMLElement) {
-				$parsed[$key] = $this->_xmlToArray($value);
-			}
-			elseif ($value === 'true') {
-				$parsed[$key] = true;
-			}
-			elseif ($value === 'false') {
-				$parsed[$key] = false;
-			}
-			elseif (is_numeric($value)) {
-				$parsed[$key] = (floatval($value) == intval($value)) ? (int) $value : (float) $value;
-			}
-			else {
-				$parsed[$key] = $value;
-			}
+			$parsed[$key] = $this->_parseXMLValue($value);
 		}
 
 		return $parsed;
 	}
 
+	private function _parseXMLValue($value)
+	{
+		if ($value instanceof \SimpleXMLElement) {
+			return $this->_xmlToArray($value);
+		}
+		elseif (is_array($value)) {
+			$new = [];
+			foreach ($value as $k => $v) {
+				$new[$k] = $this->_xmlToArray($v);
+			}
+			return $new;
+		}
+		elseif ($value === 'true') {
+			return true;
+		}
+		elseif ($value === 'false') {
+			return false;
+		}
+		elseif (is_numeric($value)) {
+			return (floatval($value) == intval($value)) ? (int) $value : (float) $value;
+		}
+		else {
+			return $value;
+		}
+	}
+
 	private function _isAssoc(array $data)
 	{
 		return array_values($data) !== $data;
+	}
+
+	private function _addTags($value, $tag)
+	{
+		return '<' . $tag . '>' . $value . '</' . $tag . '>';
 	}
 
 	private function _isValidXML($xml)
@@ -129,5 +145,7 @@ class ArrayToXml implements ArraySerializerInterface
 	private function _clear()
 	{
 		$this->_xml = null;
+		$this->_openingTag = null;
+		$this->_closingTag = null;
 	}
 }
