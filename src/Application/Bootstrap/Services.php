@@ -327,6 +327,10 @@ class Services implements ServicesInterface
 			);
 		};
 
+		$services['http.oauth.factory'] = function($c) {
+			return new Cog\HTTP\OAuth\Factory;
+		};
+
 		$services['response_builder'] = function($c) {
 			return new Cog\Controller\ResponseBuilder(
 				$c['templating']

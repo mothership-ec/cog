@@ -15,8 +15,9 @@ interface RequestDispatcherInterface
 
 	/**
 	 * @param RequestData $data
+	 * @param array $params
 	 *
 	 * @return Response
 	 */
-	public function sendRequestData(RequestData $data);
+	public function sendRequestData(RequestData $data, array $params = []);
 }

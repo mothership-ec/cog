@@ -29,7 +29,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 				array('renderProfiler', 1000),
 			),
 			'modules.load.success' => array(
-				array('registerWhoopsHandlers'),
+//				array('registerWhoopsHandlers'),
 				array('registerMonologHandlers'),
 			),
 		);
