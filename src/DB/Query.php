@@ -99,7 +99,7 @@ class Query implements QueryableInterface
 	/**
 	 * Get the parsed query in its current state
 	 *
-	 * @return string       The query
+	 * @return string       The parsed query
 	 */
 	public function getParsedQuery()
 	{
