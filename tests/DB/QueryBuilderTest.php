@@ -442,7 +442,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
-	public function testElanorsQuery()
+	public function testEleanorsQuery()
 	{
 		$forQuerys = [];
 		$this->_parser->shouldReceive('parse')->zeroOrMoreTimes()->passthru();

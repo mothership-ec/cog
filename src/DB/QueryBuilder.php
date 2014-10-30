@@ -39,6 +39,7 @@ class QueryBuilder implements QueryBuilderInterface
 	private $_orderBy = [];
 	private $_having;
 	private $_limit;
+
 	private $_query;
 
 	public function __construct(ConnectionInterface $connection, QueryParser $parser)
@@ -233,7 +234,7 @@ class QueryBuilder implements QueryBuilderInterface
 		if (is_array($orderBy)) {
 			array_merge($this->_orderBy[], $orderBy);
 		} else {
-			$this->_orderBy[] .= $orderBy;
+			$this->_orderBy[] = $orderBy;
 		}
 
 		return $this;	}
@@ -333,7 +334,6 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function getQueryString()
 	{
-
 		// SELECT_EXPRs, there must be at least one.
 		if (empty($this->_selectExpr)) {
 			if (!empty($this->_union)) {
