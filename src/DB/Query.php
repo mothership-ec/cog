@@ -20,8 +20,8 @@ class Query implements QueryableInterface
 	protected static $_queryList = [];
 
 	protected $_typeTokens = array(
-		's'	=> 'string',
-		'i'	=> 'integer',
+		's' => 'string',
+		'i' => 'integer',
 		'f' => 'float',
 		'd'	=> 'datetime',
 		'b'	=> 'boolean',
