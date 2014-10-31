@@ -20,8 +20,8 @@ class Query implements QueryableInterface
 	protected static $_queryList = [];
 
 	protected $_typeTokens = array(
-		's'	=> 'string',
-		'i'	=> 'integer',
+		's' => 'string',
+		'i' => 'integer',
 		'f' => 'float',
 		'd'	=> 'datetime',
 		'b'	=> 'boolean',
@@ -53,7 +53,7 @@ class Query implements QueryableInterface
 		}
 		$this->_params = (array)$params;
 
-		$this->_parseParams();
+		$this->_parsedQuery = $this->_queryParser->parse($this->_query, $this->_params);
 		$result = $this->_connection->query($this->_parsedQuery);
 
 		static::$_queryList[] = $this->_parsedQuery;
@@ -99,26 +99,11 @@ class Query implements QueryableInterface
 	/**
 	 * Get the parsed query in its current state
 	 *
-	 * @return string       The query
+	 * @return string       The parsed query
 	 */
 	public function getParsedQuery()
 	{
 		return $this->_parsedQuery;
-	}
-
-	/**
-	 * Replaces placeholders in the query with safe, escaped parameters. Used
-	 * to prevent SQL injection attacks.
-	 *
-	 * @return boolean Indicates if any parsing had to be performed.
-	 */
-	private function _parseParams()
-	{
-		if($this->_parsedQuery = $this->_queryParser->parse($this->_query, $this->_params)){
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public function castValue($value, $type, $useNull)

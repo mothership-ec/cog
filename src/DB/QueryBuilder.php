@@ -39,6 +39,7 @@ class QueryBuilder implements QueryBuilderInterface
 	private $_orderBy = [];
 	private $_having;
 	private $_limit;
+
 	private $_query;
 
 	public function __construct(ConnectionInterface $connection, QueryParser $parser)
@@ -62,7 +63,7 @@ class QueryBuilder implements QueryBuilderInterface
 		if (is_array($select)) {
 			$this->_selectExpr = array_merge($this->_selectExpr, $select);
 		} else {
-			$this->_selectExpr[] = $select;
+			$this->_selectExpr[] = (string) $select;
 		}
 
 		return $this;
@@ -78,8 +79,8 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function from($alias, $table = null)
 	{
-		if ($this->_validateQueryBuilder($alias)) {
-			throw new \InvalidArgumentException('Alias must not be an instance of QueryBuilder');
+		if (!is_string($alias)) {
+			throw new \InvalidArgumentException('Alias must be instance of string');
 		}
 
 		if ($table) {
@@ -104,12 +105,12 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function join($alias, $onStatement, $table = null)
 	{
-		if ($this->_validateQueryBuilder($alias)) {
-			throw new \InvalidArgumentException('Alias must not be an instance of QueryBuilder');
+		if (!is_string($alias)) {
+			throw new \InvalidArgumentException('Alias must be a string');
 		}
 
-		if ($this->_validateQueryBuilder($onStatement)) {
-			throw new \InvalidArgumentException('On statement must not be an instance of QueryBuilder');
+		if (!is_string($onStatement)) {
+			throw new \InvalidArgumentException('On statement must be a string');
 		}
 
 		if ($table) {
@@ -139,12 +140,12 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function leftJoin($alias, $onStatement, $table = null)
 	{
-		if ($this->_validateQueryBuilder($alias)) {
-			throw new \InvalidArgumentException('Alias must not be an instance of QueryBuilder');
+		if (!is_string($alias)) {
+			throw new \InvalidArgumentException('Alias must be a string');
 		}
 
-		if ($this->_validateQueryBuilder($onStatement)) {
-			throw new \InvalidArgumentException('On statement must not be an instance of QueryBuilder');
+		if (!is_string($onStatement)) {
+			throw new \InvalidArgumentException('On statement must be a string');
 		}
 
 		if ($table) {
@@ -195,7 +196,7 @@ class QueryBuilder implements QueryBuilderInterface
 		if (is_array($groupBy)) {
 			array_merge($this->_groupBy[], $groupBy);
 		} else {
-			$this->_groupBy[] .= $groupBy;
+			$this->_groupBy[] = (string) $groupBy;
 		}
 
 		return $this;
@@ -233,10 +234,11 @@ class QueryBuilder implements QueryBuilderInterface
 		if (is_array($orderBy)) {
 			array_merge($this->_orderBy[], $orderBy);
 		} else {
-			$this->_orderBy[] .= $orderBy;
+			$this->_orderBy[] = (string) $orderBy;
 		}
 
-		return $this;	}
+		return $this;
+	}
 
 	/**
 	 * Limits query to $limit rows
@@ -333,9 +335,9 @@ class QueryBuilder implements QueryBuilderInterface
 	 */
 	public function getQueryString()
 	{
-
 		// SELECT_EXPRs, there must be at least one.
 		if (empty($this->_selectExpr)) {
+			// If no select expressions then possible that only using UNION
 			if (!empty($this->_union)) {
 				$select = array_shift($this->_union);
 			} elseif(!empty($this->_unionAll)){
@@ -346,6 +348,11 @@ class QueryBuilder implements QueryBuilderInterface
 
 			$this->_query = $select->getQueryString();
 		} else {
+			// Must have a from expression when using SELECT query
+			if (empty($this->_from)) {
+				throw new \InvalidArgumentException("There must be at leas one 'from' expression when calling select");
+			}
+
 			// SELECT (and optional DISTINCT)
 			$this->_query = self::SELECT . ($this->_distinct ? " " . self::DISTINCT : '');
 
@@ -361,7 +368,7 @@ class QueryBuilder implements QueryBuilderInterface
 				$this->_query .= " " . $this->_from['table_reference'];
 			}
 				// TABLE ALIAS
-			if ($this->_from['alias']) {
+			if (!empty($this->_from['alias'])) {
 				$this->_query .= " " . $this->_from['alias'];
 			}
 

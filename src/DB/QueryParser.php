@@ -14,8 +14,8 @@ class QueryParser
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)\??([a-z]*)?)|(\?([a-z]*))/us';
 
 	protected $_typeTokens = array(
-		's'	=> 'string',
-		'i'	=> 'integer',
+		's' => 'string',
+		'i' => 'integer',
 		'f' => 'float',
 		'd'	=> 'datetime',
 		'b'	=> 'boolean',
