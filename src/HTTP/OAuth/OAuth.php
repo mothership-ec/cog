@@ -9,7 +9,11 @@ class OAuth extends \OAuth
 	/**
 	 * @var string
 	 */
-	private $_url;
+	private $_requestUrl;
+
+	private $_accessUrl;
+
+	private $_callbackUrl;
 
 	/**
 	 * @var bool
@@ -22,13 +26,18 @@ class OAuth extends \OAuth
 	private $_authTypeSet = false;
 
 	/**
-	 * @param string $url
+	 * @param string $requestUrl
+	 * @throws \InvalidArgumentException
 	 *
 	 * @return OAuth         return $this for chainability
 	 */
-	public function setUrl($url)
+	public function setRequestUrl($requestUrl)
 	{
-		$this->_url = $url;
+		if (!filter_var($requestUrl, FILTER_VALIDATE_URL)) {
+			throw new \InvalidArgumentException('Not a valid URL!');
+		}
+
+		$this->_requestUrl = $requestUrl;
 
 		return $this;
 	}
@@ -36,9 +45,59 @@ class OAuth extends \OAuth
 	/**
 	 * @return string
 	 */
-	public function getUrl()
+	public function getRequestUrl()
 	{
-		return $this->_url;
+		return $this->_requestUrl;
+	}
+
+	/**
+	 * @param string $accessUrl
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return OAuth         return $this for chainability
+	 */
+	public function setAccessUrl($accessUrl)
+	{
+		if (!filter_var($accessUrl, FILTER_VALIDATE_URL)) {
+			throw new \InvalidArgumentException('Not a valid URL!');
+		}
+
+		$this->_accessUrl = $accessUrl;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getAccessUrl()
+	{
+		return $this->_accessUrl;
+	}
+
+	/**
+	 * @param string $callbackUrl
+	 * @throws \InvalidArgumentException
+	 *
+	 * @return OAuth         return $this for chainability
+	 */
+	public function setCallbackUrl($callbackUrl)
+	{
+		if (!filter_var($callbackUrl, FILTER_VALIDATE_URL)) {
+			throw new \InvalidArgumentException('Not a valid URL!');
+		}
+
+		$this->_callbackUrl = $callbackUrl;
+
+		return $this;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCallbackUrl()
+	{
+		return $this->_callbackUrl;
 	}
 
 	/**
@@ -73,26 +132,36 @@ class OAuth extends \OAuth
 		return $this->_enableDebug;
 	}
 
-	public function getRequestToken($url = null)
+	public function getToken()
 	{
-		if (null === $url && null === $this->_url) {
-			throw new \LogicException('No URL set!');
+		try {
+			if (null === $this->_requestUrl) {
+				throw new \LogicException('No request URL set');
+			}
+
+			if (!$this->_authTypeSet) {
+				$this->setAuthType(self::DEFAULT_AUTH_TYPE);
+			}
+
+			if ($this->_enableDebug) {
+				$this->enableDebug();
+			}
+
+			$requestTokenData = $this->getRequestToken($this->_requestUrl, $this->_callbackUrl);
+
+			if (empty($requestTokenData) || (!array_key_exists(ResponseKeys::TOKEN, $requestTokenData) || !array_key_exists(ResponseKeys::TOKEN_SECRET, $requestTokenData))) {
+				throw new \RuntimeException('Could not receive request token');
+			}
+
+			$requestToken  = $requestTokenData[ResponseKeys::TOKEN];
+			$requestSecret = $requestTokenData[ResponseKeys::TOKEN_SECRET];
+
+			$this->setToken($requestToken, $requestSecret);
+
+			return $this->getAccessToken($this->_accessUrl);
 		}
-
-		$url = ($url) ?: $this->_url;
-
-		if (!filter_var($url, FILTER_VALIDATE_URL)) {
-			throw new \InvalidArgumentException('Not a valid URL!');
+		catch (\OAuthException $e) {
+			var_dump($e);
 		}
-
-		if (!$this->_authTypeSet) {
-			$this->setAuthType(self::DEFAULT_AUTH_TYPE);
-		}
-
-		if ($this->_enableDebug) {
-			$this->enableDebug();
-		}
-
-		return parent::getRequestToken($url);
 	}
 }
