@@ -442,6 +442,28 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
+	/**
+     * @expectedException InvalidArgumentException
+     */
+	public function testNoFromError()
+	{
+		$query =  $this->_builder
+			->select("*")
+			->getQueryString()
+		;
+	}
+
+	/**
+     * @expectedException InvalidArgumentException
+     */
+	public function testNoSelectError()
+	{
+		$query =  $this->_builder
+			->from("a")
+			->getQueryString()
+		;
+	}
+
 	public function testEleanorsQuery()
 	{
 		$forQuerys = [];

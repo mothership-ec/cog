@@ -337,6 +337,7 @@ class QueryBuilder implements QueryBuilderInterface
 	{
 		// SELECT_EXPRs, there must be at least one.
 		if (empty($this->_selectExpr)) {
+			// If no select expressions then possible that only using UNION
 			if (!empty($this->_union)) {
 				$select = array_shift($this->_union);
 			} elseif(!empty($this->_unionAll)){
@@ -347,6 +348,11 @@ class QueryBuilder implements QueryBuilderInterface
 
 			$this->_query = $select->getQueryString();
 		} else {
+			// Must have a from expression when using SELECT query
+			if (empty($this->_from)) {
+				throw new \InvalidArgumentException("There must be at leas one 'from' expression when calling select");
+			}
+
 			// SELECT (and optional DISTINCT)
 			$this->_query = self::SELECT . ($this->_distinct ? " " . self::DISTINCT : '');
 
@@ -362,7 +368,7 @@ class QueryBuilder implements QueryBuilderInterface
 				$this->_query .= " " . $this->_from['table_reference'];
 			}
 				// TABLE ALIAS
-			if ($this->_from['alias']) {
+			if (!empty($this->_from['alias'])) {
 				$this->_query .= " " . $this->_from['alias'];
 			}
 
