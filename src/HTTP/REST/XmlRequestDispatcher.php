@@ -64,40 +64,6 @@ class XmlRequestDispatcher implements RequestDispatcherInterface
 
 	private function _getCurlResponse(RequestData $requestData, $params)
 	{
-
-		$ch = curl_init();
-
-		$secret = $params['consumer_secret'];
-		unset($params['consumer_secret']);
-
-		$oauth = new \OAuth($params['oauth_consumer_key'], $secret);
-		$oauth->setAuthType(OAUTH_AUTH_TYPE_URI);
-		$oauth->enableDebug();
-
-		de($oauth->getRequestToken('https://api.xero.com/oauth/RequestToken'));
-
-//		$signature = sha1($secret);
-		$data = $this->_getContent($requestData, $params);
-
-		openssl_pkey_export(['WQSQ4BUMTMWNIG3AYJXJVDLYO0TDVE', 'L9WQ0RA56TJZOSS5RR57KHN8P8EO7M'], $key);
-		openssl_sign($data, $signature, sha1($secret));
-
-		$params['oauth_signature'] = $signature;
-
-
-		d('https://api.xero.com/oauth/RequestToken?' . $this->_getContent($requestData, $params));
-		curl_setopt($ch, CURLOPT_URL, 'https://api.xero.com/oauth/RequestToken?' . $this->_getContent($requestData, $params));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-//		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($ch, CURLOPT_HEADER, true);
-		$response = curl_exec($ch);
-		$code = curl_getinfo($ch);
-		curl_close($ch);
-
-		return [$response, $code];
-
-
 		$content = $this->_getContent($requestData, $params);
 		$headers = $this->_getHeaders($content);
 

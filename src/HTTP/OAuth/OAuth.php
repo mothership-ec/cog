@@ -147,13 +147,13 @@ class OAuth extends \OAuth
 		}
 
 		try {
-			$requestToken = $this->getRequestToken($this->_requestUrl, ($this->_callbackUrl ? : 'oob'));
-			$this->setToken($requestToken[ResponseKeys::TOKEN], $requestToken[ResponseKeys::TOKEN_SECRET]);
+			$requestToken = $this->getRequestToken($this->_requestUrl, $this->_callbackUrl ? : 'oob');
 		} catch (\Exception $e) {
 			throw new Exception\RequestTokenException($e->getMessage() . ': ' . urldecode($this->getLastResponse()), $e->getCode());
 		}
 
 		try {
+			$this->setToken($requestToken[ResponseKeys::TOKEN], $requestToken[ResponseKeys::TOKEN_SECRET]);
 			$accessToken = $this->getAccessToken($this->_accessUrl);
 		} catch (\Exception $e) {
 			throw new Exception\AccessTokenException($e->getMessage() . ': ' . urldecode($this->getLastResponse()), $e->getCode());
