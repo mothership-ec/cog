@@ -83,9 +83,9 @@ class OAuth extends \OAuth
 	 */
 	public function setCallbackUrl($callbackUrl)
 	{
-		if (!filter_var($callbackUrl, FILTER_VALIDATE_URL)) {
-			throw new \InvalidArgumentException('Not a valid URL!');
-		}
+//		if (!filter_var($callbackUrl, FILTER_VALIDATE_URL)) {
+//			throw new \InvalidArgumentException('Not a valid URL!');
+//		}
 
 		$this->_callbackUrl = $callbackUrl;
 
@@ -132,36 +132,36 @@ class OAuth extends \OAuth
 		return $this->_enableDebug;
 	}
 
-	public function getToken()
+	public function getTokens()
 	{
+		if (null === $this->_requestUrl) {
+			throw new \LogicException('No request URL set');
+		}
+
+		if (!$this->_authTypeSet) {
+			$this->setAuthType(self::DEFAULT_AUTH_TYPE);
+		}
+
+		if ($this->_enableDebug) {
+			$this->enableDebug();
+		}
+
 		try {
-			if (null === $this->_requestUrl) {
-				throw new \LogicException('No request URL set');
-			}
-
-			if (!$this->_authTypeSet) {
-				$this->setAuthType(self::DEFAULT_AUTH_TYPE);
-			}
-
-			if ($this->_enableDebug) {
-				$this->enableDebug();
-			}
-
-			$requestTokenData = $this->getRequestToken($this->_requestUrl, $this->_callbackUrl);
-
-			if (empty($requestTokenData) || (!array_key_exists(ResponseKeys::TOKEN, $requestTokenData) || !array_key_exists(ResponseKeys::TOKEN_SECRET, $requestTokenData))) {
-				throw new \RuntimeException('Could not receive request token');
-			}
-
-			$requestToken  = $requestTokenData[ResponseKeys::TOKEN];
-			$requestSecret = $requestTokenData[ResponseKeys::TOKEN_SECRET];
-
-			$this->setToken($requestToken, $requestSecret);
-
-			return $this->getAccessToken($this->_accessUrl);
+			$requestToken = $this->getRequestToken($this->_requestUrl, ($this->_callbackUrl ? : 'oob'));
+			$this->setToken($requestToken[ResponseKeys::TOKEN], $requestToken[ResponseKeys::TOKEN_SECRET]);
+		} catch (\Exception $e) {
+			throw new Exception\RequestTokenException($e->getMessage() . ': ' . urldecode($this->getLastResponse()), $e->getCode());
 		}
-		catch (\OAuthException $e) {
-			var_dump($e);
+
+		try {
+			$accessToken = $this->getAccessToken($this->_accessUrl);
+		} catch (\Exception $e) {
+			throw new Exception\AccessTokenException($e->getMessage() . ': ' . urldecode($this->getLastResponse()), $e->getCode());
 		}
+
+		return new TokenCollection([
+			new Token('request', $requestToken),
+			new Token('access', $accessToken),
+		]);
 	}
 }
