@@ -2,7 +2,7 @@
 
 namespace Message\Cog\HTTP\REST;
 
-use Message\Cog\HTTP\Request;
+use Message\Cog\HTTP\Curl\Request as CurlRequest;
 use Message\Cog\Serialization\ArrayToXml;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -29,71 +29,39 @@ class XmlRequestDispatcher implements RequestDispatcherInterface
 
 	public function sendRequestData(RequestData $requestData, array $params = [])
 	{
-		$request = $this->_getRequestObject($requestData, $params);
-
-		return $this->_kernel->handle($request);
+		return $this->_getCurlResponse($requestData, $params);
 	}
 
-	private function _getRequestObject(RequestData $requestData, array $params)
-	{
-		de($this->_getCurlResponse($requestData, $params));
-
-		$request = Request::create(
-			$requestData->getUrl(),
-			$requestData->getMethod(),
-			[], // $parameters
-			[], // $cookies
-			[], // $files
-			[], // $server
-			$this->_getContent($requestData, $params)
-		);
-
-		$request->headers->set('Content-Type', self::CONTENT_TYPE);
-
-		return $request;
-	}
-
-	private function _getContent(RequestData $requestData, array $params)
-	{
-		$params = $this->_parseParams($params);
-//		$params[] = 'xml=' . urlencode($this->_serializer->serialize($requestData->getData()));
-		$content = implode('&', $params);
-
-		return $content;
-	}
-
-	private function _getCurlResponse(RequestData $requestData, $params)
+	private function _getCurlResponse(RequestData $requestData, array $params)
 	{
 		$content = $this->_getContent($requestData, $params);
-		$headers = $this->_getHeaders($content);
+		$url = $requestData->getUrl() . '?' . implode('&', $this->_parseParams($params));
+		$curlRequest = new CurlRequest($this->_getContent($requestData, $params), $url, $requestData->getMethod(), $this->_getHeaders($content));
 
+		return $curlRequest->send();
+	}
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $requestData->getUrl());
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($ch, CURLOPT_HEADER, true);
+	private function _getContent(RequestData $requestData)
+	{
+		$data = $requestData->getData();
+		$data = ['xml' => urlencode($this->_serializer->serialize($data))];
 
-		switch ($requestData->getMethod()) {
-			case 'POST' :
-				curl_setopt($ch, CURLOPT_POST, true);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
-				break;
+		$content = '';
+
+		foreach ($data as $key => $value) {
+			$content .= $key . '=' . $value . '&';
 		}
 
-		$response = curl_exec($ch);
-		$code = curl_getinfo($ch);
-		curl_close($ch);
+		$content = rtrim($content, '&');
 
-		return [$response, $code];
+		return $content;
 	}
 
 	private function _getHeaders($content)
 	{
 		return [
-			"Content-type: application/x-www-form-urlencoded",
-			"Content-length: " . strlen($content),
+			"Content-Type: application/x-www-form-urlencoded",
+			"Content-Length: " . strlen($content),
 			"Connection: close"
 		];
 	}
