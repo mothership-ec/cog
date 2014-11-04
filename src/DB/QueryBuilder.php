@@ -350,7 +350,7 @@ class QueryBuilder implements QueryBuilderInterface
 		} else {
 			// Must have a from expression when using SELECT query
 			if (empty($this->_from)) {
-				throw new \InvalidArgumentException("There must be at leas one 'from' expression when calling select");
+				throw new \InvalidArgumentException("There must be at least one 'from' expression when calling select");
 			}
 
 			// SELECT (and optional DISTINCT)
