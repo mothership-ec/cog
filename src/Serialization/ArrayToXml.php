@@ -14,16 +14,23 @@ class ArrayToXml implements ArraySerializerInterface
 
 	public function serialize(array $data)
 	{
-		$this->_buildXML($data);
+		try {
+			$root = $this->_setRootFromData($data);
 
-		if (count($data) !== 1 && (null === $this->_openingTag && null === $this->_closingTag)) {
-			$this->setRoot(self::DEFAULT_ROOT);
+			$data = (null !== $root) ? $data[$root] : $data;
+
+			$xml = self::PREFIX . $this->_openingTag . $this->_closingTag;
+			$xml = new \SimpleXMLElement($xml);
+
+			$xml = $this->_buildXML($data, $xml)->asXML();
+
+			$this->_clear();
+
+			return $xml;
 		}
-
-		$xml = self::PREFIX . $this->_openingTag . $this->_xml . $this->_closingTag;
-		$this->_clear();
-
-		return $xml;
+		catch (\Exception $e) {
+			throw new SerializationException('Could not serialize data: ' . $e->getMessage() . ',  line ' . $e->getLine());
+		}
 	}
 
 	public function deserialize($xml)
@@ -55,34 +62,40 @@ class ArrayToXml implements ArraySerializerInterface
 		$this->_closingTag = '</' . $root . '>';
 	}
 
-	private function _buildXML(array $data)
+	private function _setRootFromData(array $data)
 	{
-		if (!$this->_isAssoc($data)) {
-			throw new \LogicException('Top level array must be associative!');
+		if (count($data) !== 1 && !$this->_rootSet()) {
+			$this->setRoot(self::DEFAULT_ROOT);
+			return null;
+		}
+		elseif (!$this->_rootSet()) {
+			reset($data);
+			$root = key($data);
+			$this->setRoot($root);
+			return $root;
 		}
 
-		foreach ($data as $key => $value) {
-			if (is_bool($value)) {
-				$value = $value ? 'true' : 'false';
-				$this->_xml .= $this->_addTags($value, $key);
-			}
-			elseif (is_array($value) && !$this->_isAssoc($value)) {
-				foreach ($value as $val) {
-					$this->_buildXML([$key => $val]);
+		return null;
+	}
+
+	private function _buildXML(array $data, &$xml)
+	{
+		foreach($data as $key => $value) {
+			if(is_array($value)) {
+				if(!is_numeric($key)){
+					$sub = $xml->addChild("$key");
+					$this->_buildXML($value, $sub);
+				}
+				else{
+					$this->_buildXML($value, $xml);
 				}
 			}
-			elseif (is_array($value)) {
-				$this->_xml .= '<' . $key . '>';
-				$this->_buildXML($value);
-				$this->_xml .= '</' . $key . '>';
-			}
-			elseif (is_object($value)) {
-				throw new \LogicException('Objects not currently supported by ArrayToXml serializer');
-			}
 			else {
-				$this->_xml .= $this->_addTags($value, $key);
+				$xml->addChild("$key",htmlspecialchars("$value"));
 			}
 		}
+
+		return $xml;
 	}
 
 	private function _xmlToArray($xml)
@@ -127,16 +140,6 @@ class ArrayToXml implements ArraySerializerInterface
 		}
 	}
 
-	private function _isAssoc(array $data)
-	{
-		return array_values($data) !== $data;
-	}
-
-	private function _addTags($value, $tag)
-	{
-		return '<' . $tag . '>' . $value . '</' . $tag . '>';
-	}
-
 	private function _isValidXML($xml)
 	{
 		return (bool) @simplexml_load_string($xml);
@@ -147,5 +150,10 @@ class ArrayToXml implements ArraySerializerInterface
 		$this->_xml = null;
 		$this->_openingTag = null;
 		$this->_closingTag = null;
+	}
+
+	private function _rootSet()
+	{
+		return (null !== $this->_openingTag && null !== $this->_closingTag);
 	}
 }
