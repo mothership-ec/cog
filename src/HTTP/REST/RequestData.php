@@ -35,6 +35,8 @@ class RequestData
 			throw new \InvalidArgumentException('Method must be a string');
 		}
 
+		$method = strtoupper($method);
+
 		if (!in_array($method, Methods::get())) {
 			throw new \LogicException('`' . $method . '` is not a valid HTTP method');
 		}
@@ -88,7 +90,7 @@ class RequestData
 	 *
 	 * @return RequestData         return $this for chainability
 	 */
-	public function setData($data)
+	public function setData(array $data)
 	{
 		$this->_data = $data;
 
