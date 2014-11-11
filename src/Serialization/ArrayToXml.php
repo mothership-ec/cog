@@ -140,7 +140,10 @@ class ArrayToXml implements ArraySerializerInterface
 			}
 			$value = $arr;
 		}
-		if (is_array($value)) {
+		if ($value === []) {
+			return false;
+		}
+		elseif (is_array($value)) {
 			$new = [];
 			foreach ($value as $k => $v) {
 				if (is_array($v)) {
