@@ -141,6 +141,8 @@ class ArrayToXml implements ArraySerializerInterface
 			$value = $arr;
 		}
 		if ($value === []) {
+			// I'm not sure why SimpleXML converts <tag/> to an empty array but this is the only way
+			// that my unit test passes
 			return false;
 		}
 		elseif (is_array($value)) {
