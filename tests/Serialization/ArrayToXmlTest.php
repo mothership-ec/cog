@@ -6,7 +6,7 @@ use Message\Cog\Serialization\ArrayToXml;
 
 class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 {
-	const PREFIX = '<?xml version="1.0" encoding="UTF-8" ?>';
+	const PREFIX = '<?xml version="1.0" encoding="UTF-8"?>';
 
 	/**
 	 * @var ArrayToXml
@@ -26,7 +26,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 
 		$serialized = $this->_serializer->serialize($data);
-		$expected   = self::PREFIX .
+		$expected   = self::PREFIX . PHP_EOL .
 			'<xml><hello>there</hello><good>bye</good></xml>';
 
 		$this->assertSame($expected, $serialized);
@@ -42,7 +42,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 
 		$serialized = $this->_serializer->serialize($data);
-		$expected   = self::PREFIX .
+		$expected   = self::PREFIX . PHP_EOL .
 			'<data><hello>there</hello><good>bye</good></data>';
 
 		$this->assertSame($expected, $serialized);
@@ -56,8 +56,8 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 
 		$serialized = $this->_serializer->serialize($data);
-		$expected = self::PREFIX .
-			'<xml><yes>true</yes><no>false</no></xml>';
+		$expected = self::PREFIX . PHP_EOL .
+			'<xml><yes>1</yes><no/></xml>';
 
 		$this->assertSame($expected, $serialized);
 	}
@@ -75,14 +75,14 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 
 		$serialized = $this->_serializer->serialize($data);
-		$expected = self::PREFIX .
+		$expected = self::PREFIX . PHP_EOL .
 			'<xml><first><hello>there</hello></first><second><good>bye</good><key>value</key></second></xml>';
 
 		$this->assertSame($expected, $serialized);
 	}
 
 	/**
-	 * @expectedException \LogicException
+	 * @expectedException \Message\Cog\Serialization\SerializationException
 	 */
 	public function testSerializeWithNoKeys()
 	{
@@ -103,25 +103,8 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 
 		$serialized = $this->_serializer->serialize($data);
-		$expected   = self::PREFIX .
+		$expected   = self::PREFIX . PHP_EOL .
 			'<food><hello>there</hello><good>bye</good></food>';
-
-		$this->assertSame($expected, $serialized);
-	}
-
-	public function testSerializeWithMultipleSimilarElements()
-	{
-		$data = [
-			'hello' => [
-				'there',
-				'everyone',
-			],
-			'goodbye' => 'bye',
-		];
-
-		$serialized = $this->_serializer->serialize($data);
-		$expected   = self::PREFIX .
-			'<xml><hello>there</hello><hello>everyone</hello><goodbye>bye</goodbye></xml>';
 
 		$this->assertSame($expected, $serialized);
 	}
@@ -131,21 +114,20 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		$data = [
 			'hello' => [
 				['there' => 'here'],
-				['everyone' => 'everything'],
+				['there' => 'nowhere'],
 			],
 			'good' => 'bye',
 		];
 
 		$serialized = $this->_serializer->serialize($data);
-		$expected   = self::PREFIX .
-			'<xml><hello><there>here</there></hello><hello><everyone>everything</everyone></hello><good>bye</good></xml>';
+		$expected   = self::PREFIX . PHP_EOL .
+			'<xml><hello><there>here</there><there>nowhere</there></hello><good>bye</good></xml>';
 
 		$this->assertSame($expected, $serialized);
 	}
 
 	/**
-	 * This is not wanted behaviour, but rather a result of the way the deserializer works. However, if we ever fix this issue, it's worth noting that it would
-	 * be a BC break
+	 * @expectedException \Message\Cog\Serialization\SerializationException
 	 */
 	public function testSerializeWithMultipleSimilarElementsMultiDimensionalWithSingleValueArray()
 	{
@@ -159,16 +141,12 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			],
 		];
 
-		$serialized = $this->_serializer->serialize($data);
-		$expected   = self::PREFIX .
-			'<xml><hello><there>here</there></hello><hello><everyone>everything</everyone></hello><good>bye</good></xml>';
-
-		$this->assertSame($expected, $serialized);
+		$this->_serializer->serialize($data);
 	}
 
 	public function testDeserializeBasicArray()
 	{
-		$xml = self::PREFIX .
+		$xml = self::PREFIX . PHP_EOL .
 			'<xml><hello>there</hello><good>bye</good></xml>';
 
 		$expected = [
@@ -182,7 +160,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 
 	public function testDeserializeWithRoot()
 	{
-		$xml = self::PREFIX .
+		$xml = self::PREFIX . PHP_EOL .
 			'<data><hello>there</hello><good>bye</good></data>';
 
 		$deserialized = $this->_serializer->deserialize($xml);
@@ -198,8 +176,22 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 
 	public function testDeserializeWithBool()
 	{
-		$data = self::PREFIX .
+		$data = self::PREFIX . PHP_EOL .
 			'<xml><yes>true</yes><no>false</no></xml>';
+
+		$deserialized = $this->_serializer->deserialize($data);
+		$expected = [
+			'yes' => true,
+			'no'  => false,
+		];
+
+		$this->assertSame($expected, $deserialized);
+	}
+
+	public function testDeserializeWithBoolAlt()
+	{
+		$data = self::PREFIX . PHP_EOL .
+			'<xml><yes>true</yes><no/></xml>';
 
 		$deserialized = $this->_serializer->deserialize($data);
 		$expected = [
@@ -301,14 +293,14 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 
 	public function testDeserializeWithMultipleSimilarElementsMultiDimensional()
 	{
-		$xml = self::PREFIX .
-			'<xml><hello><there>here</there></hello><hello><everyone>everything</everyone></hello><good>bye</good></xml>';
+		$xml = self::PREFIX . PHP_EOL .
+			'<xml><hello><there>here</there><there>nowhere</there></hello><good>bye</good></xml>';
 
 		$serialized = $this->_serializer->deserialize($xml);
 		$expected = [
 			'hello' => [
 				['there' => 'here'],
-				['everyone' => 'everything'],
+				['there' => 'nowhere'],
 			],
 			'good' => 'bye',
 		];
@@ -317,7 +309,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \LogicException
+	 * @expectedException \Message\Cog\Serialization\SerializationException
 	 */
 	public function testDeserializeWithNoKeys()
 	{
@@ -328,7 +320,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \LogicException
+	 * @expectedException \Message\Cog\Serialization\SerializationException
 	 */
 	public function testDeserializeInvalidXML()
 	{
@@ -336,7 +328,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \LogicException
+	 * @expectedException \Message\Cog\Serialization\SerializationException
 	 */
 	public function testDeserializeNonXML()
 	{
@@ -352,7 +344,7 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \LogicException
+	 * @expectedException \Message\Cog\Serialization\SerializationException
 	 */
 	public function testSerializeObject()
 	{
