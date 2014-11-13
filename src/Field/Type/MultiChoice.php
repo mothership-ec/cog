@@ -53,7 +53,7 @@ class MultiChoice extends MultipleValueField
 		$newValues = [];
 
 		foreach ($keys as $key) {
-			$newValues[$key] = array_key_exists($key, $values) ? $values[$key] : 0;
+			$newValues[$key] = in_array($key, $values) ? $key : 0;
 		}
 
 		foreach ($newValues as $key => $value) {
