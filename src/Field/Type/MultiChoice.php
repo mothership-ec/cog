@@ -9,7 +9,7 @@ use Symfony\Component\Form\FormBuilder;
 /**
  * A field that provides a select menu of pre-defined options.
  *
- * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class MultiChoice extends MultipleValueField
 {
