@@ -35,7 +35,7 @@ class Choice extends Field
 			throw new \LogicException('For multiple choice fields, use the `multichoice` field type');
 		}
 
-		parent::setFieldOptions($options);
+		return parent::setFieldOptions($options);
 	}
 
 	/**

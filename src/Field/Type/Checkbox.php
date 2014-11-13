@@ -28,9 +28,15 @@ class Checkbox extends Field
 		$form->add($this->getName(), 'checkbox', $this->getFieldOptions());
 	}
 
+	public function setValue($value)
+	{
+		$value = (int) $value;
+
+		return parent::setValue($value);
+	}
+
 	public function getValue()
 	{
-		de($this);
-		return (bool) $this->_value;
+		return (bool) parent::getValue();
 	}
 }
