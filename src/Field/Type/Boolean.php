@@ -7,24 +7,19 @@ use Symfony\Component\Form\FormBuilder;
 
 
 /**
- * A field for a boolean toggle.
+ * Alias for checkbox, preserved for BC
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Boolean extends Field
+class Boolean extends Checkbox
 {
+	/**
+	 * @deprecated
+	 * @return string
+	 */
 	public function getFieldType()
 	{
 		return 'boolean';
 	}
 
-	public function getFormType()
-	{
-		return 'checkbox';
-	}
-
-	public function getFormField(FormBuilder $form)
-	{
-		$form->add($this->getName(), 'checkbox', $this->getFieldOptions());
-	}
 }
