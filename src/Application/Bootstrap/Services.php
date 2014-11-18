@@ -168,7 +168,7 @@ class Services implements ServicesInterface
 					'auto_reload' => true,
 					'debug'       => 'live' !== $c['env'],
 					'autoescape'  => function($name) {
-						
+
 						// Trim off the .twig file extension
 						if ('.twig' === substr($name, -5)) {
 							$name = substr($name, 0, -5);
@@ -518,7 +518,7 @@ class Services implements ServicesInterface
 
 		$services['form.extensions'] = function($c) {
 			return [
-				new \Message\Cog\Form\Extension\Core\CoreExtension($c['http.session'], $c['cfg']),
+				new \Message\Cog\Form\Extension\Core\CoreExtension($c['http.session'], $c['cfg'], $c['translator']),
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
