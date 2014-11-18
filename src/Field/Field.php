@@ -16,6 +16,10 @@ abstract class Field extends BaseField
 	 */
 	public function setValue($value)
 	{
+		if (array_key_exists('data', $this->_options)) {
+			unset($this->_options['data']);
+		}
+
 		$this->_value = $value;
 
 		return $this;
