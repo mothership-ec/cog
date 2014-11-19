@@ -18,15 +18,36 @@ class PriceTwigExtension extends \Twig_Extension
         );
     }
 
+    public function getFunctions()
+    {
+        return [
+            'currencySymbol' => new \Twig_Function_Method($this, 'currencySymbolFunction'),
+        ];
+    }
+
     public function priceFilter($value, $currency = null, $locale = null)
     {
- 		$locale = ($locale == null ? \Locale::getDefault() : $locale);
- 		$formatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+        $locale = ($locale == null ? \Locale::getDefault() : $locale);
+        $formatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
         $currency = $currency?:$this->_defaultCurrency;
 
         $price = $formatter->formatCurrency($value, $currency);
 
         return $price;
+    }
+
+    /**
+     * @todo This is the easiet way I could see to get a currency from a String such as 'GBP'
+     * However it's not a very nice solution. This should probably be updated in the future.
+     */
+    public function currencySymbolFunction($currency = null, $locale= null)
+    {
+ 		$locale = ($locale == null ? \Locale::getDefault() : $locale);
+ 		$formatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+
+        $symbol = substr($formatter->formatCurrency(0, $currency), 0, -4);
+
+        return $symbol;
     }
 
     public function setDefaultCurrency($currency)
