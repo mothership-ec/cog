@@ -42,8 +42,9 @@ class PriceTwigExtension extends \Twig_Extension
      */
     public function currencySymbolFunction($currency = null, $locale= null)
     {
- 		$locale = ($locale == null ? \Locale::getDefault() : $locale);
- 		$formatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+        $locale = ($locale == null ? \Locale::getDefault() : $locale);
+        $formatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
+        $currency = $currency?:$this->_defaultCurrency;
 
         $symbol = substr($formatter->formatCurrency(0, $currency), 0, -4);
 
