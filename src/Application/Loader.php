@@ -164,6 +164,17 @@ namespace Message\Cog\Application {
 		}
 
 		/**
+		 * Return a representation of the default namespace for loading view files. If a view file does not exist, it will
+		 * look within its own namespace (as is standard behaviour in Cog 3.5 and under)
+		 *
+		 * @return string | null
+		 */
+		public function getDefaultViewNamespace()
+		{
+			return null;
+		}
+
+		/**
 		 * Set the service container to use.
 		 *
 		 * This gets set automatically, so this method is only for overriding the

@@ -139,7 +139,8 @@ class Services implements ServicesInterface
 					'twig',
 					'php',
 				),
-				$c['templating.formats']
+				$c['templating.formats'],
+				$c['app.loader']->getDefaultViewNamespace()
 			);
 
 			$parser->addDefaultDirectory($c['app.loader']->getBaseDir() . 'view/');
@@ -168,7 +169,7 @@ class Services implements ServicesInterface
 					'auto_reload' => true,
 					'debug'       => 'live' !== $c['env'],
 					'autoescape'  => function($name) {
-						
+
 						// Trim off the .twig file extension
 						if ('.twig' === substr($name, -5)) {
 							$name = substr($name, 0, -5);
