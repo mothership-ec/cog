@@ -53,6 +53,8 @@ class AssetGenerator extends Command
 
 		$output->writeln('<info>Generating public assets for ' . count($modules) . ' modules.</info>');
 
+		$oldUmask = umask(0);
+
 		// Compile assets for all cogules
 		foreach ($modules as $module) {
 			$moduleName = str_replace("\\", ':', $module);
@@ -94,6 +96,8 @@ class AssetGenerator extends Command
 				), 'twig');
 			}
 		}
+
+		umask($oldUmask);
 
 		// Compile the assets
 		$this->_services['asset.writer']->writeManagerAssets($this->_services['asset.manager']);
