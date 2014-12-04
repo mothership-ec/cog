@@ -1,5 +1,7 @@
 <?php
 
+namespace Message\Cog\Form\Extension\Core\DataTransform;
+
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
