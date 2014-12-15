@@ -27,12 +27,12 @@ class Transaction implements QueryableInterface
 	 * @param ConnectionInterface $connection The database connection to use
 	 * @param DispatcherInterface $dispatcher The event dispatcher to use
 	 */
-	public function __construct(ConnectionInterface $connection, DispatcherInterface $dispatcher)
+	public function __construct(ConnectionInterface $connection, QueryParser $parser, DispatcherInterface $dispatcher)
 	{
 		$this->_eventDispatcher = $dispatcher;
 		$this->_connection      = $connection;
 
-		$this->_query = new Query($connection);
+		$this->_query = new Query($connection, $parser);
 		$this->_query->fromTransaction = true;
 	}
 
