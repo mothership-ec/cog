@@ -28,6 +28,9 @@ class Table implements \IteratorAggregate, \Countable
 	public function setRows(array $rows)
 	{
 		foreach ($rows as $row) {
+			if (is_array($row)) {
+				$row = new Row($row);
+			}
 			if (!$row instanceof Row) {
 				throw new \InvalidArgumentException('Expecting be an instance of Row, ' . gettype($row) . ' given');
 			}

@@ -325,9 +325,17 @@ class Result extends ResultArrayAccess
 
 	protected function _bindPropertiesToObject($subject, $data, $force)
 	{
-		foreach($data as $key => $value) {
+		foreach ($data as $key => $value) {
 			if (property_exists($subject, $key) || $force) {
 				$subject->{$key} = $value;
+			}
+			elseif (method_exists($subject, 'set' . ucfirst($key))) {
+				try {
+					call_user_func([$subject, 'set' . ucfirst($key)], $value);
+				}
+				catch (\Exception $e) {
+					// do nothing
+				}
 			}
 		}
 	}
