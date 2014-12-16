@@ -27,14 +27,13 @@ class Table implements \IteratorAggregate, \Countable
 	 */
 	public function setRows(array $rows)
 	{
-		foreach ($rows as $row) {
+		array_walk($rows, function(&$row) {
 			if (is_array($row)) {
 				$row = new Row($row);
-			}
-			if (!$row instanceof Row) {
+			} elseif (!$row instanceof Row) {
 				throw new \InvalidArgumentException('Expecting be an instance of Row, ' . gettype($row) . ' given');
 			}
-		}
+		});
 
 		$this->_rows = $rows;
 	}
