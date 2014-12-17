@@ -30,13 +30,13 @@ class Checkbox extends Field
 
 	public function setValue($value)
 	{
-		$value = (int) $value;
+		$value = (bool) $value;
 
 		return parent::setValue($value);
 	}
 
 	public function getValue()
 	{
-		return (bool) parent::getValue();
+		return parent::getValue();
 	}
 }

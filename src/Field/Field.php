@@ -13,6 +13,8 @@ abstract class Field extends BaseField
 	 * Set the value for this field.
 	 *
 	 * @param mixed $value The field value
+	 *
+	 * @return Field
 	 */
 	public function setValue($value)
 	{
