@@ -4,6 +4,7 @@ namespace Message\Cog\Form\Extension\Core\Type;
 
 use Message\Cog\Http\Session;
 use Message\Cog\Form\Extension\Core\EventListener\CaptchaEventListener;
+use Message\Cog\Localisation\Translator;
 
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Form;
@@ -16,16 +17,18 @@ class CaptchaType extends Form\AbstractType
 
 	protected $_key;
 	protected $_session;
+	protected $_trans;
 
 	protected $_fallback = [
 		'question' => 'What colour is the sky?',
 		'answer'   => 'blue',
 	];
 
-	public function __construct($apiKey, Session $session)
+	public function __construct($apiKey, Session $session, Translator $trans)
 	{
 		$this->_key     = $apiKey;
 		$this->_session = $session;
+		$this->_trans   = $trans;
 	}
 
 	public function getName()
@@ -40,7 +43,7 @@ class CaptchaType extends Form\AbstractType
 
 	public function buildView(Form\FormView $view, Form\FormInterface $form, array $options)
 	{
-		$view->vars['label'] = ($options['label'] ? $options['label'] . ': ' : '') . $this->_getQuestion();
+		$view->vars['label'] = ($options['label'] ? $this->_trans->trans($options['label']) . ': ' : '') . $this->_getQuestion();
 	}
 
 	public function buildForm(Form\FormBuilderInterface $builder, array $options)
