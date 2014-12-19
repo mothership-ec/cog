@@ -96,6 +96,10 @@ abstract class MultipleValueField extends BaseField
 	 */
 	public function setValue($key, $value = null)
 	{
+		if (array_key_exists('data', $this->_options)) {
+			unset($this->_options['data']);
+		}
+
 		if (is_array($key)) {
 			return $this->setValues($key);
 		}
