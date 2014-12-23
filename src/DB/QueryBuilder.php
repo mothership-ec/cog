@@ -247,9 +247,24 @@ class QueryBuilder implements QueryBuilderInterface
 	 *
 	 * @return QueryBuilder $this
 	 */
-	public function limit($limit)
+	public function limit($offset, $limit = null)
 	{
-		$this->_limit = $limit;
+		// first param is the to limit if only one param set
+		if ($limit === null) {
+			$limit = $offset;
+			$offset = null;
+		}
+
+		if (!is_int($limit)) {
+			throw new \InvalidArgumentException('Limit must be of type integer');
+		}
+
+		if (!is_int($offset) && $offset !== null) {
+			throw new \InvalidArgumentException('Offset must be of type integer or null');
+			
+		}
+
+		$this->_limit = $offset ? "$offset, $limit" : $limit;
 
 		return $this;
 	}
