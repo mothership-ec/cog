@@ -106,7 +106,7 @@ abstract class BaseField implements FieldInterface, FieldContentInterface
 	/**
 	 * Merges options with existing options and re-sets help attribute.
 	 * Passed in options will override existing ones.
-	 * 
+	 *
 	 * @param  array     $options Options to be merged
 	 * @return Basefield          $this for chainability
 	 */

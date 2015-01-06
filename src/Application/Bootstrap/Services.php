@@ -484,12 +484,14 @@ class Services implements ServicesInterface
 		$services['field.collection'] = function($c) {
 			return new \Message\Cog\Field\Collection(array(
 				new \Message\Cog\Field\Type\Boolean,
+				new \Message\Cog\Field\Type\Checkbox,
 				new \Message\Cog\Field\Type\Choice,
 				new \Message\Cog\Field\Type\Datalist,
 				new \Message\Cog\Field\Type\Date,
 				new \Message\Cog\Field\Type\Datetime,
 				new \Message\Cog\Field\Type\Html,
 				new \Message\Cog\Field\Type\Integer,
+				new \Message\Cog\Field\Type\MultiChoice,
 				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
 				new \Message\Cog\Field\Type\Text,
 			));
@@ -537,7 +539,7 @@ class Services implements ServicesInterface
 
 		$services['form.extensions'] = function($c) {
 			return [
-				new \Message\Cog\Form\Extension\Core\CoreExtension($c['http.session'], $c['cfg']),
+				new \Message\Cog\Form\Extension\Core\CoreExtension($c['http.session'], $c['cfg'], $c['translator']),
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
