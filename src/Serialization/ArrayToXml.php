@@ -45,7 +45,7 @@ class ArrayToXml implements ArraySerializerInterface
 
 		if (!$xml instanceof \SimpleXMLElement) {
 			if (!$this->_isValidXML($xml)) {
-				throw new SerializationException('XML string is not valid');
+				throw new SerializationException('XML string is not valid: ' . PHP_EOL . $xml . PHP_EOL);
 			}
 			$xml = new \SimpleXMLElement($xml);
 		}
