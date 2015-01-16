@@ -32,10 +32,15 @@ class CacheClear extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$output->writeln('Clearing trasure chest caches...');
+		$output->writeln('<info>Clearing treasure chest caches...</info>');
 		$this->get('cache')->clear();
+		$output->writeln('Done');
 
-		$output->writeln('Clearing twig caches...');
+		$output->writeln('<info>Clearing twig caches...</info>');
+
+		if(posix_getuid() !== 0) {
+			$output->writeln('<comment>Care! Template cache files may not delete if not using sudo...</comment>');
+		}
 		$this->get('templating.twig.environment')->clearCacheFiles();
 
 		$output->writeln('Done');
