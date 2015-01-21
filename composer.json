@@ -32,6 +32,7 @@
 		"ext-gd"       : "*",
 		"ext-json"     : "*",
 		"ext-mysqli"   : "*",
+		"ext-mysqlnd"  : "*",
 		"ext-intl"     : "*",
 
 		"symfony/console"                  : "2.3.*",
@@ -71,9 +72,11 @@
 		"mockery/mockery"                 : "~0.9"
 	},
 	"suggest": {
-		"ext-apc"                : "The preferred caching system in Cog",
 
-		"message/cog-raven"      : "A Cog module that logs errors, exceptions and messages to Sentry"
+		"ext-apc"           : "The preferred caching system in Cog",
+		"ext-oauth"         : "Extension for managing OAuth requests",
+
+		"message/cog-raven" : "A Cog module that logs errors, exceptions and messages to Sentry"
 	},
 	"bin": [
 		"bin/cog",
