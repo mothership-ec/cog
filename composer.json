@@ -32,6 +32,7 @@
 		"ext-gd"       : "*",
 		"ext-json"     : "*",
 		"ext-mysqli"   : "*",
+		"ext-mysqlnd"  : "*",
 		"ext-intl"     : "*",
 
 		"symfony/console"                  : "2.3.*",
