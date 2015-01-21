@@ -59,6 +59,9 @@
 		<testsuite name="Routing">
 			<directory>./tests/Routing/</directory>
 		</testsuite>
+		<testsuite name="Serialization">
+			<directory>./tests/Serialization/</directory>
+		</testsuite>
 		<testsuite name="Service">
 			<directory>./tests/Service/</directory>
 		</testsuite>
