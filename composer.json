@@ -32,7 +32,6 @@
 		"ext-gd"       : "*",
 		"ext-json"     : "*",
 		"ext-mysqli"   : "*",
-		"ext-mysqlnd"  : "*",
 		"ext-intl"     : "*",
 
 		"symfony/console"                  : "2.3.*",
@@ -75,6 +74,7 @@
 
 		"ext-apc"           : "The preferred caching system in Cog",
 		"ext-oauth"         : "Extension for managing OAuth requests",
+		"ext-mysqlnd"       : "Extension for converting data types that come out of a MySQL database. There may be strange behaviour if this is not installed",
 
 		"message/cog-raven" : "A Cog module that logs errors, exceptions and messages to Sentry"
 	},
