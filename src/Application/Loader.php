@@ -348,14 +348,11 @@ namespace Message\Cog\Application {
 		/**
 		 * Apply some default PHP settings for the application.
 		 *
-		 * Currently this only covers the default timezone to avoid avoid a strict
-		 * standards error.
+		 * For example a default timezone could be set to Europe/London here using
+		 * date_default_timezone_set('Europe/London');
 		 */
 		protected function _setDefaults()
-		{
-			// Set the default timezone
-			date_default_timezone_set('Europe/London');
-		}
+		{}
 
 		/**
 		 * Returns an array of modules to load. Defined by installation application
