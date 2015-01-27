@@ -352,7 +352,12 @@ namespace Message\Cog\Application {
 		 * date_default_timezone_set('Europe/London');
 		 */
 		protected function _setDefaults()
-		{}
+		{
+			// this will default the timezone to UTC if not set. Suppress as 
+			// otherwise date_default_timezone_get() gives strict warning if 
+			// timezone not set
+			@date_default_timezone_set(date_default_timezone_get());
+		}
 
 		/**
 		 * Returns an array of modules to load. Defined by installation application
