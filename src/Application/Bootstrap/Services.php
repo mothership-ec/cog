@@ -451,6 +451,7 @@ class Services implements ServicesInterface
 				"/^\/view/us"             => $baseDir.'view/',
 				"/^\/migrations\/(.*)/us" => $baseDir.'migrations/$1',
 				"/^\/migrations/us"       => $baseDir.'migrations/',
+				"/^\/certs(\/.*)?$/us"    => $baseDir.'certs$1',
 			);
 
 			return $mapping;
