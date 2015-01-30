@@ -194,17 +194,18 @@ class Result extends ResultArrayAccess
 	}
 
 	/**
-	 * Instatiates an objects for each row of the resultset and sets the
+	 * Instanciates an objects for each row of the resultset and sets the
 	 * properties of it based on the keys/values.
 	 *
 	 * @see bind
 	 *
-	 * @param  string $subject The fully qualified name of a class you wish to
-	 *                         instantiate and bind data to.
-	 * @param  array  $args    Array of arguments to pass to the constructor
-	 * @param  bool   $force   True to bind properties even if they don't exist
+	 * @param  string $className          The fully qualified name of a class you wish to
+	 *                                    instantiate and bind data to.
+	 * @param  array  $args               Array of arguments to pass to the constructor
+	 * @param  bool   $force              True to bind properties even if they don't exist
+	 * @throws \InvalidArgumentException  Throws exception if class name is not string or if not found
 	 *
-	 * @return object          The updated object(s) with data bound to them.
+	 * @return array                      The updated object(s) with data bound to them.
 	 */
 	public function bindTo($className, array $args = array(), $force = false)
 	{
