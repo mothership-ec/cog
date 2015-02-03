@@ -73,7 +73,9 @@ class Events implements EventsInterface, ContainerAwareInterface
 		$eventDispatcher->addSubscriber(new \Message\Cog\Controller\EventListener);
 
 		// Asset Management
-		$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
+		if (isset($this->_services['cfg']->assets) && $this->_services['cfg']->assets->autoGenerate) {
+			$eventDispatcher->addSubscriber(new \Message\Cog\AssetManagement\EventListener);
+		}
 
 		// Migrations
 		$eventDispatcher->addSubscriber(new \Message\Cog\Migration\EventListener);
