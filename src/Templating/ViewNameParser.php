@@ -5,6 +5,7 @@ namespace Message\Cog\Templating;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Module\ReferenceParserInterface;
 use Message\Cog\Filesystem\Finder;
+use Message\Cog\Module\ReferenceParser;
 
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParser;
@@ -71,7 +72,6 @@ class ViewNameParser extends TemplateNameParser
 	 *
 	 * @param string $reference  The view reference (without the format)
 	 * @param bool   $batch      Return a batch of templates
-	 * @param bool  $useDefault  Attempt to use default view namespace if no namespace is set on view
 	 *
 	 * @return string            The view file path
 	 *
@@ -97,7 +97,9 @@ class ViewNameParser extends TemplateNameParser
 	/**
 	 * Get the absolute path for a parsed reference.
 	 *
-	 * @param  ReferenceParser $parsed Parsed reference
+	 * @param $reference
+	 * @param ReferenceParser $parsed Parsed reference
+	 *
 	 * @return ReferenceParser         Absolute parsed reference
 	 */
 	public function getAbsolute($reference, $parsed)

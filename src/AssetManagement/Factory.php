@@ -10,6 +10,11 @@ class Factory extends AssetFactory
 	protected $_cacheBustingEnabled = false;
 	protected $_parsed = array();
 
+	public function __construct($defaultNamespace)
+	{
+		$this->_defaultNamespace = $defaultNamespace;
+	}
+
 	public function setReferenceParser($referenceParser)
 	{
 		$this->_referenceParser = $referenceParser;
@@ -141,9 +146,20 @@ class Factory extends AssetFactory
 				continue;
 			}
 
-			if (! isset($this->_parsed[$input])) {
+			if (! array_key_exists($input, $this->_parsed)) {
 				// Parse the input, has to be cloned else the last parsed reference
 				// will override all previous
+				$rootMod = constant(get_class($this->_referenceParser) . '::ROOT_MODIFIER');
+
+				if ($this->_isRelative($input) && null !== $this->_defaultNamespace) {
+					$altInput = $rootMod . $this->_defaultNamespace . ltrim($input, $rootMod);
+					$path = $this->_referenceParser->parse($altInput)->getFullPath();
+
+					if (file_exists($path)) {
+						$input = $altInput;
+					}
+				}
+
 				$this->_parsed[$input] = clone $this->_referenceParser->parse($input);
 			}
 
@@ -151,5 +167,14 @@ class Factory extends AssetFactory
 		}
 
 		return $parsed;
+	}
+
+	private function _isRelative($input)
+	{
+		if (!is_string($input)) {
+			throw new \LogicException('Input must be a string');
+		}
+
+		return $input[1] === ':' && $input[2] === ':';
 	}
 }

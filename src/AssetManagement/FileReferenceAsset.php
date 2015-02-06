@@ -5,6 +5,7 @@ namespace Message\Cog\AssetManagement;
 use Message\Cog\Module\ReferenceParserInterface;
 
 use Assetic\Asset\FileAsset;
+use Assetic\Util\VarUtils;
 
 /**
  * Asset for a file using a Cog reference. The reference is parsed before it is
@@ -31,6 +32,6 @@ class FileReferenceAsset extends FileAsset
 	{
 		$source = $parser->parse($source)->getFullPath();
 
-		return parent::__construct($source, $filters, $sourceRoot, $sourcePath, $vars);
+		parent::__construct($source, $filters, $sourceRoot, $sourcePath, $vars);
 	}
 }

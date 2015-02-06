@@ -26,7 +26,8 @@ class Locator implements LocatorInterface
 	/**
 	 * Gets the path to the module directory.
 	 *
-	 * @param  string $moduleName Module name (e.g. Message\Raven)
+	 * @param string $moduleName Module name (e.g. Message\Raven)
+	 * @param bool $inLibrary
 	 *
 	 * @return string             The path to the module directory
 	 *

@@ -427,7 +427,10 @@ class Services implements ServicesInterface
 		};
 
 		$services['reference_parser'] = function($c) {
-			return new Cog\Module\ReferenceParser($c['module.locator'], $c['fns.utility']);
+			return new Cog\Module\ReferenceParser(
+				$c['module.locator'],
+				$c['fns.utility']
+			);
 		};
 
 		// Filesystem
@@ -731,7 +734,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['asset.factory'] = function($c) {
-			$factory = new Cog\AssetManagement\Factory('cog://public/');
+			$factory = new Cog\AssetManagement\Factory(/*'cog://public/', */$c['app.loader']->getDefaultViewNamespace());
 
 			$factory->setReferenceParser($c['reference_parser']);
 			$factory->setFilterManager($c['asset.filters']);
