@@ -359,13 +359,15 @@ namespace Message\Cog\Application {
 		/**
 		 * Apply some default PHP settings for the application.
 		 *
-		 * Currently this only covers the default timezone to avoid avoid a strict
-		 * standards error.
+		 * For example a default timezone could be set to Europe/London here using
+		 * date_default_timezone_set('Europe/London');
 		 */
 		protected function _setDefaults()
 		{
-			// Set the default timezone
-			date_default_timezone_set('Europe/London');
+			// this will default the timezone to UTC if not set. Suppress as 
+			// otherwise date_default_timezone_get() gives strict warning if 
+			// timezone not set
+			@date_default_timezone_set(date_default_timezone_get());
 		}
 
 		/**

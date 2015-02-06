@@ -59,6 +59,7 @@ class Console implements ContextInterface
 				new Command\DeployEvent,
 				new Command\DeployPermissions,
 				new Command\ModuleNamespace,
+				new Command\CacheClear,
 			));
 		};
 

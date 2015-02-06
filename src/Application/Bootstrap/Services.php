@@ -25,6 +25,10 @@ class Services implements ServicesInterface
 	 */
 	public function registerServices($services)
 	{
+		$services['currency_formatter'] = $services->factory(function($c) {
+			return new \NumberFormatter($c['locale']->getID(), \NumberFormatter::CURRENCY);
+		});
+
 		$services['profiler'] = function($s) {
 			return new Cog\Debug\Profiler(null, function() use ($s) {
 				return $s['db']->getQueryCount();
@@ -326,6 +330,25 @@ class Services implements ServicesInterface
 			return new \Symfony\Component\HttpKernel\UriSigner(time());
 		};
 
+		$services['http.rest.request_dispatcher_collection'] = function($c)
+		{
+			return new Cog\HTTP\REST\RequestDispatcherCollection([
+				$c['http.rest.xml_request_dispatcher'],
+			]);
+		};
+
+		$services['http.rest.xml_request_dispatcher'] = function($c)
+		{
+			return new Cog\HTTP\REST\XmlRequestDispatcher(
+				$c['http.kernel'],
+				$c['serializer.array_to_xml']
+			);
+		};
+
+		$services['http.oauth.factory'] = function($c) {
+			return new Cog\HTTP\OAuth\Factory;
+		};
+
 		$services['response_builder'] = function($c) {
 			return new Cog\Controller\ResponseBuilder(
 				$c['templating']
@@ -424,15 +447,16 @@ class Services implements ServicesInterface
 			$baseDir = $c['app.loader']->getBaseDir();
 			$mapping = array(
 				// Maps cog://tmp/* to /tmp/* (in the installation)
-				"/^\/tmp\/(.*)/us"        => $baseDir.'tmp/$1',
+				"/^\/tmp(\/.*)?$/us"      => $baseDir.'tmp$1',
 				"/^\/logs\/(.*)/us"       => $baseDir.'logs/$1',
 				"/^\/logs/us"             => $baseDir.'logs/',
-				"/^\/public\/(.*)/us"     => $baseDir.'public/$1',
-				"/^\/data\/(.*)/us"       => $baseDir.'data/$1',
+				"/^\/public(\/.*)?$/us"   => $baseDir.'public$1',
+				"/^\/data(\/.*)?$/us"     => $baseDir.'data$1',
 				"/^\/view\/(.*)/us"       => $baseDir.'view/$1',
 				"/^\/view/us"             => $baseDir.'view/',
 				"/^\/migrations\/(.*)/us" => $baseDir.'migrations/$1',
 				"/^\/migrations/us"       => $baseDir.'migrations/',
+				"/^\/certs(\/.*)?$/us"    => $baseDir.'certs$1',
 			);
 
 			return $mapping;
@@ -466,12 +490,14 @@ class Services implements ServicesInterface
 		$services['field.collection'] = function($c) {
 			return new \Message\Cog\Field\Collection(array(
 				new \Message\Cog\Field\Type\Boolean,
+				new \Message\Cog\Field\Type\Checkbox,
 				new \Message\Cog\Field\Type\Choice,
 				new \Message\Cog\Field\Type\Datalist,
 				new \Message\Cog\Field\Type\Date,
 				new \Message\Cog\Field\Type\Datetime,
 				new \Message\Cog\Field\Type\Html,
 				new \Message\Cog\Field\Type\Integer,
+				new \Message\Cog\Field\Type\MultiChoice,
 				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
 				new \Message\Cog\Field\Type\Text,
 			));
@@ -519,7 +545,7 @@ class Services implements ServicesInterface
 
 		$services['form.extensions'] = function($c) {
 			return [
-				new \Message\Cog\Form\Extension\Core\CoreExtension($c['http.session'], $c['cfg']),
+				new \Message\Cog\Form\Extension\Core\CoreExtension($c['http.session'], $c['cfg'], $c['translator']),
 				new \Symfony\Component\Form\Extension\Core\CoreExtension,
 				new \Symfony\Component\Form\Extension\Csrf\CsrfExtension(
 					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\SessionCsrfProvider($c['http.session'], $c['form.csrf_secret'])
@@ -873,6 +899,10 @@ class Services implements ServicesInterface
 
 		$services['pagination.adapter.array'] = $services->factory(function($c) {
 			return new Cog\Pagination\Adapter\ArrayAdapter();
+		});
+
+		$services['serializer.array_to_xml'] = $services->factory(function($c) {
+			return new Cog\Serialization\ArrayToXml();
 		});
 	}
 }
