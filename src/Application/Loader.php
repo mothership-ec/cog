@@ -169,7 +169,7 @@ namespace Message\Cog\Application {
 		 *
 		 * @return string | null
 		 */
-		public function getDefaultViewNamespace()
+		public function getDefaultNamespace()
 		{
 			return null;
 		}
@@ -364,8 +364,8 @@ namespace Message\Cog\Application {
 		 */
 		protected function _setDefaults()
 		{
-			// this will default the timezone to UTC if not set. Suppress as 
-			// otherwise date_default_timezone_get() gives strict warning if 
+			// this will default the timezone to UTC if not set. Suppress as
+			// otherwise date_default_timezone_get() gives strict warning if
 			// timezone not set
 			@date_default_timezone_set(date_default_timezone_get());
 		}

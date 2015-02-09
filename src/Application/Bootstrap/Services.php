@@ -144,7 +144,7 @@ class Services implements ServicesInterface
 					'php',
 				),
 				$c['templating.formats'],
-				$c['app.loader']->getDefaultViewNamespace()
+				$c['app.loader']->getDefaultNamespace()
 			);
 
 			$parser->addDefaultDirectory($c['app.loader']->getBaseDir() . 'view/');
@@ -734,7 +734,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['asset.factory'] = function($c) {
-			$factory = new Cog\AssetManagement\Factory('cog://public/', $c['app.loader']->getDefaultViewNamespace());
+			$factory = new Cog\AssetManagement\Factory('cog://public/', $c['app.loader']->getDefaultNamespace());
 
 			$factory->setReferenceParser($c['reference_parser']);
 			$factory->setFilterManager($c['asset.filters']);

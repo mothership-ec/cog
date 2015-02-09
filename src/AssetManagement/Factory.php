@@ -10,6 +10,8 @@ class Factory extends AssetFactory
 	protected $_cacheBustingEnabled = false;
 	protected $_parsed = array();
 
+	private $_defaultNamespace;
+
 	public function __construct($root, $defaultNamespace, $debug = false)
 	{
 		parent::__construct($root, $debug);
@@ -162,7 +164,7 @@ class Factory extends AssetFactory
 
 	private function _convertRelativePaths(array $inputs)
 	{
-		if (null !== $this->_defaultNamespace) {
+		if (null === $this->_defaultNamespace) {
 			return $inputs;
 		}
 
