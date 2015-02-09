@@ -15,7 +15,10 @@ class Factory extends AssetFactory
 	public function __construct($root, $defaultNamespace, $debug = false)
 	{
 		parent::__construct($root, $debug);
-		$this->_defaultNamespace = $defaultNamespace;
+
+		if (null !== $defaultNamespace) {
+			$this->_defaultNamespace = str_replace('\\', ':', trim($defaultNamespace, '\\'));
+		}
 	}
 
 	public function setReferenceParser($referenceParser)
