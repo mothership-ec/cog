@@ -165,7 +165,7 @@ namespace Message\Cog\Application {
 
 		/**
 		 * Return a representation of the default namespace for loading view files. If a view file does not exist, it will
-		 * look within its own namespace (as is standard behaviour in Cog 3.5 and under)
+		 * look within its own namespace (as is standard behaviour in earlier versions of Cog)
 		 *
 		 * @return string | null
 		 */
