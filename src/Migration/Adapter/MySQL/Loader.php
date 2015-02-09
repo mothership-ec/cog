@@ -4,25 +4,49 @@ namespace Message\Cog\Migration\Adapter\MySQL;
 
 use Message\Cog\Migration\Adapter\LoaderInterface;
 use Message\Cog\Filesystem\File;
+use Message\Cog\DB\Query;
+use Message\Cog\Filesystem;
+use Message\Cog\Module\ReferenceParserInterface;
 
-class Loader implements LoaderInterface {
 
-	protected $_connector;
+class Loader implements LoaderInterface
+{
+	/**
+	 * @var \Message\Cog\DB\Query
+	 */
+	protected $_query;
+
+	/**
+	 * @var \Message\Cog\Filesystem\Finder
+	 */
 	protected $_finder;
+
+	/**
+	 * @var \Message\Cog\Filesystem\Filesystem
+	 */
 	protected $_filesystem;
+
+	/**
+	 * @var \Message\Cog\Module\ReferenceParserInterface
+	 */
 	protected $_referenceParser;
 
-	public function __construct($connector, $finder, $filesystem, $referenceParser)
+	public function __construct(
+		Query $query,
+		Filesystem\Finder $finder,
+		Filesystem\Filesystem $filesystem,
+		ReferenceParserInterface $referenceParser
+	)
 	{
-		$this->_connector = $connector;
-		$this->_finder = $finder;
-		$this->_filesystem = $filesystem;
+		$this->_query           = $query;
+		$this->_finder          = $finder;
+		$this->_filesystem      = $filesystem;
 		$this->_referenceParser = $referenceParser;
 	}
 
 	public function getAll()
 	{
-		$results = $this->_connector->run('
+		$results = $this->_query->run('
 			SELECT
 				path
 			FROM
@@ -42,7 +66,7 @@ class Loader implements LoaderInterface {
 
 		$path = $this->_referenceParser->getFullPath('resources/migrations');
 
-		if (! $this->_filesystem->exists($path)) {
+		if (!$this->_filesystem->exists($path)) {
 			return array();
 		}
 
@@ -62,7 +86,7 @@ class Loader implements LoaderInterface {
 
 	public function getLastBatch()
 	{
-		$results = $this->_connector->run('
+		$results = $this->_query->run('
 			SELECT
 				path
 			FROM
@@ -82,7 +106,7 @@ class Loader implements LoaderInterface {
 
 	public function getLastBatchNumber()
 	{
-		$results = $this->_connector->run('
+		$results = $this->_query->run('
 			SELECT
 				batch
 			FROM
@@ -94,7 +118,7 @@ class Loader implements LoaderInterface {
 			LIMIT 1
 		');
 
-		if (! $results or count($results) == 0) {
+		if (!$results or count($results) == 0) {
 			return 0;
 		}
 
@@ -104,17 +128,22 @@ class Loader implements LoaderInterface {
 	public function resolve(File $file, $reference)
 	{
 		// Load the migration class
-		include_once $file->getRealpath();
+		$path = $file->getPath();
+		if (!file_exists($path)) {
+			return false;
+		}
+
+		include_once $path;
 
 		// Get the class name
 		$classname = str_replace('.php', '', $file->getBasename());
 
-		return new $classname($reference, $file, $this->_connector);
+		return new $classname($reference, $file, $this->_query);
 	}
 
 	public function install()
 	{
-		$this->_connector->run('
+		$this->_query->run('
 			CREATE TABLE IF NOT EXISTS
 				migration (
 					migration_id INT (11) AUTO_INCREMENT,
@@ -133,7 +162,11 @@ class Loader implements LoaderInterface {
 
 		foreach ($results as $row) {
 			$file = new File($row->path);
-			$migrations[] = $this->resolve($file, $row->path);
+			$migration   = $this->resolve($file, $row->path);
+
+			if (false !== $migration) {
+				$migrations[] = $this->resolve($file, $row->path);
+			}
 		}
 
 		return $migrations;

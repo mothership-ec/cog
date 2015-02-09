@@ -15,7 +15,10 @@ class Migrator {
 	protected $_collection = array();
 	protected $_notes = array();
 
-	public function __construct($loader, $creator, $deletor)
+	public function __construct(
+		Adapter\LoaderInterface $loader,
+		Adapter\CreateInterface $creator,
+		Adapter\DeleteInterface $deletor)
 	{
 		$this->_loader     = $loader;
 		$this->_creator    = $creator;
@@ -59,7 +62,7 @@ class Migrator {
 	 * @param  int       $batch
 	 * @return void
 	 */
-	public function runUp(MigrationInterface $migration, $batch)
+	public function runUp(Adapter\MigrationInterface $migration, $batch)
 	{
 		try {
 			$migration->up();
