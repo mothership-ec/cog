@@ -734,7 +734,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['asset.factory'] = function($c) {
-			$factory = new Cog\AssetManagement\Factory(/*'cog://public/', */$c['app.loader']->getDefaultViewNamespace());
+			$factory = new Cog\AssetManagement\Factory('cog://public/', $c['app.loader']->getDefaultViewNamespace());
 
 			$factory->setReferenceParser($c['reference_parser']);
 			$factory->setFilterManager($c['asset.filters']);
