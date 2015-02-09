@@ -161,7 +161,14 @@ class Factory extends AssetFactory
 		return $parsed;
 	}
 
-
+	/**
+	 * If a default namespace is set, it will convert relative asset paths to that of the default namespace, and if the file
+	 * exists, it will swap it out for the existing asset
+	 *
+	 * @param array $inputs
+	 *
+	 * @return array
+	 */
 	private function _convertRelativePaths(array $inputs)
 	{
 		if (null === $this->_defaultNamespace) {
