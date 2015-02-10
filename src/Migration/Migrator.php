@@ -3,6 +3,7 @@
 namespace Message\Cog\Migration;
 
 use Message\Cog\Migration\Adapter\MigrationInterface;
+use Message\Cog\Filesystem\File;
 
 use Exception;
 
@@ -15,7 +16,10 @@ class Migrator {
 	protected $_collection = array();
 	protected $_notes = array();
 
-	public function __construct($loader, $creator, $deletor)
+	public function __construct(
+		Adapter\LoaderInterface $loader,
+		Adapter\CreateInterface $creator,
+		Adapter\DeleteInterface $deletor)
 	{
 		$this->_loader     = $loader;
 		$this->_creator    = $creator;
@@ -50,6 +54,8 @@ class Migrator {
 
 		// Run the collection
 		$this->_runCollection();
+
+		$this->_displayFailures();
 	}
 
 	/**
@@ -59,7 +65,7 @@ class Migrator {
 	 * @param  int       $batch
 	 * @return void
 	 */
-	public function runUp(MigrationInterface $migration, $batch)
+	public function runUp(Adapter\MigrationInterface $migration, $batch)
 	{
 		try {
 			$migration->up();
@@ -92,6 +98,8 @@ class Migrator {
 		foreach ($migrations as $migration) {
 			$this->_runDown($migration);
 		}
+
+		$this->_displayFailures();
 
 		return count($migrations);
 	}
@@ -216,6 +224,25 @@ class Migrator {
 	protected function _note($note)
 	{
 		$this->_notes[] = $note;
+	}
+
+	private function _displayFailures()
+	{
+		$failures = $this->_loader->getFailures();
+
+		if (!empty($failures) && !is_array($failures)) {
+			throw new \InvalidArgumentException('Cannot display failed migrations, migration failures expected as an array, got ' . (gettype($failures) === 'object') ? get_class($failures) : gettype($failures));
+		} elseif (empty($failures)) {
+			return false;
+		}
+
+		foreach ($failures as $failure) {
+			if (!is_string($failure)) {
+				throw new \InvalidArgumentException('Cannot display failed migrations, expected a string, got ' . (gettype($failure) === 'object') ? get_class($failure) : gettype($failure));
+			}
+
+			$this->_note('<error>Could not load migration: `' . $failure . '`</error>');
+		}
 	}
 
 }
