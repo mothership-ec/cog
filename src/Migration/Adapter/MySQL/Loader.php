@@ -31,6 +31,11 @@ class Loader implements LoaderInterface
 	 */
 	protected $_referenceParser;
 
+	/**
+	 * @var array
+	 */
+	private $_failures = [];
+
 	public function __construct(
 		Query $query,
 		Filesystem\Finder $finder,
@@ -70,7 +75,7 @@ class Loader implements LoaderInterface
 			return array();
 		}
 
-		$files = $this->_finder->files()->in($path);
+		$files = $this->_getFinder()->files()->in($path);
 
 		$migrations = array();
 
@@ -127,16 +132,17 @@ class Loader implements LoaderInterface
 
 	public function resolve(File $file, $reference)
 	{
-		// Load the migration class
-		$path = $file->getPath();
-		if (!file_exists($path)) {
+		$basename = $file->getBasename();
+		$realPath = $file->getRealPath();
+
+		if (!file_exists($realPath)) {
 			return false;
 		}
 
-		include_once $path;
+		include_once $realPath;
 
 		// Get the class name
-		$classname = str_replace('.php', '', $file->getBasename());
+		$classname = str_replace('.php', '', $basename);
 
 		return new $classname($reference, $file, $this->_query);
 	}
@@ -156,6 +162,14 @@ class Loader implements LoaderInterface
 		');
 	}
 
+	public function getFailures()
+	{
+		$failures = $this->_failures;
+		$this->_failures = [];
+
+		return $failures;
+	}
+
 	protected function _getMigrations($results)
 	{
 		$migrations = array();
@@ -166,10 +180,17 @@ class Loader implements LoaderInterface
 
 			if (false !== $migration) {
 				$migrations[] = $this->resolve($file, $row->path);
+			} else {
+				$this->_failures[] = $file->getRealPath();
 			}
 		}
 
 		return $migrations;
+	}
+
+	private function _getFinder()
+	{
+		return clone $this->_finder;
 	}
 
 }

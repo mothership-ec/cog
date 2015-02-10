@@ -16,4 +16,6 @@ interface LoaderInterface
 
 	public function resolve(File $file, $reference);
 
+	public function getFailures();
+
 }
