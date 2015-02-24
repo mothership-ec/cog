@@ -2,7 +2,7 @@
 	"name": "mothership-ec/cog",
 	"description": "Mothership's PHP5 framework for building modular systems",
 	"keywords": ["framework", "cog"],
-	"homepage": "http://message.co.uk",
+	"homepage": "http://mothership.ec",
 	"authors": [
 		{
 			"name" : "The Mothership Development Team",
