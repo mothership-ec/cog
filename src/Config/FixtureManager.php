@@ -233,7 +233,7 @@ class FixtureManager
 	{
 		list($vendor, $name) = explode('/', $package->getPrettyName());
 
-		return ('message' === $vendor && ('cog-' === substr($name, 0, 4) || 'cog' === $name));
+		return ('cog-' === substr($name, 0, 4) || 'cog' === $name);
 	}
 
 	/**
