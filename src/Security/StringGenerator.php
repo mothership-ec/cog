@@ -15,7 +15,7 @@ namespace Message\Cog\Security;
 class StringGenerator
 {
 	const DEFAULT_LENGTH = 32;
-	protected $_pattern = '/.*/';
+	protected $_pattern = '/.{32}/';
 
 
 	/**
@@ -106,7 +106,8 @@ class StringGenerator
 		}
 
 		do {
-			$handle = fopen($path, 'r');
+			$handle = fopen($path, 'rb');
+			stream_set_read_buffer($handle, 0);
 			$random = fread($handle, $length);
 			fclose($handle);
 
@@ -115,7 +116,8 @@ class StringGenerator
 			}
 
 			$string = substr(base64_encode($random), 0, $length);
-			$string = str_replace(array('+', '='), '.', $string);
+			$string = str_replace('+', '.', rtrim($string, '='));
+			 
 		} while (!preg_match($this->_pattern, $string));
 
 		return $string;
@@ -142,7 +144,7 @@ class StringGenerator
 			$random = openssl_random_pseudo_bytes($length);
 
 			$string = substr(base64_encode($random), 0, $length);
-			$string = str_replace(array('+', '='), '.', $string);
+			$string = str_replace('+', '.', rtrim($string, '='));
 		} while (!preg_match($this->_pattern, $string));
 		
 
