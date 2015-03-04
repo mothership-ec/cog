@@ -147,6 +147,9 @@ class StringGenerator
 		if (!function_exists('openssl_random_pseudo_bytes')) {
 			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
 		}
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 
 		$rounds = 0;
 		do {
@@ -172,6 +175,9 @@ class StringGenerator
 	 */
 	public function generateNatively($length = self::DEFAULT_LENGTH)
 	{
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
 		$charLength = strlen($chars) - 1;
 
