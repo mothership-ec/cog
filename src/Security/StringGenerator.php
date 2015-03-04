@@ -47,6 +47,9 @@ class StringGenerator
 	public function generate($length = self::DEFAULT_LENGTH)
 	{
 		$self  = $this;
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 		$calls = array(
 			function() use ($self, $length) {
 				return $self->generateFromUnixRandom($length, '/dev/urandom');
@@ -104,7 +107,11 @@ class StringGenerator
 		if (!file_exists($path) || !is_readable($path)) {
 			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
 		}
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 
+		$rounds = 0;
 		do {
 			$handle = fopen($path, 'rb');
 			stream_set_read_buffer($handle, 0);
@@ -117,8 +124,9 @@ class StringGenerator
 
 			$string = substr(base64_encode($random), 0, $length);
 			$string = str_replace('+', '.', rtrim($string, '='));
-			 
-		} while (!preg_match($this->_pattern, $string));
+			
+			++$rounds;
+		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
 
 		return $string;
 	}
