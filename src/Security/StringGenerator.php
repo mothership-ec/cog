@@ -15,7 +15,7 @@ namespace Message\Cog\Security;
 class StringGenerator
 {
 	const DEFAULT_LENGTH = 32;
-	protected $_pattern = '/.{32}/';
+	protected $_pattern = '/.*';
 
 
 	/**
