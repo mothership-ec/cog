@@ -148,12 +148,14 @@ class StringGenerator
 			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
 		}
 
+		$rounds = 0;
 		do {
 			$random = openssl_random_pseudo_bytes($length);
 
 			$string = substr(base64_encode($random), 0, $length);
 			$string = str_replace('+', '.', rtrim($string, '='));
-		} while (!preg_match($this->_pattern, $string));
+			++$rounds;
+		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
 		
 
 		return $string;
@@ -173,13 +175,15 @@ class StringGenerator
 		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
 		$charLength = strlen($chars) - 1;
 
+		$rounds = 0;
 		do {
 			$string     = '';
 
 			for ($i = 0; $i < $length; $i++) {
 				$string .= $chars[mt_rand(0, $charLength)];
 			}
-		} while (!preg_match($this->_pattern, $string));
+			++$rounds;
+		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
 
 
 		return $string;
