@@ -25,13 +25,17 @@ class PriceTwigExtension extends \Twig_Extension
         ];
     }
 
-    public function priceFilter($value, $currency = null, $locale = null)
+    public function priceFilter($value, $currency = null, $locale = null, array $extraOptions = [])
     {
+
         $locale = ($locale == null ? \Locale::getDefault() : $locale);
         $formatter = new \NumberFormatter($locale, \NumberFormatter::CURRENCY);
         $currency = $currency?:$this->_defaultCurrency;
 
         $price = $formatter->formatCurrency($value, $currency);
+        if (isset($extraOptions['no_decimal']) && $extraOptions['no_decimal']) {
+            $price = str_replace('.00','',$price);
+        }
 
         return $price;
     }
