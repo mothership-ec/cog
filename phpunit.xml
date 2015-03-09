@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-	backupGlobals="true"
-	backupStaticAttributes="false"
-	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	stopOnFailure="false"
-	strict="true"
-	bootstrap="tests/bootstrap.php"
->
+		backupGlobals="true"
+		backupStaticAttributes="false"
+		colors="true"
+		convertErrorsToExceptions="true"
+		convertNoticesToExceptions="true"
+		convertWarningsToExceptions="true"
+		stopOnFailure="false"
+		strict="true"
+		bootstrap="tests/bootstrap.php"
+		>
 	<testsuites>
 		<testsuite name="Cog">
 			<directory>./tests/</directory>
@@ -59,6 +59,9 @@
 		<testsuite name="Routing">
 			<directory>./tests/Routing/</directory>
 		</testsuite>
+		<testsuite name="Security">
+			<directory>./tests/Security/</directory>
+		</testsuite>
 		<testsuite name="Serialization">
 			<directory>./tests/Serialization/</directory>
 		</testsuite>
@@ -86,6 +89,6 @@
 		</whitelist>
 	</filter>
 	<php>
-		<env name="COG_ENV" value="test" />
+		<env name="COG_ENV" value="test"/>
 	</php>
 </phpunit>
