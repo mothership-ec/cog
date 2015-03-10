@@ -12,8 +12,25 @@ class Connection implements ConnectionInterface
 	protected $_handle = null;
 	protected $_params = array();
 
+    /**
+     * Required parameters for database connection
+     *
+     * @var array
+     */
+    private $_required = [
+        'hostname',
+        'user',
+        'name',
+    ];
+
 	public function __construct(array $params = array())
 	{
+        foreach ($this->_required as $required) {
+            if (empty($params[$required])) {
+                throw new \LogicException('Missing parameter `' . $required . '`` for database connection, please ensure database config is complete and parameters are named correctly.');
+            }
+        }
+
 		$this->_params = $params;
 
 		if(isset($this->_params['lazy']) && $this->_params['lazy'] === false) {
