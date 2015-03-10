@@ -5,35 +5,35 @@ namespace Message\Cog\DB\Adapter\MySQLi;
 use Message\Cog\DB\Adapter\ConnectionInterface;
 
 /**
-*
-*/
+ *
+ */
 class Connection implements ConnectionInterface
 {
 	protected $_handle = null;
 	protected $_params = array();
 
-    /**
-     * Required parameters for database connection
-     *
-     * @var array
-     */
-    private $_required = [
-        'hostname',
-        'user',
-        'name',
-    ];
+	/**
+	 * Required parameters for database connection
+	 *
+	 * @var array
+	 */
+	private $_required = [
+		'hostname',
+		'user',
+		'name',
+	];
 
 	public function __construct(array $params = array())
 	{
-        foreach ($this->_required as $required) {
-            if (empty($params[$required])) {
-                throw new \LogicException('Missing parameter `' . $required . '`` for database connection, please ensure database config is complete and parameters are named correctly.');
-            }
-        }
+		foreach ($this->_required as $required) {
+			if (empty($params[$required])) {
+				throw new \LogicException('Missing parameter `' . $required . '`` for database connection, please ensure database config is complete and parameters are named correctly.');
+			}
+		}
 
 		$this->_params = $params;
 
-		if(isset($this->_params['lazy']) && $this->_params['lazy'] === false) {
+		if (isset($this->_params['lazy']) && $this->_params['lazy'] === false) {
 			$this->_connect();
 		}
 	}
@@ -58,7 +58,7 @@ class Connection implements ConnectionInterface
 	{
 		// If we've already got a connection handle we don't
 		// need to connect again
-		if($this->_handle !== null) {
+		if ($this->_handle !== null) {
 			return;
 		}
 
@@ -76,7 +76,7 @@ class Connection implements ConnectionInterface
 		}
 
 		// Set the charset
-		if(isset($this->_params['charset'])) {
+		if (isset($this->_params['charset'])) {
 			$this->_handle->set_charset($this->_params['charset']);
 		}
 
@@ -90,7 +90,7 @@ class Connection implements ConnectionInterface
 	{
 		$this->_connect();
 
-		if($res = $this->_handle->query($sql)) {
+		if ($res = $this->_handle->query($sql)) {
 			return new Result($res, $this);
 		}
 
