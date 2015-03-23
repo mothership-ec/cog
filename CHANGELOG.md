@@ -1,6 +1,11 @@
 # Changelog
 
-# 4.1.0
+## 4.1.1
+
+- Improved bcrypt security checks
+- Fixed incorrect header type on changelog
+
+## 4.1.0
 
 - Ability to trim trailing zeros off prices in the Twig price function
 
