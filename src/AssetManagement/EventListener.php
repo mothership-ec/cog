@@ -65,7 +65,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 			), 'twig');
 		}
 
+		$oldUmask = umask(0);
 		$this->_services['asset.writer']->writeManagerAssets($this->_services['asset.manager']);
+		umask($oldUmask);
 	}
 
 	/**

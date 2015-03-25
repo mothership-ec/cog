@@ -52,6 +52,7 @@ class AssetDump extends Command
 
 		$output->writeln('<info>Moving public assets for ' . count($modules) . ' modules.</info>');
 
+		$oldUmask = umask(0);
 		foreach($modules as $module) {
 			$moduleName = str_replace("\\", ':', $module);
 
@@ -87,6 +88,7 @@ class AssetDump extends Command
 				$fileSystem->mirror($originDir, $targetDir);
 			}
 		}
+		umask($oldUmask);
 
 		$output->writeln("<info>Finished dumping module assets.</info>");
 	}
