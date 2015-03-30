@@ -18,6 +18,7 @@ class Query implements QueryableInterface
 	protected $_queryParser;
 
 	private $_isSelect;
+	private $_disableCache = false;
 
 	protected static $_queryList = [];
 
@@ -71,7 +72,7 @@ class Query implements QueryableInterface
 
 			if (!$this->_isSelect()) {
 				$this->_clearResultCache();
-			} else {
+			} elseif (false === $this->_disableCache) {
 				$this->_cacheResult($result);
 			}
 		} else {
@@ -122,6 +123,14 @@ class Query implements QueryableInterface
 		return $this->_parsedQuery;
 	}
 
+	/**
+	 * Disable the result caching. To be used if running subqueries that have updates, deletes etc
+	 */
+	public function disableCache()
+	{
+		$this->_disableCache = true;
+	}
+
 	public function castValue($value, $type, $useNull)
 	{
 		// check for nullness
@@ -163,7 +172,7 @@ class Query implements QueryableInterface
 	 */
 	private function _resultInCache()
 	{
-		return array_key_exists(trim($this->_parsedQuery), static::$_resultCache);
+		return array_key_exists($this->_getCacheKey(), static::$_resultCache);
 	}
 
 	/**
@@ -173,7 +182,7 @@ class Query implements QueryableInterface
 	 */
 	private function _cacheResult(Adapter\ResultInterface $result)
 	{
-		static::$_resultCache[trim($this->_parsedQuery)] = $result;
+		static::$_resultCache[$this->_getCacheKey()] = $result;
 	}
 
 	/**
@@ -185,11 +194,11 @@ class Query implements QueryableInterface
 	 */
 	private function _getCachedResult()
 	{
-		if (!array_key_exists(trim($this->_parsedQuery), static::$_resultCache)) {
+		if (!array_key_exists($this->_getCacheKey(), static::$_resultCache)) {
 			throw new \LogicException('Attempting to get cached result that does not exist');
 		}
 
-		return static::$_resultCache[trim($this->_parsedQuery)];
+		return static::$_resultCache[$this->_getCacheKey()];
 	}
 
 	/**
@@ -212,5 +221,15 @@ class Query implements QueryableInterface
 		}
 
 		return $this->_isSelect;
+	}
+
+	/**
+	 * Trim and hash the parsed query to create a key for the cached query
+	 *
+	 * @return string
+	 */
+	private function _getCacheKey()
+	{
+		return md5(trim($this->_parsedQuery));
 	}
 }
