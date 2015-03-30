@@ -17,7 +17,11 @@ class Query implements QueryableInterface
 	protected $_parsedQuery;
 	protected $_queryParser;
 
+	private $_isSelect;
+
 	protected static $_queryList = [];
+
+	private static $_resultCache = [];
 
 	protected $_typeTokens = array(
 		's' => 'string',
@@ -54,12 +58,22 @@ class Query implements QueryableInterface
 		$this->_params = (array)$params;
 
 		$this->_parsedQuery = $this->_queryParser->parse($this->_query, $this->_params);
-		$result = $this->_connection->query($this->_parsedQuery);
 
-		static::$_queryList[] = $this->_parsedQuery;
+		if (!$this->_resultInCache()) {
+			$result = $this->_connection->query($this->_parsedQuery);
+			static::$_queryList[] = $this->_parsedQuery;
 
-		if($result === false) {
-			throw new Exception($this->_connection->getLastError(), $this->_query);
+			if($result === false) {
+				throw new Exception($this->_connection->getLastError(), $this->_query);
+			}
+
+			if (!$this->_isSelect()) {
+				$this->_clearResultCache();
+			} else {
+				$this->_cacheResult($result);
+			}
+		} else {
+			$result = static::$_resultCache[$this->_parsedQuery];
 		}
 
 		return new Result($result, clone $this);
@@ -138,5 +152,31 @@ class Query implements QueryableInterface
 		}
 
 		return $safe;
+	}
+
+	private function _resultInCache()
+	{
+		return array_key_exists(trim($this->_parsedQuery), static::$_resultCache);
+	}
+
+	private function _cacheResult(Adapter\ResultInterface $result)
+	{
+		static::$_resultCache[$this->_parsedQuery] = $result;
+	}
+
+	private function _clearResultCache()
+	{
+		static::$_resultCache = [];
+	}
+
+	private function _isSelect()
+	{
+		if (null === $this->_isSelect) {
+			$query = trim($this->_parsedQuery);
+
+			$this->_isSelect = (bool) preg_match('/^select*/i', $query);
+		}
+
+		return $this->_isSelect;
 	}
 }
