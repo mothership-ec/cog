@@ -66,7 +66,7 @@ class Query implements QueryableInterface
 			$result = $this->_connection->query($this->_parsedQuery);
 			static::$_queryList[] = $this->_parsedQuery;
 
-			if($result === false) {
+			if ($result === false) {
 				throw new Exception($this->_connection->getLastError(), $this->_query);
 			}
 
