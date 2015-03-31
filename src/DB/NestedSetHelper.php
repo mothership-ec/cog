@@ -358,7 +358,7 @@ class NestedSetHelper implements TransactionalInterface
 				`' . $this->_right . '` = `' . $this->_right . '` - 2
 			WHERE
 				`' . $this->_pk . '` = ?i
-		', $nodeID);
+		', [$nodeID]);
 
 		return $this->_trans;
 	}
@@ -437,7 +437,7 @@ class NestedSetHelper implements TransactionalInterface
 				`' . $this->_depth . '` = NULL
 			WHERE
 				`' . $this->_pk . '` = ?i
-		', $nodeID);
+		', [$nodeID]);
 
 		return $this->_trans;
 	}
@@ -576,7 +576,7 @@ class NestedSetHelper implements TransactionalInterface
 					`' . $this->_table . '`
 				WHERE
 					`' . $this->_pk . '` = ?s
-			', $nodeID);
+			', [$nodeID]);
 		}
 
 		if (!($node = $result->first()) && !$force) {
@@ -628,7 +628,7 @@ class NestedSetHelper implements TransactionalInterface
 			));
 		}
 
-		return (array)$result->first();
+		return (array) $result->first();
 	}
 
 	/**
@@ -786,7 +786,7 @@ class NestedSetHelper implements TransactionalInterface
 			array(
 				$node[$this->_left],
 				$node[$this->_right],
-				(array)$exclude,
+				(array) $exclude,
 			));
 
 		/**
