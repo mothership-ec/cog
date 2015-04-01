@@ -31,7 +31,7 @@ class UrlGenerator extends \Symfony\Component\Routing\Generator\UrlGenerator
 		array_walk($parameters, function (&$item) {
 			if ($item instanceof Slug) {
 				$item = (string) $item;
-				$item = ltrim($item, '/');
+				$item = $item === '/' ? $item : ltrim($item, '/');
 			}
 		});
 
