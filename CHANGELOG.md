@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.2.0
+
+- Improved validation on nested set helper
+- Add `NestedSetException` class to DB component
+- Deprecates useless and unfinished `toArray()` method on `NestedSetHelper` in DB component
+- Fix issue where double slash would appear on full URLs made from slugs in the routing component
+
 ## 4.1.1
 
 - Improved bcrypt security checks
