@@ -35,7 +35,7 @@ class Routing extends \Twig_Extension
 
     public function getPath($name, $parameters = array(), $absolute = false)
     {
-        return $this->_generator->generate($name, $parameters, $relative ? UrlGeneratorInterface::RELATIVE_PATH : UrlGeneratorInterface::ABSOLUTE_PATH);
+        return $this->_generator->generate($name, $parameters, !$absolute ? UrlGeneratorInterface::RELATIVE_PATH : UrlGeneratorInterface::ABSOLUTE_PATH);
     }
 
     public function getUrl($name, $parameters = array(), $schemeRelative = false)
