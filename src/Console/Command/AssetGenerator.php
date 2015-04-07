@@ -52,6 +52,7 @@ class AssetGenerator extends Command
 				$memory = (int) $memory * 1073741824;
 				break;
 			default:
+				$memory = (int) $memory;
 				break;
 		}
 
