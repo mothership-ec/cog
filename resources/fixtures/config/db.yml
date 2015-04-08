@@ -3,3 +3,4 @@ user: user
 pass: password
 name: schema_name
 charset: utf8
+cache: mysql_memory

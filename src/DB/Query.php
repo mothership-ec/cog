@@ -3,6 +3,7 @@
 namespace Message\Cog\DB;
 
 use Message\Cog\DB\Adapter\ConnectionInterface;
+use Message\Cog\DB\Adapter\QueryCountableInterface;
 
 /**
 * Query class
@@ -85,21 +86,33 @@ class Query implements QueryableInterface
 	/**
 	 * Gets the static count of queries
 	 *
+	 * @deprecated use connection that implements QueryCountableInterface instead
+	 *
 	 * @return int
 	 */
 	public function getQueryCount()
 	{
-		return count(static::$_queryList);
+		if ($this->_connection instanceof QueryCountableInterface) {
+			return $this->_connection->getQueryCount();
+		}
+
+		throw new \LogicException('Cannot count queries from Query object');
 	}
 
 	/**
 	 * Gets the static list of parsed queries run.
 	 *
+	 * @deprecated use connection that implements QueryCountableInterface instead
+	 *
 	 * @return array
 	 */
 	public function getQueryList()
 	{
-		return static::$_queryList;
+		if ($this->_connection instanceof QueryCountableInterface) {
+			return $this->_connection->getQueryList();
+		}
+
+		throw new \LogicException('Cannot list queries from Query object');
 	}
 
 	/**
