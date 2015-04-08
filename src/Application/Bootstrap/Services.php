@@ -25,6 +25,10 @@ class Services implements ServicesInterface
 	 */
 	public function registerServices($services)
 	{
+		$services['currency_formatter'] = $services->factory(function($c) {
+			return new \NumberFormatter($c['locale']->getID(), \NumberFormatter::CURRENCY);
+		});
+
 		$services['profiler'] = function($s) {
 			return new Cog\Debug\Profiler(null, function() use ($s) {
 				return $s['db']->getQueryCount();
@@ -451,6 +455,7 @@ class Services implements ServicesInterface
 				"/^\/view/us"             => $baseDir.'view/',
 				"/^\/migrations\/(.*)/us" => $baseDir.'migrations/$1',
 				"/^\/migrations/us"       => $baseDir.'migrations/',
+				"/^\/certs(\/.*)?$/us"    => $baseDir.'certs$1',
 			);
 
 			return $mapping;

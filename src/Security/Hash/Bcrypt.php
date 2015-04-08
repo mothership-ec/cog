@@ -38,10 +38,10 @@ class Bcrypt implements HashInterface
 	 * used as the salt.
 	 *
 	 * Generates *0 if invalid characters are used. Exception thrown if
-  	 * *0 is returned.
+	 * *0 is returned.
 	 *
-	 * @param  string      $string String to hash
-	 * @param  string|null $salt   Salt to use
+	 * @param  string $string String to hash
+	 * @param  string|null $salt Salt to use
 	 *
 	 * @return string              The hashed value
 	 *
@@ -63,7 +63,7 @@ class Bcrypt implements HashInterface
 
 		// Using a salt formatted in this way tells crypt() to use bcrypt
 		$bcryptSalt = '$2a$' . str_pad(self::WORK_FACTOR, 2, '0', STR_PAD_LEFT) . '$'
-					 . substr($salt, 0, 22);
+			. substr($salt, 0, 22);
 
 		$crypto = crypt($string, $bcryptSalt);
 
@@ -78,15 +78,74 @@ class Bcrypt implements HashInterface
 	}
 
 	/**
-	 * Check if a string matches a bcrypt hash.
+	 * Check if a string matches a bcrypt hash using a timing attack resistant approach
 	 *
 	 * @param  string $string Plain text string to check
-	 * @param  string $hash   Full bcrypt hashed string
+	 * @param  string $hash Full bcrypt hashed string
 	 *
 	 * @return boolean        Result of match check
 	 */
 	public function check($string, $hash)
 	{
-		return $hash === crypt($string, $hash);
+		if (!function_exists('crypt')) {
+			trigger_error("Crypt must be loaded for password_verify to function", E_USER_WARNING);
+
+			return false;
+		}
+
+		$ret = crypt($string, $hash);
+
+		if (!is_string($ret) || $this->_strlen($ret) != $this->_strlen($hash) || $this->_strlen($ret) <= 13) {
+			return false;
+		}
+
+		$status = 0;
+		for ($i = 0; $i < $this->_strlen($ret); $i++) {
+			$status |= (ord($ret[$i]) ^ ord($hash[$i]));
+		}
+
+		return $status === 0;
+	}
+
+	/**
+	 * Count the number of bytes in a string
+	 *
+	 * We cannot simply use strlen() for this, because it might be overwritten by the mbstring extension.
+	 * In this case, strlen() will count the number of *characters* based on the internal encoding. A
+	 * sequence of bytes might be regarded as a single multibyte character.
+	 *
+	 * @param string $binary_string The input string
+	 *
+	 * @internal
+	 * @return int The number of bytes
+	 */
+	protected function _strlen($binary_string)
+	{
+		if (function_exists('mb_strlen')) {
+			return mb_strlen($binary_string, '8bit');
+		}
+
+		return strlen($binary_string);
+	}
+
+	/**
+	 * Get a substring based on byte limits
+	 *
+	 * @see _strlen()
+	 *
+	 * @param string $binary_string The input string
+	 * @param int $start
+	 * @param int $length
+	 *
+	 * @internal
+	 * @return string The substring
+	 */
+	protected function _substr($binary_string, $start, $length)
+	{
+		if (function_exists('mb_substr')) {
+			return mb_substr($binary_string, $start, $length, '8bit');
+		}
+
+		return substr($binary_string, $start, $length);
 	}
 }

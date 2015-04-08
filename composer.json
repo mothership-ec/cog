@@ -1,17 +1,17 @@
 {
-	"name": "message/cog",
-	"description": "Message's powerful PHP5 framework for building modular systems",
+	"name": "mothership-ec/cog",
+	"description": "Mothership's PHP5 framework for building modular systems",
 	"keywords": ["framework", "cog"],
-	"homepage": "http://message.co.uk",
+	"homepage": "http://mothership.ec",
 	"authors": [
 		{
-			"name" : "The Message Development Team",
-			"email": "dev@message.co.uk"
+			"name" : "The Mothership Development Team",
+			"email": "hello@mothership.ec"
 		}
 	],
 	"support": {
-		"wiki"  : "http://server.local/wiki/projects/cog",
-		"issues": "http://github.com/messagedigital/cog/issues"
+		"wiki"  : "http://wiki.mothership.ec/Cog",
+		"issues": "http://github.com/mothership-ec/cog/issues"
 	},
 	"autoload": {
 		"psr-4": {
@@ -19,12 +19,6 @@
 			"Message\\Cog\\Test\\": "tests"
 		}
 	},
-	"repositories": [
-		{
-			"type": "composer",
-			"url" : "http://packages.message.co.uk"
-		}
-	],
 	"require": {
 		"php"          : ">=5.4.0",
 		"ext-simplexml": "*",

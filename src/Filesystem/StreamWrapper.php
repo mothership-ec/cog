@@ -72,10 +72,11 @@ class StreamWrapper implements StreamWrapperInterface
 	 *
 	 * Mappings are checked first, if there's no matching mapping then the reference parser is checked.
 	 *
-	 * @param  string $uri 		The uri to be parsed
+	 * @param  string $uri 		       The uri to be parsed
+	 * @param  string | bool $prefix
 	 *
-	 * @return string|boolean   If a valid URI is passed in, returns the full
-	 *                          real path to the file, otherwise false.
+	 * @return string|boolean          If a valid URI is passed in, returns the full
+	 *                                 real path to the file, otherwise false.
 	 */
 	public function getLocalPath($uri, $prefix = false)
 	{

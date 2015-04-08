@@ -47,6 +47,9 @@ class StringGenerator
 	public function generate($length = self::DEFAULT_LENGTH)
 	{
 		$self  = $this;
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 		$calls = array(
 			function() use ($self, $length) {
 				return $self->generateFromUnixRandom($length, '/dev/urandom');
@@ -104,9 +107,14 @@ class StringGenerator
 		if (!file_exists($path) || !is_readable($path)) {
 			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
 		}
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 
+		$rounds = 0;
 		do {
-			$handle = fopen($path, 'r');
+			$handle = fopen($path, 'rb');
+			stream_set_read_buffer($handle, 0);
 			$random = fread($handle, $length);
 			fclose($handle);
 
@@ -115,8 +123,10 @@ class StringGenerator
 			}
 
 			$string = substr(base64_encode($random), 0, $length);
-			$string = str_replace(array('+', '='), '.', $string);
-		} while (!preg_match($this->_pattern, $string));
+			$string = str_replace('+', '.', rtrim($string, '='));
+			
+			++$rounds;
+		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
 
 		return $string;
 	}
@@ -137,13 +147,18 @@ class StringGenerator
 		if (!function_exists('openssl_random_pseudo_bytes')) {
 			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
 		}
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 
+		$rounds = 0;
 		do {
 			$random = openssl_random_pseudo_bytes($length);
 
 			$string = substr(base64_encode($random), 0, $length);
-			$string = str_replace(array('+', '='), '.', $string);
-		} while (!preg_match($this->_pattern, $string));
+			$string = str_replace('+', '.', rtrim($string, '='));
+			++$rounds;
+		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
 		
 
 		return $string;
@@ -160,16 +175,21 @@ class StringGenerator
 	 */
 	public function generateNatively($length = self::DEFAULT_LENGTH)
 	{
+		if ($length < 1) {
+			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+		}
 		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
 		$charLength = strlen($chars) - 1;
 
+		$rounds = 0;
 		do {
 			$string     = '';
 
 			for ($i = 0; $i < $length; $i++) {
 				$string .= $chars[mt_rand(0, $charLength)];
 			}
-		} while (!preg_match($this->_pattern, $string));
+			++$rounds;
+		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
 
 
 		return $string;
