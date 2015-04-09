@@ -14,6 +14,9 @@ use Message\Cog\ValueObject\Collection;
  */
 class CacheCollection extends Collection
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function _configure()
 	{
 		$this->addValidator(function ($item) {

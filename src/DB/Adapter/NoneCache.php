@@ -33,7 +33,7 @@ class NoneCache implements CacheInterface
 	 */
 	public function getCachedResult($query)
 	{
-		throw new \LogicException('Cannot load result from NoCache');
+		throw new \LogicException('Cannot load result from NoneCache');
 	}
 
 	/**
