@@ -23,13 +23,13 @@ class NoneCacheTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame('none', $this->_cache->getName());
 	}
 
-	public function testResultInCacheNoCache()
+	public function testResultNotInCache()
 	{
 		$this->_cache->cacheResult(self::SELECT, $this->_result);
 		$this->assertFalse($this->_cache->resultInCache(self::SELECT));
 	}
 
-	public function testResultInCacheNoCachingAttempt()
+	public function testResultNotInCacheNoCachingAttempt()
 	{
 		$this->assertFalse($this->_cache->resultInCache(self::SELECT));
 	}
