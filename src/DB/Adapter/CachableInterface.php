@@ -11,4 +11,8 @@ namespace Message\Cog\DB\Adapter;
 interface CachableInterface
 {
 	public function setCache(CacheInterface $cache);
+
+	public function disableCache();
+
+	public function enableCache();
 }

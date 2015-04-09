@@ -31,7 +31,7 @@ class Services implements ServicesInterface
 
 		$services['profiler'] = function($s) {
 			return new Cog\Debug\Profiler(null, function() use ($s) {
-				return $s['db']->getQueryCount();
+				return $s['db.connection']->getQueryCount();
 			}, false);
 		};
 
@@ -44,7 +44,7 @@ class Services implements ServicesInterface
 				'charset'	=> $s['cfg']->db->charset,
 			));
 
-			$cache = ($s['cfg']->db->cache) ?
+			$cache = (isset($s['cfg']->db->cache)) ?
 				$s['db.cache.collection']->get($s['cfg']->db->cache) :
 				$s['db.cache.collection']->get('mysql_memory')
 			;

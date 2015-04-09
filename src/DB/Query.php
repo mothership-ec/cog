@@ -18,13 +18,6 @@ class Query implements QueryableInterface
 	protected $_parsedQuery;
 	protected $_queryParser;
 
-	private $_isSelect;
-	private $_disableCache = false;
-
-	protected static $_queryList = [];
-
-	private static $_resultCache = [];
-
 	protected $_typeTokens = array(
 		's' => 'string',
 		'i' => 'integer',
@@ -63,21 +56,10 @@ class Query implements QueryableInterface
 
 		$this->_parsedQuery = $this->_queryParser->parse($this->_query, $this->_params);
 
-		if (!$this->_resultInCache()) {
-			$result = $this->_connection->query($this->_parsedQuery);
-			static::$_queryList[] = $this->_parsedQuery;
+		$result = $this->_connection->query($this->_parsedQuery);
 
-			if ($result === false) {
-				throw new Exception($this->_connection->getLastError(), $this->_query);
-			}
-
-			if (!$this->_isSelect()) {
-				$this->_clearResultCache();
-			} elseif (false === $this->_disableCache) {
-				$this->_cacheResult($result);
-			}
-		} else {
-			$result = $this->_getCachedResult();
+		if ($result === false) {
+			throw new Exception($this->_connection->getLastError(), $this->_query);
 		}
 
 		return new Result($result, clone $this);
@@ -136,14 +118,6 @@ class Query implements QueryableInterface
 		return $this->_parsedQuery;
 	}
 
-	/**
-	 * Disable the result caching. To be used if running subqueries that have updates, deletes etc
-	 */
-	public function disableCache()
-	{
-		$this->_disableCache = true;
-	}
-
 	public function castValue($value, $type, $useNull)
 	{
 		// check for nullness
@@ -176,73 +150,5 @@ class Query implements QueryableInterface
 		}
 
 		return $safe;
-	}
-
-	/**
-	 * Check to see if query has been run before and the result exists in memory
-	 *
-	 * @return bool
-	 */
-	private function _resultInCache()
-	{
-		return array_key_exists($this->_getCacheKey(), static::$_resultCache);
-	}
-
-	/**
-	 * Store the result in memory with the parsed query as the key
-	 *
-	 * @param Adapter\ResultInterface $result
-	 */
-	private function _cacheResult(Adapter\ResultInterface $result)
-	{
-		static::$_resultCache[$this->_getCacheKey()] = $result;
-	}
-
-	/**
-	 * Get the result from the cache using the parsed query as the key
-	 *
-	 * @throws \LogicException   Throws exception if query result has not been cached
-	 *
-	 * @return Adapter\ResultInterface
-	 */
-	private function _getCachedResult()
-	{
-		if (!array_key_exists($this->_getCacheKey(), static::$_resultCache)) {
-			throw new \LogicException('Attempting to get cached result that does not exist');
-		}
-
-		return static::$_resultCache[$this->_getCacheKey()];
-	}
-
-	/**
-	 * Reset the result cache
-	 */
-	private function _clearResultCache()
-	{
-		static::$_resultCache = [];
-	}
-
-	/**
-	 * Check to see if the query is a select query
-	 *
-	 * @return bool
-	 */
-	private function _isSelect()
-	{
-		if (null === $this->_isSelect) {
-			$this->_isSelect = (bool) preg_match('/^select*/i', trim($this->_parsedQuery));
-		}
-
-		return $this->_isSelect;
-	}
-
-	/**
-	 * Trim and hash the parsed query to create a key for the cached query
-	 *
-	 * @return string
-	 */
-	private function _getCacheKey()
-	{
-		return md5(trim($this->_parsedQuery));
 	}
 }

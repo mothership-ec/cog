@@ -17,6 +17,8 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 
 	private $_queryList = [];
 
+	private $_cacheEnabled = true;
+
 	/**
 	 * @var CacheInterface
 	 */
@@ -42,7 +44,8 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 
 		return [
 			'_params',
-			'_queryCount',
+			'_queryList',
+			'_cacheEnabled',
 		];
 	}
 
@@ -69,7 +72,7 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 	 */
 	public function query($sql)
 	{
-		if ($this->_cache && $this->_cache->resultInCache($sql)) {
+		if ($this->_cacheEnabled() && $this->_cache->resultInCache($sql)) {
 			return $this->_cache->getCachedResult($sql);
 		}
 
@@ -78,7 +81,7 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 		if($res = $this->_handle->query($sql)) {
 			$result = new Result($res, $this);
 
-			if ($this->_cache) {
+			if ($this->_cacheEnabled()) {
 				$this->_cache->cacheResult($sql, $result);
 			}
 
@@ -160,6 +163,16 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 		return $this->_queryList;
 	}
 
+	public function enableCache()
+	{
+		$this->_cacheEnabled = true;
+	}
+
+	public function disableCache()
+	{
+		$this->_cacheEnabled = false;
+	}
+
 	protected function _connect()
 	{
 		// If we've already got a connection handle we don't
@@ -190,6 +203,14 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 		$now = new \DateTime;
 		$offset = $now->format('P');
 		$this->query('SET time_zone="' . $offset . '";');
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	private function _cacheEnabled()
+	{
+		return $this->_cacheEnabled && $this->_cache;
 	}
 
 }
