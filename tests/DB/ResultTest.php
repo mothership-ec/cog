@@ -338,7 +338,8 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$query = new \Message\Cog\DB\Query($connection);
+		$parser = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->disableOriginalConstructor()->getMock();
+		$query = new \Message\Cog\DB\Query($connection, $parser);
 		$result = $query->run("SELECT * FROM staff");
 
 		$this->assertEquals(1337, $result->id());
@@ -357,7 +358,8 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$query = new \Message\Cog\DB\Query($connection);
+		$parser = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->disableOriginalConstructor()->getMock();
+		$query = new \Message\Cog\DB\Query($connection, $parser);
 		$result = $query->run("SELECT * FROM staff");
 
 		$this->assertEquals(2345, $result->affected());
@@ -374,7 +376,10 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$query = new \Message\Cog\DB\Transaction($connection);
+		$parser = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->disableOriginalConstructor()->getMock();
+		$dispatcher = $this->getMockBuilder('Message\\Cog\\Event\\Dispatcher')->disableOriginalConstructor()->getMock();
+
+		$query = new \Message\Cog\DB\Transaction($connection, $parser, $dispatcher);
 		$result = $query->add("SELECT * FROM staff")->commit();
 
 		$this->assertTrue($result->isFromTransaction());
@@ -406,7 +411,9 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 			),
 		));
 
-		$query = new \Message\Cog\DB\Query($connection);
+		$parser = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->disableOriginalConstructor()->getMock();
+
+		$query = new \Message\Cog\DB\Query($connection, $parser);
 
 		return $query;
 	}
