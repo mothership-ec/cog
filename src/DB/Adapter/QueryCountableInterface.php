@@ -7,6 +7,8 @@ namespace Message\Cog\DB\Adapter;
  * @package Message\Cog\DB\Adapter
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
+ *
+ * Interface for objects that can keep a log of all the queries that are being run
  */
 interface QueryCountableInterface
 {

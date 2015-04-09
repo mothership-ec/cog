@@ -10,9 +10,20 @@ namespace Message\Cog\DB\Adapter;
  */
 interface CachableInterface
 {
+	/**
+	 * Set a result caching object
+	 *
+	 * @param CacheInterface $cache
+	 */
 	public function setCache(CacheInterface $cache);
 
+	/**
+	 * Disable caching on this object
+	 */
 	public function disableCache();
 
+	/**
+	 * Enable caching on this object
+	 */
 	public function enableCache();
 }

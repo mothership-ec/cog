@@ -10,7 +10,6 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$result = $this->getQuery()->run("SELECT * FROM staff");
 		$data = $result->value();
 
-		// This test is kinda lame
 		foreach($result as $row) {
 			$this->assertInstanceOf('stdClass', $row);
 		}
