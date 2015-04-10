@@ -36,6 +36,31 @@ class AssetGenerator extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$memory = ini_get('memory_limit');
+
+		switch (substr($memory, -1)) {
+			case 'M':
+			case 'm':
+				$memory = (int) $memory * 1048576;
+				break;
+			case 'K':
+			case 'k':
+				$memory = (int) $memory * 1024;
+				break;
+			case 'G':
+			case 'g':
+				$memory = (int) $memory * 1073741824;
+				break;
+			default:
+				$memory = (int) $memory;
+				break;
+		}
+
+		if ($memory < 536870912) {
+			$output->writeln('<info>Increasing memory limit to 512M</info>');
+			$iniSet = ini_set('memory_limit', 536870912);
+		}
+
 		// Call the twig environment. This seems bizarre but is important,
 		// otherwise the AssetManager won't know how to load Twig files. It is
 		// the only way we could get around a crazy dependency loop for the time being.
@@ -99,5 +124,10 @@ class AssetGenerator extends Command
 		$this->_services['asset.writer']->writeManagerAssets($this->_services['asset.manager']);
 
 		$output->writeln("<info>Compiled assets for all views</info>");
+
+		if (!empty($iniSet)) {
+			$output->writeln('<info>Resetting memory limit to ' . $iniSet . '</info>');
+			ini_set('memory_limit', $iniSet);
+		}
 	}
 }
