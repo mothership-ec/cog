@@ -20,19 +20,6 @@ use Message\Cog\AssetManagement\TwigResource;
  */
 class EventListener extends BaseListener implements SubscriberInterface
 {
-	private $_config = [];
-
-	public function __construct($config = null)
-	{
-		if (is_array($config)) {
-			$this->_config['auto-generate'] = $config['auto-generate'];
-		} else {
-			$this->_config = [
-				'auto-generate' => false,
-			];
-		}
-	}
-
 	/**
 	 * {@inheritdoc}
 	 */
@@ -65,7 +52,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			return;
 		}
 
-		if ('local' !== $this->_services['env'] || !$this->_config['auto-generate']) {
+		if ('local' !== $this->_services['env'] || $this->get('cfg')->asset->autoGenerate) {
 			return;
 		}
 
