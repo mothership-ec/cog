@@ -52,7 +52,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			return;
 		}
 
-		if ('local' !== $this->_services['env'] || $this->get('cfg')->asset->autoGenerate) {
+		if ('local' !== $this->_services['env'] || !$this->get('cfg')->asset->autoGenerate) {
 			return;
 		}
 
