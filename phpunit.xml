@@ -80,7 +80,6 @@
 	</testsuites>
 	<filter>
 		<whitelist>
-			<directory>./src/Message</directory>
 			<exclude>
 				<directory>./vendor</directory>
 				<directory>./tests</directory>

@@ -27,7 +27,7 @@ abstract class ResultArrayAccess extends ResultIterator implements ArrayAccess
 	final public function offsetGet($offset)
 	{
 		// store the old position so we can go back to it
-		$oldPos = $this->_position;
+		$oldPos = $this->_getPosition();
 		
 		// get the desired row
 		$this->_result->seek($offset);
