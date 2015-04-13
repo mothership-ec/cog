@@ -3,14 +3,26 @@
 namespace Message\Cog\DB\Adapter\MySQLi;
 
 use Message\Cog\DB\Adapter\ConnectionInterface;
+use Message\Cog\DB\Adapter\CachableInterface;
+use Message\Cog\DB\Adapter\CacheInterface;
+use Message\Cog\DB\Adapter\QueryCountableInterface;
 
 /**
 *
 */
-class Connection implements ConnectionInterface
+class Connection implements ConnectionInterface, CachableInterface, QueryCountableInterface
 {
 	protected $_handle = null;
 	protected $_params = array();
+
+	private $_queryList = [];
+
+	private $_cacheEnabled = true;
+
+	/**
+	 * @var CacheInterface
+	 */
+	private $_cache;
 
 	public function __construct(array $params = array())
 	{
@@ -21,20 +33,144 @@ class Connection implements ConnectionInterface
 		}
 	}
 
+	/**
+	 * Disconnect when serializing connection
+	 *
+	 * @return array
+	 */
 	public function __sleep()
 	{
 		$this->_handle = null;
 
 		return [
 			'_params',
+			'_queryList',
+			'_cacheEnabled',
 		];
 	}
 
+	/**
+	 * Re-establish database connection upon unserialization if the `lazy` parameter is set to false
+	 */
 	public function __wakeup()
 	{
 		if (isset($this->_params['lazy']) && $this->_params['lazy'] === false) {
 			$this->_connect();
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setCache(CacheInterface $cache)
+	{
+		$this->_cache = $cache;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function query($sql)
+	{
+		if ($this->_cacheEnabled() && $this->_cache->resultInCache($sql)) {
+			return $this->_cache->getCachedResult($sql);
+		}
+
+		$this->_connect();
+
+		if($res = $this->_handle->query($sql)) {
+			$result = new Result($res, $this);
+
+			if ($this->_cacheEnabled()) {
+				$this->_cache->cacheResult($sql, $result);
+			}
+
+			$this->_queryList[] = $sql;
+
+			return $result;
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function escape($text)
+	{
+		$this->_connect();
+
+		return $this->_handle->real_escape_string($text);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getLastError()
+	{
+		$this->_connect();
+
+		return $this->_handle->error;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getHandle()
+	{
+		return $this->_handle;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getTransactionStart()
+	{
+		return 'START TRANSACTION';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getTransactionEnd()
+	{
+		return 'COMMIT';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getTransactionRollback()
+	{
+		return 'ROLLBACK';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getLastInsertIdFunc()
+	{
+		return 'LAST_INSERT_ID()';
+	}
+
+	public function getQueryCount()
+	{
+		return count($this->_queryList);
+	}
+
+	public function getQueryList()
+	{
+		return $this->_queryList;
+	}
+
+	public function enableCache()
+	{
+		$this->_cacheEnabled = true;
+	}
+
+	public function disableCache()
+	{
+		$this->_cacheEnabled = false;
 	}
 
 	protected function _connect()
@@ -69,53 +205,12 @@ class Connection implements ConnectionInterface
 		$this->query('SET time_zone="' . $offset . '";');
 	}
 
-	public function query($sql)
+	/**
+	 * {@inheritDoc}
+	 */
+	private function _cacheEnabled()
 	{
-		$this->_connect();
-
-		if($res = $this->_handle->query($sql)) {
-			return new Result($res, $this);
-		}
-
-		return false;
+		return $this->_cacheEnabled && $this->_cache;
 	}
 
-	public function escape($text)
-	{
-		$this->_connect();
-
-		return $this->_handle->real_escape_string($text);
-	}
-
-	public function getLastError()
-	{
-		$this->_connect();
-
-		return $this->_handle->error;
-	}
-
-	public function getHandle()
-	{
-		return $this->_handle;
-	}
-
-	public function getTransactionStart()
-	{
-		return 'START TRANSACTION';
-	}
-
-	public function getTransactionEnd()
-	{
-		return 'COMMIT';
-	}
-
-	public function getTransactionRollback()
-	{
-		return 'ROLLBACK';
-	}
-
-	public function getLastInsertIdFunc()
-	{
-		return 'LAST_INSERT_ID()';
-	}
 }

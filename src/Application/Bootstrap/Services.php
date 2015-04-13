@@ -31,18 +31,27 @@ class Services implements ServicesInterface
 
 		$services['profiler'] = function($s) {
 			return new Cog\Debug\Profiler(null, function() use ($s) {
-				return $s['db']->getQueryCount();
+				return $s['db.connection']->getQueryCount();
 			}, false);
 		};
 
 		$services['db.connection'] = function($s) {
-			return new Cog\DB\Adapter\MySQLi\Connection(array(
+			$connection = new Cog\DB\Adapter\MySQLi\Connection(array(
 				'host'		=> $s['cfg']->db->hostname,
 				'user'		=> $s['cfg']->db->user,
 				'password' 	=> $s['cfg']->db->pass,
 				'db'		=> $s['cfg']->db->name,
 				'charset'	=> $s['cfg']->db->charset,
 			));
+
+			$cache = (isset($s['cfg']->db->cache)) ?
+				$s['db.cache.collection']->get($s['cfg']->db->cache) :
+				$s['db.cache.collection']->get('mysql_memory')
+			;
+
+			$connection->setCache($cache);
+
+			return $connection;
 		};
 
 		$services['db.query.parser'] = function($s) {
@@ -72,6 +81,21 @@ class Services implements ServicesInterface
 		$services['db.nested_set_helper'] = $services->factory(function($s) {
 			return new Cog\DB\NestedSetHelper($s['db.query'], $s['db.transaction']);
 		});
+
+		$services['db.cache.collection'] = function($c) {
+			return new Cog\DB\Adapter\CacheCollection([
+				$c['db.cache.none'],
+				$c['db.cache.mysql.memory'],
+			]);
+		};
+
+		$services['db.cache.none'] = function($c) {
+			return new Cog\DB\Adapter\NoneCache;
+		};
+
+		$services['db.cache.mysql.memory'] = function($c) {
+			return new Cog\DB\Adapter\MySQLi\MemoryCache;
+		};
 
 		$services['event'] = $services->factory(function() {
 			return new Cog\Event\Event;
@@ -886,10 +910,6 @@ class Services implements ServicesInterface
 
 		$services['pagination'] = $services->factory(function($c) {
 			return new Cog\Pagination\Pagination($c['pagination.adapter.sql']);
-		});
-
-		$services['pagination.adapter.dbresult'] = $services->factory(function($c) {
-			return new Cog\Pagination\Adapter\DBResultAdapter();
 		});
 
 		$services['pagination.adapter.sql'] = $services->factory(function($c) {
