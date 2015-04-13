@@ -15,6 +15,8 @@
 - `Adapter\MySQLi\Connection` class implements `QueryCountableInterface`
 - The static `$_queryList` variable on the `Query` object has been moved to the `Adapter\MySQLi\Connection` class, and the `getQueryList()` and `getQueryCount()` methods on the `Query` object have been deprecated, as they now exist on the connection
 - `Adapter\MySQLi\Connection` class implements `CachableInterface`
+- Removed broken `Pagination\Adapter\DBResultAdapter` class and its `pagination.adapter.dbresult` service
+- Fixed issue on `Pagination\Adapter\SQLAdapter` class where the `count` would always be set to 1
 
 ## 4.2.0
 
