@@ -12,7 +12,7 @@
 - `asset.yml` config file for handling asset generation
 - Option to disable automatic asset generation on local versions (does not affect non-local versions as automatic asset generation is already disabled)
 - Memory limit on asset generation is increased to `512M` if less
-- Added `QueryCounabletInterface` to DB component for counting/listing the queries run in a single request
+- Added `QueryCountableInterface` to DB component for counting/listing the queries run in a single request
 - Added `CachableInterface` to DB component for allowing database results to be cached
 - Added `CacheInterface` to represent a cache for database results
 - Added `CacheCollection` to DB component for holding different caching options
