@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.3.1
+
+- Change `Datetime` field to convert values to instance of `DateTimeImmutable` if not already a `\DateTime` on `setValue()`, rather than on the way out via `getValue()`. Will throw `\LogicException` if date string is not valid
+- `Date` field extends `Datetime`
+- `__toString()` method of `Datetime` field converts `DateTimeImmutable` to date string with format of 'G:i:s d m Y'
+- `__toString()` method of `Date` field converts `DateTimeImmutable` to date string with format of 'd m Y'
+
 ## 4.3.0
 
 - `asset.yml` config file for handling asset generation
