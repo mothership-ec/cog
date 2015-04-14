@@ -62,6 +62,7 @@
 	},
 	"require-dev": {
 		"mikey179/vfsStream"              : "1.1.*",
+		"phpunit/phpunit"                 : "~4.5",
 		"mockery/mockery"                 : "~0.9"
 	},
 	"suggest": {
