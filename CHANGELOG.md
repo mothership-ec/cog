@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.3.3
+
+- Fix invalid date format on `__toString()` method on `Datetime` field
+- Fix invalid date format on `__toString()` method on `Date` field
+
 ## 4.3.2
 
 - Revert change to `Pagination\Adapter\SQLAdapter` made in `4.3.0` as it appears it's a bit flaky as to when it does and doesn't work, will need further investigation (see <a href="https://github.com/mothership-ec/cog/issues/435">this issue</a>)
