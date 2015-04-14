@@ -78,7 +78,7 @@ class SQLAdapter implements AdapterInterface
 
 			$this->_count = 0;
 			if ($result = $this->_query->run($this->_countSql, $this->_countParams)) {
-				$this->_count = count($result);
+				$this->_count = $result[0]->count;
 			}
 		}
 
