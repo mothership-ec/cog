@@ -14,7 +14,7 @@ class Date extends Datetime
 {
 	public function __toString()
 	{
-		return ($this->_value instanceof \DateTime) ? $this->_value->format('d m Y') : (string) $this->_value;
+		return ($this->_value instanceof \DateTime) ? $this->_value->format('d-m-Y') : (string) $this->_value;
 	}
 
 	public function getFieldType()
