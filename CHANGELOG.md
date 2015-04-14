@@ -1,11 +1,18 @@
 # Changelog
 
+## 4.3.1
+
+- Change `Datetime` field to convert values to instance of `DateTimeImmutable` if not already a `\DateTime` on `setValue()`, rather than on the way out via `getValue()`. Will throw `\LogicException` if date string is not valid
+- `Date` field extends `Datetime`
+- `__toString()` method of `Datetime` field converts `DateTimeImmutable` to date string with format of 'G:i:s d m Y'
+- `__toString()` method of `Date` field converts `DateTimeImmutable` to date string with format of 'd m Y'
+
 ## 4.3.0
 
-- `assets.yml` config file for handling asset generation
+- `asset.yml` config file for handling asset generation
 - Option to disable automatic asset generation on local versions (does not affect non-local versions as automatic asset generation is already disabled)
 - Memory limit on asset generation is increased to `512M` if less
-- Added `QueryCounabletInterface` to DB component for counting/listing the queries run in a single request
+- Added `QueryCountableInterface` to DB component for counting/listing the queries run in a single request
 - Added `CachableInterface` to DB component for allowing database results to be cached
 - Added `CacheInterface` to represent a cache for database results
 - Added `CacheCollection` to DB component for holding different caching options
