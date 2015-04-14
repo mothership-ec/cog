@@ -10,20 +10,16 @@ use Symfony\Component\Form\FormBuilder;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Date extends Field
+class Date extends Datetime
 {
+	public function __toString()
+	{
+		return ($this->_value instanceof \DateTime) ? $this->_value->format('d m Y') : (string) $this->_value;
+	}
+
 	public function getFieldType()
 	{
 		return 'date';
-	}
-
-	public function getValue()
-	{
-		if ($this->_value instanceof \DateTime) {
-			return $this->_value;
-		}
-
-		return ($this->_value) ? new \DateTime(date('c', $this->_value)) : null;
 	}
 
 	public function getFormField(FormBuilder $form)
