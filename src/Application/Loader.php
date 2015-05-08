@@ -81,8 +81,6 @@ namespace Message\Cog\Application {
 	 */
 	abstract class Loader
 	{
-		protected $_sessionSavePath = 'cog://tmp/sessions';
-
 		protected $_autoloader;
 		protected $_baseDir;
 		protected $_context;
