@@ -81,6 +81,8 @@ namespace Message\Cog\Application {
 	 */
 	abstract class Loader
 	{
+		protected $_sessionSavePath = 'cog://tmp/sessions';
+
 		protected $_autoloader;
 		protected $_baseDir;
 		protected $_context;
@@ -346,6 +348,44 @@ namespace Message\Cog\Application {
 		}
 
 		/**
+		 * Create a session path for this specific installation. By default uses and md5 hash of the current working
+		 * directory (i.e. the public directory) to determine the difference between different installations on the
+		 * same server.
+		 *
+		 * If $strict is set to false and the directory cannot be created, the application will use the default
+		 * session directory. If $strict is set to true, the application will throw a \RuntimeException.
+		 *
+		 * @param bool $strict                 Set whether the application should error if no session directory can be
+		 *                                     created
+		 * @param string | null $sessionPath   Set the path to save the session. If not set, the application will
+		 *                                     set the session path to a directory of an md5 hash of the current
+		 *                                     working directory, within the system's temp directory.
+		 * @throws \InvalidArgumentException   Throws an exception if the given session path is not a string
+		 * @throws \RuntimeException           Throws an exception if $strict is set to true and the directory could
+		 *                                     not be created.
+		 */
+		protected function _createSessionPath($strict = false, $sessionPath = null)
+		{
+			if ($sessionPath && !is_string($sessionPath)) {
+				throw new \InvalidArgumentException('Session path must be a string, ' . gettype($sessionPath . ' given'));
+			}
+
+			$sessionPath = $sessionPath ?: rtrim(sys_get_temp_dir()) . '/' . md5(getcwd());
+
+			$exists = is_dir($sessionPath);
+
+			if (!$exists) {
+				$exists = @mkdir($sessionPath, 0755);
+			}
+
+			if ($exists) {
+				ini_set('session.save_path', $sessionPath);
+			} elseif (!$exists && $strict) {
+				throw new \RuntimeException('Could not create session path at `' . $sessionPath . '`');
+			}
+		}
+
+		/**
 		 * Apply some default PHP settings for the application.
 		 *
 		 * For example a default timezone could be set to Europe/London here using
@@ -357,6 +397,8 @@ namespace Message\Cog\Application {
 			// otherwise date_default_timezone_get() gives strict warning if 
 			// timezone not set
 			@date_default_timezone_set(date_default_timezone_get());
+
+			$this->_createSessionPath();
 
 			// Session date will not be marked as garbage for collection until
 			// one week has passed
