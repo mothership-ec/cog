@@ -357,6 +357,10 @@ namespace Message\Cog\Application {
 			// otherwise date_default_timezone_get() gives strict warning if 
 			// timezone not set
 			@date_default_timezone_set(date_default_timezone_get());
+
+			// Session date will not be marked as garbage for collection until
+			// one week has passed
+			ini_set('session.gc_maxlifetime', 604800);
 		}
 
 		/**
