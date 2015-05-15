@@ -4,6 +4,12 @@ namespace Message\Cog\Test\Filter;
 
 use Message\Cog\Filter\FilterForm;
 
+/**
+ * Class FilterFormTest
+ * @package Message\Cog\Test\Filter
+ *
+ * @author  Thomas Marchant <thomas@mothership.ec>
+ */
 class FilterFormTest extends \PHPUnit_Framework_TestCase
 {
 	const NAME = 'name';
@@ -16,6 +22,15 @@ class FilterFormTest extends \PHPUnit_Framework_TestCase
 	private $_filters2;
 	private $_formBuilder;
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * Create mocks for the following:
+	 *     - The Symfony form builder
+	 *     - Two different filters
+	 *     - A filter collection with one filter
+	 *     - A filter collection with two filters
+	 */
 	protected function setUp()
 	{
 		$this->_filter1 = $this->getMockBuilder('Message\\Cog\\Test\\Filter\\FauxFilter')
@@ -51,6 +66,8 @@ class FilterFormTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * Test that an exception is thrown if the name given to the constructor is not a string
+	 *
 	 * @expectedException \InvalidArgumentException
 	 */
 	public function testConstructNonStringName()
@@ -58,11 +75,18 @@ class FilterFormTest extends \PHPUnit_Framework_TestCase
 		$form = new FilterForm(new \stdClass, $this->_filters1);
 	}
 
+	/**
+	 * Test that the name given in the constructor matches that returned by getName()
+	 */
 	public function testGetName()
 	{
 		$this->assertSame(self::NAME, $this->_getFilterForm()->getName());
 	}
 
+	/**
+	 * Test that the Symfony form builder will call the appropriate methods when there is one
+	 * filter in the collection
+	 */
 	public function testBuildFormOneFilter()
 	{
 		$form = $this->_getFilterForm();
@@ -94,6 +118,10 @@ class FilterFormTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	/**
+	 * Test that the Symfony form builder will call the appropriate methods when there are multiple
+	 * filters in the collection
+	 */
 	public function testBuildFormMultipleFilters()
 	{
 		$form = new FilterForm(self::NAME, $this->_filters2);
@@ -142,6 +170,11 @@ class FilterFormTest extends \PHPUnit_Framework_TestCase
 		$form->buildForm($this->_formBuilder, []);
 	}
 
+	/**
+	 * Get an instance of the filter form with the first filter collection mock
+	 *
+	 * @return FilterForm
+	 */
 	private function _getFilterForm()
 	{
 		return new FilterForm(self::NAME, $this->_filters1);

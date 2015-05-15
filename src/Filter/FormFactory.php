@@ -20,6 +20,10 @@ class FormFactory
 	 */
 	public function getForm(FilterCollection $filters, $name = null)
 	{
+		if (!count($filters)) {
+			throw new Exception\NoFiltersException('No filters to create form with!');
+		}
+
 		$name = $name ?: self::NAME;
 
 		return new FilterForm($name, $filters);
