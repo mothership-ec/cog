@@ -148,7 +148,7 @@ abstract class AbstractFilter implements FilterInterface
 	protected function _setDisplayName($displayName)
 	{
 		if (!is_string($displayName)) {
-			throw new \InvalidArgumentException('Second parameter must be a string, ' . gettype($name) . ' given');
+			throw new \InvalidArgumentException('Second parameter must be a string, ' . gettype($displayName) . ' given');
 		}
 
 		$this->_displayName = $displayName;
