@@ -927,5 +927,9 @@ class Services implements ServicesInterface
 		$services['filter.form_factory'] = function ($c) {
 			return new Cog\Filter\FormFactory;
 		};
+
+		$services['filter.data_binder'] = function ($c) {
+			return new Cog\Filter\DataBinder;
+		};
 	}
 }
