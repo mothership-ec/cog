@@ -26,7 +26,7 @@ class DataBinder
 	{
 		$boundFilters = new FilterCollection;
 		foreach ($data as $key => $value) {
-			if ($filters->exists($key)) {
+			if ($filters->exists($key) && $value) {
 				$filter = $filters[$key];
 				$filter->setValue($value);
 				$boundFilters->add($filter);

@@ -4,6 +4,7 @@ namespace Message\Cog\Filter;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class FilterForm
@@ -29,6 +30,7 @@ class FilterForm extends AbstractType
 	 * Set the name of the form upon instanciation
 	 *
 	 * @param $name string
+	 * @param $filters FilterCollection
 	 */
 	public function __construct($name, FilterCollection $filters)
 	{
@@ -62,5 +64,15 @@ class FilterForm extends AbstractType
 				$filter->getOptions()
 			);
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setDefaultOptions(OptionsResolverInterface $resolver)
+	{
+		$resolver->setDefaults([
+			'method' => 'GET'
+		]);
 	}
 }
