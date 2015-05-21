@@ -72,7 +72,8 @@ class FilterForm extends AbstractType
 	public function setDefaultOptions(OptionsResolverInterface $resolver)
 	{
 		$resolver->setDefaults([
-			'method' => 'GET'
+			'method' => 'GET',
+			'csrf_protection' => false,
 		]);
 	}
 }
