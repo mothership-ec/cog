@@ -22,9 +22,9 @@ class QueryParser
 		's' => 'string',
 		'i' => 'integer',
 		'f' => 'float',
-		'd'	=> 'datetime',
+		'd' => 'datetime',
 		'q' => 'sub_query', // must be QueryBuilderInterface
-		'b'	=> 'boolean',
+		'b' => 'boolean',
 	);
 
 	public function __construct(ConnectionInterface $connection)
