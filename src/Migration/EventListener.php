@@ -5,7 +5,7 @@ namespace Message\Cog\Migration;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
-use Message\Cog\Deploy\Event\Event as DeployEvent;
+use Message\Cog\Deploy;
 
 /**
  * Event listener for migrations.
@@ -20,10 +20,10 @@ class EventListener extends BaseListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'cog.deploy.after.deploy' => array(
+			Deploy\Events::AFTER_COMPOSER_INSTALL => array(
 				array('runMigrations')
 			),
-			'cog.deploy.after.complete' => array(
+			Deploy\Events::AFTER_COMPLETE => array(
 				array('runMigrations')
 			),
 		);
@@ -34,9 +34,12 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 *
 	 * @param DeployEvent $event
 	 */
-	public function runMigrations(DeployEvent $event)
+	public function runMigrations(Deploy\Event\Event $event)
 	{
-		$event->executeCommand('migrate:install'); // Ensure migrations are set up
+		$event->writeln("<comment>Running migrate:install</comment>");
+		$event->executeCommand('migrate:install');
+
+		$event->writeln("<comment>Running migrate:run</comment>");
 		$event->executeCommand('migrate:run');
 	}
 }

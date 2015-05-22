@@ -26,9 +26,7 @@ class DeployEvent extends Command
 		$this
 			->setName('deploy:event')
 			->setDescription('Runs event listeners for deployment events.')
-			->addOption('task', null, InputOption::VALUE_REQUIRED, 'The task that is being run by capistrano.')
-			->addOption('before', null, InputOption::VALUE_NONE, 'Flag for fired before the task.')
-			->addOption('after', null, InputOption::VALUE_NONE, 'Flag for fired after the task.')
+			->addOption('task', null, InputOption::VALUE_REQUIRED, 'The task that is being run by the deploy process.')
 		;
 	}
 
@@ -38,17 +36,10 @@ class DeployEvent extends Command
 
 		$event = new Deploy\Event\Event();
 
-		// $eventInput = new ArrayInput(array('env' => $this->_services['env']));
 		$event->setInput($input);
-
 		$event->setOutput($output);
-
 		$event->setCommandCollection($this->_services['console.commands']);
 
-		if ($input->getOption('before')) {
-			$this->get('event.dispatcher')->dispatch('cog.deploy.before.' . $task, $event);
-		} else {
-			$this->get('event.dispatcher')->dispatch('cog.deploy.after.' . $task, $event);
-		}
+		$this->get('event.dispatcher')->dispatch('deploy.' . $task, $event);
 	}
 }

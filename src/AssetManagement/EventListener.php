@@ -5,7 +5,7 @@ namespace Message\Cog\AssetManagement;
 use Message\Cog\Event\EventListener as BaseListener;
 use Message\Cog\Event\SubscriberInterface;
 
-use Message\Cog\Deploy\Event\Event as DeployEvent;
+use Message\Cog\Deploy;
 
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -29,10 +29,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 			KernelEvents::RESPONSE => array(
 				array('generateAssetsOnRequest'),
 			),
-			'cog.deploy.after.deploy' => array(
-				array('generateAssetsOnDeploy'),
-			),
-			'cog.deploy.after.complete' => array(
+			Deploy\Events::AFTER_COMPOSER_INSTALL => array(
 				array('generateAssetsOnDeploy'),
 			),
 		);
@@ -73,7 +70,7 @@ class EventListener extends BaseListener implements SubscriberInterface
 	 *
 	 * @param  DeployEvent $event
 	 */
-	public function generateAssetsOnDeploy(DeployEvent $event)
+	public function generateAssetsOnDeploy(Deploy\Event\Event $event)
 	{
 		$event->executeCommand('asset:dump');
 		$event->executeCommand('asset:generate');
