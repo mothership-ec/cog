@@ -41,6 +41,9 @@
 		<testsuite name="Filesystem">
 			<directory>./tests/Filesystem/</directory>
 		</testsuite>
+		<testsuite name="Filter">
+			<directory>./tests/Filter/</directory>
+		</testsuite>
 		<testsuite name="Form">
 			<directory>./tests/Form/</directory>
 		</testsuite>
