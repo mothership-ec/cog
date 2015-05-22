@@ -13,12 +13,18 @@ class QueryParser
 
 	const TOKEN_REGEX = '/((\:[a-zA-Z0-9_\-\.]*)\??([a-z]*)?)|(\?([a-z]*))/us';
 
+	/**
+	 * @var ConnectionInterface
+	 */
+	private $_connection;
+
 	protected $_typeTokens = array(
 		's' => 'string',
 		'i' => 'integer',
 		'f' => 'float',
-		'd'	=> 'datetime',
-		'b'	=> 'boolean',
+		'd' => 'datetime',
+		'q' => 'sub_query', // must be QueryBuilderInterface
+		'b' => 'boolean',
 	);
 
 	public function __construct(ConnectionInterface $connection)
@@ -111,8 +117,14 @@ class QueryParser
 		}
 
 		// If a type is set to date then cast it to an int
-		if ($type == 'd') {
+		if ($type === 'd') {
 		    $safe = (int) $value;
+		} elseif ($type === 'q') {
+			if (!$value instanceof QueryBuilderInterface) {
+				$valueType = gettype($value) === 'object' ? get_class($value) : gettype($value);
+				throw new \InvalidArgumentException('Cannot parse value as sub query (?q) as value must be an instance of QueryBuilderInterface, ' . $valueType . ' given');
+			}
+			$safe = $value->getQueryString();
 		} else {
 			// Don't cast type if type is integer and value starts with @ (as it is an ID variable)
 			if (!('i' === $type && '@' === substr($value, 0, 1))) {
@@ -122,7 +134,7 @@ class QueryParser
 		}
 		// Floats are quotes to support all locales.
 		// See: http://stackoverflow.com/questions/2030684/which-mysql-data-types-should-i-not-be-quoting-during-an-insert"
-		if ($type == 's' || $type == 'f') {
+		if ($type === 's' || $type === 'f') {
 			$safe = "'".$safe."'";
 		}
 
