@@ -13,6 +13,11 @@ abstract class ResultIterator implements Iterator, Countable
 	protected $_result;
 	private   $_position = 0;
 
+	protected function _getPosition()
+	{
+		return $this->_position;
+	}
+
 	final public function rewind()
 	{
 		$this->_position = 0;

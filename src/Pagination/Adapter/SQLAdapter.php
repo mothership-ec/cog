@@ -72,13 +72,12 @@ class SQLAdapter implements AdapterInterface
 
 				// Generate the count query sql.
 				$this->_countSql = preg_replace('/SELECT.*FROM/s', 'SELECT COUNT('.$column.') as `count` FROM', $this->_sql);
-
 				$this->_countParams = $this->_params;
 			}
 
 			$this->_count = 0;
-			if ($count = $this->_query->run($this->_countSql, $this->_countParams)) {
-				$this->_count = $count[0]->count;
+			if ($result = $this->_query->run($this->_countSql, $this->_countParams)) {
+				$this->_count = $result->value();
 			}
 		}
 

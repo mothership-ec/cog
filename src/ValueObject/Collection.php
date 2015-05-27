@@ -224,7 +224,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 		$key = $this->_getKey($item);
 
 		if (null !== $this->_key && $this->exists($key) ) {
-			throw new \InvalidArgumentException(sprintf('Item with key "%s" already set on collection', $this->_key));
+			throw new \InvalidArgumentException(sprintf('Item with key "%s" already set on collection', $key));
 		}
 
 		if ($this->_type && !($item instanceof $this->_type)) {

@@ -3,7 +3,8 @@
 	"description": "Mothership's PHP5 framework for building modular systems",
 	"keywords": ["framework", "cog"],
 	"homepage": "http://mothership.ec",
-	"authors": [
+	"license": "GPL-3.0+",
+  	"authors": [
 		{
 			"name" : "The Mothership Development Team",
 			"email": "hello@mothership.ec"
