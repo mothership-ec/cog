@@ -6,6 +6,7 @@ use Message\Cog\DB\Adapter\ConnectionInterface;
 use Message\Cog\DB\Adapter\CachableInterface;
 use Message\Cog\DB\Adapter\CacheInterface;
 use Message\Cog\DB\Adapter\QueryCountableInterface;
+use Message\Cog\DB\Adapter\Exception;
 
 /**
 *
@@ -23,6 +24,17 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 	 * @var CacheInterface
 	 */
 	private $_cache;
+
+	/**
+	 * Required parameters for database connection
+	 *
+	 * @var array
+	 */
+	private $_required = [
+		'host',
+		'user',
+		'db',
+	];
 
 	public function __construct(array $params = array())
 	{
@@ -181,6 +193,8 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 			return;
 		}
 
+		$this->_validateParams();
+
 		// Make the connection
 		$this->_handle = new \MySQLi(
 			$this->_params['host'],
@@ -211,6 +225,15 @@ class Connection implements ConnectionInterface, CachableInterface, QueryCountab
 	private function _cacheEnabled()
 	{
 		return $this->_cacheEnabled && $this->_cache;
+	}
+
+	private function _validateParams()
+	{
+		foreach ($this->_required as $required) {
+			if (!array_key_exists($required, $this->_params)) {
+				throw new Exception\InvalidParameterException('Missing required database parameter `' . $required . '`, please add to db.yml config');
+			}
+		}
 	}
 
 }
