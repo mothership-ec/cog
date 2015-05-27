@@ -98,6 +98,7 @@ namespace Message\Cog\Application {
 		 */
 		public function __construct(ClassLoader $autoloader, $baseDir)
 		{
+			de($autoloader);
 			$this->_autoloader = $autoloader;
 			$this->_baseDir    = rtrim($baseDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 		}
