@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.4.1
+
+- Fix issue where falsy values such as empty strings were being converted to current datetimes when passed into the `Date` and `Datetime` fields
+
 ## 4.4.0
 
 - Added `Filter` component
