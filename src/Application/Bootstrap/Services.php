@@ -801,7 +801,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['whoops.page_handler'] = function($c) {
-			return new \Whoops\Handler\PrettyPageHandler;
+			return new \Message\Cog\Debug\Whoops\SimpleHandler;
 		};
 
 		$services['migration.mysql'] = function($c) {
