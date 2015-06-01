@@ -58,7 +58,8 @@
 		"itbz/fpdf"                        : "1.7.*",
 		"itbz/fpdi"                        : "1.4.*",
 		"dflydev/markdown"                 : "~1.0",
-		"zendframework/zend-debug"         : "~2.2.6",
+		"zendframework/zend-debug"         : "~2.4",
+		"zendframework/zend-escaper"       : "~2.4",
 		"jeremeamia/superclosure"          : "~1.0"
 	},
 	"require-dev": {
