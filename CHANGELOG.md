@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.4.3
+
+- Fix issue where integer field would break if value was empty
+- Lock `symfony\options-resolver` to 2.6 as it was throwing a deprecated error in later versions
+
 ## 4.4.2
 
 - Include `Zend\Escaper` library in `composer.json` file to prevent `d()` and `de()` functions breaking when xDebug is not installed
