@@ -129,9 +129,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 		}
 
 		if ($this->count() > 0) {
-			if (is_callable($key)) {
+			if (is_scalar($key)) {
 				throw new \LogicException(sprintf('Cannot set key "%s" on a non-empty collection in %s', $key, get_class($this)));
-			} elseif (is_scalar($key)) {
+			} else {
 				throw new \LogicException(sprintf('Cannot set key (closure) on a non-empty collection in %s', get_class($this)));
 			}
 		}
@@ -265,7 +265,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	public function remove($key)
 	{
 		if (!$this->exists($key)) {
-			throw new \InvalidArgumentException(sprintf('Identifier "%s" does not exist on collection in %s', $this->_key, get_class($this)));
+			throw new \InvalidArgumentException(sprintf('Identifier "%s" does not exist on collection in %s', $key, get_class($this)));
 		}
 
 		unset($this->_items[$key]);
