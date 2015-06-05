@@ -145,16 +145,21 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 * Set the collection type. This must be a fully-qualified class name if the
 	 * collection values will be instances of this class.
 	 *
-	 * @param  string $type     Fully-qualified class name
+	 * @param  string $type                 Fully-qualified class name
 	 *
-	 * @return Collection       Returns $this for chainability
+	 * @return Collection                   Returns $this for chainability
 	 *
-	 * @throws \LogicException If collection is not empty
+	 * @throws \LogicException            If collection is not empty
+	 * @throws \InvalidArgumentException  Throws exception if $type is not a string
 	 */
 	public function setType($type)
 	{
+		if (!is_string($type)) {
+			throw new \InvalidArgumentException('Type must be a string, ' . gettype($type) . ' given in ' . get_class($this));
+		}
+
 		if ($this->count() > 0) {
-			throw new \LogicException(sprintf('Cannot set type "%s" on a non-empty collection in %s', $this->_type, get_class($this)));
+			throw new \LogicException(sprintf('Cannot set type "%s" on a non-empty collection in %s', $type, get_class($this)));
 		}
 
 		$this->_type = $type;
