@@ -26,7 +26,7 @@ class ModuleNamespace extends Command
 		$modules = $this->get('module.loader')->getModules();
 		$locator = $this->get('module.locator');
 
-		$table = $table = $this->getHelperSet()->get('table')
+		$table = $this->_getTable($output)
 			->setHeaders(array('Name', 'Location'));
 
 		foreach($modules as $module) {

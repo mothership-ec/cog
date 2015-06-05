@@ -29,7 +29,7 @@ class ModuleList extends Command
 
 		$output->writeln('<info>Found ' . count($modules) . ' registered modules.</info>');
 
-		$table = $this->getHelperSet()->get('table')
+		$table = $this->_getTable($output)
 			->setHeaders(array('Name'));
 
 		foreach($modules as $module) {

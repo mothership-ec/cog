@@ -89,7 +89,7 @@ class EventList extends Command
 		});
 
 		$output->writeln('<info>Found ' . count($events) . ' registered event listeners.</info>');
-		$table = $this->getHelperSet()->get('table')
+		$table = $this->_getTable($output)
 			->setHeaders(array('Class', 'Method', 'Event', 'Priority'));
 
 		foreach($events as $event) {
