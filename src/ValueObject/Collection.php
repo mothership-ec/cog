@@ -25,6 +25,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 
 	private $_items = [];
 
+	private $_sorted = false;
+
 	/**
 	 * Constructor.
 	 *
@@ -136,7 +138,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 			}
 		}
 
-		$this->_key = $key;
+		$this->_key    = $key;
+		$this->_sorted = false;
 
 		return $this;
 	}
@@ -187,7 +190,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 		$this->_sort   = $sorter;
 		$this->_sortBy = $by;
 
-		$this->_sort();
+		$this->_sorted = false;
 
 		return $this;
 	}
@@ -253,7 +256,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 			$this->_items[] = $item;
 		}
 
-		$this->_sort();
+		$this->_sorted = false;
 
 		return $this;
 	}
@@ -364,6 +367,10 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 */
 	public function all()
 	{
+		if (false === $this->_sorted) {
+			$this->_sort();
+		}
+
 		return $this->_items;
 	}
 
@@ -432,6 +439,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 		else {
 			uasort($this->_items, $this->_sort);
 		}
+
+		$this->_sorted = true;
 	}
 
 	/**
