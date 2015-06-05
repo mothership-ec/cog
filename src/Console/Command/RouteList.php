@@ -26,7 +26,6 @@ class RouteList extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		ini_set('memory_limit', '2G');
 		$routes = $this->get('routes.compiled');
 
 		$output->writeln('<info>Found ' . count($routes) . ' registered routes.</info>');
