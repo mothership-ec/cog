@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AssetDump extends Command
 {
 	const USE_SYMLINKS = 'symlink';
+	const MODULE_SEPARATOR = '!';
 
 	protected function configure()
 	{
@@ -53,7 +54,7 @@ class AssetDump extends Command
 		$output->writeln('<info>Moving public assets for ' . count($modules) . ' modules.</info>');
 
 		foreach($modules as $module) {
-			$moduleName = str_replace("\\", ':', $module);
+			$moduleName = str_replace("\\", self::MODULE_SEPARATOR, $module);
 
 			// Directory locations
 			$originDir = $moduleLocator->getPath($module, false) . $resourcesDir;
