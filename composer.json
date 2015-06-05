@@ -29,7 +29,7 @@
 		"ext-mysqli"   : "*",
 		"ext-intl"     : "*",
 
-		"symfony/console"                  : "2.3.*",
+		"symfony/console"                  : "2.7.*",
 		"symfony/event-dispatcher"         : "2.1.*",
 		"symfony/form"                     : "2.3.*",
 		"symfony/validator"                : "2.3.*",
