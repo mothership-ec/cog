@@ -36,6 +36,12 @@ class Command extends BaseCommand implements ContainerAwareInterface
 		return $this->_services[$name];
 	}
 
+	/**
+	 * Create a Table output instance
+	 *
+	 * @param OutputInterface $output
+	 * @return Table
+	 */
 	protected function _getTable(OutputInterface $output)
 	{
 		return new Table($output);
