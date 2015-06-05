@@ -21,8 +21,8 @@ class Module extends Controller
 {
 	public function getFile($fileRef)
 	{
-		$givenPath = 'cog://public/cogules/' . $fileRef;
-		$bangPath  = 'cog://public/cogules' . str_replace(':', AssetDump::MODULE_SEPARATOR, $fileRef);
+		$givenPath = $this->_getBasePath() . $fileRef;
+		$bangPath  = $this->_getBasePath() . str_replace(':', AssetDump::MODULE_SEPARATOR, $fileRef);
 
 		try {
 			$file = new File($bangPath);
@@ -30,10 +30,15 @@ class Module extends Controller
 			try {
 				$file = new File($givenPath);
 			} catch (FileNotFoundException $e) {
-				return new Response('File not found', 404);
+				throw $this->createNotFoundException();
 			}
 		}
 
 		return new Response(readfile($file), 200, ['Content-Type' => $file->getMimeType() ?: 'text/plain']);
+	}
+
+	protected function _getBasePath()
+	{
+		return 'cog://public/cogules/';
 	}
 }
