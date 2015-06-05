@@ -23,7 +23,7 @@ class ViewNameParser extends TemplateNameParser
 	/**
 	 * Possible separators for module names
 	 */
-	const VIEW_SEPARATORS = [':', '!'];
+	const VIEW_SEPARATORS = ['!', ':'];
 
 	/**
 	 * Constructor.
@@ -117,6 +117,7 @@ class ViewNameParser extends TemplateNameParser
 		}
 
 		// Get the base file name from the reference parser
+		// this needs to be done last as the array's order matters
 		$checkPaths[] = $parsed->getFullPath('resources/view');
 
 		// Loop paths to check, returning on the first one to match
