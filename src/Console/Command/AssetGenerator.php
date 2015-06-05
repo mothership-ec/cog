@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Templating\TemplateReference;
 
 use Message\Cog\AssetManagement\TwigResource;
+use Message\Cog\Module\ReferenceParser;
 
 /**
  * AssetGenerator
@@ -80,7 +81,7 @@ class AssetGenerator extends Command
 
 		// Compile assets for all cogules
 		foreach ($modules as $module) {
-			$moduleName = str_replace("\\", ':', $module);
+			$moduleName = str_replace("\\", ReferenceParser::SEPARATOR, $module);
 
 			// Path for cogules' view directory
 			$originDir = $moduleLocator->getPath($module, false) . 'resources/view';

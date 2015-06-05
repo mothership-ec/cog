@@ -25,9 +25,9 @@ class EventListener extends BaseListener implements SubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			KernelEvents::RESPONSE => array(
-				array('renderProfiler', 1000),
-			),
+			// KernelEvents::RESPONSE => array(
+			// 	array('renderProfiler', 1000),
+			// ),
 			'modules.load.success' => array(
 				array('registerWhoopsHandlers'),
 				array('registerMonologHandlers'),
