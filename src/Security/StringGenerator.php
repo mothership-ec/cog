@@ -65,6 +65,8 @@ class StringGenerator
 			},
 		);
 
+		$string = null;
+
 		foreach ($calls as $call) {
 			try {
 				$string = $call();
