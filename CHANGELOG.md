@@ -1,5 +1,27 @@
 # Changelog
 
+## 4.4.2
+
+- Include `Zend\Escaper` library in `composer.json` file to prevent `d()` and `de()` functions breaking when xDebug is not installed
+
+## 4.4.1
+
+- Fix issue where falsy values such as empty strings were being converted to current datetimes when passed into the `Date` and `Datetime` fields
+
+## 4.4.0
+
+- Added `Filter` component
+- `FilterInterface`, representing a filter, added
+- `AbstractFilter` implementing `FilterInterface` covers default functionality for a filter
+- `FilterCollection` class for storing filters
+- `FilterForm` class for representing filters as a form for user interaction
+- `Filter\FormFactory` class for building instances of `FilterForm` from a `FilterCollection`
+- `Filter\DataBinder` class for assigning an array of form data to filters in a collection
+- `Filter\Exception\NoFiltersException` to be thrown when attempting to build a form from an empty `FilterCollection`
+- `Filter\Exception\NoValueSetException` to be thrown when attempting to use a filter with no value
+- Unit tests for entire `Filter` component
+- New `q` option for `DB\QueryParser`, which converts instances of `DB\QueryBuilderInterface` into a query string for subqueries
+
 ## 4.3.3
 
 - Fix invalid date format on `__toString()` method on `Datetime` field

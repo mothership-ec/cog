@@ -25,6 +25,10 @@ class Datetime extends Field
 
 	public function setValue($value)
 	{
+		if (is_scalar($value) && (string) $value === '') {
+			$value = null;
+		}
+
 		if (null !== $value && !$value instanceof \DateTime) {
 			if (!is_scalar($value)) {
 				throw new \InvalidArgumentException('Value must be a scalar type or a DateTime');
