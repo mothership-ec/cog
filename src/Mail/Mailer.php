@@ -188,7 +188,7 @@ class Mailer
 					$item = str_replace($char, '\\' . $char, $item);
 				}
 
-				// Case to string for faux-strict typing.
+				// Cast to string for faux-strict typing.
 				switch ((string) strpos($item, '@')) {
 					// If @ is not present, add a wildcard to each end of the string
 					case '':
