@@ -141,7 +141,7 @@ class Mailer
 	 */
 	protected function _whitelistFilter(array $addresses)
 	{
-		$filtered = array();
+		$filtered = [];
 
 		// Filter each address
 		foreach ($addresses as $address => $name) {
@@ -169,6 +169,7 @@ class Mailer
 	 * Convert whitelist array into a list of regular expressions
 	 *
 	 * @param array $whitelist   Whitelist to convert to regular expressions
+	 * @throws \LogicException   Throws exception if item in array is not a string
 	 *
 	 * @return array
 	 */
