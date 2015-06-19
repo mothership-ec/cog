@@ -12,8 +12,8 @@ See Swiftmailer docs here:
     $message = $this->get('mail.message');
 
     // You can use anything within SwiftMailer here.
-    $message->setTo('joe@message.co.uk', 'Joe Holdcroft');
-    $message->setFrom('test@message.co.uk');
+    $message->setTo('joe@example.com', 'Joe Bloggs');
+    $message->setFrom('test@example.com');
 
     // Set View has been added to Cog so that we can parse Views for the content.
     $message->setView('UniformWares:CMS::modules/mail', $params = array());
@@ -49,7 +49,7 @@ See Swiftmailer docs here:
     // SMTP
 
         $serviceContainer['mail.transport'] = function($c) {
-            $transport = new \Message\Cog\Mail\Transport\SMTP('mail.message.co.uk', 25);
+            $transport = new \Message\Cog\Mail\Transport\SMTP('mail.example.com', 25);
 
             $transport->setUsername('test');
             $transport->setPassword('testpw');

@@ -9,6 +9,22 @@ class Mailer
 	protected $_whitelistFallback;
 	protected $_whitelistEnabled = false;
 
+	/**
+	 * List of valid email characters that would need to be escaped to be part of a regex
+	 *
+	 * @var array
+	 */
+	private $_escapeCharacters = [
+		'.',
+		'-',
+		'$',
+		'&',
+		'(',
+		')',
+		'*',
+		'+',
+	];
+
 	public function __construct(\Swift_Mailer $swiftMailer)
 	{
 		$this->_swiftMailer = $swiftMailer;
@@ -89,22 +105,30 @@ class Mailer
 	/**
 	 * Set the whitelist
 	 *
-	 * @param  array $walterWhite
+	 * @param  array $whitelist
 	 * @return void
 	 */
-	public function setWhitelist($walterWhite)
+	public function setWhitelist($whitelist)
 	{
-		$this->_whitelist = $walterWhite;
+		$this->_whitelist = $whitelist;
 	}
 
 	/**
 	 * Add a regex test to the whitelist
 	 *
-	 * @param string $regex
+	 * @param array | string $whitelist
 	 */
-	public function addToWhitelist($regex)
+	public function addToWhitelist($whitelist)
 	{
-		$regex = is_array($regex) ? $regex : array($regex);
+		if (!$whitelist) {
+			return;
+		}
+
+		if (!is_array($whitelist) && !is_string($whitelist)) {
+			throw new \InvalidArgumentException('Whitelist must be either an array or string');
+		}
+
+		$regex = $this->_parseWhitelist((array) $whitelist);
 
 		$this->_whitelist = array_merge($this->_whitelist, $regex);
 	}
@@ -119,32 +143,68 @@ class Mailer
 	{
 		$filtered = array();
 
-		// If there are any whitelist tests
-		if (count($this->_whitelist) > 0) {
+		// Filter each address
+		foreach ($addresses as $address => $name) {
+			$matched = false;
 
-			// Filter each address
-			foreach ($addresses as $address => $name) {
-				$matched = false;
-
-				// Check against each whitelist regex test
-				foreach ($this->_whitelist as $regex) {
-					$matched = (bool) preg_match($regex, $address);
-					if ($matched) break;
-				}
-
-				// If the address did not match any of the tests, replace it with
-				// the fallback address.
-				if (false === $matched) {
-					$address = $this->_whitelistFallback;
-				}
-
-				$filtered[$address] = $name;
+			// Check against each whitelist regex test
+			foreach ($this->_whitelist as $regex) {
+				$matched = (bool) preg_match($regex, $address);
+				if ($matched) break;
 			}
-		}
-		else {
-			$filtered = $addresses;
+
+			// If the address did not match any of the tests, replace it with
+			// the fallback address.
+			if (false === $matched) {
+				$address = $this->_whitelistFallback;
+			}
+
+			$filtered[$address] = $name;
 		}
 
 		return $filtered;
+	}
+
+	/**
+	 * Convert whitelist array into a list of regular expressions
+	 *
+	 * @param array $whitelist   Whitelist to convert to regular expressions
+	 *
+	 * @return array
+	 */
+	private function _parseWhitelist(array $whitelist)
+	{
+		array_walk($whitelist, function(&$item) {
+
+			if (!is_string($item)) {
+				throw new \LogicException('Whitelist array must be made up of strings');
+			}
+
+			// Check if first character is a forward slash, assume it is already a regex if so
+			if (0 !== strpos($item, '/')) {
+				// Escape characters for regex
+				foreach ($this->_escapeCharacters as $char) {
+					$item = str_replace($char, '\\' . $char, $item);
+				}
+
+				// Case to string for faux-strict typing.
+				switch ((string) strpos($item, '@')) {
+					// If @ is not present, add a wildcard to each end of the string
+					case '':
+						$item = '/.+' . $item . '.+/';
+						break;
+					// If @ is the first character, add a wildcard to the start of the string
+					case '0':
+						$item = '/.+' . $item . '/';
+						break;
+					// If @ is present but not the first character, assume it is a whole email address and add no wildcards
+					default:
+						$item = '/' . $item . '/';
+						break;
+				}
+			}
+		});
+
+		return $whitelist;
 	}
 }
