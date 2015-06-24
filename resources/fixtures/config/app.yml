@@ -1,6 +1,6 @@
 name: My Application
 base-url: default.com
-default-contact-email: dev@message.co.uk
+default-contact-email: contact@default.com
 default-email-from:
   email: noreply@default.com
   name: My Application
