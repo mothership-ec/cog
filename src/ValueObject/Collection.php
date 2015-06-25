@@ -25,6 +25,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 
 	private $_items = [];
 
+	private $_sorted = false;
+
 	/**
 	 * Constructor.
 	 *
@@ -119,15 +121,25 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 *
 	 * @return Collection              Returns $this for chainability
 	 *
-	 * @throws \LogicException If collection is not empty
+	 * @throws \LogicException             If collection is not empty
+	 * @throws \InvalidArgumentException   If key is not a closure or scalar type
 	 */
 	public function setKey($key)
 	{
-		if ($this->count() > 0) {
-			throw new \LogicException(sprintf('Cannot set key "%s" on a non-empty collection', $this->_key));
+		if (!is_callable($key) && !is_scalar($key)) {
+			throw new \InvalidArgumentException('Key on ' . get_class($this) . ' must be either a closure, integer or string');
 		}
 
-		$this->_key = $key;
+		if ($this->count() > 0) {
+			if (is_scalar($key)) {
+				throw new \LogicException(sprintf('Cannot set key "%s" on a non-empty collection in %s', $key, get_class($this)));
+			} else {
+				throw new \LogicException(sprintf('Cannot set key (closure) on a non-empty collection in %s', get_class($this)));
+			}
+		}
+
+		$this->_key    = $key;
+		$this->_sorted = false;
 
 		return $this;
 	}
@@ -136,16 +148,21 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 * Set the collection type. This must be a fully-qualified class name if the
 	 * collection values will be instances of this class.
 	 *
-	 * @param  string $type     Fully-qualified class name
+	 * @param  string $type                 Fully-qualified class name
 	 *
-	 * @return Collection       Returns $this for chainability
+	 * @return Collection                   Returns $this for chainability
 	 *
-	 * @throws \LogicException If collection is not empty
+	 * @throws \LogicException            If collection is not empty
+	 * @throws \InvalidArgumentException  Throws exception if $type is not a string
 	 */
 	public function setType($type)
 	{
+		if (!is_string($type)) {
+			throw new \InvalidArgumentException('Type must be a string, ' . gettype($type) . ' given in ' . get_class($this));
+		}
+
 		if ($this->count() > 0) {
-			throw new \LogicException(sprintf('Cannot set type "%s" on a non-empty collection', $this->_type));
+			throw new \LogicException(sprintf('Cannot set type "%s" on a non-empty collection in %s', $type, get_class($this)));
 		}
 
 		$this->_type = $type;
@@ -167,13 +184,13 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	public function setSort(callable $sorter, $by = self::SORT_VALUE)
 	{
 		if ($by != self::SORT_VALUE and $by != self::SORT_KEY) {
-			throw new \LogicException('Sort by value must either be key or value');
+			throw new \LogicException('Sort by value must either be key or value in ' . get_class($this));
 		}
 
 		$this->_sort   = $sorter;
 		$this->_sortBy = $by;
 
-		$this->_sort();
+		$this->_sorted = false;
 
 		return $this;
 	}
@@ -218,17 +235,18 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	public function add($item)
 	{
 		if (!$this->_validate($item)) {
-			throw new \InvalidArgumentException('Does not meet validation requirements');
+			$type = gettype($item) === 'object' ? get_class($item) : gettype($item);
+			throw new \InvalidArgumentException('Added item of type ' . $type . 'does not meet validation requirements in ' . get_class($this));
 		}
 
 		$key = $this->_getKey($item);
 
 		if (null !== $this->_key && $this->exists($key) ) {
-			throw new \InvalidArgumentException(sprintf('Item with key "%s" already set on collection', $key));
+			throw new \InvalidArgumentException(sprintf('Item with key "%s" already set on collection in %s', $key, get_class($this)));
 		}
 
 		if ($this->_type && !($item instanceof $this->_type)) {
-			throw new \InvalidArgumentException(sprintf('Item must be an instance of "%s"', $this->_type));
+			throw new \InvalidArgumentException(sprintf('Item added to %s must be an instance of "%s"', get_class($this), $this->_type));
 		}
 
 		if (false !== $key) {
@@ -238,7 +256,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 			$this->_items[] = $item;
 		}
 
-		$this->_sort();
+		$this->_sorted = false;
 
 		return $this;
 	}
@@ -255,7 +273,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	public function remove($key)
 	{
 		if (!$this->exists($key)) {
-			throw new \InvalidArgumentException(sprintf('Identifier "%s" does not exist on collection', $this->_key));
+			throw new \InvalidArgumentException(sprintf('Identifier "%s" does not exist on collection in %s', $key, get_class($this)));
 		}
 
 		unset($this->_items[$key]);
@@ -275,7 +293,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	public function get($key)
 	{
 		if (!$this->exists($key)) {
-			throw new \InvalidArgumentException(sprintf('Identifier "%s" does not exist on collection', $key));
+			throw new \InvalidArgumentException(sprintf('Identifier "%s" does not exist on collection in %s', $key, get_class($this)));
 		}
 
 		return $this->_items[$key];
@@ -349,6 +367,10 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 */
 	public function all()
 	{
+		if (false === $this->_sorted) {
+			$this->_sort();
+		}
+
 		return $this->_items;
 	}
 
@@ -417,6 +439,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 		else {
 			uasort($this->_items, $this->_sort);
 		}
+
+		$this->_sorted = true;
 	}
 
 	/**
@@ -446,7 +470,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 
 		if (is_array($item)) {
 			if (!array_key_exists($this->_key, $item)) {
-				throw new \InvalidArgumentException('Item does not have key');
+				throw new \InvalidArgumentException('Item does not have key in ' . get_class($this));
 			}
 
 			return $item[$this->_key];
@@ -454,12 +478,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 
 		if (is_object($item)) {
 			if (!property_exists($item, $this->_key)) {
-				throw new \InvalidArgumentException('Item does not have key property');
+				throw new \InvalidArgumentException('Item does not have key property in ' . get_class($this));
 			}
 
 			return $item->{$this->_key};
 		}
 
-		throw new \InvalidArgumentException('Item must be array or object to have a key');
+		throw new \InvalidArgumentException('Item must be array or object to have a key in ' . get_class($this));
 	}
 }
