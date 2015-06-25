@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.5.0
+
+- Added `email.yml` config for setting a default email address to send emails to when site is not in 'live' mode. Also allows developers add set email addresses or partial email addresses to a whitelist, which determines which email addresses can be sent emails as if the site were live when in dev mode.
+- Removed references to `Message` in email whitelists and readme
+- Added `module_exists` Twig function to alias `moduleExists`
+- `moduleExists` and `module_exists` Twig functions allow namespaces to be delimited by backslashes or colons
+- Resolved issue in `ValueObject\Collection` class no longer error when trying to create the exception message if the key is a closure
+- `ValueObject\Collection` classes no longer sort unnecessarily, they will now sort as data leaves rather than on the way in
+- Updated `symfony/console` dependency to 2.7 minimum
+
 ## 4.4.3
 
 - Fix issue where integer field would break if value was empty
