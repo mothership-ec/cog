@@ -60,7 +60,7 @@ class ServiceList extends Command
 		$msg = 'Found %s registered services'.(strlen($term) ? ' matching `%s`' : '').'.';
 		$output->writeln(sprintf('<info>'.$msg.'</info>', count($result), $term));
 
-		$table = $this->getHelperSet()->get('table')
+		$table = $this->_getTable($output)
 			->setHeaders(array('Name', 'Type'));
 
 		foreach($result as $name => $service) {

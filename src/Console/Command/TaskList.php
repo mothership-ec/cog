@@ -40,8 +40,7 @@ class TaskList extends Command
 
 		$output->writeln('<info>Found ' . count($tasks) . ' registered tasks.</info>');
 
-		$table = $this->getHelperSet()->get('table')
-			->setHeaders(array('Name', 'Description', 'Scheduled', 'Next run date'));
+		$table = $this->_getTable($output)->setHeaders(array('Name', 'Description', 'Scheduled', 'Next run date'));
 
 		ksort($tasks);
 		foreach($tasks as $task) {
