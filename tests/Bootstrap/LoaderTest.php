@@ -8,6 +8,7 @@ use Message\Cog\HTTP\Request;
 use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Event\FauxDispatcher;
+use Mockery as m;
 
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,8 +25,18 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
+		$finder = m::mock('Message\Cog\Filesystem\Finder');
+		$finder->shouldReceive('files')->zeroOrMoreTimes()->andReturn($finder);
+		$finder->shouldReceive('in')->zeroOrMoreTimes()->andReturn([]);
+
 		$this->_services = new FauxContainer;
-		$this->_loader   = new Loader($this->_services);
+		$this->_loader   = new Loader($this->_services, $finder);
+
+		$this->_services['cache'] = function($c) {
+			$cache = m::mock('Message\Cog\Cache\CacheInterface');
+			$cache->shouldReceive('store')->with(m::type('string'), m::type('array'))->zeroOrMoreTimes();
+			return $cache;
+		};
 	}
 
 	public function testChainability()

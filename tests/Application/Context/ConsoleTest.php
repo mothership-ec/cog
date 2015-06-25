@@ -6,6 +6,7 @@ use Message\Cog\Application\Context\Console;
 use Message\Cog\Application\Environment;
 use Message\Cog\Test\Service\FauxContainer;
 use Message\Cog\Test\Console\Command\Foo1Command;
+use Mockery as m;
 
 class ConsoleTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,17 +23,26 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 	{
 		//var_dump(__CLASS__, $_SERVER['argv']);
 		$this->_context = new Console($this->_container, $args);
+		$command = m::mock('Message\Cog\Console\Command');
 
-		$this->_container['app.console']->setAutoExit(false);
-		$this->_container['app.console']->add(new Foo1Command);
+		$command->shouldReceive('setContainer')->zeroOrMoreTimes();
+		$command->shouldReceive('setApplication')->zeroOrMoreTimes();
+		$command->shouldReceive('isEnabled')->zeroOrMoreTimes()->andReturn(true);
+		$command->shouldReceive('getName')->zeroOrMoreTimes()->andReturn('foo:bar1');
+		$command->shouldReceive('getAliases')->zeroOrMoreTimes()->andReturn([]);
+		$command->shouldReceive('getSynopsis')->zeroOrMoreTimes()->andReturn('Synopsis');
+		$command->shouldReceive('run')->zeroOrMoreTimes()->andReturn(true);
+
+		$this->_container['console.app']->setAutoExit(false);
+		$this->_container['console.app']->add($command);
 	}
 
 	public function testConsoleServiceDefined()
 	{
 		$this->setUpContextClass();
 
-		$this->assertTrue($this->_container->isShared('app.console'));
-		$this->assertInstanceOf('Symfony\Component\Console\Application', $this->_container['app.console']);
+		$this->assertTrue($this->_container->isShared('console.app'));
+		$this->assertInstanceOf('Symfony\Component\Console\Application', $this->_container['console.app']);
 	}
 
 	/**
@@ -58,64 +68,15 @@ class ConsoleTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->setUpContextClass();
 
-		$console = $this->getMock(
-			'Symfony\Component\Console\Application',
-			array('run')
-		);
-
-		$console
-			->expects($this->once())
-			->method('run');
-
-		$this->_container['app.console'] = function() use ($console) {
-			return $console;
-		};
-
 		ob_start();
 		$this->_context->run();
 		ob_end_clean();
 
-		$name = $this->_container['app.console']->getName();
+		$name = $this->_container['console.app']->getName();
 
 		$this->assertInternalType('string', $name);
 		$this->assertFalse(empty($name), 'Console name is not empty');
 	}
-
-	public function testRunRunsConsole()
-	{
-		$this->setUpContextClass();
-
-		ob_start();
-		$this->_context->run();
-		ob_end_clean();
-	}
-
-	// public function testRunOutputsSomething()
-	// {
-	// 	$dispatcher = $this->getMock(
-	// 		'Message\Cog\HTTP\Dispatcher',
-	// 		array('handle', 'send'),
-	// 		array(),
-	// 		'',
-	// 		false
-	// 	);
-
-	// 	$dispatcher
-	// 		->expects($this->once())
-	// 		->method('handle')
-	// 		->with($this->equalTo($this->_container['http.request.master']))
-	// 		->will($this->returnValue($dispatcher));
-
-	// 	$dispatcher
-	// 		->expects($this->once())
-	// 		->method('send');
-
-	// 	$this->_container['http.dispatcher'] = function() use ($dispatcher) {
-	// 		return $dispatcher;
-	// 	};
-
-	// 	$this->_webContext->run();
-	// }
 
 	public function getEnvironmentOptions()
 	{
