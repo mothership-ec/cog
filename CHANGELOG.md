@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.5.1
+
+- Resolve issue where classes that extend ValueObject\Collection and override the constructor break as a result of there being no sort setting
+
 ## 4.5.0
 
 - Added `email.yml` config for setting a default email address to send emails to when site is not in 'live' mode. Also allows developers add set email addresses or partial email addresses to a whitelist, which determines which email addresses can be sent emails as if the site were live when in dev mode.
