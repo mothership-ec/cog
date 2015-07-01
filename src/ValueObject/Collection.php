@@ -433,6 +433,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 */
 	private function _sort()
 	{
+		// No sort set, set sorted to true and return
+		if (!$this->_sort) {
+			$this->_sorted = true;
+			return;
+		}
+
 		if (self::SORT_KEY === $this->_sortBy) {
 			uksort($this->_items, $this->_sort);
 		}
