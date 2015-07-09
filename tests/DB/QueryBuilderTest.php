@@ -148,6 +148,20 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
+	public function testGroupByArray()
+	{ 
+		$query = $this->_builder
+			->select("*")
+			->from('table')
+			->groupBy(['col', 'col2'])
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table GROUP BY col, col2";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
 	public function testOrderBy()
 	{
 		$query = $this->_builder
@@ -169,6 +183,20 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->from('table')
 			->orderBy('col')
 			->orderBy('col2')
+			->getQueryString()
+		;
+
+		$expected = "SELECT * FROM table ORDER BY col, col2";
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testOrderByArray()
+	{ 
+		$query = $this->_builder
+			->select("*")
+			->from('table')
+			->orderBy(['col', 'col2'])
 			->getQueryString()
 		;
 
