@@ -179,7 +179,7 @@ class Loader implements LoaderInterface
 			$migration   = $this->resolve($file, $row->path);
 
 			if (false !== $migration) {
-				$migrations[] = $this->resolve($file, $row->path);
+				$migrations[$row->path] = $this->resolve($file, $row->path);
 			} else {
 				$this->_failures[] = $file->getRealPath();
 			}

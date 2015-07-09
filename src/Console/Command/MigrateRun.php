@@ -30,27 +30,29 @@ class MigrateRun extends Command
 
 		// Get the loaded modules
 		$modules = $this->get('module.loader')->getModules();
+		$references = [];
 
 		foreach ($modules as $module) {
 
 			// Get the reference
-			$reference = '@' . str_replace('\\', ':', $module);
+			$references[] = '@' . str_replace('\\', ':', $module);
 
-			try {
-				$this->get('migration')->run($reference);
-			}
-			catch (\Message\Cog\DB\Exception $e) {
-				$output->writeln('<error>Migration error: Have you run `migrate:install`?</error>');
-				return;
-			}
-
-			// Output this migration's notes
-			foreach ($this->get('migration')->getNotes() as $note) {
-				$output->writeln($note);
-			}
-
-			// Clear the notes
-			$this->get('migration')->clearNotes();
 		}
+
+		try {
+			$this->get('migration')->runFromReferences($references);
+		}
+		catch (\Message\Cog\DB\Exception $e) {
+			$output->writeln('<error>Migration error: Have you run `migrate:install`?</error>');
+			return;
+		}
+
+		// Output this migration's notes
+		foreach ($this->get('migration')->getNotes() as $note) {
+			$output->writeln($note);
+		}
+
+		// Clear the notes
+		$this->get('migration')->clearNotes();
 	}
 }

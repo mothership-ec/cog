@@ -34,8 +34,28 @@ class Migrator {
 	 */
 	public function run($reference)
 	{
+		$this->runFromReferences([$reference]);
 		// Find the migrations in the path that have not yet been run
-		$migrations = $inPath = $this->_loader->getFromReference($reference);
+//		$migrations = $inPath = $this->_loader->getFromReference($reference);
+
+	}
+
+	public function runFromReferences(array $references)
+	{
+		$migrations = [];
+
+		foreach ($references as $reference) {
+			$migrationsForReference = $this->_loader->getFromReference($reference);
+
+			if (count($migrationsForReference) === 0) {
+				$this->_note("<comment>No migrations to run for `". $reference . "`</comment>");
+			}
+
+			$migrations = array_merge($migrations, $migrationsForReference);
+		}
+
+		ksort($migrations);
+
 		$run = $this->_loader->getAll();
 
 		// Diff the migrations in the path and those run to get new migrations
