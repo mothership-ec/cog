@@ -35,9 +35,6 @@ class Migrator {
 	public function run($reference)
 	{
 		$this->runFromReferences([$reference]);
-		// Find the migrations in the path that have not yet been run
-//		$migrations = $inPath = $this->_loader->getFromReference($reference);
-
 	}
 
 	public function runFromReferences(array $references)
