@@ -36,11 +36,10 @@ class MigrateRun extends Command
 
 			// Get the reference
 			$references[] = '@' . str_replace('\\', ':', $module);
-
 		}
 
 		try {
-			$this->get('migration')->runFromReferences($references);
+			$this->get('migrator')->runFromReferences($references);
 		}
 		catch (\Message\Cog\DB\Exception $e) {
 			$output->writeln('<error>Migration error: Have you run `migrate:install`?</error>');
@@ -48,11 +47,11 @@ class MigrateRun extends Command
 		}
 
 		// Output this migration's notes
-		foreach ($this->get('migration')->getNotes() as $note) {
+		foreach ($this->get('migrator')->getNotes() as $note) {
 			$output->writeln($note);
 		}
 
 		// Clear the notes
-		$this->get('migration')->clearNotes();
+		$this->get('migrator')->clearNotes();
 	}
 }

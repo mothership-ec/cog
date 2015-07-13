@@ -82,7 +82,8 @@ class Loader implements LoaderInterface
 		foreach ($files as $file) {
 			if ($file->isFile()) {
 				$fileReference = 'cog://' . $reference . 'resources/migrations/' . $file->getBasename();
-				$migrations[] = $this->resolve($file, $fileReference);
+				$key = $this->_getTimestamp($fileReference);
+				$migrations[$key] = $this->resolve($file, $fileReference);
 			}
 		}
 
@@ -178,14 +179,41 @@ class Loader implements LoaderInterface
 			$file = new File($row->path);
 			$migration   = $this->resolve($file, $row->path);
 
+			$key = (false !== $migration) ? $this->_getTimestamp($row->path) : $this->_getTimestamp($file->getRealPath());
+
 			if (false !== $migration) {
-				$migrations[$row->path] = $this->resolve($file, $row->path);
+				$migrations[$key] = $this->resolve($file, $row->path);
 			} else {
-				$this->_failures[] = $file->getRealPath();
+				$this->_failures[$key] = $file->getRealPath();
 			}
 		}
 
 		return $migrations;
+	}
+
+	private function _getTimestamp($path)
+	{
+		if (!is_string($path)) {
+			throw new \InvalidArgumentException('Path must be a string, ' . gettype($path) . ' given');
+		}
+
+		$valid = preg_match('/_[0-9]+_[_A-Za-z0-9]+\.php/', $path, $matches);
+
+		if ($valid) {
+			$match = array_shift($matches);
+			$valid = preg_match('/[0-9]+/', $match, $timestamp);
+
+			if ($valid) {
+				$timestamp = array_shift($timestamp);
+				$timestamp = str_pad($timestamp, 20, '0', STR_PAD_LEFT);
+
+				return $timestamp . $match;
+			} else {
+				throw new \LogicException('Could match filename in `' . $path . '` but not a timestamp');
+			}
+		}
+
+		throw new \LogicException('Could not find valid timestamp in `' . $path . '`');
 	}
 
 	private function _getFinder()

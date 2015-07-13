@@ -27,9 +27,9 @@ class MigrateRollback extends Command
 	{
 		$output->writeln('<info>Rolling back last migration batch...</info>');
 
-		$this->get('migration')->rollback();
+		$this->get('migrator')->rollback();
 
-		foreach ($this->get('migration')->getNotes() as $note) {
+		foreach ($this->get('migrator')->getNotes() as $note) {
 			$output->writeln($note);
 		}
 	}

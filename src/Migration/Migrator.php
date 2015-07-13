@@ -48,7 +48,7 @@ class Migrator {
 				$this->_note("<comment>No migrations to run for `". $reference . "`</comment>");
 			}
 
-			$migrations = array_merge($migrations, $migrationsForReference);
+			$migrations = $migrations + $migrationsForReference;
 		}
 
 		ksort($migrations);
