@@ -82,7 +82,7 @@ class Loader implements LoaderInterface
 		foreach ($files as $file) {
 			if ($file->isFile()) {
 				$fileReference = 'cog://' . $reference . 'resources/migrations/' . $file->getBasename();
-				$key = $this->_getTimestamp($fileReference);
+				$key = $this->_getKey($fileReference);
 				$migrations[$key] = $this->resolve($file, $fileReference);
 			}
 		}
@@ -179,7 +179,7 @@ class Loader implements LoaderInterface
 			$file = new File($row->path);
 			$migration   = $this->resolve($file, $row->path);
 
-			$key = (false !== $migration) ? $this->_getTimestamp($row->path) : $this->_getTimestamp($file->getRealPath());
+			$key = (false !== $migration) ? $this->_getKey($row->path) : $this->_getKey($file->getRealPath());
 
 			if (false !== $migration) {
 				$migrations[$key] = $this->resolve($file, $row->path);
@@ -191,7 +191,15 @@ class Loader implements LoaderInterface
 		return $migrations;
 	}
 
-	private function _getTimestamp($path)
+	/**
+	 * Use the timestamp in the filename to create a key, allowing the Migrator to order the migrations in chronological
+	 * order
+	 *
+	 * @param $path
+	 *
+	 * @return string
+	 */
+	private function _getKey($path)
 	{
 		if (!is_string($path)) {
 			throw new \InvalidArgumentException('Path must be a string, ' . gettype($path) . ' given');
