@@ -59,6 +59,7 @@ class Migrator {
 		foreach ($migrations as $key => $migration) {
 			foreach ($run as $r) {
 				if (get_class($migration) === get_class($r)) {
+					$this->_note("<comment>Migration `" . $migration->getReference() . "` already run</comment>");
 					unset($migrations[$key]);
 				}
 			}
@@ -184,7 +185,7 @@ class Migrator {
 	protected function _runCollection()
 	{
 		if (count($this->_collection) == 0) {
-			$this->_note("<comment>No migrations to run</comment>");
+			$this->_note("<comment>No migrations run</comment>");
 		}
 
 		$batch = $this->_getNextBatchNumber();
