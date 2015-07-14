@@ -31,14 +31,10 @@ class LinkedChoice extends AbstractType
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		foreach ($this->_groups as $name => $choices) {
-			// Cannot use array-merge as we need to preserve any integer keys.
-			$choiceData = ['none' => 'None'];
-			foreach ($choices as $key => $value) {
-				$choiceData[$key] = $value;
-			}
+			$choices = ['none' => 'None'] + $choices;
 
 			$builder->add($name, 'choice', array(
-				'choices'     => $choiceData,
+				'choices'     => $choices,
 				'empty_value' => 'Please select...',
 			));
 		}
