@@ -813,6 +813,11 @@ class Services implements ServicesInterface
 		};
 
 		// Shortcut to mysql migration adapter
+		$services['migrator'] = function($c) {
+			return $c['migration.mysql'];
+		};
+
+		// Preserved for backwards compatibility. Use more accurately named `migrator` instead.
 		$services['migration'] = function($c) {
 			return $c['migration.mysql'];
 		};

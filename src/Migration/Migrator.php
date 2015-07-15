@@ -34,14 +34,32 @@ class Migrator {
 	 */
 	public function run($reference)
 	{
-		// Find the migrations in the path that have not yet been run
-		$migrations = $inPath = $this->_loader->getFromReference($reference);
+		$this->runFromReferences([$reference]);
+	}
+
+	public function runFromReferences(array $references)
+	{
+		$migrations = [];
+
+		foreach ($references as $reference) {
+			$migrationsForReference = $this->_loader->getFromReference($reference);
+
+			if (count($migrationsForReference) === 0) {
+				$this->_note("<comment>No migrations to run for `". $reference . "`</comment>");
+			}
+
+			$migrations = $migrations + $migrationsForReference;
+		}
+
+		ksort($migrations);
+
 		$run = $this->_loader->getAll();
 
 		// Diff the migrations in the path and those run to get new migrations
 		foreach ($migrations as $key => $migration) {
 			foreach ($run as $r) {
 				if (get_class($migration) === get_class($r)) {
+					$this->_note("<comment>Migration `" . $migration->getReference() . "` already run</comment>");
 					unset($migrations[$key]);
 				}
 			}
@@ -167,7 +185,7 @@ class Migrator {
 	protected function _runCollection()
 	{
 		if (count($this->_collection) == 0) {
-			$this->_note("<comment>No migrations to run</comment>");
+			$this->_note("<comment>No migrations run</comment>");
 		}
 
 		$batch = $this->_getNextBatchNumber();

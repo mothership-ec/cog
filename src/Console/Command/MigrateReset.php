@@ -27,9 +27,9 @@ class MigrateReset extends Command
 	{
 		$output->writeln('<info>Resetting all migrations...</info>');
 
-		$this->get('migration')->reset();
+		$this->get('migrator')->reset();
 
-		foreach ($this->get('migration')->getNotes() as $note) {
+		foreach ($this->get('migrator')->getNotes() as $note) {
 			$output->writeln($note);
 		}
 	}
