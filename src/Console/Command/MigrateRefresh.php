@@ -27,9 +27,9 @@ class MigrateRefresh extends Command
 	{
 		$output->writeln('<info>Refreshing migrations...</info>');
 
-		$this->get('migration')->refresh();
+		$this->get('migrator')->refresh();
 
-		foreach ($this->get('migration')->getNotes() as $note) {
+		foreach ($this->get('migrator')->getNotes() as $note) {
 			$output->writeln($note);
 		}
 	}

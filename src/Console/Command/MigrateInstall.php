@@ -29,7 +29,7 @@ class MigrateInstall extends Command
 
 		$this->get('migration.mysql.loader')->install();
 
-		foreach ($this->get('migration')->getNotes() as $note) {
+		foreach ($this->get('migrator')->getNotes() as $note) {
 			$output->writeln($note);
 		}
 	}

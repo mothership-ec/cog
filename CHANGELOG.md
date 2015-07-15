@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.6.0
+
+- Migrations are sorted by timestamp and name before being run with the `migrate:run` command
+- Feedback provided when a migration has already been run
+- Migration names are validated before being run, a `\LogicException` is thrown if invalid
+- Added `runFromReferences()` method to `Migrator` class for looping through an array of references and sorting migrations before running them
+- Renamed `migration` service to `migrator` (`migration` is still available for backwards compatibility)
+
 ## 4.5.1
 
 - Resolve issue where classes that extend ValueObject\Collection and override the constructor break as a result of there being no sort setting
