@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.7.0
+
+- Resolve issue on `DB\QueryBuilder` where `groupBy()` and `orderBy()` would break if you gave it an array
+- Added unit tests for giving `groupBy()` an array, and for giving it an array twice
+- Added unit tests for giving `orderBy()` an array, and for giving it an array twice
+- Allow the sort on `Collection` class to be set to null via `setSort()`, which disables the sorting
+- Added unit tests for setting the sort to null on `Collection` class
+
 ## 4.6.0
 
 - Migrations are sorted by timestamp and name before being run with the `migrate:run` command
