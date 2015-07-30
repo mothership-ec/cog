@@ -1322,7 +1322,7 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v2.6.10",
+            "version": "v2.6.11",
             "target-dir": "Symfony/Component/OptionsResolver",
             "source": {
                 "type": "git",
