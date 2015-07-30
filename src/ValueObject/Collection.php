@@ -181,8 +181,14 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess, \Seria
 	 *
 	 * @throws  \LogicException If sort by is not by key or value
 	 */
-	public function setSort(callable $sorter, $by = self::SORT_VALUE)
+	public function setSort(callable $sorter = null, $by = self::SORT_VALUE)
 	{
+		if (null === $sorter) {
+			$this->_sort = null;
+
+			return $this;
+		}
+
 		if ($by != self::SORT_VALUE and $by != self::SORT_KEY) {
 			throw new \LogicException('Sort by value must either be key or value in ' . get_class($this));
 		}
