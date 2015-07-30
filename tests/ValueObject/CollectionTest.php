@@ -172,6 +172,49 @@ class CollectionTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * Test bypassing the sort and testing an array with no keys remains unsorted
+	 */
+	public function testSetSortAsNullNoKeys()
+	{
+		$collection = new Collection;
+		$collection->setSort(null);
+		$collection->add(3);
+		$collection->add(2);
+		$collection->add(6);
+		$collection->add(-1);
+		$collection->add('string');
+
+		$sorted = [3, 2, 6, -1, 'string'];
+
+		$this->assertSame($sorted, array_values($collection->all()));
+	}
+
+	/**
+	 * Test bypassing the sort and testing an array with keys remains unsorted
+	 */
+	public function testSetSortAsNullWithKeys()
+	{
+		$collection = new Collection;
+		$collection->setSort(null);
+
+		// Set key as equal to value
+		$collection->setKey(function ($item) {
+			return $item;
+		});
+
+		$collection->add(3);
+		$collection->add(2);
+		$collection->add(6);
+		$collection->add(-1);
+		$collection->add('string');
+
+		$sorted = [3, 2, 6, -1, 'string'];
+		$sorted = array_combine($sorted, $sorted);
+
+		$this->assertSame($sorted, $collection->all());
+	}
+
+	/**
 	 * Tests calling setSort() with a "by" that is not valid.
 	 *
 	 * @expectedException \LogicException
