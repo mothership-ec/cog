@@ -31,7 +31,8 @@ class LinkedChoice extends AbstractType
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
 		foreach ($this->_groups as $name => $choices) {
-			$choices = array_merge(array('none' => 'None'), $choices);
+			$choices = ['none' => 'None'] + $choices;
+
 			$builder->add($name, 'choice', array(
 				'choices'     => $choices,
 				'empty_value' => 'Please select...',
