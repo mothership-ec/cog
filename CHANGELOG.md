@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.7.1
+
+- Resolve issue where `LinkedChoice` form field would reset the keys of the choices array if they were numeric values
+
 ## 4.7.0
 
 - Resolve issue on `DB\QueryBuilder` where `groupBy()` and `orderBy()` would break if you gave it an array
