@@ -46,7 +46,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
 	public function testIsPublic()
 	{
-		$file = new File('cog://tmp/hello.txt');
+		$file = new File('cog://config/hello.txt');
 		$this->assertFalse($file->isPublic());
 
 		$file = new File('cog://public/files/image.jpg');
