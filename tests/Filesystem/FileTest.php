@@ -39,7 +39,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGettingNonPublicUrl()
 	{
-		$file = new File('cog://tmp/hello.txt');
+		$file = new File('cog://config/hello.txt');
 
 		$file->getPublicUrl();
 	}
