@@ -102,12 +102,12 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->will($this->returnValue($composer));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('isPackageCogModule')
 			->will($this->returnValue(true));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('getFixtures')
 			->will($this->returnValue(false));
 
@@ -155,12 +155,12 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->will($this->returnValue($io));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('isPackageCogModule')
 			->will($this->returnValue(true));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('getFixtures')
 			->will($this->throwException(new Exception('test message')));
 
@@ -203,12 +203,12 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->will($this->returnValue($io));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('isPackageCogModule')
 			->will($this->returnValue(true));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('getFixtures')
 			->will($this->returnValue($fixtures));
 
@@ -233,12 +233,12 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 		}
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('getWorkingDir')
 			->will($this->returnValue(vfsStream::url('root/application') . '/'));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('getConfigFixtureDir')
 			->will($this->returnValue(vfsStream::url('root/fixtures/config') . '/'));
 
@@ -284,12 +284,12 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 			->will($this->returnValue($io));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('isPackageCogModule')
 			->will($this->returnValue(true));
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('getFixtures')
 			->will($this->returnValue(array_keys($fixtures)));
 
@@ -304,7 +304,7 @@ class FixtureManagerTest extends \PHPUnit_Framework_TestCase
 		}
 
 		$manager
-			::staticExpects($this->any())
+			->expects($this->any())
 			->method('getConfigFixtureDir')
 			->will($this->returnValue(vfsStream::url('fixtures/config') . '/'));
 
