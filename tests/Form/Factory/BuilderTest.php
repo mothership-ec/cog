@@ -8,7 +8,7 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
 {
 	public function testConstruct()
 	{
-		$builder = new Builder;
+		$builder = new Builder([]);
 
 		$this->assertInstanceOf('\\Message\\Cog\\Form\\Factory\\Builder', $builder);
 	}

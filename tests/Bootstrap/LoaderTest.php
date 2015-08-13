@@ -12,6 +12,7 @@ use Message\Cog\Test\Event\FauxDispatcher;
 class LoaderTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_services;
+	protected $_finder;
 	protected $_loader;
 
 	static public function getContexts()
@@ -25,14 +26,10 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	public function setUp()
 	{
 		$this->_services = new FauxContainer;
-		$this->_loader   = new Loader($this->_services);
-	}
-
-	public function testChainability()
-	{
-		$this->assertEquals($this->_loader, $this->_loader->add(new Mocks\FauxFullBootstrap));
-		$this->assertEquals($this->_loader, $this->_loader->addFromDirectory(dirname(__FILE__), 'Not\A\Namespace'));
-		$this->assertEquals($this->_loader, $this->_loader->clear());
+		$this->_finder = $this->getMockBuilder('Message\\Cog\\Filesystem\\Finder')
+			->disableOriginalConstructor()
+			->getMock();
+		$this->_loader   = new Loader($this->_services, $this->_finder);
 	}
 
 	public function testAdd()
@@ -58,33 +55,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertInternalType('array', $loader->getBootstraps());
 		$this->assertEmpty($loader->getBootstraps());
-	}
-
-	/**
-	 * @todo Refactor so this test does not assume the directory read ordering
-	 *       will be by filename ascending - this might be different on different
-	 *       operating systems or distros.
-	 */
-	public function testAddFromDirectory()
-	{
-		$this->_services['request'] = function() {
-			return new Request;
-		};
-
-		$this->_loader->addFromDirectory(dirname(__FILE__) . '/Mocks', 'Message\Cog\Test\Bootstrap\Mocks');
-
-		$bootstraps = $this->_loader->getBootstraps();
-
-		// Assert only the valid bootstraps were loaded
-		$this->assertCount(4, $bootstraps);
-		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\ContainerAwareBootstrap', $bootstraps[0]);
-		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\FauxFullBootstrap', $bootstraps[1]);
-		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\MethodCallOrderTesterBootstrap', $bootstraps[2]);
-		$this->assertInstanceOf('Message\Cog\Test\Bootstrap\Mocks\RequestAwareBootstrap', $bootstraps[3]);
-
-		// Assert the 'Aware' bootstraps were made aware!
-		$this->assertEquals($this->_services, $bootstraps[0]->getContainer());
-		$this->assertEquals($this->_services['request'], $bootstraps[3]->getRequest());
 	}
 
 	/**

@@ -698,13 +698,4 @@ class HandlerTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertSame(array(), $this->_handler->getPost());
 	}
-
-	public function testGetMessages()
-	{
-		$this->_validator->expects($this->once())
-			->method('getMessages')
-			->will($this->returnValue(array('messages')));
-
-		$this->assertSame(array('messages'), $this->_handler->getMessages());
-	}
 }

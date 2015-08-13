@@ -234,13 +234,4 @@ class TextTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($this->_rule->match('123abc', '/[A-Z][a-z]+\s[a-z]+/'));
 		$this->assertFalse($this->_rule->match('Hello there', '/[0-9]+[a-z]+/'));
 	}
-
-	/**
-	 * @expectedException \Exception
-	 */
-	public function testMatchNonString()
-	{
-		$this->_rule->match('123', 123);
-	}
-
 }
