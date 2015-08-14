@@ -9,7 +9,7 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 
-class SaltTest extends \PHPUnit_Framework_TestCase
+class StringGeneratorTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_salt;
 	protected $_badHash;
@@ -35,16 +35,6 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($this->_dlength, strlen($this->_salt->generateFromOpenSSL($this->_dlength)));
 		$this->assertSame($this->_dlength, strlen($this->_salt->generateNatively($this->_dlength)));
 		$this->assertSame($this->_dlength, strlen($this->_salt->generate($this->_dlength)));
-	}
-
-	/**
-	 * @expectedException        \UnexpectedValueException
-	 * @expectedExceptionMessage could not be generated
-	 */
-	public function testGenerateThrowsExceptionWhenNoStringGenerated()
-	{
-		$this->markTestIncomplete('Needs writing. Will likely require mocking of `Salt`');
-		// mock the 3 generating methods so they all return false, then run ->generate()
 	}
 
 	public function testGenerateReturnValuesFormat()

@@ -30,16 +30,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($this->_loader, $this->_loader->registerClasses(array($this->_collection)));
 	}
 
-	/**
-	 * @expectedException \Exception
-	 */
-	public function testRegisterClassesInvalid()
-	{
-		$this->_loader->registerClasses(array(new \stdClass));
-
-		$this->fail('Exception not thrown');
-	}
-
 	public function testRegisterRule()
 	{
 		$loader = $this->_loader->registerRule('testRule', array($this->_collection, 'testRule'), 'test');

@@ -24,11 +24,6 @@ class MessagesTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('test message', $this->_messages->getDefaultErrorMessage('test'));
 	}
 
-	public function testAddFromRule()
-	{
-
-	}
-
 	public function testAddError()
 	{
 		$this->_messages->addError('test', 'test error');
