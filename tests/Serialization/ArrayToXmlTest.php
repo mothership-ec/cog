@@ -56,12 +56,15 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 		];
 
 		$serialized = $this->_serializer->serialize($data);
-		$expected = self::PREFIX . PHP_EOL .
-			'<xml><yes>1</yes><no/></xml>';
 
-		$xml = new \SimpleXMLElement($expected);
+		// Outcome can vary slightly depending on environment, annoyingly. However, there are tests to ensure that
+		// both formats can be deserialized
+		$expected  = [
+			self::PREFIX . PHP_EOL . '<xml><yes>1</yes><no/></xml>',
+			self::PREFIX . PHP_EOL . '<xml><yes>1</yes><no></no></xml>',
+		];
 
-		$this->assertSame(trim($xml->asXML()), $serialized);
+		$this->assertTrue(in_array($serialized, $expected));
 	}
 
 	public function testSerializeMultiDimensional()
