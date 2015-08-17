@@ -60,11 +60,8 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			'<xml><yes>1</yes><no/></xml>';
 
 		$xml = new \SimpleXMLElement($expected);
-		$parsed = trim($xml->asXML());
 
-		throw new \Exception($expected . PHP_EOL . $parsed . PHP_EOL . $serialized);
-
-		$this->assertSame($expected, $serialized);
+		$this->assertSame(trim($xml->asXML()), $serialized);
 	}
 
 	public function testSerializeMultiDimensional()
@@ -197,6 +194,20 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 	{
 		$data = self::PREFIX . PHP_EOL .
 			'<xml><yes>true</yes><no/></xml>';
+
+		$deserialized = $this->_serializer->deserialize($data);
+		$expected = [
+			'yes' => true,
+			'no'  => false,
+		];
+
+		$this->assertSame($expected, $deserialized);
+	}
+
+	public function testDeserializeWithBoolEmpty()
+	{
+		$data = self::PREFIX . PHP_EOL .
+			'<xml><yes>true</yes><no></no></xml>';
 
 		$deserialized = $this->_serializer->deserialize($data);
 		$expected = [
