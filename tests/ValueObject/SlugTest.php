@@ -99,7 +99,6 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 	{
 		$segments = array(
 			'(MY Website',
-			'bløgs',
 			'march!/2013',
 			'me & you',
 			'50 % 5 = 10.00',
@@ -110,10 +109,8 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($slug, $slug->sanitize());
 
 		$blogs = function_exists('iconv') ? 'blogs' : 'bl-gs';
-
 		$this->assertSame(array(
 			'my-website',
-			$blogs,
 			'march-2013',
 			'me-and-you',
 			'50-5-10-00',
@@ -130,7 +127,6 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertSame(array(
 			'my-website',
-			$blogs,
 			'march-2013',
 			'me-you',
 			'50-divided-by-5-equals-10',
