@@ -60,7 +60,9 @@ class ArrayToXmlTest extends \PHPUnit_Framework_TestCase
 			'<xml><yes>1</yes><no/></xml>';
 
 		$xml = new \SimpleXMLElement($expected);
-		$expected = trim($xml->asXML());
+		$parsed = trim($xml->asXML());
+
+		throw new \Exception($expected . PHP_EOL . $parsed . PHP_EOL . $serialized);
 
 		$this->assertSame($expected, $serialized);
 	}

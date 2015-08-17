@@ -109,10 +109,6 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertSame($slug, $slug->sanitize());
 
-		if (function_exists('iconv')) {
-			throw new \Exception('travis test');
-		}
-
 		$blogs = function_exists('iconv') ? 'blogs' : 'bl-gs';
 
 		$this->assertSame(array(
