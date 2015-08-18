@@ -8,7 +8,7 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		setlocale(LC_ALL, 'en_GB.UTF8');
+		setlocale(LC_ALL, 'en_GB');
 	}
 
 	public function testIterationAndCountable()
