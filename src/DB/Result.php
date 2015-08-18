@@ -4,6 +4,7 @@ namespace Message\Cog\DB;
 
 use Message\Cog\DB\Adapter\ConnectionInterface;
 use Message\Cog\DB\Adapter\ResultInterface;
+use Message\Cog\ValueObject\Collection;
 
 /**
 * Result class
@@ -201,13 +202,15 @@ class Result extends ResultArrayAccess
 	 *
 	 * @param  string $className          The fully qualified name of a class you wish to
 	 *                                    instantiate and bind data to.
-	 * @param  array  $args               Array of arguments to pass to the constructor
-	 * @param  bool   $force              True to bind properties even if they don't exist
+	 * @param  array        $args         Array of arguments to pass to the constructor
+	 * @param  bool         $force        True to bind properties even if they don't exist
+	 * @param  Collection   $cache        Cache to attempt to get objects from
+	 * @param  string|null  $force        The key to match the row to the
 	 * @throws \InvalidArgumentException  Throws exception if class name is not string or if not found
 	 *
 	 * @return array                      The updated object(s) with data bound to them.
 	 */
-	public function bindTo($className, array $args = array(), $force = false)
+	public function bindTo($className, array $args = array(), $force = false, Collection $cache = null, $cacheKey = null)
 	{
 		// Only strings can be passed in
 		if(!is_string($className)) {
@@ -219,10 +222,19 @@ class Result extends ResultArrayAccess
 			throw new \InvalidArgumentException(sprintf('`%s` class not found', $className));
 		}
 
+		$this->_setDefaultKeys($cacheKey);
+
 		$this->reset();
 
 		$result = array();
 		while($row = $this->_result->fetchObject()) {
+			if($cache !== null) {
+				if ($cache->exists($row->{$cacheKey})) {
+					$result[] = $cache->get($row->{$cacheKey});
+					continue;				
+				}
+			}
+
 			if ($args) {
 				$obj = new \ReflectionClass($className);
 				$obj = $obj->newInstanceArgs($args);
@@ -233,6 +245,10 @@ class Result extends ResultArrayAccess
 
 			$this->_bindPropertiesToObject($obj, $row, $force);
 			$result[] = $obj;
+
+			if ($cache !== null) {
+				$cache->add($obj);
+			}
 		}
 
 		return $result;
