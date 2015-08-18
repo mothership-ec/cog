@@ -7,6 +7,7 @@
 - `Slug::sanitize()` method comes with some character default replacements not always covered by `iconv()` function
 - `Result::bindTo()` can accept a `ValueObject\Collection` as its forth parameter to load objects from a cache. Use the fifth parameter to set the key of the collection
 - Unit test for cache on `Result::bindTo()` method
+- PHPUnit no longer uses deprecated strict mode
 
 ## 4.7.1
 
