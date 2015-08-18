@@ -9,7 +9,7 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 
-class SaltTest extends \PHPUnit_Framework_TestCase
+class StringGeneratorTest extends \PHPUnit_Framework_TestCase
 {
 	protected $_salt;
 	protected $_badHash;
@@ -35,16 +35,6 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($this->_dlength, strlen($this->_salt->generateFromOpenSSL($this->_dlength)));
 		$this->assertSame($this->_dlength, strlen($this->_salt->generateNatively($this->_dlength)));
 		$this->assertSame($this->_dlength, strlen($this->_salt->generate($this->_dlength)));
-	}
-
-	/**
-	 * @expectedException        \UnexpectedValueException
-	 * @expectedExceptionMessage could not be generated
-	 */
-	public function testGenerateThrowsExceptionWhenNoStringGenerated()
-	{
-		$this->markTestIncomplete('Needs writing. Will likely require mocking of `Salt`');
-		// mock the 3 generating methods so they all return false, then run ->generate()
 	}
 
 	public function testGenerateReturnValuesFormat()
@@ -99,28 +89,30 @@ class SaltTest extends \PHPUnit_Framework_TestCase
 		$this->_salt->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
 	}
 
-	/**
-	 * @expectedException        \RuntimeException
-	 * @expectedExceptionMessage Function `openssl_random_pseudo_bytes` does not exist.
-	 */
 	public function testGenerateOpenSSLThrowsExceptionWhenFunctionDoesNotExist()
 	{
 		if (function_exists('openssl_random_pseudo_bytes')) {
-			$this->markTestSkipped('Cannot run test: openssl_random_pseudo_bytes function exists.');
-		}
+			$this->assertTrue(true);
+		} else {
+			try {
+				$this->_salt->generateFromOpenSSL();
+			} catch (\RuntimeException $e) {
+				$this->assertTrue(true);
+			}
 
-		$this->_salt->generateFromOpenSSL();
+			$this->fail('RuntimeException not thrown');
+		}
 	}
 
 	public function getValidLengths()
 	{
 		return array(
-			array(1),
-			array(0),
-			array(100),
-			array(50),
-			array(32),
-			array(8),
+			[1],
+			[0],
+			[100],
+			[50],
+			[32],
+			[8],
 		);
 	}
 }

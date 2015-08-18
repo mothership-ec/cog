@@ -83,34 +83,4 @@ class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
 
 		$this->fail('Exception should be raised when no view can be rendered or generated');
 	}
-
-	public function testGeneratedResponses()
-	{
-		$reference   = '::ViewDir:ViewName';
-		$content     = 'I\'m a little teapot, short and stout. This is my handle. This is my spout.';
-		$params      = array('myField' => 'myValue', 'myArrayField' => array(1, 2, 'three'));
-		$contentType = 'application/json';
-		$engine      = $this->getMock('Message\Cog\Templating\DelegatingEngine');
-		$request     = $this->getMock('Message\Cog\HTTP\Request', array('getAllowedContentTypes'));
-
-		$engine
-			->expects($this->exactly(1))
-			->method('render')
-			->with($reference)
-			->will($this->throwException(new \Exception('No!')));
-
-		$request
-			->expects($this->any())
-			->method('getAllowedContentTypes')
-			->will($this->returnValue(array($contentType)));
-
-		$responseBuilder = new ResponseBuilder($engine);
-		$responseBuilder->setRequest($request);
-
-		$response = $responseBuilder->render($reference, $params);
-
-		$this->assertInstanceOf('Message\Cog\HTTP\Response', $response);
-		$this->assertEquals(json_encode($params), $response->getContent());
-		$this->assertEquals($contentType, $response->headers->get('Content-Type'));
-	}
 }

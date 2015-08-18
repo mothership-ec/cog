@@ -39,15 +39,12 @@ class NumberTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($this->_rule->min(1, 1));
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
 	public function testMinNonNumeric()
 	{
-		try {
-			$this->_rule->min(1, false);
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_rule->min(1, false);
 	}
 
 	public function testMaxTrue()

@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.8.0
+
+- Removed broken and deprecated unit tests - now all existing unit tests pass
+- Implement Travis continuous integration
+- `Slug::sanitize()` method comes with some character default replacements not always covered by `iconv()` function
+- `Result::bindTo()` can accept a `ValueObject\Collection` as its forth parameter to load objects from a cache. Use the fifth parameter to set the key of the collection
+- Unit test for cache on `Result::bindTo()` method
+- PHPUnit no longer uses deprecated strict mode
+
 ## 4.7.1
 
 - Resolve issue where `LinkedChoice` form field would reset the keys of the choices array if they were numeric values

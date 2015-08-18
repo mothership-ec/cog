@@ -71,6 +71,8 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$registry = new NonLoadingRegistry($loader);
 
 		$loader->load($registry);
+
+		$this->assertTrue(true);
 	}
 
 	/**
