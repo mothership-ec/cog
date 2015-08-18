@@ -133,7 +133,7 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertSame(array(
 			'my-website',
-			$blogs,
+			'blogs',
 			'march-2013',
 			'me-you',
 			'50-divided-by-5-equals-10',
