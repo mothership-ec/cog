@@ -210,17 +210,11 @@ class TypeTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * Test to check if an exception is thrown when given a timezone that doesn't exist
+	 * @expectedException \Exception
 	 */
 	public function testDateInvalidTimeZone()
 	{
-		try {
-			$this->_filter->date('10-10-1985', 'asdasdad');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_filter->date('10-10-1985', 'asdasdad');
 	}
 
 	/**

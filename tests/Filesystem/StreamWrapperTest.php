@@ -51,27 +51,6 @@ class StreamWrapperTest extends \PHPUnit_Framework_TestCase
 		@unlink(__DIR__.'/fixtures/tmp/poem.txt');
 	}
 
-	public function testMapping()
-	{
-		$this->manager->register('bob', function(){
-			$wrapper = new StreamWrapper;
-			$wrapper->setMapping(array(
-				"/^\/tmp\/(.*)/us" => __DIR__.'/fixtures/tmp/$1',
-			));
-
-			return $wrapper;
-		});
-
-		$contents = file_get_contents('bob://tmp/hello.txt');
-		$this->assertSame('world', $contents);
-
-		$path = 'bob://tmp/poem.txt';
-		file_put_contents($path, 'A short poem');
-		$this->assertSame('A short poem', file_get_contents($path));
-	
-		$this->assertSame(unlink($path), true);
-	}
-
 	public function testReferenceParser()
 	{
 		$self = $this;

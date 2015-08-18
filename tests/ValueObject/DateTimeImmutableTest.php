@@ -50,16 +50,6 @@ class DateTimeImmutableTest extends \PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('Message\Cog\ValueObject\DateTimeImmutable', $newDate);
 	}
 
-	public function testSetTimezone()
-	{
-		$date = new DateTimeImmutable('8 June 2013 1:50pm', new DateTimeZone('GMT'));
-		$newDate = $date->setTimezone(new DateTimeZone('BST'));
-
-		$this->assertNotSame($date, $newDate);
-		$this->assertNotEquals($date->format('d/m/y h:ia'), $newDate->format('d/m/y h:ia'));
-		$this->assertInstanceOf('Message\Cog\ValueObject\DateTimeImmutable', $newDate);
-	}
-
 	public function testSetTime()
 	{
 		$date = new DateTimeImmutable('21 March 2011 4:50am');

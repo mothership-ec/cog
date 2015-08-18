@@ -24,22 +24,6 @@ class ProfilerTest extends \PHPUnit_Framework_TestCase
 		$this->assertGreaterThanOrEqual($first['memory_usage_peak'], $last['memory_usage_peak']);
 	}
 
-	public function testAbsoluteSnapshots()
-	{
-		// sleep before we create the profiler
-		usleep(250000);
-		$profiler = new Profiler(null, null, false);
-		$profiler->poll();
-		$snapshots = $profiler->getSnapshots();
-		$first = reset($snapshots);
-		$last = end($snapshots);
-
-		$time = $last['execution_time'] - $first['execution_time'];
-
-		// usleep sometimes isnt very accurate so we use a fair window
-		$this->assertEquals(0, $time, null, 0.25);
-	}
-
 	public function testBasicHtmlOutput()
 	{
 		// sleep before we create the profiler

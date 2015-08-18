@@ -30,17 +30,6 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($this->_loader, $this->_loader->registerClasses(array($this->_collection)));
 	}
 
-	public function testRegisterClassesInvalid()
-	{
-		try {
-			$this->_loader->registerClasses(array(new \stdClass));
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
-	}
-
 	public function testRegisterRule()
 	{
 		$loader = $this->_loader->registerRule('testRule', array($this->_collection, 'testRule'), 'test');
@@ -106,61 +95,37 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * Test to ensure exception is thrown when rule is registered twice
+	 * @expectedException \Exception
 	 */
 	public function testRegisterRuleFailDuplicate()
 	{
-		try {
-			$this->_loader->registerRule('testRule', array($this->_collection, 'testRule'), 'test');
-			$this->_loader->registerRule('testRule', array($this->_collection, 'testRule'), 'test');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_loader->registerRule('testRule', array($this->_collection, 'testRule'), 'test');
+		$this->_loader->registerRule('testRule', array($this->_collection, 'testRule'), 'test');
 	}
 
 	/**
-	 * Test to ensure exception is thrown when filter is registered twice
+	 * @expectedException \Exception
 	 */
 	public function testRegisterFilterFailDuplicate()
 	{
-		try {
-			$this->_loader->registerFilter('testFilter', array($this->_collection, 'testFilter'));
-			$this->_loader->registerFilter('testFilter', array($this->_collection, 'testFilter'));
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this-fail('Exception not thrown');
+		$this->_loader->registerFilter('testFilter', array($this->_collection, 'testFilter'));
+		$this->_loader->registerFilter('testFilter', array($this->_collection, 'testFilter'));
 	}
 
 	/**
-	 * Test to ensure exception is thrown when rule is not callable
+	 * @expectedException \Exception
 	 */
 	public function testRegisterRuleFailNotCallable()
 	{
-		try {
-			$this->_loader->registerRule('testRule', array($this->_collection, 'not a real method'), 'testRule');
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_loader->registerRule('testRule', array($this->_collection, 'not a real method'), 'testRule');
 	}
 
 	/**
-	 * Test to ensure exception is thrown if filter is not callable
+	 * @expectedException \Exception
 	 */
 	public function testRegisterFilterFailNotCallable()
 	{
-		try {
-			$this->_loader->registerFilter('testFilter', array($this->_collection, 'not a real method'));
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
+		$this->_loader->registerFilter('testFilter', array($this->_collection, 'not a real method'));
 	}
 
 }
