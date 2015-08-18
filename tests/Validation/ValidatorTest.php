@@ -68,22 +68,6 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * Test exception is thrown if method does not exist
-	 */
-	public function testInvalidMethodName()
-	{
-		try {
-			$this->_validator
-				->addField('first_name')
-					->khaskd();
-		}
-		catch (\Exception $e) {
-			return;
-		}
-		$this->fail('Exception not thrown');
-	}
-
-	/**
 	 * Test method name is inverted if proceeded with 'not'
 	 */
 	public function testNotMethod()
