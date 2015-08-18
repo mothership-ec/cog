@@ -9,6 +9,14 @@ namespace Message\Cog\ValueObject;
  */
 class Slug implements \IteratorAggregate, \Countable
 {
+	// Characters not always picked up by iconv()
+	private $_substitutions = [
+		'ð' => 'd',
+		'Đ' => 'D',
+		'ø' => 'o',
+		'Ø' => 'O',
+	];
+
 	protected $_segments;
 
 	/**
@@ -97,6 +105,12 @@ class Slug implements \IteratorAggregate, \Countable
 	 */
 	public function sanitize(array $substitutions = array('&' => 'and'))
 	{
+		// Only replace accented characters declared by $this->_substitutions if iconv() exists as otherwise
+		// there would be an inconsistency in the final result
+		if (function_exists('iconv')) {
+			$substitutions = array_merge($this->_substitutions, $substitutions);
+		}
+
 		foreach ($this->_segments as $i => $segment) {
 			// Perform substitutions
 			foreach ($substitutions as $find => $replace) {
@@ -104,7 +118,7 @@ class Slug implements \IteratorAggregate, \Countable
 			}
 			// Transliterate
 			if (function_exists('iconv')) {
-				$segment = iconv('UTF-8', 'ASCII//TRANSLIT', $segment);
+				$segment = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $segment);
 				// Remove any weird characters added by the transliteration
 				$segment = str_replace(array('"', '\'', '`', '^'), '', $segment);
 			}
