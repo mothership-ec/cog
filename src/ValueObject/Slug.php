@@ -98,7 +98,7 @@ class Slug implements \IteratorAggregate, \Countable
 	public function sanitize(array $substitutions = array('&' => 'and'))
 	{
 		$mbSubChar = mb_substitute_character();
-		mb_substitute_character("none");
+		mb_substitute_character("long");
 		foreach ($this->_segments as $i => $segment) {
 			// Perform substitutions
 			foreach ($substitutions as $find => $replace) {
