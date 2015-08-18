@@ -6,6 +6,11 @@ use Message\Cog\ValueObject\Slug;
 
 class SlugTest extends \PHPUnit_Framework_TestCase
 {
+	public function setUp()
+	{
+		setlocale(LC_ALL, 'en_GB.UTF8');
+	}
+
 	public function testIterationAndCountable()
 	{
 		$segments = array(
