@@ -102,44 +102,42 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 
 	public function testSanitize()
 	{
-		if (function_exists('iconv')) {
-			$segments = array(
-				'(MY Website',
-				'bløgs',
-				'march!/2013',
-				'me & you',
-				'50 % 5 = 10.00',
-				'YåYéî!',
-			);
-			$slug = new Slug($segments);
+		$segments = array(
+			'(MY Website',
+			'bløgs',
+			'march!/2013',
+			'me & you',
+			'50 % 5 = 10.00',
+			'YåYéî!',
+		);
+		$slug = new Slug($segments);
 
-			$this->assertSame($slug, $slug->sanitize());
+		$this->assertSame($slug, $slug->sanitize());
 
-			$this->assertSame(array(
-				'my-website',
-				'blogs',
-				'march-2013',
-				'me-and-you',
-				'50-5-10-00',
-				'yayei',
-			), $slug->getSegments());
+		$this->assertSame(array(
+			'my-website',
+			'blogs',
+			'march-2013',
+			'me-and-you',
+			'50-5-10-00',
+			'yayei',
+		), $slug->getSegments());
 
-			$slug = new Slug($segments);
+		$slug = new Slug($segments);
 
-			$this->assertSame($slug, $slug->sanitize(array(
-				'%' => 'Divided By',
-				'=' => 'equals',
-				'.00' => '',
-			)));
+		$this->assertSame($slug, $slug->sanitize(array(
+			'%' => 'Divided By',
+			'=' => 'equals',
+			'.00' => '',
+		)));
 
-			$this->assertSame(array(
-				'my-website',
-				'blogs',
-				'march-2013',
-				'me-you',
-				'50-divided-by-5-equals-10',
-				'yayei',
-			), $slug->getSegments());
-		}
+		$this->assertSame(array(
+			'my-website',
+			'blogs',
+			'march-2013',
+			'me-you',
+			'50-divided-by-5-equals-10',
+			'yayei',
+		), $slug->getSegments());
 	}
 }
