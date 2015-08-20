@@ -13,7 +13,7 @@ use Message\Cog\DB\Adapter\QueryCountableInterface;
 class Query implements QueryableInterface
 {
 	protected $_connection;
-	protected $_params;
+	protected $_params = [];
 	protected $_query;
 	protected $_parsedQuery;
 	protected $_queryParser;
@@ -52,7 +52,8 @@ class Query implements QueryableInterface
 		if ($query) {
 			$this->_query  = $query;
 		}
-		$this->_params = (array)$params;
+
+		$this->_params = array_merge($this->_params, $params);
 
 		$this->_parsedQuery = $this->_queryParser->parse($this->_query, $this->_params);
 
@@ -63,6 +64,13 @@ class Query implements QueryableInterface
 		}
 
 		return new Result($result, clone $this);
+	}
+
+	public function addParams(array $params)
+	{
+		$this->_params = array_merge($this->_params, $params);
+
+		return $this;
 	}
 
 	/**

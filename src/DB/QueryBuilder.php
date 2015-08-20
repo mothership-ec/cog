@@ -42,6 +42,8 @@ class QueryBuilder implements QueryBuilderInterface
 
 	private $_query;
 
+	private $_params = [];
+
 	public function __construct(ConnectionInterface $connection, QueryParser $parser)
 	{
 		$this->_connection = $connection;
@@ -333,6 +335,18 @@ class QueryBuilder implements QueryBuilderInterface
 		return $this;
 	}
 
+	public function addParams(array $params)
+	{
+		$this->_params = array_merge($this->_params, $params);
+
+		return $this;
+	}
+
+	public function run()
+	{
+		return $this->getQuery()->run();
+	}
+
 	/**
 	 * Creates and returns the Query object to execute
 	 *
@@ -461,7 +475,7 @@ class QueryBuilder implements QueryBuilderInterface
 			$this->_query .= PHP_EOL . self::UNION_ALL . PHP_EOL . $union->getQueryString();
 		}
 
-		return $this->_query;
+		return $this->_parser->parse($this->_query, $this->_params);
 	}
 
 	/**
