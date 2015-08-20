@@ -13,8 +13,8 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_parser  = m::mock('Message\Cog\DB\QueryParser');
 		$this->_connect = m::mock('Message\Cog\DB\Adapter\ConnectionInterface');
+		$this->_parser  = m::mock('Message\Cog\DB\QueryParser');
 		$this->_builder = new QueryBuilder($this->_connect, $this->_parser);
 	}
 	
@@ -373,19 +373,6 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		;
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
-	}
-
-	public function testAddParams()
-	{
-		$expected = 'SELECT hello FROM world';
-		$query = $this->_builder
-			->select(':test?s')
-			->from('world')
-			->addParams(['test' => 'hello'])
-			->getQueryString()
-		;
-
-		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)))
 	}
 
 	public function testHaving()
