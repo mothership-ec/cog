@@ -375,6 +375,19 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
+	public function testAddParams()
+	{
+		$expected = 'SELECT hello FROM world';
+		$query = $this->_builder
+			->select(':test?s')
+			->from('world')
+			->addParams(['test' => 'hello'])
+			->getQueryString()
+		;
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)))
+	}
+
 	public function testHaving()
 	{
 		$this->_parser->shouldReceive('parse')->once()
