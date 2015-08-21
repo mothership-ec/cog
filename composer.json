@@ -65,8 +65,7 @@
 	},
 	"require-dev": {
 		"mikey179/vfsStream"              : "1.1.*",
-		"mockery/mockery"                 : "~0.9",
-		"hamcrest/hamcrest-php"           : "~1.2"
+		"mockery/mockery"                 : "~0.9"
 	},
 	"suggest": {
 
