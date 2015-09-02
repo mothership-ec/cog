@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.9.0
+
+- Added `addParams()` method to `QueryBuilder`, allowing developers to add extra parameters for parsing ad hoc, i.e. not just in where statements
+- `QueryBuilder` parses queries when `getQueryString()` is called
+- Added `run()` method to `QueryBuilder` which calls `run()` on the `Query` object itself
+- Deprecated `QueryBuilderInterface` as it was too restrictive, just use `QueryBuilder` instead
+- Added protected `_getConnection()` method to `QueryParser` instead of calling `$this->_connection` directly
+- Amended `QueryBuilder` unit tests to accommodate the `QueryParser::parse()` call in `getQueryString()`
+- Disabled email notifications on Travis
+
 ## 4.8.0
 
 - Removed broken and deprecated unit tests - now all existing unit tests pass

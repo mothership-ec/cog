@@ -49,7 +49,7 @@ class QueryParser
 			return $statement;
 		}
 
-		$connection = $this->_connection;
+		$connection = $this->_getConnection();
 		$fields     = $variables;
 		$types      = $this->_typeTokens;
 		$self       = $this;
@@ -143,5 +143,10 @@ class QueryParser
 		}
 
 		return $safe;
+	}
+
+	protected function _getConnection()
+	{
+		return $this->_connection;
 	}
 }
