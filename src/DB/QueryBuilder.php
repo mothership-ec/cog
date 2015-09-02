@@ -335,6 +335,13 @@ class QueryBuilder implements QueryBuilderInterface
 		return $this;
 	}
 
+	/**
+	 * Add parameters ad hoc to the query string for parsing when `getQueryString()` is called
+	 *
+	 * @param array $params
+	 *
+	 * @return QueryBuilder			Return $this for chainability
+	 */
 	public function addParams(array $params)
 	{
 		$this->_params = array_merge($this->_params, $params);
@@ -342,6 +349,11 @@ class QueryBuilder implements QueryBuilderInterface
 		return $this;
 	}
 
+	/**
+	 * Calls `run()` on the instanciated `Query` object and returns the result
+	 *
+	 * @return Result
+	 */
 	public function run()
 	{
 		return $this->getQuery()->run();
