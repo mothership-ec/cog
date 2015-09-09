@@ -2,6 +2,15 @@
 
 namespace Message\Cog\DB;
 
+/**
+ * Interface QueryBuilderInterface
+ * @package Message\Cog\DB
+ *
+ * @author  Eleanor Shakeshaft <eleanor@message.co.uk>
+ *
+ * @deprecated No need for QueryBuilder to be tied to an interface as it is the only object of its type and having
+ *             an interface restricts development for it
+ */
 interface QueryBuilderInterface
 {
 

@@ -13,26 +13,35 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_parser  = m::mock('Message\Cog\DB\QueryParser');
 		$this->_connect = m::mock('Message\Cog\DB\Adapter\ConnectionInterface');
+		$this->_parser  = m::mock('Message\Cog\DB\QueryParser');
 		$this->_builder = new QueryBuilder($this->_connect, $this->_parser);
 	}
 	
 	public function testSelectFromSimple()
 	{
+		$expected = "SELECT * FROM table";
+		$this->_parser->shouldReceive('parse')
+			->once()
+			->passthru()
+		;
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testMultiipleSelect()
 	{
+		$expected = "SELECT col_1, col_2, col_3, col_4 FROM table";
+		$this->_parser->shouldReceive('parse')->once()
+			->passthru()
+		;
+
 		$query = $this->_builder
 			->select("col_1")
 			->select("col_2")
@@ -42,33 +51,37 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT col_1, col_2, col_3, col_4 FROM table";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testSelectArray()
 	{
+		$expected = "SELECT col_1, col_2, col_3, col_4 FROM table";
+		$this->_parser->shouldReceive('parse')->once()
+			->passthru()
+		;
+
 		$query = $this->_builder
 			->select(["col_1", "col_2", "col_3", "col_4"])
 			->from('table')
 			->getQueryString()
 		;
 
-		$expected = "SELECT col_1, col_2, col_3, col_4 FROM table";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testSelectDistinct()
 	{
+		$expected = "SELECT DISTINCT * FROM table";
+		$this->_parser->shouldReceive('parse')->once()
+			->passthru()
+		;
+
 		$query = $this->_builder
 			->select("*", true)
 			->from('table')
 			->getQueryString()
 		;
-
-		$expected = "SELECT DISTINCT * FROM table";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -78,7 +91,10 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->_parser->shouldReceive('parse')->once()
 			->with('col = variable', [])
 			->andReturn('col = variable');
-	
+
+		$expected = "SELECT * FROM table WHERE col = variable";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -86,7 +102,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table WHERE col = variable";
+
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -105,6 +121,9 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->with('col3 = ?s', ['ORstring'])
 			->andReturn("col3 = 'ORstring'");
 
+		$expected = "SELECT * FROM table WHERE col = 'string' AND col2 = 100 OR col3 = 'ORstring'";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -114,13 +133,13 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table WHERE col = 'string' AND col2 = 100 OR col3 = 'ORstring'";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testGroupBy()
 	{
+		$expected = "SELECT * FROM table GROUP BY col";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -128,14 +147,15 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table GROUP BY col";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testGroupByMulti()
-	{ 
-		$query = $this->_builder
+	{
+		$expected = "SELECT * FROM table GROUP BY col, col2";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
+			$query = $this->_builder
 			->select("*")
 			->from('table')
 			->groupBy('col')
@@ -143,13 +163,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table GROUP BY col, col2";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testGroupByArray()
-	{ 
+	{
+		$expected = "SELECT * FROM table GROUP BY col, col2";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -157,13 +178,15 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table GROUP BY col, col2";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testGroupByArrayMulti()
-	{ 
+	{
+		$expected = "SELECT * FROM table GROUP BY col, col2, col3, col4";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -172,13 +195,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table GROUP BY col, col2, col3, col4";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testOrderBy()
 	{
+		$expected = "SELECT * FROM table ORDER BY col";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -186,13 +210,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table ORDER BY col";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testOrderByMulti()
-	{ 
+	{
+		$expected = "SELECT * FROM table ORDER BY col, col2";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -201,13 +226,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table ORDER BY col, col2";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testOrderByArray()
-	{ 
+	{
+		$expected = "SELECT * FROM table ORDER BY col, col2";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -215,13 +241,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table ORDER BY col, col2";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testOrderByArrayMulti()
-	{ 
+	{
+		$expected = "SELECT * FROM table ORDER BY col, col2, col3, col4";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -230,13 +257,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table ORDER BY col, col2, col3, col4";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testLimit()
 	{
+		$expected = "SELECT * FROM table LIMIT 2";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -244,13 +272,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table LIMIT 2";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testLimitToFrom()
 	{
+		$expected = "SELECT * FROM table LIMIT 2, 5";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -258,13 +287,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table LIMIT 2, 5";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testOrderGroupLimit()
 	{
+		$expected = "SELECT * FROM table GROUP BY col, col1 ORDER BY col2, col3 LIMIT 2";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -276,21 +306,19 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table GROUP BY col, col1 ORDER BY col2, col3 LIMIT 2";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testFromAlias()
 	{
+		$expected = "SELECT * FROM from_table alias";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('alias', 'from_table')
 			->getQueryString()
 		;
-
-
-		$expected = "SELECT * FROM from_table alias";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -303,21 +331,20 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->from('from_table')
 		;
 
+		$expected = "SELECT * FROM (SELECT * FROM from_table) alias";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('alias', $fromTable)
 			->getQueryString()
 		;
 
-
-		$expected = "SELECT * FROM (SELECT * FROM from_table) alias";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testFromWithUnion()
 	{
-
 		$table_b = new QueryBuilder($this->_connect, $this->_parser);
 		$table_b
 			->select('*')
@@ -336,14 +363,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->union($table_b)
 		;
 
+		$expected = "SELECT * FROM (SELECT * FROM table_a UNION SELECT * FROM table_b) alias";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('alias', $fromTable)
 			->getQueryString()
 		;
-
-
-		$expected = "SELECT * FROM (SELECT * FROM table_a UNION SELECT * FROM table_b) alias";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -353,15 +380,16 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->_parser->shouldReceive('parse')->once()
 			->with('col = variable', [])
 			->passthru();
-	
+
+		$expected = "SELECT * FROM table HAVING col = variable";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
 			->having('col = variable')
 			->getQueryString()
 		;
-
-		$expected = "SELECT * FROM table HAVING col = variable";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -370,7 +398,10 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->_parser->shouldReceive('parse')->times(3)
 			->passthru();
-	
+
+		$expected = "SELECT * FROM table HAVING col_a = a AND col_b = b OR col_c = c";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -379,8 +410,6 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->having('col_c = c', [], false)
 			->getQueryString()
 		;
-
-		$expected = "SELECT * FROM table HAVING col_a = a AND col_b = b OR col_c = c";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -403,6 +432,9 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->passthru()
 		;
 
+		$expected = "SELECT * FROM table WHERE col = variable";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
@@ -413,13 +445,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$query->run();
 		$query = $query->getParsedQuery();
 
-		$expected = "SELECT * FROM table WHERE col = variable";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testJoinSimple()
 	{
+		$expected = "SELECT * FROM table_a JOIN table_b ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table_a')
@@ -427,13 +460,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table_a JOIN table_b ON id = id";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testJoinAlias()
 	{
+		$expected = "SELECT * FROM table_a JOIN table_b alias ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table_a')
@@ -441,13 +475,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table_a JOIN table_b alias ON id = id";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testLeftJoinSimple()
 	{
+		$expected = "SELECT * FROM table_a LEFT JOIN table_b ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table_a')
@@ -455,21 +490,21 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table_a LEFT JOIN table_b ON id = id";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testLeftJoinAlias()
 	{
+		$expected = "SELECT * FROM table_a LEFT JOIN table_b alias ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query = $this->_builder
 			->select("*")
 			->from('table_a')
 			->leftJoin('alias', 'id = id', 'table_b')
 			->getQueryString()
 		;
-
-		$expected = "SELECT * FROM table_a LEFT JOIN table_b alias ON id = id";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -482,6 +517,9 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->from('table_b')
 		;
 
+		$expected = "SELECT * FROM table_a JOIN (SELECT * FROM table_b) alias ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$query =  $this->_builder
 			->select("*")
 			->from('table_a')
@@ -489,13 +527,14 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->getQueryString()
 		;
 
-		$expected = "SELECT * FROM table_a JOIN (SELECT * FROM table_b) alias ON id = id";
-
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
 	public function testLeftJoinQB()
 	{
+		$expected = "SELECT * FROM table_a LEFT JOIN (SELECT * FROM table_b) alias ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
 		$table_a = new QueryBuilder($this->_connect, $this->_parser);
 		$table_a
 			->select('*')
@@ -508,8 +547,6 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->leftJoin('alias', 'id = id', $table_a)
 			->getQueryString()
 		;
-
-		$expected = "SELECT * FROM table_a LEFT JOIN (SELECT * FROM table_b) alias ON id = id";
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
@@ -719,6 +756,8 @@ accepted = 1
 AND status_code >= 2200
 AND item.product_id NOT IN (9)
 AND item.completed_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())) all';
+
+		$this->_parser->shouldReceive('parse')->once()->andReturn($expected);
 
 		$this->assertEquals(trim(preg_replace('/\s+/', ' ', $expected)), trim(preg_replace('/\s+/', ' ', $query->getQueryString())));
 	}
