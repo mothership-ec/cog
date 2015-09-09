@@ -813,6 +813,11 @@ class Services implements ServicesInterface
 		};
 
 		// Shortcut to mysql migration adapter
+		$services['migrator'] = function($c) {
+			return $c['migration.mysql'];
+		};
+
+		// Preserved for backwards compatibility. Use more accurately named `migrator` instead.
 		$services['migration'] = function($c) {
 			return $c['migration.mysql'];
 		};
@@ -850,12 +855,11 @@ class Services implements ServicesInterface
 			$swift = new \Swift_Mailer($c['mail.transport']);
 			$dispatcher = new Cog\Mail\Mailer($swift);
 
-			$dispatcher->setWhitelistFallback('dev@message.co.uk');
-			$dispatcher->addToWhitelist('/.+@message\.co\.uk/');
-			$dispatcher->addToWhitelist('/.+@message\.uk\.com/');
+			$dispatcher->setWhitelistFallback($c['cfg']->email->fallbackEmail);
+			$dispatcher->addToWhitelist($c['cfg']->email->whitelist);
 
 			// Only enable whitelist filtering on non-live environments
-			if ($c['env']!== 'live') {
+			if ($c['env'] !== 'live') {
 				$dispatcher->enableToFiltering();
 			}
 

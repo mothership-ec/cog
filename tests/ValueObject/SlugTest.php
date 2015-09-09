@@ -6,6 +6,11 @@ use Message\Cog\ValueObject\Slug;
 
 class SlugTest extends \PHPUnit_Framework_TestCase
 {
+	public function setUp()
+	{
+		setlocale(LC_ALL, 'en_GB');
+	}
+
 	public function testIterationAndCountable()
 	{
 		$segments = array(
@@ -121,8 +126,8 @@ class SlugTest extends \PHPUnit_Framework_TestCase
 		$slug = new Slug($segments);
 
 		$this->assertSame($slug, $slug->sanitize(array(
-			'%'   => 'Divided By',
-			'='   => 'equals',
+			'%' => 'Divided By',
+			'=' => 'equals',
 			'.00' => '',
 		)));
 

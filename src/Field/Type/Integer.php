@@ -22,6 +22,17 @@ class Integer extends Field
 		return 'number';
 	}
 
+	public function setValue($value)
+	{
+		if ($value === '' || $value === null) {
+			$value = null;
+		} else {
+			$value = (int) $value;
+		}
+
+		parent::setValue($value);
+	}
+
 	public function getFormField(FormBuilder $form)
 	{
 		$form->add($this->getName(), 'number', $this->getFieldOptions());

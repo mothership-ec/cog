@@ -2,6 +2,7 @@
 
 namespace Message\Cog\Test\DB;
 
+use Mockery as m;
 
 class ResultTest extends \PHPUnit_Framework_TestCase
 {
@@ -290,6 +291,87 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 		$obj->forename = 'Joe';
 		$obj->surname = 'Bloggs';
 		$testClasses[] = $obj;
+
+		$this->assertEquals($testClasses, $result);
+	}
+
+	public function testBindToWithCache()
+	{
+		$testClasses = [];
+
+		$james = new BindClass;
+		$james->forename = 'James';
+		$james->surname = 'Moss';
+		$testClasses[] = $james;
+
+		$joeH = new BindClass;
+		$joeH->forename = 'Joe';
+		$joeH->surname = 'Holdcroft';
+		$testClasses[] = $joeH;
+
+		$danny = new BindClass;
+		$danny->forename = 'Danny';
+		$danny->surname = 'Hannah';
+		$testClasses[] = $danny;
+
+		$joeB = new BindClass;
+		$joeB->forename = 'Joe';
+		$joeB->surname = 'Bloggs';
+		$testClasses[] = $joeB;
+
+		$cache = m::mock('\\Message\\Cog\\ValueObject\\Collection')
+
+			// cache returns the ones we have
+			->shouldReceive('exists')
+			->with('James')
+			->once()
+			->andReturn(true)
+
+			->shouldReceive('get')
+			->with('James')
+			->once()
+			->andReturn($james)
+
+			->shouldReceive('exists')
+			->with('Danny')
+			->once()
+			->andReturn(true)
+
+			->shouldReceive('get')
+			->with('Danny')
+			->once()
+			->andReturn($danny)
+
+			// cache has the ones we don't have added to it
+			->shouldReceive('exists')
+			->with('Joe')
+			->once()
+			->andReturn(false)
+
+			->shouldReceive('exists')
+			->with('Joe')
+			->once()
+			->andReturn(false)
+			
+			->shouldReceive('add')
+			->with(m::on(function($obj) {
+				return ($obj->forename == 'Joe' && $obj->surname == 'Holdcroft');
+			}))
+			->once()
+
+			->shouldReceive('add')
+			->with(m::on(function($obj) {
+				return ($obj->forename == 'Joe' && $obj->surname == 'Bloggs');
+			}))
+			->once()
+
+			->getMock()
+		;
+
+		$className = 'Message\Cog\Test\DB\BindClass';
+
+		$result = $this->getQuery()->run("SELECT * FROM staff");
+		$result = $result->bindTo($className, [], false, $cache);
 
 		$this->assertEquals($testClasses, $result);
 	}

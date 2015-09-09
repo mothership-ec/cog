@@ -29,19 +29,20 @@ class RouteList extends Command
 
 		$output->writeln('<info>Found ' . count($routes) . ' registered routes.</info>');
 
-		$table = $this->getHelperSet()->get('table')
-			->setHeaders(array('Name', 'Path', 'Method', 'Format', 'Controller'));
+		$table = $this->_getTable($output)->setHeaders(array('Name', 'Path', 'Method', 'Format', 'Controller'));
 
 		foreach($routes as $name => $route) {
-
 			$defaults = $route->getDefaults();
-			$table->addRow(array(
+
+			$row = array(
 				$name,
 				$route->getPath(),
 				$route->getMethods() ? implode('|', $route->getMethods()) : 'ANY',
 				$defaults['_format'] ? $defaults['_format'] : 'ANY',
-				$defaults['_controller']
-			));
+				is_scalar($defaults['_controller']) ? $defaults['_controller'] : gettype($defaults['_controller']),
+			);
+
+			$table->addRow($row);
 		}
 
 		$table->render($output);

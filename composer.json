@@ -29,7 +29,7 @@
 		"ext-mysqli"   : "*",
 		"ext-intl"     : "*",
 
-		"symfony/console"                  : "2.3.*",
+		"symfony/console"                  : "2.7.*",
 		"symfony/event-dispatcher"         : "2.1.*",
 		"symfony/form"                     : "2.3.*",
 		"symfony/validator"                : "2.3.*",
@@ -43,6 +43,7 @@
 		"symfony/yaml"                     : "2.1.*",
 		"symfony/filesystem"               : "2.3.*",
 		"symfony/finder"                   : "2.2.*",
+		"symfony/options-resolver"         : "2.6.*",
 		"twig/twig"                        : "1.13.*",
 		"pimple/pimple"                    : "~2.0",
 		"monolog/monolog"                  : "1.7.*",

@@ -6,6 +6,8 @@ use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\Service\ContainerInterface;
 
 use Symfony\Component\Console\Command\Command as BaseCommand;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\Table;
 
 /**
  * Our wrapper around Symfony's Console component.
@@ -32,5 +34,16 @@ class Command extends BaseCommand implements ContainerAwareInterface
 	public function get($name)
 	{
 		return $this->_services[$name];
+	}
+
+	/**
+	 * Create a Table output instance
+	 *
+	 * @param OutputInterface $output
+	 * @return Table
+	 */
+	protected function _getTable(OutputInterface $output)
+	{
+		return new Table($output);
 	}
 }

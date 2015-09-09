@@ -256,19 +256,6 @@ namespace Message\Cog\Test\Application {
 			$this->assertSame($this->_autoloader, $container['class.loader']);
 		}
 
-		public function testLoadCogDefinesBaseServices()
-		{
-			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-			$container = new FauxContainer;
-
-			$loader->setServiceContainer($container)->initialise()->loadCog();
-
-			$this->assertEquals($loader, $container['app.loader']);
-			$this->assertTrue($container->isShared('app.loader'));
-
-			$this->assertInstanceOf('Message\\Cog\\Bootstrap\\LoaderInterface', $container['bootstrap.loader']);
-		}
-
 		public function testLoadModules()
 		{
 			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR), array('loadCog'));
@@ -331,22 +318,6 @@ namespace Message\Cog\Test\Application {
 
 			// Assert 'terminate' event fired
 			$this->assertInstanceOf('Message\\Cog\\Event\\Event', $dispatcher->getDispatchedEvent('terminate'));
-		}
-
-		public function testChainability()
-		{
-			$loader    = $this->getLoader(vfsStream::url(self::VFS_ROOT_DIR));
-			$container = new FauxContainer;
-
-			$this->assertEquals($loader, $loader->setServiceContainer($container));
-			$this->assertEquals($loader, $loader->initialise());
-			$this->assertEquals($loader, $loader->loadCog());
-
-			$container['module.loader'] = function() {
-				return new FauxModuleLoader;
-			};
-
-			$this->assertEquals($loader, $loader->loadModules());
 		}
 	}
 }

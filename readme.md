@@ -30,3 +30,5 @@ To execute all tests run `phpunit` in the root of the site.
 You can run tests for individual components by running `phpunit --testsuite <componentname>`
 
 e.g `phpunit --testsuite Routing` or `phpunit --testsuite Application`
+
+[![Build Status](https://travis-ci.org/mothership-ec/cog.svg)](https://travis-ci.org/mothership-ec/cog)

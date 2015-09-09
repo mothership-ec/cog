@@ -38,7 +38,6 @@ class Console implements ContextInterface
 		$this->_services['console.commands'] = function() {
 			return new CommandCollection(array(
 				new Command\EventList,
-				new Command\ModuleGenerate,
 				new Command\ModuleList,
 				new Command\RouteList,
 				new Command\RouteCollectionTree,

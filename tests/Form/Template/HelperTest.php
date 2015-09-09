@@ -2,7 +2,7 @@
 
 namespace Message\Cog\Test\Form\Template;
 
-use Message\Cog\form\Template\Helper;
+use Message\Cog\Form\Template\Helper;
 
 class HelperTest extends \PHPUnit_Framework_TestCase
 {

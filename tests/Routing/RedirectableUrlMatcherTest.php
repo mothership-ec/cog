@@ -9,33 +9,6 @@ use Symfony\Component\Routing\RequestContext;
 
 class RedirectableUrlMatcherTest extends \PHPUnit_Framework_TestCase
 {
-	public function testRedirectWhenNoSlash()
-	{
-		$coll = new RouteCollection();
-		$coll->add('foo', new Route('/foo/'));
-		
-		$matcher = new UrlMatcher($coll, new RequestContext());
-		$result = $matcher->match('/foo');
-
-		$this->assertArrayHasKey('url', $result);
-		$this->assertSame($result['url'], '/foo/');
-	}
-
-	/**
-	 * @expectedException \Symfony\Component\Routing\Exception\ResourceNotFoundException
-	 */
-	public function testRedirectWhenNoSlashForNonSafeMethod()
-	{
-		$coll = new RouteCollection();
-		$coll->add('foo', new Route('/foo/'));
-
-		$context = new RequestContext();
-		$context->setMethod('POST');
-
-		$matcher = new UrlMatcher($coll, $context);
-		$matcher->match('/foo');
-	}
-
 	public function testSchemeRedirect()
 	{
 		$coll = new RouteCollection();

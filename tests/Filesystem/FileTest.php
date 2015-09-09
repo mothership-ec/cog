@@ -27,14 +27,6 @@ class FileTest extends \PHPUnit_Framework_TestCase
 		$this->manager->clear();
 	}
 
-	public function testChecksum()
-	{
-		$path = __DIR__.'/fixtures/tmp/hello.txt';
-		$file = new File($path);
-
-		$this->assertSame('7d793037a0760186574b0282f2f435e7', $file->getChecksum());
-	}
-
 	public function testGettingPublicUrl()
 	{
 		$file = new File('cog://public/hello.txt');
@@ -47,14 +39,14 @@ class FileTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGettingNonPublicUrl()
 	{
-		$file = new File('cog://tmp/hello.txt');
+		$file = new File('cog://config/hello.txt');
 
 		$file->getPublicUrl();
 	}
 
 	public function testIsPublic()
 	{
-		$file = new File('cog://tmp/hello.txt');
+		$file = new File('cog://config/hello.txt');
 		$this->assertFalse($file->isPublic());
 
 		$file = new File('cog://public/files/image.jpg');

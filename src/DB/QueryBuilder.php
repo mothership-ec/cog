@@ -194,7 +194,7 @@ class QueryBuilder implements QueryBuilderInterface
 	public function groupBy($groupBy)
 	{
 		if (is_array($groupBy)) {
-			array_merge($this->_groupBy[], $groupBy);
+			$this->_groupBy = array_merge($this->_groupBy, $groupBy);
 		} else {
 			$this->_groupBy[] = (string) $groupBy;
 		}
@@ -232,7 +232,7 @@ class QueryBuilder implements QueryBuilderInterface
 	public function orderBy($orderBy)
 	{
 		if (is_array($orderBy)) {
-			array_merge($this->_orderBy[], $orderBy);
+			$this->_orderBy = array_merge($this->_orderBy, $orderBy);
 		} else {
 			$this->_orderBy[] = (string) $orderBy;
 		}
