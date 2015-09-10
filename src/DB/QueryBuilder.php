@@ -27,6 +27,9 @@ class QueryBuilder implements QueryBuilderInterface
 	const HAVING    = 'HAVING';
 	const LIMIT     = 'LIMIT';
 
+	const INNER_JOIN_TAG = 0;
+	const LEFT_JOIN_TAG = 1;
+
 	private $_selectExpr = [];
 	private $_distinct;
 	private $_from = [];
@@ -120,11 +123,13 @@ class QueryBuilder implements QueryBuilderInterface
 				'table_reference' => $table,
 				'on_statement'    => $onStatement,
 				'alias'           => $alias,
+				'type'            => self::INNER_JOIN_TAG,
 			];
 		} else {
 			$this->_join[] = [
 				'table_reference' => $alias,
 				'on_statement'    => $onStatement,
+				'type'            => self::INNER_JOIN_TAG,
 			];
 		}
 
@@ -151,15 +156,17 @@ class QueryBuilder implements QueryBuilderInterface
 		}
 
 		if ($table) {
-			$this->_leftJoin[] = [
+			$this->_join[] = [
 				'table_reference' => $table,
 				'on_statement'    => $onStatement,
 				'alias'           => $alias,
+				'type'            => self::LEFT_JOIN_TAG
 			];
 		} else {
-			$this->_leftJoin[] = [
+			$this->_join[] = [
 				'table_reference' => $alias,
 				'on_statement'    => $onStatement,
+				'type'            => self::LEFT_JOIN_TAG,
 			];
 		}
 
@@ -415,25 +422,18 @@ class QueryBuilder implements QueryBuilderInterface
 
 			// JOIN
 			foreach ($this->_join as $join) {
-				$this->_query .= PHP_EOL . self::JOIN;
+				$this->_query .= PHP_EOL;
 
-				if ($join['table_reference'] instanceof QueryBuilder) {
-					$this->_query .= " (" . $join['table_reference']->getQueryString() . ")";
-				} else {
-					$this->_query .= " " . $join['table_reference'];
+				switch ($join['type']) {
+					case self::INNER_JOIN_TAG :
+						$this->_query .= self::JOIN;
+						break;
+					case self::LEFT_JOIN_TAG :
+						$this->_query .= self::LEFT_JOIN;
+						break;
+					default:
+						throw new \LogicException('Join type not set');
 				}
-
-				// TABLE_ALIAS
-				if (isset($join['alias'])) {
-					$this->_query .= " " . $join['alias'];
-				}
-
-				$this->_query .= " ON " . $join['on_statement'];
-			}
-
-			// LEFT JOIN
-			foreach ($this->_leftJoin as $join) {
-				$this->_query .= PHP_EOL . self::LEFT_JOIN;
 
 				if ($join['table_reference'] instanceof QueryBuilder) {
 					$this->_query .= " (" . $join['table_reference']->getQueryString() . ")";
