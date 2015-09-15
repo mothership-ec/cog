@@ -47,11 +47,14 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	/**
 	 * Add a flash message to the session.
 	 *
-	 * @param string $type    The type of message
-	 * @param string $message The message to add
+	 * @param string $type      The type of message
+	 * @param string $message   The message or translation key to add to the flash bag
+	 * @param array $params    Parameters to pass to translator
 	 */
-	public function addFlash($type, $message)
+	public function addFlash($type, $message, array $params = [])
 	{
+		$message = $this->trans($message, $params);
+
 		return $this->get('http.session')->getFlashBag()->add($type, $message);
 	}
 
