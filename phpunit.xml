@@ -37,6 +37,9 @@
 		<testsuite name="Event">
 			<directory>./tests/Event/</directory>
 		</testsuite>
+        <testsuite name="Field">
+            <directory>./tests/Field/</directory>
+        </testsuite>
 		<testsuite name="Filesystem">
 			<directory>./tests/Filesystem/</directory>
 		</testsuite>
