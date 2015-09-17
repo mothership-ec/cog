@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.9.1
+
+- Resolve issue where `DB\QueryBuilder` would create joins and left joins separately, and therefore ignoring the order in which they were added
+- Added unit tests to ensure that join and left join order is maintained in `DB\QueryBuilder`
+
 ## 4.9.0
 
 - Added `addParams()` method to `QueryBuilder`, allowing developers to add extra parameters for parsing ad hoc, i.e. not just in where statements

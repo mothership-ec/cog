@@ -478,6 +478,38 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
+	public function testJoinBeforeLeftJoin()
+	{
+		$expected = "SELECT * FROM table_a JOIN table_b ON id = id LEFT JOIN table_c ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
+		$query = $this->_builder
+			->select("*")
+			->from('table_a')
+			->join('table_b', 'id = id')
+			->leftJoin('table_c', 'id = id')
+			->getQueryString()
+		;
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
+	public function testLeftJoinBeforeJoin()
+	{
+		$expected = "SELECT * FROM table_a LEFT JOIN table_b ON id = id JOIN table_c ON id = id";
+		$this->_parser->shouldReceive('parse')->once()->passthru();
+
+		$query = $this->_builder
+			->select("*")
+			->from('table_a')
+			->leftJoin('table_b', 'id = id')
+			->join('table_c', 'id = id')
+			->getQueryString()
+		;
+
+		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
+	}
+
 	public function testLeftJoinSimple()
 	{
 		$expected = "SELECT * FROM table_a LEFT JOIN table_b ON id = id";
