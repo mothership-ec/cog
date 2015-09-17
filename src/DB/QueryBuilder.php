@@ -120,6 +120,8 @@ class QueryBuilder implements QueryBuilderInterface
 			throw new \InvalidArgumentException('On statement must be a string');
 		}
 
+		$statement = $on ? $statement : '(' . $statement . ')';
+
 		if ($table) {
 			$this->_join[] = [
 				'table_reference' => $table,
@@ -188,6 +190,8 @@ class QueryBuilder implements QueryBuilderInterface
 		if (!is_string($statement)) {
 			throw new \InvalidArgumentException('On statement must be a string');
 		}
+
+		$statement = $on ? $statement : '(' . $statement . ')';
 
 		if ($table) {
 			$this->_join[] = [
