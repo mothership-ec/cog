@@ -8,7 +8,7 @@ use Message\Cog\DB\QueryParser;
 use Message\Cog\DB\Query;
 
 /**
- * Builds a database query by concatinating query elements given.
+ * Builds a database query by concatenating query elements given.
  *
  * @author Eleanor Shakeshaft <eleanor@message.co.uk>
  */
@@ -100,36 +100,42 @@ class QueryBuilder implements QueryBuilderInterface
 	}
 
 	/**
-	 * Joins $table as $alias using $onStatement.
+	 * Joins $table as $alias using $statement.
 	 *
 	 * @param  string                           $alias       Name of the table or table alias
-	 * @param  string                           $onStatement Statement to join on
+	 * @param  string                           $statement   Statement to join on
 	 * @param  QueryBuilder | string            $table       Data / table
+	 * @param  bool                             $on          Set to true if the join uses the ON clause, and false if
+	 *                                                       it uses the USING clause
 	 *
 	 * @return QueryBuilder                     $this
 	 */
-	public function join($alias, $onStatement, $table = null)
+	public function join($alias, $statement, $table = null, $on = true)
 	{
 		if (!is_string($alias)) {
 			throw new \InvalidArgumentException('Alias must be a string');
 		}
 
-		if (!is_string($onStatement)) {
+		if (!is_string($statement)) {
 			throw new \InvalidArgumentException('On statement must be a string');
 		}
+
+		$statement = $on ? $statement : '(' . $statement . ')';
 
 		if ($table) {
 			$this->_join[] = [
 				'table_reference' => $table,
-				'on_statement'    => $onStatement,
+				'statement'       => $statement,
 				'alias'           => $alias,
 				'type'            => self::INNER_JOIN_TAG,
+				'clause'          => $on ? 'ON' : 'USING'
 			];
 		} else {
 			$this->_join[] = [
 				'table_reference' => $alias,
-				'on_statement'    => $onStatement,
+				'statement'       => $statement,
 				'type'            => self::INNER_JOIN_TAG,
+				'clause'          => $on ? 'ON' : 'USING'
 			];
 		}
 
@@ -137,47 +143,109 @@ class QueryBuilder implements QueryBuilderInterface
 	}
 
 	/**
+	 * Join using the ON clause
+	 *
+	 * @param  string                           $alias       Name of the table or table alias
+	 * @param  string                           $statement   Statement to join on
+	 * @param  QueryBuilder | string            $table       Data / table
+	 *
+	 * @return QueryBuilder
+	 */
+	public function joinOn($alias, $statement, $table = null)
+	{
+		return $this->join($alias, $statement, $table, true);
+	}
+
+	/**
+	 * Join using the USING clause
+	 *
+	 * @param  string                           $alias       Name of the table or table alias
+	 * @param  string                           $statement   Statement to join on
+	 * @param  QueryBuilder | string            $table       Data / table
+	 *
+	 * @return QueryBuilder
+	 */
+	public function joinUsing($alias, $statement, $table = null)
+	{
+		return $this->join($alias, $statement, $table, false);
+	}
+
+	/**
 	 * Joins $table as $alias using $onStatement.
 	 *
 	 * @param  string                           $alias       Name of the table or table alias
-	 * @param  string                           $onStatement Statement to join on
+	 * @param  string                           $statement   Statement to join on
 	 * @param  QueryBuilder | string            $table       Data / table
+	 * @param  bool                             $on          Set to true if the join uses the ON clause, and false if
+	 *                                                       it uses the USING clause
 	 *
 	 * @return QueryBuilder                     $this
 	 */
-	public function leftJoin($alias, $onStatement, $table = null)
+	public function leftJoin($alias, $statement, $table = null, $on = true)
 	{
 		if (!is_string($alias)) {
 			throw new \InvalidArgumentException('Alias must be a string');
 		}
 
-		if (!is_string($onStatement)) {
+		if (!is_string($statement)) {
 			throw new \InvalidArgumentException('On statement must be a string');
 		}
+
+		$statement = $on ? $statement : '(' . $statement . ')';
 
 		if ($table) {
 			$this->_join[] = [
 				'table_reference' => $table,
-				'on_statement'    => $onStatement,
+				'statement'       => $statement,
 				'alias'           => $alias,
-				'type'            => self::LEFT_JOIN_TAG
+				'type'            => self::LEFT_JOIN_TAG,
+				'clause'          => $on ? 'ON' : 'USING'
 			];
 		} else {
 			$this->_join[] = [
 				'table_reference' => $alias,
-				'on_statement'    => $onStatement,
+				'statement'       => $statement,
 				'type'            => self::LEFT_JOIN_TAG,
+				'clause'          => $on ? 'ON' : 'USING'
 			];
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Left join using the ON clause
+	 *
+	 * @param  string                           $alias       Name of the table or table alias
+	 * @param  string                           $statement   Statement to join on
+	 * @param  QueryBuilder | string            $table       Data / table
+	 *
+	 * @return QueryBuilder
+	 */
+	public function leftJoinOn($alias, $statement, $table = null)
+	{
+		return $this->leftJoin($alias, $statement, $table, true);
+	}
+
+	/**
+	 * Left join using the USING clause
+	 *
+	 * @param  string                           $alias       Name of the table or table alias
+	 * @param  string                           $statement   Statement to join on
+	 * @param  QueryBuilder | string            $table       Data / table
+	 *
+	 * @return QueryBuilder
+	 */
+	public function leftJoinUsing($alias, $statement, $table = null)
+	{
+		return $this->leftJoin($alias, $statement, $table, false);
 	}
 
 	/**
 	 * Builds into the where statement using "AND" as default.
 	 *
-	 * @param  string | closure  $statement the statement to append
-	 * @param  array             $variable  variable to substitute in
+	 * @param  string | \Closure $statement the statement to append
+	 * @param  array             $variables variable to substitute in
 	 * @param  boolean           $and       append using and if true, or if false
 	 *
 	 * @return QueryBuilder                 $this
@@ -446,7 +514,7 @@ class QueryBuilder implements QueryBuilderInterface
 					$this->_query .= " " . $join['alias'];
 				}
 
-				$this->_query .= " ON " . $join['on_statement'];
+				$this->_query .= " ". $join['clause'] . " " . $join['statement'];
 			}
 		}
 
