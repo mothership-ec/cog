@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.10.0
+
+- Added forth parameter to `DB\QueryBuilder::join()` that takes a boolean to determine whether to use an `ON` clause (if set to `true`) or a `USING` clause (if set to `false`). Defaults to `true`.
+- Added forth parameter to `DB\QueryBuilder::leftJoin()` that takes a boolean to determine whether to use an `ON` clause (if set to `true`) or a `USING` clause (if set to `false`). Defaults to `true`.
+- Added `DB\QueryBuilder::joinOn()` method for doing a join with the `ON` clause
+- Added `DB\QueryBuilder::joinUsing()` method for doing a join with the `USING` clause
+- Added `DB\QueryBuilder::leftJoinOn()` method for doing a left join with the `ON` clause
+- Added `DB\QueryBuilder::leftJoinUsing()` method for doing a left join with the `USING` clause
+- `Controller::addFlash()` method now automatically translates strings if possible
+- Added unit tests for new `DB\QueryBuilder` methods
+- Added unit tests for `Field` component (imported from CMS, where fields used to be)
+
 ## 4.9.1
 
 - Resolve issue where `DB\QueryBuilder` would create joins and left joins separately, and therefore ignoring the order in which they were added
