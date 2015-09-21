@@ -46,11 +46,14 @@ class StringGenerator
 	 */
 	public function generate($length = self::DEFAULT_LENGTH)
 	{
-		$self  = $this;
+		$self   = $this;
+		$string = null;
+
 		if ($length < 1) {
 			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
 		}
-		$calls = array(
+
+		$calls = [
 			function() use ($self, $length) {
 				return $self->generateFromUnixRandom($length, '/dev/urandom');
 			},
@@ -63,7 +66,7 @@ class StringGenerator
 			function() use ($self, $length) {
 				return $self->generateNatively($length);
 			},
-		);
+		];
 
 		foreach ($calls as $call) {
 			try {
@@ -72,7 +75,7 @@ class StringGenerator
 					break;
 				}
 			}
-			catch (\Exception $e) {
+			catch (\RuntimeException $e) {
 				continue;
 			}
 		}
@@ -178,7 +181,7 @@ class StringGenerator
 		if ($length < 1) {
 			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
 		}
-		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
+		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 		$charLength = strlen($chars) - 1;
 
 		$rounds = 0;

@@ -11,39 +11,49 @@ use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 
 class StringGeneratorTest extends \PHPUnit_Framework_TestCase
 {
-	protected $_salt;
+	/**
+	 * @var StringGenerator
+	 */
+	protected $_stringGenerator;
+
 	protected $_badHash;
-	protected $_dlength;
+	protected $_length;
 
 	public function setUp()
 	{
-		$this->_salt    = new StringGenerator;
-		$this->_dlength = StringGenerator::DEFAULT_LENGTH;
+		$this->_stringGenerator = new StringGenerator;
+		$this->_length          = StringGenerator::DEFAULT_LENGTH;
 	}
 
 	public function testAllGenerateMethodsRespectLength()
 	{
-		$this->assertSame(10, strlen($this->_salt->generateFromUnixRandom(10)));
-		$this->assertSame(10, strlen($this->_salt->generateFromOpenSSL(10)));
-		$this->assertSame(10, strlen($this->_salt->generateNatively(10)));
-		$this->assertSame(10, strlen($this->_salt->generate(10)));
+		for ($i = 1; $i < 200; ++$i) {
+			$this->assertSame(10, strlen($this->_stringGenerator->generateFromUnixRandom(10)));
+			$this->assertSame(10, strlen($this->_stringGenerator->generateFromOpenSSL(10)));
+			$this->assertSame(10, strlen($this->_stringGenerator->generateNatively(10)));
+			$this->assertSame(10, strlen($this->_stringGenerator->generate(10)));
+		}
 	}
 
 	public function testDefaultLengthUsed()
 	{
-		$this->assertSame($this->_dlength, strlen($this->_salt->generateFromUnixRandom($this->_dlength)));
-		$this->assertSame($this->_dlength, strlen($this->_salt->generateFromOpenSSL($this->_dlength)));
-		$this->assertSame($this->_dlength, strlen($this->_salt->generateNatively($this->_dlength)));
-		$this->assertSame($this->_dlength, strlen($this->_salt->generate($this->_dlength)));
+		for ($i = 1; $i < 200; ++$i) {
+			$this->assertSame($this->_length, strlen($this->_stringGenerator->generateFromUnixRandom($this->_length)));
+			$this->assertSame($this->_length, strlen($this->_stringGenerator->generateFromOpenSSL($this->_length)));
+			$this->assertSame($this->_length, strlen($this->_stringGenerator->generateNatively($this->_length)));
+			$this->assertSame($this->_length, strlen($this->_stringGenerator->generate($this->_length)));
+		}
 	}
 
 	public function testGenerateReturnValuesFormat()
 	{
-		// for each, check the results are strings and match the regex [./0-9A-Za-z]
-		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generate($this->_dlength));
-		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generateFromUnixRandom($this->_dlength));
-		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generateFromOpenSSL($this->_dlength));
-		$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_salt->generateNatively($this->_dlength));
+		for ($i = 1; $i < 200; ++$i) {
+			// for each, check the results are strings and match the regex [./0-9A-Za-z]
+			$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_stringGenerator->generate($this->_length));
+			$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_stringGenerator->generateFromUnixRandom($this->_length));
+			$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_stringGenerator->generateFromOpenSSL($this->_length));
+			$this->assertRegExp("/[A-Za-z0-9\/\\.']/", $this->_stringGenerator->generateNatively($this->_length));
+		}
 	}
 
 	/**
@@ -56,7 +66,7 @@ class StringGeneratorTest extends \PHPUnit_Framework_TestCase
 		vfsStream::newDirectory('dev')
 			->at(vfsStreamWrapper::getRoot());
 
-		$this->_salt->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
+		$this->_stringGenerator->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
 	}
 
 	/**
@@ -71,7 +81,7 @@ class StringGeneratorTest extends \PHPUnit_Framework_TestCase
 		vfsStream::newFile('urandom', 0000)
 			->at(vfsStreamWrapper::getRoot()->getChild('dev'));
 
-		$this->_salt->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
+		$this->_stringGenerator->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
 	}
 
 	/**
@@ -86,7 +96,7 @@ class StringGeneratorTest extends \PHPUnit_Framework_TestCase
 		vfsStream::newFile('urandom')
 			->at(vfsStreamWrapper::getRoot()->getChild('dev'));
 
-		$this->_salt->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
+		$this->_stringGenerator->generateFromUnixRandom(10, vfsStream::url('root') . '/dev/urandom');
 	}
 
 	public function testGenerateOpenSSLThrowsExceptionWhenFunctionDoesNotExist()
@@ -95,12 +105,54 @@ class StringGeneratorTest extends \PHPUnit_Framework_TestCase
 			$this->assertTrue(true);
 		} else {
 			try {
-				$this->_salt->generateFromOpenSSL();
+				$this->_stringGenerator->generateFromOpenSSL();
 			} catch (\RuntimeException $e) {
 				$this->assertTrue(true);
 			}
 
 			$this->fail('RuntimeException not thrown');
+		}
+	}
+
+	public function testGenerateNativelyNoLengthSet()
+	{
+		for ($i = 1; $i < 200; ++$i) {
+			$string1 = $this->_stringGenerator->generateNatively();
+			$string2 = $this->_stringGenerator->generateNatively();
+			$this->assertSame($this->_length, strlen($string1));
+			$this->assertSame($this->_length, strlen($string2));
+
+			$this->assertNotEquals($string1, $string2);
+			$this->assertRegExp('/^[A-Za-z0-9]{' . $this->_length . '}$/', $string1);
+			$this->assertRegExp('/^[A-Za-z0-9]{' . $this->_length . '}$/', $string2);
+		}
+	}
+
+	public function testGenerateNativelyShortLength()
+	{
+		for ($i = 1; $i < 200; ++$i) {
+			$string1 = $this->_stringGenerator->generateNatively(5);
+			$string2 = $this->_stringGenerator->generateNatively(5);
+			$this->assertSame(5, strlen($string1));
+			$this->assertSame(5, strlen($string2));
+
+			$this->assertNotEquals($string1, $string2);
+			$this->assertRegExp('/^[A-Za-z0-9]{5}$/', $string1);
+			$this->assertRegExp('/^[A-Za-z0-9]{5}$/', $string2);
+		}
+	}
+
+	public function testGenerateNativelyLongLength()
+	{
+		for ($i = 1; $i < 200; ++$i) {
+			$string1 = $this->_stringGenerator->generateNatively(100);
+			$string2 = $this->_stringGenerator->generateNatively(100);
+			$this->assertSame(100, strlen($string1));
+			$this->assertSame(100, strlen($string2));
+
+			$this->assertNotEquals($string1, $string2);
+			$this->assertRegExp('/^[A-Za-z0-9]{100}$/', $string1);
+			$this->assertRegExp('/^[A-Za-z0-9]{100}$/', $string2);
 		}
 	}
 
