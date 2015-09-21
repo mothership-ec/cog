@@ -2,6 +2,8 @@
 
 namespace Message\Cog\Security;
 
+use Message\Cog\Helper\ReverseRegexHelper as ReverseRegex;
+
 /**
  * Pseudorandom string generator.
  *
@@ -15,8 +17,17 @@ namespace Message\Cog\Security;
 class StringGenerator
 {
 	const DEFAULT_LENGTH = 32;
-	protected $_pattern = '/.*/';
 
+	private $_reverseRegex;
+
+	private $_tenacity  = 10000;
+	protected $_pattern;
+
+
+	public function __construct(ReverseRegex $reverseRegex = null)
+	{
+		$this->_reverseRegex = $reverseRegex ?: new ReverseRegex;
+	}
 
 	/**
 	 * Allows setting a regex the String must match
@@ -26,7 +37,17 @@ class StringGenerator
 	public function setPattern($pattern)
 	{
 		$this->_pattern = $pattern;
+
 		return $this;
+	}
+	
+	public function setTenacity($tenacity)
+	{
+		if (!is_int($tenacity)) {
+			throw new \InvalidArgumentException('Tenacity must be an integer');
+		}
+		
+		$this->_tenacity = $tenacity;
 	}
 
 	/**
@@ -55,6 +76,9 @@ class StringGenerator
 
 		$calls = [
 			function() use ($self, $length) {
+				return $self->generateFromUnixRandom($length, '/dev/arandom');
+			},
+			function() use ($self, $length) {
 				return $self->generateFromUnixRandom($length, '/dev/urandom');
 			},
 			function() use ($self, $length) {
@@ -76,6 +100,9 @@ class StringGenerator
 				}
 			}
 			catch (\RuntimeException $e) {
+				continue;
+			}
+			catch (Exception\GenerateStringException $e) {
 				continue;
 			}
 		}
@@ -129,7 +156,10 @@ class StringGenerator
 			$string = str_replace('+', '.', rtrim($string, '='));
 			
 			++$rounds;
-		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
+			if ($rounds >= $this->_tenacity) {
+				throw new Exception\GenerateStringException('Could not generate string from Unix random in ' . $this->_tenacity . ' attempts');
+			}
+		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
 
 		return $string;
 	}
@@ -161,7 +191,11 @@ class StringGenerator
 			$string = substr(base64_encode($random), 0, $length);
 			$string = str_replace('+', '.', rtrim($string, '='));
 			++$rounds;
-		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
+
+			if ($rounds >= $this->_tenacity) {
+				throw new Exception\GenerateStringException('Could not generate string from openSSL in ' . $this->_tenacity . ' attempts');
+			}
+		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
 		
 
 		return $string;
@@ -185,16 +219,31 @@ class StringGenerator
 		$charLength = strlen($chars) - 1;
 
 		$rounds = 0;
-		do {
-			$string     = '';
 
-			for ($i = 0; $i < $length; $i++) {
-				$string .= $chars[mt_rand(0, $charLength)];
-			}
+		do {
 			++$rounds;
-		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
+			if ($rounds >= $this->_tenacity) {
+				throw new Exception\GenerateStringException('Could not generate string natively in ' . $this->_tenacity . ' attempts');
+			}
+
+			if ($this->_pattern) {
+				$string = $this->_reverseRegex->getString($this->_pattern);
+			} else {
+
+				$string = '';
+				for ($i = 0; $i < $length; $i++) {
+					$string .= $chars[mt_rand(0, $charLength)];
+				}
+			}
+
+		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
 
 
 		return $string;
+	}
+
+	private function _getPattern()
+	{
+		return $this->_pattern ?: '/.*/';
 	}
 }
