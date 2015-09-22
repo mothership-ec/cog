@@ -107,6 +107,8 @@ class Migrator {
 	{
 		$migrations = $this->_loader->getLastBatch();
 
+		return $this->_rollbackMigrations($migrations);
+
 		if (count($migrations) == 0) {
 			$this->_note('<comment>Nothing to rollback</comment>');
 
@@ -120,6 +122,17 @@ class Migrator {
 		$this->_displayFailures();
 
 		return count($migrations);
+	}
+
+	public function rollbackModule($moduleName)
+	{
+		if (!is_string($moduleName)) {
+			throw new \InvalidArgumentException('Module name must be a string, ' . gettype($moduleName) . ' given');
+		}
+
+		$migrations = $this->_loader->getByModule($moduleName);
+
+		return $this->_rollbackMigrations($migrations);
 	}
 
 	/**
@@ -261,6 +274,25 @@ class Migrator {
 
 			$this->_note('<error>Could not load migration: `' . $failure . '`</error>');
 		}
+	}
+
+	private function _rollbackMigrations(array $migrations)
+	{
+		if (count($migrations) == 0) {
+			$this->_note('<comment>Nothing to rollback</comment>');
+
+			return count($migrations);
+		}
+
+		krsort($migrations);
+
+		foreach ($migrations as $migration) {
+			$this->_runDown($migration);
+		}
+
+		$this->_displayFailures();
+
+		return count($migrations);
 	}
 
 }

@@ -131,6 +131,27 @@ class Loader implements LoaderInterface
 		return $results[0]->batch;
 	}
 
+	public function getByModule($moduleName)
+	{
+		$moduleName = 'cog://@' . $moduleName . '%';
+
+		$results = $this->_query->run('
+			SELECT
+				path
+			FROM
+				migration
+			WHERE
+				adapter = :adapter?s
+			AND
+				path LIKE :moduleName?s
+		', [
+			'adapter'    => 'mysql',
+			'moduleName' => $moduleName,
+		]);
+
+		return $this->_getMigrations($results);
+	}
+
 	public function resolve(File $file, $reference)
 	{
 		$basename = $file->getBasename();
