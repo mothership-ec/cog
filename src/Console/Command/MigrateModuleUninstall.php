@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
  */
-class MigrateUninstall extends Command
+class MigrateModuleUninstall extends Command
 {
 	/**
 	 * {@inheritDoc}
@@ -22,7 +22,7 @@ class MigrateUninstall extends Command
 	protected function configure()
 	{
 		$this
-			->setName('migrate:uninstall')
+			->setName('migrate:module:uninstall')
 			->setDescription('Rolls back all migrations on for a module. Use colon delimited syntax (i.e. \'Message:Mothership:Commerce\' to uninstall commerce module).')
 			->addArgument('module_name', InputArgument::REQUIRED, 'Uninstall databases for a specific module.')
 		;
