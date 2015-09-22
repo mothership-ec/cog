@@ -11,6 +11,7 @@ namespace Message\Cog\Security;
  * Generated strings are in the format: [./0-9A-Za-z]{$length}
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class StringGenerator
 {
