@@ -70,7 +70,7 @@ class StringGenerator
 	}
 
 	/**
-	 * Set how hard the string generation method try to create
+	 * Set how hard the string generation method should try to create create the string matching the requirements.
 	 *
 	 * @param $tenacity
 	 *
@@ -207,35 +207,10 @@ class StringGenerator
 	 */
 	public function generateFromUnixRandom($length = self::DEFAULT_LENGTH, $path = '/dev/urandom')
 	{
-		if ($length < 1) {
-			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
-		}
+		$callback = [$this, '_getUnixRandomString'];
+		$parameters = [$path];
 
-		$rounds = 0;
-		do {
-			$loops = 0;
-			$string = '';
-
-			while (strlen($string) < $length && $loops < $this->_tenacity) {
-				$newString = $this->_getUnixRandomString($length, $path);
-				$newString = $this->_filterChars($newString);
-
-				$string .= $newString;
-				++$loops;
-			}
-			if (strlen($string) < $length) {
-				throw new Exception\GenerateStringException('Could not generate string with provided whitelist: `' . implode('', $this->_whitelist) . '`');
-			}
-
-			$string = substr($string, 0, $length);
-			
-			++$rounds;
-			if ($rounds >= $this->_tenacity) {
-				throw new Exception\GenerateStringException('Could not generate string from Unix random in ' . $this->_tenacity . ' attempts');
-			}
-		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
-
-		return $string;
+		return $this->_generateStringFromCallback($length, $callback, $parameters);
 	}
 
 	/**
@@ -251,37 +226,9 @@ class StringGenerator
 	 */
 	public function generateFromOpenSSL($length = self::DEFAULT_LENGTH)
 	{
+		$callback = [$this, '_getOpenSSLString'];
 
-		if ($length < 1) {
-			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
-		}
-
-		$rounds = 0;
-		do {
-			$loops = 0;
-			$string = '';
-
-			while (strlen($string) < $length && $loops < $this->_tenacity) {
-				$newString = $this->_getOpenSSLString($length);
-				$newString = $this->_filterChars($newString);
-
-				$string .= $newString;
-				++$loops;
-			}
-			if (strlen($string) < $length) {
-				throw new Exception\GenerateStringException('Could not generate string with provided whitelist: `' . implode('', $this->_whitelist) . '`');
-			}
-
-			$string = substr($string, 0, $length);
-			++$rounds;
-
-			if ($rounds >= $this->_tenacity) {
-				throw new Exception\GenerateStringException('Could not generate string from openSSL in ' . $this->_tenacity . ' attempts');
-			}
-		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
-		
-
-		return $string;
+		return $this->_generateStringFromCallback($length, $callback);
 	}
 
 	/**
@@ -295,23 +242,53 @@ class StringGenerator
 	 */
 	public function generateNatively($length = self::DEFAULT_LENGTH)
 	{
+		$callback = [$this, '_getNativeString'];
+
+		return $this->_generateStringFromCallback($length, $callback);
+	}
+
+	/**
+	 * Attempt to build a string using a callback. The number of attempts is based on the `$_tenacity` property.
+	 * This method will generate strings, filter out characters that aren't in the whitelist, validate the length and
+	 * then append a new string. If the number of characters is longer than the set length after the invalid characters
+	 * have been filtered out, the string will then be trimmed down to size and returned.
+	 *
+	 * @param $length
+	 * @param callable $callback
+	 * @param array $parameters
+	 *
+	 * @return string
+	 */
+	private function _generateStringFromCallback($length, callable $callback, array $parameters = [])
+	{
 		if ($length < 1) {
-			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+			throw new \UnexpectedValueException('Cannot create string with length less than or equal to zero');
 		}
 
+		$parameters = array_merge([$length], $parameters);
+
 		$rounds = 0;
-
 		do {
-			++$rounds;
-			if ($rounds >= $this->_tenacity) {
-				throw new Exception\GenerateStringException('Could not generate string natively in ' . $this->_tenacity . ' attempts');
-			}
-
+			$loops = 0;
 			$string = '';
-			for ($i = 0; $i < $length; $i++) {
-				$string .= $this->_whitelist[mt_rand(0, (count($this->_whitelist) - 1))];
+
+			while (strlen($string) < $length && $loops < $this->_tenacity) {
+				$newString = call_user_func_array($callback, $parameters);
+				$newString = $this->_filterChars($newString);
+
+				$string .= $newString;
+				++$loops;
+			}
+			if (strlen($string) < $length) {
+				throw new Exception\GenerateStringException('Could not generate string with provided whitelist: `' . implode('', $this->_whitelist) . '`');
 			}
 
+			$string = substr($string, 0, $length);
+			++$rounds;
+
+			if ($rounds >= $this->_tenacity) {
+				throw new Exception\GenerateStringException('Could not generate string in ' . $this->_tenacity . ' attempts');
+			}
 		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
 
 		return $string;
@@ -319,6 +296,8 @@ class StringGenerator
 
 	/**
 	 * Creates random string with no whitelist filtering
+	 *
+	 * Note: Your IDE might mark this method as unused, as it is called via call_user_func_array()
 	 *
 	 * @see generateFromUnixRandom()
 	 * @param int $length
@@ -350,6 +329,8 @@ class StringGenerator
 	/**
 	 * Creates random string with no whitelist filtering
 	 *
+	 * Note: Your IDE might mark this method as unused, as it is called via call_user_func_array()
+	 *
 	 * @see generateFromOpenSSL()
 	 * @param int $length
 	 *
@@ -365,6 +346,27 @@ class StringGenerator
 
 		$string = substr(base64_encode($random), 0, $length);
 		$string = str_replace('+', '.', rtrim($string, '='));
+
+		return $string;
+	}
+
+	/**
+	 * Select random characters from whitelist using mt_rand() and append to string. Return once it reaches correct
+	 * length.
+	 *
+	 * Note: Your IDE might mark this method as unused, as it is called via call_user_func_array()
+	 *
+	 * @see generateFromNative()
+	 * @param $length
+	 *
+	 * @return string
+	 */
+	private function _getNativeString($length)
+	{
+		$string = '';
+		for ($i = 0; $i < $length; $i++) {
+			$string .= $this->_whitelist[mt_rand(0, (count($this->_whitelist) - 1))];
+		}
 
 		return $string;
 	}
