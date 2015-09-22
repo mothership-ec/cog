@@ -15,13 +15,51 @@ namespace Message\Cog\Security;
 class StringGenerator
 {
 	const DEFAULT_LENGTH = 32;
+	const CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
 
-	private $_tenacity  = 10000;
+	/**
+	 * How many attempts the string generation methods will make to generate strings matching requirements. This is
+	 * used both with match regular expresses (whose functionality is deprecated), and when filtering out characters
+	 * not found in the whitelist
+	 *
+	 * @var int
+	 */
+	private $_tenacity = 1000;
+
+	/**
+	 * List of characters that are allowed to appear in the string. Defaults to all alphanumeric characters, as well
+	 * as the dot '.' and slash '/'
+	 *
+	 * @var array
+	 */
+	private $_whitelist;
+
+	/**
+	 * Regex pattern that the generated string should match
+	 *
+	 * @deprecated  This property is deprecated, use the whitelist instead. See `setPattern()` docblock.
+	 * @var string
+	 */
 	protected $_pattern;
 
 	/**
+	 * Split default characters into an array to set as whitelist
+	 */
+	public function __construct()
+	{
+		$this->_whitelist = str_split(self::CHARS);
+	}
+
+	/**
+	 * @deprecated It is too inefficient and difficult to generate a string matching a regex, and on top of that these
+	 *             methods only ever generate strings with alphanumeric characters, dots or slashes, and there is a set
+	 *             length, so it's kind of dumb to try and match a regex where it's possible to have a regex that
+	 *             couldn't possibly be created, i.e. if you had a regex of /^[a-z]{30}$/ but had set a length of 10,
+	 *             it would never match.
+	 *
 	 * Allows setting a regex the String must match
 	 * @param string $pattern the regex
+	 *
 	 * @return StringGenerator $this for chainability
 	 */
 	public function setPattern($pattern)
@@ -30,14 +68,59 @@ class StringGenerator
 
 		return $this;
 	}
-	
+
+	/**
+	 * Set how hard the string generation method try to create
+	 *
+	 * @param $tenacity
+	 *
+	 * @return StringGenerator
+	 */
 	public function setTenacity($tenacity)
 	{
 		if (!is_int($tenacity)) {
 			throw new \InvalidArgumentException('Tenacity must be an integer');
 		}
-		
+
 		$this->_tenacity = $tenacity;
+
+		return $this;
+	}
+
+	/**
+	 * Set which characters should be set in the whitelist
+	 *
+	 * @param $chars
+	 *
+	 * @return StringGenerator
+	 */
+	public function allowChars($chars)
+	{
+		$this->_whitelist = array_values($this->_getChars($chars));
+
+		return $this;
+	}
+
+	/**
+	 * Set which characters to exclude from the whitelist
+	 *
+	 * @param $chars
+	 *
+	 * @return StringGenerator
+	 */
+	public function disallowChars($chars)
+	{
+		$blacklist = $this->_getChars($chars);
+
+		foreach ($this->_whitelist as $key => $char) {
+			if (in_array($char, $blacklist, true)) {
+				unset($this->_whitelist[$key]);
+			}
+		}
+
+		$this->_whitelist = array_values($this->_whitelist);
+
+		return $this;
 	}
 
 	/**
@@ -124,26 +207,27 @@ class StringGenerator
 	 */
 	public function generateFromUnixRandom($length = self::DEFAULT_LENGTH, $path = '/dev/urandom')
 	{
-		if (!file_exists($path) || !is_readable($path)) {
-			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
-		}
 		if ($length < 1) {
 			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
 		}
 
 		$rounds = 0;
 		do {
-			$handle = fopen($path, 'rb');
-			stream_set_read_buffer($handle, 0);
-			$random = fread($handle, $length);
-			fclose($handle);
+			$loops = 0;
+			$string = '';
 
-			if (!$random) {
-				throw new \RuntimeException(sprintf('`%s` returned an empty value.', $path));
+			while (strlen($string) < $length && $loops < $this->_tenacity) {
+				$newString = $this->_getUnixRandomString($length, $path);
+				$newString = $this->_filterChars($newString);
+
+				$string .= $newString;
+				++$loops;
+			}
+			if (strlen($string) < $length) {
+				throw new Exception\GenerateStringException('Could not generate string with provided whitelist: `' . implode('', $this->_whitelist) . '`');
 			}
 
-			$string = substr(base64_encode($random), 0, $length);
-			$string = str_replace('+', '.', rtrim($string, '='));
+			$string = substr($string, 0, $length);
 			
 			++$rounds;
 			if ($rounds >= $this->_tenacity) {
@@ -167,19 +251,28 @@ class StringGenerator
 	 */
 	public function generateFromOpenSSL($length = self::DEFAULT_LENGTH)
 	{
-		if (!function_exists('openssl_random_pseudo_bytes')) {
-			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
-		}
+
 		if ($length < 1) {
 			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
 		}
 
 		$rounds = 0;
 		do {
-			$random = openssl_random_pseudo_bytes($length);
+			$loops = 0;
+			$string = '';
 
-			$string = substr(base64_encode($random), 0, $length);
-			$string = str_replace('+', '.', rtrim($string, '='));
+			while (strlen($string) < $length && $loops < $this->_tenacity) {
+				$newString = $this->_getOpenSSLString($length);
+				$newString = $this->_filterChars($newString);
+
+				$string .= $newString;
+				++$loops;
+			}
+			if (strlen($string) < $length) {
+				throw new Exception\GenerateStringException('Could not generate string with provided whitelist: `' . implode('', $this->_whitelist) . '`');
+			}
+
+			$string = substr($string, 0, $length);
 			++$rounds;
 
 			if ($rounds >= $this->_tenacity) {
@@ -205,8 +298,6 @@ class StringGenerator
 		if ($length < 1) {
 			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
 		}
-		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
-		$charLength = strlen($chars) - 1;
 
 		$rounds = 0;
 
@@ -216,24 +307,121 @@ class StringGenerator
 				throw new Exception\GenerateStringException('Could not generate string natively in ' . $this->_tenacity . ' attempts');
 			}
 
-			if ($this->_pattern) {
-				$string = $this->_reverseRegex->getString($this->_pattern);
-			} else {
-
-				$string = '';
-				for ($i = 0; $i < $length; $i++) {
-					$string .= $chars[mt_rand(0, $charLength)];
-				}
+			$string = '';
+			for ($i = 0; $i < $length; $i++) {
+				$string .= $this->_whitelist[mt_rand(0, (count($this->_whitelist) - 1))];
 			}
 
 		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
 
+		return $string;
+	}
+
+	/**
+	 * Creates random string with no whitelist filtering
+	 *
+	 * @see generateFromUnixRandom()
+	 * @param int $length
+	 * @param string $path
+	 *
+	 * @return string
+	 */
+	private function _getUnixRandomString($length, $path)
+	{
+		if (!file_exists($path) || !is_readable($path)) {
+			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
+		}
+
+		$handle = fopen($path, 'rb');
+		stream_set_read_buffer($handle, 0);
+		$random = fread($handle, $length);
+		fclose($handle);
+
+		if (!$random) {
+			throw new \RuntimeException(sprintf('`%s` returned an empty value.', $path));
+		}
+
+		$string = substr(base64_encode($random), 0, $length);
+		$string = str_replace('+', '.', rtrim($string, '='));
 
 		return $string;
 	}
 
+	/**
+	 * Creates random string with no whitelist filtering
+	 *
+	 * @see generateFromOpenSSL()
+	 * @param int $length
+	 *
+	 * @return string
+	 */
+	private function _getOpenSSLString($length)
+	{
+		if (!function_exists('openssl_random_pseudo_bytes')) {
+			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
+		}
+
+		$random = openssl_random_pseudo_bytes($length);
+
+		$string = substr(base64_encode($random), 0, $length);
+		$string = str_replace('+', '.', rtrim($string, '='));
+
+		return $string;
+	}
+
+	/**
+	 * Filter out characters from a string that are not found in the whitelist
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
+	private function _filterChars($string)
+	{
+		$chars = $this->_getChars($string);
+
+		foreach ($chars as $key => $char) {
+			if (!in_array($char, $this->_whitelist, true)) {
+				unset($chars[$key]);
+			}
+		}
+
+		return implode('', $chars);
+	}
+
+	/**
+	 * Get the regex pattern to compare generated string with
+	 *
+	 * @return string
+	 */
 	private function _getPattern()
 	{
 		return $this->_pattern ?: '/.*/';
+	}
+
+	/**
+	 * Either validate an array of individual characters, or take a string of characters and split it up into an array
+	 *
+	 * @param array | string $chars    List of characters to split
+	 *
+	 * @return array
+	 */
+	private function _getChars($chars)
+	{
+		if (!is_string($chars) && !is_array($chars)) {
+			throw new \InvalidArgumentException('Allowed characters must be a string or an array');
+		}
+
+		if (is_string($chars)) {
+			$chars = str_split($chars);
+		}
+
+		foreach ($chars as $char) {
+			if (!is_string($char) || strlen($char) !== 1) {
+				throw new \LogicException('Each value in character list must be a one character string');
+			}
+		}
+
+		return $chars;
 	}
 }
