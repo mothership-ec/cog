@@ -9,11 +9,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Provides the migrate:run command. Runs new migrations for all registered
- * modules.
+ * Class MigrateUninstall
+ * @package Message\Cog\Console\Command
+ *
+ * @author  Thomas Marchant <thomas@mothership.ec>
  */
 class MigrateUninstall extends Command
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function configure()
 	{
 		$this
@@ -23,6 +28,9 @@ class MigrateUninstall extends Command
 		;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$output->writeln('<info>Uninstalling databases for ' . $input->getArgument('module_name') . '...</info>');
