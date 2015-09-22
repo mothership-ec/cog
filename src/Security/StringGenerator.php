@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Security;
 
-use Message\Cog\Helper\ReverseRegexHelper as ReverseRegex;
-
 /**
  * Pseudorandom string generator.
  *
@@ -18,16 +16,8 @@ class StringGenerator
 {
 	const DEFAULT_LENGTH = 32;
 
-	private $_reverseRegex;
-
 	private $_tenacity  = 10000;
 	protected $_pattern;
-
-
-	public function __construct(ReverseRegex $reverseRegex = null)
-	{
-		$this->_reverseRegex = $reverseRegex ?: new ReverseRegex;
-	}
 
 	/**
 	 * Allows setting a regex the String must match

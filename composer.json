@@ -61,8 +61,7 @@
 		"dflydev/markdown"                 : "~1.0",
 		"zendframework/zend-debug"         : "~2.4",
 		"zendframework/zend-escaper"       : "~2.4",
-		"jeremeamia/superclosure"          : "~1.0",
-	    "icomefromthenet/reverse-regex"    : "~0.0.6"
+		"jeremeamia/superclosure"          : "~1.0"
 	},
 	"require-dev": {
 		"mikey179/vfsStream"              : "1.1.*",
