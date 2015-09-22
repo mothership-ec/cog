@@ -208,10 +208,27 @@ class StringGenerator
 	 */
 	public function generateFromUnixRandom($length = self::DEFAULT_LENGTH, $path = '/dev/urandom')
 	{
-		$callback = [$this, '_getUnixRandomString'];
-		$parameters = [$path];
+		if (!file_exists($path) || !is_readable($path)) {
+			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
+		}
 
-		return $this->_generateStringFromCallback($length, $callback, $parameters);
+		$callback = function () use ($length, $path) {
+			$handle = fopen($path, 'rb');
+			stream_set_read_buffer($handle, 0);
+			$random = fread($handle, $length);
+			fclose($handle);
+
+			if (!$random) {
+				throw new \RuntimeException(sprintf('`%s` returned an empty value.', $path));
+			}
+
+			$string = substr(base64_encode($random), 0, $length);
+			$string = str_replace('+', '.', rtrim($string, '='));
+
+			return $string;
+		};
+
+		return $this->_generateStringFromCallback($length, $callback);
 	}
 
 	/**
@@ -227,7 +244,18 @@ class StringGenerator
 	 */
 	public function generateFromOpenSSL($length = self::DEFAULT_LENGTH)
 	{
-		$callback = [$this, '_getOpenSSLString'];
+		if (!function_exists('openssl_random_pseudo_bytes')) {
+			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
+		}
+
+		$callback = function () use ($length) {
+			$random = openssl_random_pseudo_bytes($length);
+
+			$string = substr(base64_encode($random), 0, $length);
+			$string = str_replace('+', '.', rtrim($string, '='));
+
+			return $string;
+		};
 
 		return $this->_generateStringFromCallback($length, $callback);
 	}
@@ -243,7 +271,14 @@ class StringGenerator
 	 */
 	public function generateNatively($length = self::DEFAULT_LENGTH)
 	{
-		$callback = [$this, '_getNativeString'];
+		$callback = function () use ($length) {
+			$string = '';
+			for ($i = 0; $i < $length; $i++) {
+				$string .= $this->_whitelist[mt_rand(0, (count($this->_whitelist) - 1))];
+			}
+
+			return $string;
+		};
 
 		return $this->_generateStringFromCallback($length, $callback);
 	}
@@ -256,17 +291,14 @@ class StringGenerator
 	 *
 	 * @param $length
 	 * @param callable $callback
-	 * @param array $parameters
 	 *
 	 * @return string
 	 */
-	private function _generateStringFromCallback($length, callable $callback, array $parameters = [])
+	private function _generateStringFromCallback($length, \Closure $callback)
 	{
 		if ($length < 1) {
 			throw new \UnexpectedValueException('Cannot create string with length less than or equal to zero');
 		}
-
-		$parameters = array_merge([$length], $parameters);
 
 		$rounds = 0;
 		do {
@@ -274,7 +306,7 @@ class StringGenerator
 			$string = '';
 
 			while (strlen($string) < $length && $loops < $this->_tenacity) {
-				$newString = call_user_func_array($callback, $parameters);
+				$newString = $callback();
 				$newString = $this->_filterChars($newString);
 
 				$string .= $newString;
@@ -291,83 +323,6 @@ class StringGenerator
 				throw new Exception\GenerateStringException('Could not generate string in ' . $this->_tenacity . ' attempts');
 			}
 		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
-
-		return $string;
-	}
-
-	/**
-	 * Creates random string with no whitelist filtering
-	 *
-	 * Note: Your IDE might mark this method as unused, as it is called via call_user_func_array()
-	 *
-	 * @see generateFromUnixRandom()
-	 * @param int $length
-	 * @param string $path
-	 *
-	 * @return string
-	 */
-	private function _getUnixRandomString($length, $path)
-	{
-		if (!file_exists($path) || !is_readable($path)) {
-			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
-		}
-
-		$handle = fopen($path, 'rb');
-		stream_set_read_buffer($handle, 0);
-		$random = fread($handle, $length);
-		fclose($handle);
-
-		if (!$random) {
-			throw new \RuntimeException(sprintf('`%s` returned an empty value.', $path));
-		}
-
-		$string = substr(base64_encode($random), 0, $length);
-		$string = str_replace('+', '.', rtrim($string, '='));
-
-		return $string;
-	}
-
-	/**
-	 * Creates random string with no whitelist filtering
-	 *
-	 * Note: Your IDE might mark this method as unused, as it is called via call_user_func_array()
-	 *
-	 * @see generateFromOpenSSL()
-	 * @param int $length
-	 *
-	 * @return string
-	 */
-	private function _getOpenSSLString($length)
-	{
-		if (!function_exists('openssl_random_pseudo_bytes')) {
-			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
-		}
-
-		$random = openssl_random_pseudo_bytes($length);
-
-		$string = substr(base64_encode($random), 0, $length);
-		$string = str_replace('+', '.', rtrim($string, '='));
-
-		return $string;
-	}
-
-	/**
-	 * Select random characters from whitelist using mt_rand() and append to string. Return once it reaches correct
-	 * length.
-	 *
-	 * Note: Your IDE might mark this method as unused, as it is called via call_user_func_array()
-	 *
-	 * @see generateFromNative()
-	 * @param $length
-	 *
-	 * @return string
-	 */
-	private function _getNativeString($length)
-	{
-		$string = '';
-		for ($i = 0; $i < $length; $i++) {
-			$string .= $this->_whitelist[mt_rand(0, (count($this->_whitelist) - 1))];
-		}
 
 		return $string;
 	}
