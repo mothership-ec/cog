@@ -11,21 +11,116 @@ namespace Message\Cog\Security;
  * Generated strings are in the format: [./0-9A-Za-z]{$length}
  *
  * @author Joe Holdcroft <joe@message.co.uk>
+ * @author Thomas Marchant <thomas@message.co.uk>
  */
 class StringGenerator
 {
 	const DEFAULT_LENGTH = 32;
-	protected $_pattern = '/.*/';
-
+	const CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
 
 	/**
+	 * How many attempts the string generation methods will make to generate strings matching requirements. This is
+	 * used both with match regular expresses (whose functionality is deprecated), and when filtering out characters
+	 * not found in the whitelist
+	 *
+	 * @var int
+	 */
+	private $_tenacity = 1000;
+
+	/**
+	 * List of characters that are allowed to appear in the string. Defaults to all alphanumeric characters, as well
+	 * as the dot '.' and slash '/'
+	 *
+	 * @var array
+	 */
+	private $_whitelist;
+
+	/**
+	 * Regex pattern that the generated string should match
+	 *
+	 * @deprecated  This property is deprecated, use the whitelist instead. See `setPattern()` docblock.
+	 * @var string
+	 */
+	protected $_pattern;
+
+	/**
+	 * Split default characters into an array to set as whitelist
+	 */
+	public function __construct()
+	{
+		$this->_whitelist = str_split(self::CHARS);
+	}
+
+	/**
+	 * @deprecated It is too inefficient and difficult to generate a string matching a regex, and on top of that these
+	 *             methods only ever generate strings with alphanumeric characters, dots or slashes, and there is a set
+	 *             length, so it's kind of dumb to try and match a regex where it's possible to have a regex that
+	 *             couldn't possibly be created, i.e. if you had a regex of /^[a-z]{30}$/ but had set a length of 10,
+	 *             it would never match.
+	 *
 	 * Allows setting a regex the String must match
 	 * @param string $pattern the regex
+	 *
 	 * @return StringGenerator $this for chainability
 	 */
 	public function setPattern($pattern)
 	{
 		$this->_pattern = $pattern;
+
+		return $this;
+	}
+
+	/**
+	 * Set how hard the string generation method should try to create create the string matching the requirements.
+	 *
+	 * @param $tenacity
+	 *
+	 * @return StringGenerator
+	 */
+	public function setTenacity($tenacity)
+	{
+		if (!is_int($tenacity)) {
+			throw new \InvalidArgumentException('Tenacity must be an integer');
+		}
+
+		$this->_tenacity = $tenacity;
+
+		return $this;
+	}
+
+	/**
+	 * Set which characters should be set in the whitelist
+	 *
+	 * @param $chars
+	 *
+	 * @return StringGenerator
+	 */
+	public function allowChars($chars)
+	{
+		$this->_whitelist = array_values($this->_getChars($chars));
+
+		return $this;
+	}
+
+	/**
+	 * Set which characters to exclude from the whitelist
+	 *
+	 * @param $chars
+	 *
+	 * @return StringGenerator
+	 */
+	public function disallowChars($chars)
+	{
+		$blacklist = $this->_getChars($chars);
+
+		foreach ($this->_whitelist as $key => $char) {
+			if (in_array($char, $blacklist, true)) {
+				unset($this->_whitelist[$key]);
+			}
+		}
+
+		$this->_whitelist = array_values($this->_whitelist);
+
 		return $this;
 	}
 
@@ -46,11 +141,17 @@ class StringGenerator
 	 */
 	public function generate($length = self::DEFAULT_LENGTH)
 	{
-		$self  = $this;
+		$self   = $this;
+		$string = null;
+
 		if ($length < 1) {
 			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
 		}
-		$calls = array(
+
+		$calls = [
+			function() use ($self, $length) {
+				return $self->generateFromUnixRandom($length, '/dev/arandom');
+			},
 			function() use ($self, $length) {
 				return $self->generateFromUnixRandom($length, '/dev/urandom');
 			},
@@ -63,7 +164,7 @@ class StringGenerator
 			function() use ($self, $length) {
 				return $self->generateNatively($length);
 			},
-		);
+		];
 
 		foreach ($calls as $call) {
 			try {
@@ -72,7 +173,10 @@ class StringGenerator
 					break;
 				}
 			}
-			catch (\Exception $e) {
+			catch (\RuntimeException $e) {
+				continue;
+			}
+			catch (Exception\GenerateStringException $e) {
 				continue;
 			}
 		}
@@ -107,12 +211,8 @@ class StringGenerator
 		if (!file_exists($path) || !is_readable($path)) {
 			throw new \RuntimeException(sprintf('Unable to read `%s`.', $path));
 		}
-		if ($length < 1) {
-			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
-		}
 
-		$rounds = 0;
-		do {
+		$callback = function () use ($length, $path) {
 			$handle = fopen($path, 'rb');
 			stream_set_read_buffer($handle, 0);
 			$random = fread($handle, $length);
@@ -124,11 +224,11 @@ class StringGenerator
 
 			$string = substr(base64_encode($random), 0, $length);
 			$string = str_replace('+', '.', rtrim($string, '='));
-			
-			++$rounds;
-		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
 
-		return $string;
+			return $string;
+		};
+
+		return $this->_generateStringFromCallback($length, $callback);
 	}
 
 	/**
@@ -147,21 +247,17 @@ class StringGenerator
 		if (!function_exists('openssl_random_pseudo_bytes')) {
 			throw new \RuntimeException('Function `openssl_random_pseudo_bytes` does not exist.');
 		}
-		if ($length < 1) {
-			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
-		}
 
-		$rounds = 0;
-		do {
+		$callback = function () use ($length) {
 			$random = openssl_random_pseudo_bytes($length);
 
 			$string = substr(base64_encode($random), 0, $length);
 			$string = str_replace('+', '.', rtrim($string, '='));
-			++$rounds;
-		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
-		
 
-		return $string;
+			return $string;
+		};
+
+		return $this->_generateStringFromCallback($length, $callback);
 	}
 
 	/**
@@ -175,23 +271,115 @@ class StringGenerator
 	 */
 	public function generateNatively($length = self::DEFAULT_LENGTH)
 	{
+		$callback = function () use ($length) {
+			$string = '';
+			for ($i = 0; $i < $length; $i++) {
+				$string .= $this->_whitelist[mt_rand(0, (count($this->_whitelist) - 1))];
+			}
+
+			return $string;
+		};
+
+		return $this->_generateStringFromCallback($length, $callback);
+	}
+
+	/**
+	 * Attempt to build a string using a callback. The number of attempts is based on the `$_tenacity` property.
+	 * This method will generate strings, filter out characters that aren't in the whitelist, validate the length and
+	 * then append a new string. If the number of characters is longer than the set length after the invalid characters
+	 * have been filtered out, the string will then be trimmed down to size and returned.
+	 *
+	 * @param $length
+	 * @param callable $callback
+	 *
+	 * @return string
+	 */
+	private function _generateStringFromCallback($length, \Closure $callback)
+	{
 		if ($length < 1) {
-			throw new \UnexpectedValueException('generate() expects an integer greater than or equal to 1');
+			throw new \UnexpectedValueException('Cannot create string with length less than or equal to zero');
 		}
-		$chars      = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./';
-		$charLength = strlen($chars) - 1;
 
 		$rounds = 0;
 		do {
-			$string     = '';
+			$loops = 0;
+			$string = '';
 
-			for ($i = 0; $i < $length; $i++) {
-				$string .= $chars[mt_rand(0, $charLength)];
+			while (strlen($string) < $length && $loops < $this->_tenacity) {
+				$newString = $callback();
+				$newString = $this->_filterChars($newString);
+
+				$string .= $newString;
+				++$loops;
 			}
-			++$rounds;
-		} while (!preg_match($this->_pattern, $string) && $rounds < $length);
+			if (strlen($string) < $length) {
+				throw new Exception\GenerateStringException('Could not generate string with provided whitelist: `' . implode('', $this->_whitelist) . '`');
+			}
 
+			$string = substr($string, 0, $length);
+			++$rounds;
+
+			if ($rounds >= $this->_tenacity) {
+				throw new Exception\GenerateStringException('Could not generate string in ' . $this->_tenacity . ' attempts');
+			}
+		} while (!preg_match($this->_getPattern(), $string) && $rounds < $this->_tenacity);
 
 		return $string;
+	}
+
+	/**
+	 * Filter out characters from a string that are not found in the whitelist
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
+	private function _filterChars($string)
+	{
+		$chars = $this->_getChars($string);
+
+		foreach ($chars as $key => $char) {
+			if (!in_array($char, $this->_whitelist, true)) {
+				unset($chars[$key]);
+			}
+		}
+
+		return implode('', $chars);
+	}
+
+	/**
+	 * Get the regex pattern to compare generated string with
+	 *
+	 * @return string
+	 */
+	private function _getPattern()
+	{
+		return $this->_pattern ?: '/.*/';
+	}
+
+	/**
+	 * Either validate an array of individual characters, or take a string of characters and split it up into an array
+	 *
+	 * @param array | string $chars    List of characters to split
+	 *
+	 * @return array
+	 */
+	private function _getChars($chars)
+	{
+		if (!is_string($chars) && !is_array($chars)) {
+			throw new \InvalidArgumentException('Allowed characters must be a string or an array');
+		}
+
+		if (is_string($chars)) {
+			$chars = str_split($chars);
+		}
+
+		foreach ($chars as $char) {
+			if (!is_string($char) || strlen($char) !== 1) {
+				throw new \LogicException('Each value in character list must be a one character string');
+			}
+		}
+
+		return $chars;
 	}
 }
