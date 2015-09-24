@@ -21,11 +21,6 @@ class ViewNameParser extends TemplateNameParser
 	protected $_defaultDirs = array();
 
 	/**
-	 * Possible separators for module names
-	 */
-	const VIEW_SEPARATORS = ['!', ':'];
-
-	/**
 	 * Constructor.
 	 *
 	 * @param ReferenceParserInterface $parser    Reference parser class
@@ -38,6 +33,14 @@ class ViewNameParser extends TemplateNameParser
 		$this->_finder    = $finder;
 		$this->_fileTypes = $fileTypes;
 		$this->_formats   = $formats;
+	}
+
+	/**
+	 * Possible separators for module names
+	 */
+	public static function getViewNamespaceSeparators()
+	{
+		return ['!', ':'];
 	}
 
 	/**
@@ -81,7 +84,7 @@ class ViewNameParser extends TemplateNameParser
 
 		$parsed = $this->_parser->parse($reference);
 
-		$referenceSeparators = $this->_getReferenceSeparators();
+		$referenceSeparators = self::getViewNamespaceSeparators();
 
 		// If it is relative and an absolute path was used previously, make the
 		// reference absolute using the previous module name
@@ -169,7 +172,7 @@ class ViewNameParser extends TemplateNameParser
 		// which should be improved/refactored at a later date
 		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
 			// If it is relative, make it absolute with the last module name
-			$referenceSeparators = $this->_getReferenceSeparators();
+			$referenceSeparators = self::getViewNamespaceSeparators();
 			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
 
 			// Parse the new reference
@@ -180,10 +183,5 @@ class ViewNameParser extends TemplateNameParser
 		}
 
 		return $parsed;
-	}
-
-	private function _getReferenceSeparators()
-	{
-		return self::VIEW_SEPARATORS;
 	}
 }
