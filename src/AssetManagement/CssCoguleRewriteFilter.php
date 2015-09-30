@@ -30,13 +30,11 @@ class CssCoguleRewriteFilter extends BaseCssFilter
 		$cogNamespace = $asset->cogNamespace;
 
 		$content = $this->filterReferences($asset->getContent(), function($matches) use ($cogNamespace) {
-			if (false !== strpos($matches['url'], '://') || 0 === strpos($matches['url'], '//') || 0 === strpos($matches['url'], 'data:')) {
+			if (false !== strpos($matches['url'], '://') ||
+				0 === strpos($matches['url'], '//') ||
+				0 === strpos($matches['url'], 'data:') ||
+				isset($matches['url'][0]) && '/' == $matches['url'][0]) {
 				// absolute or protocol-relative or data uri
-				return $matches[0];
-			}
-
-			if (isset($matches['url'][0]) && '/' == $matches['url'][0]) {
-				// root relative
 				return $matches[0];
 			}
 
