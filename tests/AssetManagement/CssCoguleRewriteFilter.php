@@ -71,4 +71,36 @@ class CssCoguleRewriteFilter extends \PHPUnit_Framework_TestCase
 
 		$filter->filterDump($asset);
 	}
+
+	public function testAbsolutePathWithProtocol() {
+		$asset = m::mock('\\Assetic\\Asset\\AssetInterface')
+			->shouldReceive('getSourceRoot')
+			->zeroOrMoreTimes()
+			->andReturn('/test')
+
+			->shouldReceive('getSourcePath')
+			->zeroOrMoreTimes()
+			->andReturn('test')
+
+			->shouldReceive('getTargetPath')
+			->zeroOrMoreTimes()
+			->andReturn('/test/target')
+
+			->shouldReceive('getContent')
+			->once()
+			->andReturn("url('http://image.jpg')")
+
+			->shouldReceive('setContent')
+			->with('url(\'http://image.jpg\')')
+			->once()
+
+			->getMock()
+		;
+
+		$asset->cogNamespace = 'Test:Module';
+
+		$filter = new Filter;
+
+		$filter->filterDump($asset);
+	}
 }
