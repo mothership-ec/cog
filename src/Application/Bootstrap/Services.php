@@ -353,25 +353,6 @@ class Services implements ServicesInterface
 			return new \Symfony\Component\HttpKernel\UriSigner(time());
 		};
 
-		$services['http.rest.request_dispatcher_collection'] = function($c)
-		{
-			return new Cog\HTTP\REST\RequestDispatcherCollection([
-				$c['http.rest.xml_request_dispatcher'],
-			]);
-		};
-
-		$services['http.rest.xml_request_dispatcher'] = function($c)
-		{
-			return new Cog\HTTP\REST\XmlRequestDispatcher(
-				$c['http.kernel'],
-				$c['serializer.array_to_xml']
-			);
-		};
-
-		$services['http.oauth.factory'] = function($c) {
-			return new Cog\HTTP\OAuth\Factory;
-		};
-
 		$services['response_builder'] = function($c) {
 			return new Cog\Controller\ResponseBuilder(
 				$c['templating']
