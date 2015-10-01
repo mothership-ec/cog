@@ -129,12 +129,12 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 *
 	 * @param string         $routeName     Name of the route to use
 	 * @param array          $params        Parameters to use in the route
-	 * @param boolean|string $referenceType The type of reference (one of the
+	 * @param boolean|string $absolute The type of reference (one of the
 	 *                                      constants in UrlGeneratorInterface)
 	 *
 	 * @return string            The generated URL
 	 */
-	public function generateUrl($routeName, $params = array(), $absolute = UrlGeneratorInterface::ABSOLUTE_PATH)
+	public function generateUrl($routeName, $params = array(), $absolute = UrlGeneratorInterface::ABSOLUTE_URL)
 	{
 		return $this->_services['routing.generator']->generate($routeName, $params, $absolute);
 	}
