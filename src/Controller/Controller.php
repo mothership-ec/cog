@@ -127,10 +127,10 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 	 *
 	 * @see \Message\Cog\Routing\UrlGenerator::generate()
 	 *
-	 * @param string         $routeName     Name of the route to use
-	 * @param array          $params        Parameters to use in the route
-	 * @param boolean|string $absolute The type of reference (one of the
-	 *                                      constants in UrlGeneratorInterface)
+	 * @param string             $routeName     Name of the route to use
+	 * @param array              $params        Parameters to use in the route
+	 * @param boolean|string     $absolute      The type of reference (one of the
+	 *                                          constants in UrlGeneratorInterface)
 	 *
 	 * @return string            The generated URL
 	 */
