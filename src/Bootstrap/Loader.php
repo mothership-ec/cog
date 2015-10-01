@@ -7,8 +7,6 @@ use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Service\ContainerAwareInterface;
 use Message\Cog\HTTP\RequestAwareInterface;
 
-use RuntimeException;
-
 /**
  * Bootstrap loader, responsible for loading bootstraps from modules or Cog
  * itself.
@@ -43,8 +41,6 @@ class Loader implements LoaderInterface
 	 *
 	 * @param  string $path      The directory to load from
 	 * @param  string $namespace The namespace for this directory
-	 *
-	 * @throws RuntimeException  If the given path does not exist or is not a directory
 	 *
 	 * @return Loader            Returns $this for chaining
 	 */
