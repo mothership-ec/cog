@@ -523,6 +523,7 @@ class Services implements ServicesInterface
 				new \Message\Cog\Field\Type\MultiChoice,
 				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
 				new \Message\Cog\Field\Type\Text,
+				new \Message\Cog\Field\Type\Hidden,
 			));
 		};
 
