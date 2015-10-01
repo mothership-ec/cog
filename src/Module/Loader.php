@@ -93,27 +93,21 @@ class Loader implements LoaderInterface
 	protected function _loadModules()
 	{
 		foreach ($this->_modules as $module) {
-			try {
-				// Load the bootstraps
-				$this->_bootstrapLoader
-					->addFromDirectory(
-						$this->_locator->getPath($module) . 'Bootstrap',
-						$module . '\\Bootstrap'
-					);
-
-				// Fire the "module loaded" event
-				$this->_eventDispatcher->dispatch(
-					sprintf(
-						'module.%s.load.success',
-						strtolower(str_replace('\\', '.', $module))
-					),
-					new Event
+			// Load the bootstraps
+			$this->_bootstrapLoader
+				->addFromDirectory(
+					$this->_locator->getPath($module) . 'Bootstrap',
+					$module . '\\Bootstrap'
 				);
-			} catch (\RuntimeException $e) {
-				// Catch and log an exception if the directory is not found, to
-				// allow the application to continue since this is not fatal.
-				$this->_logger->warning($e->getMessage());
-			}
+
+			// Fire the "module loaded" event
+			$this->_eventDispatcher->dispatch(
+				sprintf(
+					'module.%s.load.success',
+					strtolower(str_replace('\\', '.', $module))
+				),
+				new Event
+			);
 		}
 
 		$this->_bootstrapLoader->load();
