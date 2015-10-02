@@ -2,9 +2,21 @@
 
 ## 4.12.0 (not released yet)
 
-- Resolves issue where referencing a file, such as an image, absolutely from a CSS file would cause an undefined variable error
-- Disabled `Whoops` error handler as it made error messages harder to interpret than just using xDebug
+- Added `HTTP\ResponseInterface`, which contains all the methods of `Symfony\Component\HttpFoundation\Response` class, as a means of ensuring that we can type hint all Cog response classes
 - Added `Debug\Whoops\SimpleHandler` class which rethrows any exceptions an lets the developer's PHP handler deal with the error
+- `HTTP\Response` implements `HTTP\ResponseInterface`
+- `HTTP\RedirectResponse` implements `HTTP\ResponseInterface`
+- `HTTP\StreamedResponse` implements `HTTP\ResponseInterface`
+- Disabled `Whoops` error handler as it made error messages harder to interpret than just using xDebug
+- No longer throws `RuntimeException` if a module has no `Bootstrap` directory. Will only throw it if the given path is not a directory, it is not readable, or it is not executable
+- Resolved issue where referencing a file, such as an image, absolutely from a CSS file would cause an undefined variable error
+- Resolved issue where tasks would print output twice
+- Removed broken `http.oath.factory` service
+- Removed broken `rest.xml_request_dispatcher` service
+- Removed broken `http.rest.request_dispatcher_collection` service
+- Deprecated `Form\Handler` class
+- Deprecated `Validation` component
+- Deprecated `Console\Command\ServiceList` command class and removed it from command list
 
 ## 4.11.0
 
