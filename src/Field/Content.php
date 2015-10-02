@@ -14,7 +14,6 @@ class Content implements ContentInterface
 	protected $_fields = array();
 	protected $_validator;
 
-
 	/**
 	 * @see set()
 	 */

@@ -1,9 +1,16 @@
 # Changelog
 
-## 4.12.0 (not released yet)
+## 4.12.0
 
+- Added `Field\Content` class, adapted from `Message\Mothership\Page\Content` in the CMS module, to allow content to be more consistent across modules
+- Added `Field\ContentBuilder` class for joining form data onto a `Content` object
+- Added `Field\ContentInterface` interface representing content classes, to be used with the `Field\ContentBuilder` class
+- Added `Field\Type\Hidden` for adding hidden form fields to content
 - Added `HTTP\ResponseInterface`, which contains all the methods of `Symfony\Component\HttpFoundation\Response` class, as a means of ensuring that we can type hint all Cog response classes
 - Added `Debug\Whoops\SimpleHandler` class which rethrows any exceptions an lets the developer's PHP handler deal with the error
+- Added `field.content.builder` service which returns an instance of `Field\ContentBuilder`
+- Added `Field\Group::get()` method for returning a field in a group, `__get()` now calls this method
+- Added `Field\Group::exists()` method for checking if a field exists, `__isset()` now calls this method
 - `HTTP\Response` implements `HTTP\ResponseInterface`
 - `HTTP\RedirectResponse` implements `HTTP\ResponseInterface`
 - `HTTP\StreamedResponse` implements `HTTP\ResponseInterface`
