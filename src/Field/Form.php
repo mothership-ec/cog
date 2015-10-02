@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Field;
 
-use Message\Mothership\CMS\Page\Content;
-
 use Message\Cog\Service\ContainerInterface;
 use Symfony\Component\Form\FormFactory;
 
