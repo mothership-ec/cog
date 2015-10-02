@@ -1,5 +1,30 @@
 # Changelog
 
+## 4.12.0
+
+- Added `Field\Content` class, adapted from `Message\Mothership\Page\Content` in the CMS module, to allow content to be more consistent across modules
+- Added `Field\ContentBuilder` class for joining form data onto a `Content` object
+- Added `Field\ContentInterface` interface representing content classes, to be used with the `Field\ContentBuilder` class
+- Added `Field\Type\Hidden` for adding hidden form fields to content
+- Added `HTTP\ResponseInterface`, which contains all the methods of `Symfony\Component\HttpFoundation\Response` class, as a means of ensuring that we can type hint all Cog response classes
+- Added `Debug\Whoops\SimpleHandler` class which rethrows any exceptions an lets the developer's PHP handler deal with the error
+- Added `field.content.builder` service which returns an instance of `Field\ContentBuilder`
+- Added `Field\Group::get()` method for returning a field in a group, `__get()` now calls this method
+- Added `Field\Group::exists()` method for checking if a field exists, `__isset()` now calls this method
+- `HTTP\Response` implements `HTTP\ResponseInterface`
+- `HTTP\RedirectResponse` implements `HTTP\ResponseInterface`
+- `HTTP\StreamedResponse` implements `HTTP\ResponseInterface`
+- Disabled `Whoops` error handler as it made error messages harder to interpret than just using xDebug
+- No longer throws `RuntimeException` if a module has no `Bootstrap` directory. Will only throw it if the given path is not a directory, it is not readable, or it is not executable
+- Resolved issue where referencing a file, such as an image, absolutely from a CSS file would cause an undefined variable error
+- Resolved issue where tasks would print output twice
+- Removed broken `http.oath.factory` service
+- Removed broken `rest.xml_request_dispatcher` service
+- Removed broken `http.rest.request_dispatcher_collection` service
+- Deprecated `Form\Handler` class
+- Deprecated `Validation` component
+- Deprecated `Console\Command\ServiceList` command class and removed it from command list
+
 ## 4.11.0
 
 - Increased reliability and refactor for `Security\StringGenerator` class. String generation methods now pass a closure to a private `_generateStringFromCallback()` method that use the closure as the algorithm for creating the string. A random string will be generated, and then any disallowed characters will be stripped out, and if the string no longer matches the given length, a new string will be generated, appended, and the process will repeat. If the string exceeds the given length, it will be trimmed down to size and returned.

@@ -8,6 +8,8 @@ namespace Message\Cog\Validation;
  *
  * Stores and manages error messages for validation
  *
+ * @deprecated Do not use this component, use Symfony's validation component instead
+ *
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */

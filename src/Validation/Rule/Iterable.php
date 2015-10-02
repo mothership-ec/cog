@@ -12,7 +12,7 @@ use Message\Cog\Validation\Loader;
  *
  * Class for looping through values for validation
  *
- * @todo get working
+ * @deprecated Do not use this component, use Symfony's validation component instead
  *
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>

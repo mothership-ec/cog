@@ -15,7 +15,7 @@ use Message\Cog\Service\Container;
  * use of private properties and methods, as well as the labyrinthian structure of the component. This class is
  * designed to create an instance of the form and of the validator, and allow them to work together.
  *
- * @todo when adding a select field, make sure validation removes any fields that aren't in the list
+ * @deprecated Forms should not be built using this class. Use vanilla Symfony form instead
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */

@@ -12,5 +12,5 @@ use Symfony\Component\HttpFoundation\StreamedResponse as BaseResponse;
  *
  * @author Thomas Marchant <thomas@message.co.uk>
  */
-class StreamedResponse extends BaseResponse
+class StreamedResponse extends BaseResponse implements ResponseInterface
 {}

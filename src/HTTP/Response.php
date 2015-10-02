@@ -9,7 +9,7 @@ namespace Message\Cog\HTTP;
  *
  * @author Joe Holdcroft <joe@message.co.uk>
  */
-class Response extends \Symfony\Component\HttpFoundation\Response
+class Response extends \Symfony\Component\HttpFoundation\Response implements ResponseInterface
 {
 	/**
 	 * Checks whether this Response is either a client or server error.

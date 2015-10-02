@@ -353,25 +353,6 @@ class Services implements ServicesInterface
 			return new \Symfony\Component\HttpKernel\UriSigner(time());
 		};
 
-		$services['http.rest.request_dispatcher_collection'] = function($c)
-		{
-			return new Cog\HTTP\REST\RequestDispatcherCollection([
-				$c['http.rest.xml_request_dispatcher'],
-			]);
-		};
-
-		$services['http.rest.xml_request_dispatcher'] = function($c)
-		{
-			return new Cog\HTTP\REST\XmlRequestDispatcher(
-				$c['http.kernel'],
-				$c['serializer.array_to_xml']
-			);
-		};
-
-		$services['http.oauth.factory'] = function($c) {
-			return new Cog\HTTP\OAuth\Factory;
-		};
-
 		$services['response_builder'] = function($c) {
 			return new Cog\Controller\ResponseBuilder(
 				$c['templating']
@@ -523,8 +504,13 @@ class Services implements ServicesInterface
 				new \Message\Cog\Field\Type\MultiChoice,
 				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
 				new \Message\Cog\Field\Type\Text,
+				new \Message\Cog\Field\Type\Hidden,
 			));
 		};
+
+		$services['field.content.builder'] = $services->factory(function($c) {
+			return new \Message\Cog\Field\ContentBuilder;
+		});
 
 		$services['markdown.parser'] = $services->factory(function() {
 			return new \dflydev\markdown\MarkdownParser;
@@ -801,7 +787,7 @@ class Services implements ServicesInterface
 		};
 
 		$services['whoops.page_handler'] = function($c) {
-			return new \Whoops\Handler\PrettyPageHandler;
+			return new \Message\Cog\Debug\Whoops\SimpleHandler;
 		};
 
 		$services['migration.mysql'] = function($c) {
