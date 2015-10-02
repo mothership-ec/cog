@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.12.0 (not released yet)
+
+- Resolves issue where referencing a file, such as an image, absolutely from a CSS file would cause an undefined variable error
+- Disabled `Whoops` error handler as it made error messages harder to interpret than just using xDebug
+- Added `Debug\Whoops\SimpleHandler` class which rethrows any exceptions an lets the developer's PHP handler deal with the error
+
 ## 4.11.0
 
 - Increased reliability and refactor for `Security\StringGenerator` class. String generation methods now pass a closure to a private `_generateStringFromCallback()` method that use the closure as the algorithm for creating the string. A random string will be generated, and then any disallowed characters will be stripped out, and if the string no longer matches the given length, a new string will be generated, appended, and the process will repeat. If the string exceeds the given length, it will be trimmed down to size and returned.
