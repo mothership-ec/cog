@@ -3,7 +3,6 @@
 namespace Message\Cog\Test\Bootstrap;
 
 use Message\Cog\Bootstrap\Loader;
-use Message\Cog\HTTP\Request;
 
 use Message\Cog\Test\Application\FauxEnvironment;
 use Message\Cog\Test\Service\FauxContainer;
@@ -130,5 +129,40 @@ class LoaderTest extends \PHPUnit_Framework_TestCase
 
 		// Test the bootstraps were cleared from the loader
 		$this->assertEmpty($this->_loader->getBootstraps());
+	}
+
+	public function testAddFromDirectoryNotExists()
+	{
+		$loader = $this->_loader->addFromDirectory('non-existent', 'Mothership\\Site');
+
+		$this->assertSame($loader, $this->_loader);
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testAddFromDirectoryNotDirectory()
+	{
+		$this->_loader->addFromDirectory(__FILE__, 'Mothership\\Site');
+	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testAddFromDirectoryUnexecutable()
+	{
+		$path = __DIR__ . '/test-exec';
+		$perm = 0666;
+		if (!is_dir(__DIR__ . '/test-exec')) {
+			mkdir($path, $perm);
+		}
+
+		if (is_executable($path)) {
+			@chmod($path, $perm);
+		}
+
+		$this->_loader->addFromDirectory($path, 'Mothership\\Site');
+
+		@rmdir($path);
 	}
 }
