@@ -2,6 +2,11 @@
 
 namespace Message\Cog\Field;
 
+/**
+ * @author Samuel Trangmar-Keates
+ *
+ * An interface to be used with ContentBuilder and the Form class.
+ */
 interface ContentInterface extends \IteratorAggregate, \Countable
 {
 	/**
