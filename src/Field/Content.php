@@ -18,7 +18,7 @@ class Content implements ContentInterface
 	/**
 	 * @see set()
 	 */
-	public function __set($var, $value)
+	public function __set($key, $value)
 	{
 		return $this->set($key, $value);
 	}
@@ -26,7 +26,7 @@ class Content implements ContentInterface
 	/**
 	 * @see get()
 	 */
-	public function __get($var)
+	public function __get($key)
 	{
 		return $this->get($key);
 	}
@@ -34,7 +34,7 @@ class Content implements ContentInterface
 	/**
 	 * @see exists()
 	 */
-	public function __isset($var)
+	public function __isset($key)
 	{
 		return $this->exists($key);
 	}
@@ -42,7 +42,7 @@ class Content implements ContentInterface
 	/**
 	 * Set a content part.
 	 *
-	 * @param string                             $var   Content part name
+	 * @param string                             $key   Content part name
 	 * @param FieldInterface|RepeatableContainer $value The content part
 	 *
 	 * @throws \InvalidArgumentException If the content part was not a valid instance
@@ -56,31 +56,31 @@ class Content implements ContentInterface
 			));
 		}
 
-		$this->_fields[$var] = $value;
+		$this->_fields[$key] = $value;
 	}
 
 	/**
 	 * Get a content part by name.
 	 *
-	 * @param  string $var Content part name
+	 * @param  string $key Content part name
 	 *
 	 * @return FieldInterface|RepeatableContainer $value The content part
 	 */
 	public function get($key)
 	{
-		return array_key_exists($var, $this->_fields) ? $this->_fields[$var] : null;
+		return array_key_exists($key, $this->_fields) ? $this->_fields[$key] : null;
 	}
 
 	/**
 	 * Check if a content part is set on this object.
 	 *
-	 * @param  string  $var Content part name
+	 * @param  string  $key Content part name
 	 *
 	 * @return boolean
 	 */
 	public function exists()
 	{
-		return isset($this->_fields[$var]);
+		return isset($this->_fields[$key]);
 	}
 
 	/**
