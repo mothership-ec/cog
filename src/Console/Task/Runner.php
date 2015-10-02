@@ -43,9 +43,6 @@ class Runner
 		$command->addOutputHandler($mail);
 		$command->addOutputHandler($log);
 
-		// Output to the console by default
-		$command->output('print')->enable();
-
 		$app->add($command);
 		$app->setAutoExit(false);
 

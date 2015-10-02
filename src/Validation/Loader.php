@@ -8,6 +8,8 @@ namespace Message\Cog\Validation;
  *
  * Loads and maintains a set of rules and filters to use in validation
  *
+ * @deprecated Do not use this component, use Symfony's validation component instead
+ *
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */

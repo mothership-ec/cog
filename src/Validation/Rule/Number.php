@@ -11,6 +11,8 @@ use Message\Cog\Validation\Loader;
  *
  * Validating numeric values
  *
+ * @deprecated Do not use this component, use Symfony's validation component instead
+ *
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */
