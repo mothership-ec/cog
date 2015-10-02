@@ -6,6 +6,8 @@ namespace Message\Cog\Validation;
  * Validator
  * @package Message\Cog\Validation
  *
+ * @deprecated Do not use this component, use Symfony's validation component instead
+ *
  * @author Iris Schaffer <iris@message.co.uk>
  */
 class Field

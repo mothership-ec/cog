@@ -12,6 +12,8 @@ use Message\Cog\Functions\Text as TextFunction;
  *
  * Casts fields through string filters
  *
+ * @deprecated Do not use this component, use Symfony's validation component instead
+ *
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */

@@ -10,6 +10,8 @@ use Message\Cog\Validation\Loader;
  * @package Message\Cog\Validation\Rule
  *
  * Class used to validating and comparing types.
+ *
+ * @deprecated Do not use this component, use Symfony's validation component instead
  */
 class Type implements CollectionInterface
 {
