@@ -46,8 +46,16 @@ class Loader implements LoaderInterface
 	 */
 	public function addFromDirectory($path, $namespace)
 	{
-		if (!file_exists($path) || !is_dir($path)) {
+		if (!file_exists($path)) {
 			return $this;
+		}
+
+		if (!is_dir($path)) {
+			throw new \RuntimeException('`' . $path . '` exists, but is not a directory');
+		}
+
+		if (!is_readable($path) || !is_executable($path)) {
+			throw new \RuntimeException('Bootstrap directory `' . $path . '` is not readable');
 		}
 
 		// Check the leading namespace slash is there
