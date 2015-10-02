@@ -41,7 +41,6 @@ class Console implements ContextInterface
 				new Command\ModuleList,
 				new Command\RouteList,
 				new Command\RouteCollectionTree,
-				new Command\ServiceList,
 				new Command\Setup,
 				new Command\Status,
 				new Command\TaskGenerate,

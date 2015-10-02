@@ -13,6 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * Provides the services:list command.
  * List all registered services.
+ *
+ * @deprecated This class is deprecated because it is too unstable to use in practice. It loads every single
+ *             service in the service container, but if any have issues the whole script will break. This makes
+ *             it better as a tool for debugging but not very useful as a way to list services.
  */
 class ServiceList extends Command
 {
