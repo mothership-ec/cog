@@ -41,6 +41,9 @@ class Loader implements LoaderInterface
 	 *
 	 * @param  string $path      The directory to load from
 	 * @param  string $namespace The namespace for this directory
+	 * @throws \RuntimeException Throws exception if $path is not a directory
+	 * @throws \RuntimeException Throws exception if $path not readable
+	 * @throws \RuntimeException Throws exception if $path not executable
 	 *
 	 * @return Loader            Returns $this for chaining
 	 */
