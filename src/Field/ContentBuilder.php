@@ -2,10 +2,31 @@
 
 namespace Message\Cog\Field;
 
+/**
+ * @author Sam Trangmar-Keates <sam@message.co.uk>
+ *
+ * Class to build Content of a field
+ */
 class ContentBuilder
 {
+	/**
+	 * The name of the form field added to keep track of sequence within
+	 * RepeatableContainers
+	 */
 	const SEQUENCE_FIELD = '_sequence';
 
+	/**
+	 * [buildContent description]
+	 * @param  Factory $fieldFactory The field factory with all fields for the 
+	 *                               content
+	 * @param  array   $data         The content data, this should be specified
+	 *                               as ['group' => [$field_1, $field_2, ...], ...]
+	 *                               where $field_1 & $field_2 are a stdClass
+	 *                               objects containing at least 'field' and 
+	 *                               'value' properties
+	 * @param  string|ContentInterface $content Content class or class name
+	 * @return ContentInterface       Returns the build content
+	 */
 	public function buildContent(Factory $fieldFactory, $data, $content = '\\Message\\Cog\\Field\\Content')
 	{
 		if (!$content instanceof ContentInterface) {

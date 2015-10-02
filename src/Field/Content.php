@@ -14,6 +14,31 @@ class Content implements ContentInterface
 	protected $_fields = array();
 	protected $_validator;
 
+
+	/**
+	 * @see set()
+	 */
+	public function __set($var, $value)
+	{
+		return $this->set($key, $value);
+	}
+
+	/**
+	 * @see get()
+	 */
+	public function __get($var)
+	{
+		return $this->get($key);
+	}
+
+	/**
+	 * @see exists()
+	 */
+	public function __isset($var)
+	{
+		return $this->exists($key);
+	}
+
 	/**
 	 * Set a content part.
 	 *
@@ -22,7 +47,7 @@ class Content implements ContentInterface
 	 *
 	 * @throws \InvalidArgumentException If the content part was not a valid instance
 	 */
-	public function __set($var, $value)
+	public function set($key, $value)
 	{
 		if (!($value instanceof FieldInterface || $value instanceof RepeatableContainer)) {
 			throw new \InvalidArgumentException(sprintf(
@@ -41,7 +66,7 @@ class Content implements ContentInterface
 	 *
 	 * @return FieldInterface|RepeatableContainer $value The content part
 	 */
-	public function __get($var)
+	public function get($key)
 	{
 		return array_key_exists($var, $this->_fields) ? $this->_fields[$var] : null;
 	}
@@ -53,19 +78,9 @@ class Content implements ContentInterface
 	 *
 	 * @return boolean
 	 */
-	public function __isset($var)
+	public function exists()
 	{
 		return isset($this->_fields[$var]);
-	}
-
-	public function set($key, $value)
-	{
-		return $this->__set($key, $value);
-	}
-
-	public function get($key)
-	{
-		return $this->__get($key);
 	}
 
 	/**
