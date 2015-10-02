@@ -72,6 +72,10 @@ class ContentBuilderTest extends \PHPUnit_Framework_TestCase
 			->passthru()
 
 			->shouldReceive('get')
+			->with('field_1')
+			->passthru()
+
+			->shouldReceive('get')
 			->with('_sequence')
 			->andReturn($hidden)
 
@@ -133,6 +137,10 @@ class ContentBuilderTest extends \PHPUnit_Framework_TestCase
 
 			->shouldReceive('getIdentifierField')
 			->zeroOrMoreTimes()
+			->passthru()
+
+			->shouldReceive('get')
+			->with('field_1')
 			->passthru()
 
 			->shouldReceive('get')

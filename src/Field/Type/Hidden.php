@@ -12,11 +12,17 @@ use Symfony\Component\Form\FormBuilder;
  */
 class Hidden extends Field
 {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getFieldType()
 	{
 		return 'hidden';
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getFormField(FormBuilder $form)
 	{
 		$form->add($this->getName(), 'hidden', $this->getFieldOptions());
