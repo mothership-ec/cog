@@ -78,7 +78,7 @@ class Content implements ContentInterface
 	 *
 	 * @return boolean
 	 */
-	public function exists()
+	public function exists($key)
 	{
 		return isset($this->_fields[$key]);
 	}

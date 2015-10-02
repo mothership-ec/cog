@@ -35,7 +35,7 @@ interface ContentInterface extends \IteratorAggregate, \Countable
 	 *
 	 * @return boolean
 	 */
-	public function exists();
+	public function exists($key);
 
 	/**
 	 * Get the number of base fields & groups defined on this page content.
