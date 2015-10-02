@@ -5,6 +5,12 @@ namespace Message\Cog\Validation\Filter;
 use Message\Cog\Validation\CollectionInterface;
 use Message\Cog\Validation\Loader;
 
+/**
+ * Class Number
+ * @package Message\Cog\Validation\Filter
+ *
+ * @deprecated Do not use this component, use Symfony's validation component instead
+ */
 class Number implements CollectionInterface
 {
 	/**

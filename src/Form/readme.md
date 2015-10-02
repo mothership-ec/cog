@@ -172,6 +172,8 @@ To display the entity in the form view, the `property`-option is used to determi
 
 # Deprecated Form Component
 
+**This component is deprecated, do not create new forms using this component!**
+
 The form integrates the Symfony Form component with the rest of the framework, specifically templating and validation.
 
 Due to the complexity of the Symfony Form component, and the fact that many of the classes have several private properties and methods, the majority of the classes are not extended. As a result, we must use a handler to use the Form and Validation components together.

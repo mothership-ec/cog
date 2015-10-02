@@ -8,6 +8,8 @@ namespace Message\Cog\Validation;
  *
  * A wrapper around Respect\Validation which makes using it easier
  *
+ * @deprecated Do not use this component, use Symfony's validation component instead
+ *
  * @author James Moss <james@message.co.uk>
  * @author Thomas Marchant <thomas@message.co.uk>
  */
