@@ -19,8 +19,8 @@ class SimpleHandler extends Handler
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * This is the simplest handler. It just throws the exception, meaning it 
-	 * will error as a normal php app (without whoops) would
+	 * Just throws the exception, meaning it will error in the same way a normal
+	 * php app (without whoops) would.
 	 */
 	public function handle()
 	{
