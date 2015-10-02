@@ -77,6 +77,23 @@ class Group implements FieldInterface, FieldContentInterface
 	}
 
 	/**
+	 * @see __get()
+	 */
+	public function get($key)
+	{
+		return $this->__get($key);
+	}
+
+	/**
+	 * @see __isset()
+	 */
+	public function exists($key)
+	{
+		return $this->__get($key);
+	}
+
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function getName()

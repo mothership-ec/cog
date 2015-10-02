@@ -527,6 +527,10 @@ class Services implements ServicesInterface
 			));
 		};
 
+		$services['field.content.builder'] = $services->factory(function($c) {
+			return new \Message\Cog\Field\ContentBuilder;
+		});
+
 		$services['markdown.parser'] = $services->factory(function() {
 			return new \dflydev\markdown\MarkdownParser;
 		});
