@@ -27,21 +27,11 @@ class Group implements FieldInterface, FieldContentInterface
 	protected $_options = array();
 
 	/**
-	 * Get a field in this group.
-	 *
-	 * @param  string $name Field name
-	 *
-	 * @return mixed        The field
-	 *
-	 * @throws \OutOfBoundsException If the field does not exist
+	 * @see get()
 	 */
-	public function __get($name)
+	public function __get($key)
 	{
-		if (isset($this->_fields[$name])) {
-			return $this->_fields[$name];
-		}
-
-		throw new \OutOfBoundsException(sprintf('Group field does not exist: `%s`', $name));
+		return $this->get($key);
 	}
 
 	public function getFieldType()
@@ -50,15 +40,11 @@ class Group implements FieldInterface, FieldContentInterface
 	}
 
 	/**
-	 * Check if a field exists in this group
-	 *
-	 * @param  string  $name Field name
-	 *
-	 * @return boolean       True if the field exists on this group
+	 * @see exists()
 	 */
-	public function __isset($name)
+	public function __isset($key)
 	{
-		return isset($this->_fields[$name]);
+		return $this->exists($key);
 	}
 
 	/**
@@ -71,10 +57,41 @@ class Group implements FieldInterface, FieldContentInterface
 	 */
 	public function __clone()
 	{
-		foreach ($this->_fields as $name => $field) {
-			$this->_fields[$name] = clone $field;
+		foreach ($this->_fields as $key => $field) {
+			$this->_fields[$key] = clone $field;
 		}
 	}
+
+	/**
+	 * Get a field in this group.
+	 *
+	 * @param  string $key Field key
+	 *
+	 * @return mixed        The field
+	 *
+	 * @throws \OutOfBoundsException If the field does not exist
+	 */
+	public function get($key)
+	{
+		if (isset($this->_fields[$key])) {
+			return $this->_fields[$key];
+		}
+
+		throw new \OutOfBoundsException(sprintf('Group field does not exist: `%s`', $key));
+	}
+
+	/**
+	 * Check if a field exists in this group
+	 *
+	 * @param  string  $key Field key
+	 *
+	 * @return boolean       True if the field exists on this group
+	 */
+	public function exists($key)
+	{
+		return isset($this->_fields[$key]);
+	}
+
 
 	/**
 	 * {@inheritDoc}

@@ -2,8 +2,6 @@
 
 namespace Message\Cog\Field;
 
-use Message\Mothership\CMS\Page\Content;
-
 use Message\Cog\Service\ContainerInterface;
 use Symfony\Component\Form\FormFactory;
 
@@ -55,6 +53,10 @@ class Form
 		$this->_builder = $this->_factory->createBuilder('form', $defaultValues, $options);
 
 		foreach ($content as $fieldName => $field) {
+			if ($field instanceof Group && $field->isRepeatable()) {
+				$field = new RepeatableContainer($field);
+			}
+
 			if ($field instanceof Group) {
 				$this->_addGroup($field);
 			} else if ($field instanceof BaseField) {

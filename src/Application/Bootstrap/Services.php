@@ -504,8 +504,13 @@ class Services implements ServicesInterface
 				new \Message\Cog\Field\Type\MultiChoice,
 				new \Message\Cog\Field\Type\Richtext($c['markdown.parser']),
 				new \Message\Cog\Field\Type\Text,
+				new \Message\Cog\Field\Type\Hidden,
 			));
 		};
+
+		$services['field.content.builder'] = $services->factory(function($c) {
+			return new \Message\Cog\Field\ContentBuilder;
+		});
 
 		$services['markdown.parser'] = $services->factory(function() {
 			return new \dflydev\markdown\MarkdownParser;
