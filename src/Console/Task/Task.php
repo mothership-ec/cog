@@ -24,6 +24,8 @@ abstract class Task extends Command
 	protected $_outputHandlers   = array();
 	protected $_buffer           = '';
 
+	protected $_output;
+
 	final public function __construct($name)
 	{
 		parent::__construct($name);
