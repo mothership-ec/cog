@@ -5,12 +5,14 @@ namespace Message\Cog\Filter;
 use Message\Cog\DB\QueryBuilderInterface;
 
 /**
- * Class AbstractFilter
+ * Class CallbackFilter
+ * 
  * @package Message\Cog\Filter
  *
  * @author  Samuel Trangmar-Keates <sam@mothership.ec>
  *
- * Callback based filter. Filters and forms built using callbacks.
+ * Callback based filter. Filters and forms built using callbacks. Useful for
+ * short filters where an extra class wppuld be overkill.
  */
 class CallbackFilter implements FilterInterface
 {
