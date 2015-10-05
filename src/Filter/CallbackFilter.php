@@ -50,8 +50,10 @@ class CallbackFilter implements FilterInterface
 	 * Set the name and display name on instanciation, and set the label of the form field to
 	 * the display name
 	 *
-	 * @param $name
-	 * @param $displayName
+	 * @param string $name The filter name
+	 * @param string $displayName The filter display name
+	 * @param callable $filterCallback The filter apply callback
+	 * @param callable $formCallback The filter form getForm() callback
 	 */
 	public function __construct($name, $displayName, callable $filterCallback, callable $formCallback = null)
 	{
