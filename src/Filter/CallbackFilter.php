@@ -119,6 +119,26 @@ class CallbackFilter implements FilterInterface
 	}
 
 	/**
+	 * Sets the filterCallback property, this will be run when apply() is run
+	 * 
+	 * @param callable $filterCallback The apply() call
+	 */
+	public function setFilterCallback(callable $filterCallback)
+	{
+		$this->_filterCallback = $filterCallback;
+	}
+
+	/**
+	 * Sets the formCallback property, this will be run when getForm() is run
+	 * 
+	 * @param callable $formCallback The getForm() call
+	 */
+	public function setFormCallback(callable $formCallback)
+	{
+		$this->_formCallback = $formCallback;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * Runs the filter callback, passing the queryBuilder and value as parameters.
