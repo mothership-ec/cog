@@ -12,7 +12,7 @@ use Message\Cog\DB\QueryBuilderInterface;
  * @author  Samuel Trangmar-Keates <sam@mothership.ec>
  *
  * Callback based filter. Filters and forms built using callbacks. Useful for
- * short filters where an extra class wppuld be overkill.
+ * short filters where an extra class would be overkill.
  */
 class CallbackFilter implements FilterInterface
 {
