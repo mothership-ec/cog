@@ -23,6 +23,7 @@ class TranslationRuntimeException extends \RuntimeException implements Translati
 	public function __construct(
 		$message = "",
 		$translation = null,
+		$params = [],
 		$code = 0,
 		\Exception $previous = null
 	)
@@ -30,6 +31,8 @@ class TranslationRuntimeException extends \RuntimeException implements Translati
 		if (null !== $translation) {
 			$this->setTranslation($translation);
 		}
+
+		$this->setParams($params);
 
 		parent::__construct($message, $code, $previous);
 	}

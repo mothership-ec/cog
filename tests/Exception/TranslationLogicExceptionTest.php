@@ -45,6 +45,44 @@ class TranslationLogicExceptionTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($translation, $exception->getTranslation());
 	}
 
+	public function testGetParamsFromConstruct()
+	{
+		$params = ['foo' => 'bar'];
+		$exception = new TranslationLogicException('Message', 'translation', $params);
+		$this->assertSame($params, $exception->getParams());
+	}
+
+	public function testGetParamsFromSetParams()
+	{
+		$params = ['foo' => 'bar'];
+		$exception = new TranslationLogicException('Message');
+		$exception->setParams($params);
+		$this->assertSame($params, $exception->getParams());
+	}
+
+	public function testGetParamsDefaultToEmptyArray()
+	{
+		$exception = new TranslationLogicException;
+		$this->assertSame([], $exception->getParams());
+	}
+
+	public function testSetParamsOverrideConstruct()
+	{
+		$params = ['baz' => 'bing'];
+		$exception = new TranslationLogicException('Message', 'translation', ['foo' => 'bar']);
+		$exception->setParams($params);
+		$this->assertSame($params, $exception->getParams());
+	}
+
+	public function testSetParamsOverrideSetParams()
+	{
+		$params = ['baz' => 'bing'];
+		$exception = new TranslationLogicException;
+		$exception->setParams(['foo' => 'bar']);
+		$exception->setParams($params);
+		$this->assertSame($params, $exception->getParams());
+	}
+
 	/**
 	 * @expectedException \InvalidArgumentException
 	 */

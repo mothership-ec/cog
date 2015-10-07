@@ -18,6 +18,11 @@ trait TranslationExceptionTrait
 	private $_translation;
 
 	/**
+	 * @var
+	 */
+	private $_params = [];
+
+	/**
 	 * @see TranslationExceptionInterface::setTranslation()
 	 * {@inheritDoc}
 	 */
@@ -37,5 +42,15 @@ trait TranslationExceptionTrait
 	public function getTranslation()
 	{
 		return $this->_translation ?: $this->getMessage();
+	}
+
+	public function setParams(array $params)
+	{
+		$this->_params = $params;
+	}
+
+	public function getParams()
+	{
+		return $this->_params;
 	}
 }

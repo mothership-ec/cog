@@ -23,6 +23,7 @@ class TranslationLogicException extends \LogicException implements TranslationEx
 	public function __construct(
 		$message = "",
 		$translation = null,
+		$params = [],
 		$code = 0,
 		\Exception $previous = null
 	)
@@ -30,6 +31,8 @@ class TranslationLogicException extends \LogicException implements TranslationEx
 		if (null !== $translation) {
 			$this->setTranslation($translation);
 		}
+
+		$this->setParams($params);
 
 		parent::__construct($message, $code, $previous);
 	}
