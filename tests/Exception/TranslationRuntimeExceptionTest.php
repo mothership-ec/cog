@@ -70,4 +70,12 @@ class TranslationRuntimeExceptionTest extends \PHPUnit_Framework_TestCase
 	{
 		throw new TranslationRuntimeException;
 	}
+
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function testExceptionIsRuntimeException()
+	{
+		throw new TranslationRuntimeException;
+	}
 }

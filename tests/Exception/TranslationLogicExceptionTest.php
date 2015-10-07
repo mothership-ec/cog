@@ -69,4 +69,12 @@ class TranslationLogicExceptionTest extends \PHPUnit_Framework_TestCase
 	{
 		throw new TranslationLogicException;
 	}
+
+	/**
+	 * @expectedException \LogicException
+	 */
+	public function testExceptionIsLogicException()
+	{
+		throw new TranslationLogicException;
+	}
 }
