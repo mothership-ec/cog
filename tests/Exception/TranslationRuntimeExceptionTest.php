@@ -62,4 +62,12 @@ class TranslationRuntimeExceptionTest extends \PHPUnit_Framework_TestCase
 		$exception = new TranslationRuntimeException('Message');
 		$exception->setTranslation([]);
 	}
+
+	/**
+	 * @expectedException \Message\Cog\Exception\TranslationRuntimeException
+	 */
+	public function testExceptionThrowable()
+	{
+		throw new TranslationRuntimeException;
+	}
 }

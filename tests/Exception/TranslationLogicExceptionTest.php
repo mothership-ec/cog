@@ -61,4 +61,12 @@ class TranslationLogicExceptionTest extends \PHPUnit_Framework_TestCase
 		$exception = new TranslationLogicException('Message');
 		$exception->setTranslation([]);
 	}
+
+	/**
+	 * @expectedException \Message\Cog\Exception\TranslationLogicException
+	 */
+	public function testExceptionThrowable()
+	{
+		throw new TranslationLogicException;
+	}
 }
