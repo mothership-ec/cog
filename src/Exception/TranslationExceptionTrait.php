@@ -44,11 +44,19 @@ trait TranslationExceptionTrait
 		return $this->_translation ?: $this->getMessage();
 	}
 
+	/**
+	 * @see TranslationExceptionInterface::setParams()
+	 * {@inheritDoc}
+	 */
 	public function setParams(array $params)
 	{
 		$this->_params = $params;
 	}
 
+	/**
+	 * @see TranslationExceptionInterface::getParams()
+	 * {@inheritDoc}
+	 */
 	public function getParams()
 	{
 		return $this->_params;
