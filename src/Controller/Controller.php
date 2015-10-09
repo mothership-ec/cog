@@ -58,9 +58,8 @@ class Controller implements ContainerAwareInterface, RequestAwareInterface
 
 		// Filter out duplicate messages
 		$flashes = $this->get('http.session')->getFlashBag()->peekAll();
-		foreach ($flashes as $type => $messages) {
-			$flashes[$type] = array_unique($messages);
-		}
+
+		$flashes[$type] = array_unique($flashes[$type]);
 
 		// Replace flash messages with filtered set and return
 		return $this->get('http.session')->getFlashBag()->setAll($flashes);
