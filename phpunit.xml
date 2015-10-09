@@ -37,6 +37,9 @@
 		<testsuite name="Event">
 			<directory>./tests/Event/</directory>
 		</testsuite>
+        <testsuite name="ExceptionTest"> <!-- Exception is a reserved word so must be ExceptionTest -->
+            <directory>./tests/Exception/</directory>
+        </testsuite>
         <testsuite name="Field">
             <directory>./tests/Field/</directory>
         </testsuite>

@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.13.0
+
+- Added ability to assign translations to exceptions for rendering error messages to the user while still being able to keep a log of the error message
+- Added `Exception` component
+- Added `Exception\TranslationExceptionInterface` interface which ensures that exceptions that allow for translation strings to be added have the same constructor and methods for adding translation details
+- Added `Exception\TranslationExceptionTrait` trait which has methods declared in `Exception\TranslationExceptionInterface` for shared functionality between translation exceptions
+- Added `Exception\TranslationLogicException` exception class which extends `\LogicException` and uses methods declared in `Exception\TranslationExceptionTrait`
+- Added `Exception\TranslationRuntimeException` exception class which extends `\RuntimeException` and uses methods declared in `Exception\TranslationExceptionTrait`
+- Added `Filter\CallbackFilter` class for applying filters with custom filtering capability without the need to create a whole new class
+- `Controller::addFlash()` method now filters out duplicate flash messages
+
 ## 4.12.0
 
 - Added `Field\Content` class, adapted from `Message\Mothership\Page\Content` in the CMS module, to allow content to be more consistent across modules
