@@ -45,4 +45,18 @@ interface TranslationExceptionInterface
 	 * @return string
 	 */
 	public function getTranslation();
+
+	/**
+	 * Set the parameters for to pass to the translator with the translation string
+	 *
+	 * @param array $params
+	 */
+	public function setParams(array $params);
+
+	/**
+	 * Get the parameters for to pass to the translator with the translation string
+	 *
+	 * @return array
+	 */
+	public function getParams();
 }
