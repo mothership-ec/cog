@@ -81,6 +81,7 @@ abstract class Task extends Command
 
 		$exception = '';
 		$returned  = '';
+		$e = null;
 
 		ob_start(); // capture any calls to `echo` or `print`
 		try {
@@ -95,6 +96,10 @@ abstract class Task extends Command
 				$this->getBuffer(), $printed, $returned, $exception
 			)));
 			$handler->process(array($all, $this->getBuffer(), $printed, $returned, $exception));
+		}
+
+		if ($e instanceof \Exception) {
+			throw $e;
 		}
 	}
 
