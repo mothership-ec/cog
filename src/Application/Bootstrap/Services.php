@@ -733,8 +733,13 @@ class Services implements ServicesInterface
 
 			$manager->set('csscogulerewrite', new Cog\AssetManagement\CssCoguleRewriteFilter);
 
-			$manager->set('cssmin', new \Assetic\Filter\CssMinFilter);
-			$manager->set('jsmin', new \Assetic\Filter\JSMinFilter);
+			if ('local' !== $c['env']) {
+				$manager->set('cssmin', new \Assetic\Filter\CssMinFilter);
+				$manager->set('jsmin', new \Assetic\Filter\JSMinFilter);
+			} else {
+				$manager->set('cssmin', new \Message\Cog\AssetManagement\NullFilter);
+				$manager->set('jsmin', new \Message\Cog\AssetManagement\NullFilter);
+			}
 
 			return $manager;
 		};
