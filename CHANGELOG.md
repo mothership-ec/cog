@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.14.0
+
+- Mothership now bypasses minification of assets when developing locally by default. Since the assets currently get generated on every request in order to ensure that changes made to CSS and JS files can be seen right away, load times were very slow as the generation process also included minification
+- Added `AssetManagement\NullFilter` class which implements `\Assetic\Filter\FilterInterface`, but does nothing to amend source files
+- Added `asset.filter.minify.css` service which returns instance of `\Assetic\Filter\CssMinFilter`
+- Added `asset.filter.minify.js` service which returns instance of `\Assetic\Filter\JSMinFilter`
+- Added `asset.filter.null` service which returns instance of `AssetManagement\NullFilter`
+- Added `asset.yml` `local-minify` config option. Setting this to true will enable minification on local versions of Mothership. Set to false by default.
+- `asset.yml` `auto-generate` option set to true by default
+- Tasks will re-throw any caught exceptions
+
 ## 4.13.0
 
 - Added ability to assign translations to exceptions for rendering error messages to the user while still being able to keep a log of the error message
