@@ -733,15 +733,36 @@ class Services implements ServicesInterface
 
 			$manager->set('csscogulerewrite', new Cog\AssetManagement\CssCoguleRewriteFilter);
 
-			if ('local' !== $c['env']) {
-				$manager->set('cssmin', new \Assetic\Filter\CssMinFilter);
-				$manager->set('jsmin', new \Assetic\Filter\JSMinFilter);
-			} else {
-				$manager->set('cssmin', new \Message\Cog\AssetManagement\NullFilter);
-				$manager->set('jsmin', new \Message\Cog\AssetManagement\NullFilter);
-			}
+			$manager->set('cssmin', $c['asset.filter.minify.css']);
+			$manager->set('jsmin', $c['asset.filter.minify.js']);
 
 			return $manager;
+		};
+
+		$services['asset.filter.minify.css'] = function ($c) {
+			return ('local' !== $c['env'] || $c['asset.local-minify']) ?
+				new \Assetic\Filter\CssMinFilter :
+				$c['asset.filter.null']
+			;
+		};
+
+		$services['asset.filter.minify.js'] = function ($c) {
+			return ('local' !== $c['env'] || $c['asset.local-minify']) ?
+				new \Assetic\Filter\JSMinFilter :
+				$c['asset.filter.null']
+			;
+		};
+
+		$services['asset.filter.null'] = function ($c) {
+			return new \Message\Cog\AssetManagement\NullFilter;
+		};
+
+		$services['asset.local-minify'] = function ($c) {
+			if (!property_exists($c['cfg']->asset, 'localMinify')) {
+				return false;
+			}
+
+			return $c['cfg']->asset->localMinify;
 		};
 
 		$services['asset.factory'] = function($c) {
