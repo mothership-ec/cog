@@ -1,2 +1,2 @@
-auto-generate: false
+auto-generate: true
 local-minify: false
