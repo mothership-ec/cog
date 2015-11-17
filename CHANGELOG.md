@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.14.1
+
+- Added `l()` global function for debugging. Works in the same way as `d()` and `de()`, but writes the output to `logs/debug.log` instead of outputting on the screen.
+
 ## 4.14.0
 
 - Mothership now bypasses minification of assets when developing locally by default. Since the assets currently get generated on every request in order to ensure that changes made to CSS and JS files can be seen right away, load times were very slow as the generation process also included minification
