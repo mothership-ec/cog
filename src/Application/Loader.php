@@ -62,7 +62,7 @@ namespace {
 	 */
 	function l($message, $context = [])
 	{
-		$message = var_export($message, true);
+		$message = print_r($message, true);
 
 		$logger = new \Monolog\Logger('debug');
 		$logger->pushHandler(new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/debug.log'));
