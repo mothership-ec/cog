@@ -51,6 +51,25 @@ namespace {
 	{
 		return de(\Message\Cog\Service\Container::get('db.connection')->getQueryList());
 	}
+
+	/**
+	 * Short function to debug log objects to `cog://logs/debug.log`
+	 * 
+	 * @see \Psr\Log\LoggerInterface::debug()
+	 * 
+	 * @param mixed $var,... Unlimited number of variables to log
+	 */
+	function l()
+	{
+		$logger = new \Monolog\Logger('debug');
+		$logger->pushHandler(new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/debug.log'));
+
+		foreach (func_get_args() as $message) {
+			$message = print_r($message, true);
+
+			$logger->debug($message);
+		}
+	}
 }
 
 namespace Message\Cog\Application {
