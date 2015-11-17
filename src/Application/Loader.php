@@ -51,6 +51,17 @@ namespace {
 	{
 		return de(\Message\Cog\Service\Container::get('db.connection')->getQueryList());
 	}
+
+	function l($message, $context = [])
+	{
+		$message = var_export($message, true);
+
+		$logger = new \Monolog\Logger('debug');
+
+		$logger->pushHandler(new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/debug.log'));
+
+		$logger->debug($message, $context);
+	}
 }
 
 namespace Message\Cog\Application {
