@@ -57,17 +57,18 @@ namespace {
 	 * 
 	 * @see \Psr\Log\LoggerInterface::debug()
 	 * 
-	 * @param  mixed $message Any object to be printed to the log file
-	 * @param  array $context Array context for the message
+	 * @param mixed $var,... Unlimited number of variables to log
 	 */
-	function l($message, $context = [])
+	function l()
 	{
-		$message = print_r($message, true);
-
 		$logger = new \Monolog\Logger('debug');
 		$logger->pushHandler(new \Message\Cog\Logging\TouchingStreamHandler('cog://logs/debug.log'));
 
-		$logger->debug($message, $context);
+		foreach (func_get_args() as $message) {
+			$message = print_r($message, true);
+
+			$logger->debug($message);
+		}
 	}
 }
 
