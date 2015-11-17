@@ -52,6 +52,14 @@ namespace {
 		return de(\Message\Cog\Service\Container::get('db.connection')->getQueryList());
 	}
 
+	/**
+	 * Short function to debug log objects to `cog://logs/debug.log`
+	 * 
+	 * @see \Psr\Log\LoggerInterface::debug()
+	 * 
+	 * @param  mixed $message Any object to be printed to the log file
+	 * @param  array $context Array context for the message
+	 */
 	function l($message, $context = [])
 	{
 		$message = var_export($message, true);
