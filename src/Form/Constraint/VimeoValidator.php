@@ -57,5 +57,7 @@ class VimeoValidator extends Validator\Constraints\UrlValidator
 		if (strlen($code) > self::CODE_LENGTH) {
 			return false;
 		}
+
+		return true;
 	}
 }
