@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.15.0
+
+- Added `Form\Constraint` namespace for custom validation constraints
+- Added `Form\Constraint\Vimeo` and `Form\Constraint\VimeoValidator` classes to check that inputs are valid Vimeo URLs
+- Added `Form\Constraint\Youtube` and `Form\Constraint\YoutubeValidator` classes to check that inputs are valid YouTube URLs
+
 ## 4.14.1
 
 - Added `l()` global function for debugging. Works in the same way as `d()` and `de()`, but writes the output to `logs/debug.log` instead of outputting on the screen.
