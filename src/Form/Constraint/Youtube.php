@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraints\Url as BaseConstraint;
 
 /**
  * Class Youtube
- * @package Mothership\Site\Constraint
+ * @package Message\Cog\Form\Constraint
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
  *

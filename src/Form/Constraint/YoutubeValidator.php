@@ -6,11 +6,9 @@ use Symfony\Component\Validator;
 
 /**
  * Class YoutubeValidator
- * @package Mothership\Site\Constraint
+ * @package Message\Cog\Form\Constraint
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
- *
- * Validator for Youtube constraint
  */
 class YoutubeValidator extends Validator\Constraints\UrlValidator
 {
@@ -24,8 +22,8 @@ class YoutubeValidator extends Validator\Constraints\UrlValidator
 	 */
 	public function validate($value, Validator\Constraint $constraint)
 	{
-		if (empty($value)) {
-			return true;
+		if (null === $value || false === $value || '' === $value) {
+			return;
 		}
 
 		parent::validate($value, $constraint);
@@ -34,12 +32,12 @@ class YoutubeValidator extends Validator\Constraints\UrlValidator
 			$this->context->addViolation('\'%value%\' is not a valid YouTube video URL', [
 				'%value%' => $value,
 			]);
-
-			return false;
 		}
 	}
 
 	/**
+	 * Check if the value is a valid YouTube URL
+	 *
 	 * @param $url
 	 *
 	 * @return bool
