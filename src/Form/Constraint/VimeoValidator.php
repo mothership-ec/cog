@@ -22,6 +22,8 @@ class VimeoValidator extends Validator\Constraints\UrlValidator
 	 */
 	public function validate($value, Validator\Constraint $constraint)
 	{
+		// If value has not been submitting, it should skip validation. However, we cannot simply check for
+		// falsiness because the value could be '0' (spoiler alert: that will fail validation)
 		if (null === $value || false === $value || '' === $value) {
 			return;
 		}

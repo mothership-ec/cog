@@ -22,6 +22,8 @@ class YoutubeValidator extends Validator\Constraints\UrlValidator
 	 */
 	public function validate($value, Validator\Constraint $constraint)
 	{
+		// If value has not been submitting, it should skip validation. However, we cannot simply check for
+		// falsiness because the value could be '0' (spoiler alert: that will fail validation)
 		if (null === $value || false === $value || '' === $value) {
 			return;
 		}
@@ -57,6 +59,7 @@ class YoutubeValidator extends Validator\Constraints\UrlValidator
 		$urn = array_pop($urn);
 		parse_str($urn, $parts);
 
+		// Check that video ID exists in the URL and is the correct length
 		if (!array_key_exists('watch?v', $parts) || (strlen($parts['watch?v']) !== self::CODE_LENGTH)) {
 			return false;
 		}
