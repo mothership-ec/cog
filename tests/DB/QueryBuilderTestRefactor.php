@@ -17,6 +17,28 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 		$this->_builder = new QueryBuilder($this->_connect, $this->_parser);
 	}
 
+	public function testRun()
+	{
+		/*
+		$result = $this->getMockBuilder('Message\\Cog\\DB\\Adapter\\ResultInterface')
+									->setMethods(array('fetchArray', 'fetchObject', 'seek', 'getAffectedRows', 'getLastInsertId'))
+									->setConstructorArgs(array(null, $this->_connect))
+									->getMockForAbstractClass()
+									;
+
+		$result->method('getAffectedRows')
+					 ->will($this->returnValue([]));
+    $result->method('getLastInsertId')
+					 ->will($this->returnValue(1));
+
+		$expected = "SELECT * FROM table WHERE col = variable";
+
+		$this->_connect->expects($this->once())
+										->method('query')
+										->will($this->returnValue($result));
+		*/
+	}
+
 	public function testSelectFromSimple()
 	{
 		$expected = "SELECT * FROM table";
@@ -96,7 +118,7 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 			->where('col = ?s', ["string"])
 			->where('col2 = ?i', [100])
 			->where('col3 = ?s', ['ORstring'], false)
-				->getQueryString()
+			->getQueryString()
 		;
 
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
@@ -357,25 +379,6 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 
 	public function testGetQuery()
 	{
-		/*
-		$result = $this->getMockBuilder('Message\\Cog\\DB\\Adapter\\ResultInterface')
-									->setMethods(array('fetchArray', 'fetchObject', 'seek', 'getAffectedRows', 'getLastInsertId'))
-									->setConstructorArgs(array(null, $this->_connect))
-									->getMockForAbstractClass()
-									;
-
-		$result->method('getAffectedRows')
-					 ->will($this->returnValue([]));
-    $result->method('getLastInsertId')
-					 ->will($this->returnValue(1));
-
-		$expected = "SELECT * FROM table WHERE col = variable";
-
-		$this->_connect->expects($this->once())
-										->method('query')
-										->will($this->returnValue($result));
-		*/
-
 		$query = $this->_builder
 			->select("*")
 			->from('table')
