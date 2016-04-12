@@ -19,24 +19,38 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 
 	public function testRun()
 	{
-		/*
 		$result = $this->getMockBuilder('Message\\Cog\\DB\\Adapter\\ResultInterface')
 									->setMethods(array('fetchArray', 'fetchObject', 'seek', 'getAffectedRows', 'getLastInsertId'))
 									->setConstructorArgs(array(null, $this->_connect))
 									->getMockForAbstractClass()
 									;
 
-		$result->method('getAffectedRows')
-					 ->will($this->returnValue([]));
-    $result->method('getLastInsertId')
-					 ->will($this->returnValue(1));
-
-		$expected = "SELECT * FROM table WHERE col = variable";
-
 		$this->_connect->expects($this->once())
 										->method('query')
 										->will($this->returnValue($result));
-		*/
+
+		$query = $this->_builder
+			->select("*")
+			->from('table')
+			->getQuery()
+			->run();
+
+	}
+
+	public function testAddParams()
+	{
+		$this->_builder
+			->select("*")
+			->from('table');
+
+		$query = $this->_builder->getQueryString();
+		var_dump( $query );
+
+		$this->_builder->addParams(['param' => 'value']);
+
+		$query = $this->_builder->getQueryString();
+		var_dump($query);
+
 	}
 
 	public function testSelectFromSimple()
