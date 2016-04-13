@@ -12,6 +12,7 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
+		//$this->_connect = $this->getMockBuilder('Message\\Cog\\DB\\Adapter\\ConnectionInterface')->disableOriginalConstructor()->setMethods(array('__construct','query','escape', 'getLastError', 'getTransactionStart', 'getTransactionEnd', 'getTransactionRollback', 'getLastInsertIdFunc'))->getMock();
 		$this->_connect = $this->getMockBuilder('Message\\Cog\\DB\\Adapter\\ConnectionInterface')->disableOriginalConstructor()->getMock();
 		$this->_parser  = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->setConstructorArgs(array($this->_connect))->setMethods(array('escape'))->getMock();
 		$this->_builder = new QueryBuilder($this->_connect, $this->_parser);
@@ -44,12 +45,12 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 			->from('table');
 
 		$query = $this->_builder->getQueryString();
-		var_dump( $query );
+		//var_dump( $query );
 
 		$this->_builder->addParams(['param' => 'value']);
 
 		$query = $this->_builder->getQueryString();
-		var_dump($query);
+		//var_dump($query);
 
 	}
 
@@ -126,10 +127,14 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 	{
 		$expected = "SELECT * FROM table WHERE col = 'string' AND col2 = 100 OR col3 = 'ORstring'";
 
+		// Configure the stub.
+    $this->_connect->method('escape')
+         ->will($this->returnArgument(0));
+
 		$query = $this->_builder
 			->select("*")
 			->from('table')
-			->where('col = ?s', ["string"])
+			->where('col = ?s', ['string'])
 			->where('col2 = ?i', [100])
 			->where('col3 = ?s', ['ORstring'], false)
 			->getQueryString()
