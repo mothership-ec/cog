@@ -40,17 +40,30 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 
 	public function testAddParams()
 	{
-		$this->_builder
-			->select("*")
-			->from('table');
+		$parser  = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->setConstructorArgs(array($this->_connect))->setMethods(array('parse'))->getMock();
+		$builder = new QueryBuilder($this->_connect, $parser);
 
-		$query = $this->_builder->getQueryString();
-		//var_dump( $query );
+		// Configure the stub.
+		$parser->method('parse')
+					 ->willReturn(true)
+					 ;
 
-		$this->_builder->addParams(['param' => 'value']);
+		// Test that getQueryString is calling parse
+		$parser->expects($this->once())
+					 ->method('parse')
+					 ->with(
+									"SELECT\n*\nFROM table",
+									['param' => 'value']
+								)
 
-		$query = $this->_builder->getQueryString();
-		//var_dump($query);
+					;
+
+		$builder->select("*")
+						->from('table')
+						->addParams(['param' => 'value']);
+
+		// Generate the querystring which will run parse
+		$builder->getQueryString();
 
 	}
 
