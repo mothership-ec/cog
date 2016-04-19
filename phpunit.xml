@@ -55,6 +55,9 @@
 		<testsuite name="Functions">
 			<directory>./tests/Functions/</directory>
 		</testsuite>
+        <testsuite name="Helper">
+            <directory>./tests/Helper/</directory>
+        </testsuite>
 		<testsuite name="HTTP">
 			<directory>./tests/HTTP/</directory>
 		</testsuite>
