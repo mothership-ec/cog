@@ -10,7 +10,7 @@ namespace Message\Cog\Exception;
  *
  * Exception class explicitly for validating types
  */
-class InvalidTypeException extends \InvalidArgumentException
+class InvalidVariableException extends \InvalidArgumentException
 {
 
 }

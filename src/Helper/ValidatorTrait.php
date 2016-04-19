@@ -2,35 +2,35 @@
 
 namespace Message\Cog\Helper;
 
-use Message\Cog\Exception\InvalidTypeException;
+use Message\Cog\Exception\InvalidVariableException;
 
 /**
- * Class TypeValidatorTrait
+ * Class ValidatorTrait
  * @package Message\Cog\Helper
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
  *
- * Trait for easy type validation and exception throwing in classes. Throws InvalidTypeExceptions
+ * Trait for easy type validation and exception throwing in classes. Throws InvalidVariableExceptions
  */
-trait TypeValidatorTrait
+trait ValidatorTrait
 {
 	/**
 	 * @param $x
 	 * @param string $name
-	 * @throws InvalidTypeException
+	 * @throws InvalidVariableException
 	 */
 	public function checkNumeric($x, $name = 'Value')
 	{
 		$this->_validateVarName($name);
 		if (!is_numeric($x)) {
-			throw new InvalidTypeException($name . ' should be numeric, non-numeric ' . gettype($x) . ' given');
+			throw new InvalidVariableException($name . ' should be numeric, non-numeric ' . gettype($x) . ' given');
 		}
 	}
 
 	/**
 	 * @param $x
 	 * @param string $name
-	 * @throws InvalidTypeException
+	 * @throws InvalidVariableException
 	 */
 	public function checkWholeNumber($x, $name = 'Value')
 	{
@@ -38,14 +38,14 @@ trait TypeValidatorTrait
 		$this->checkNumeric($x, $name);
 
 		if ((int) $x != $x) {
-			throw new InvalidTypeException($name . ' should be a whole number, ' . $x . ' given');
+			throw new InvalidVariableException($name . ' should be a whole number, ' . $x . ' given');
 		}
 	}
 
 	/**
 	 * @param $x
 	 * @param string $name
-	 * @throws InvalidTypeException
+	 * @throws InvalidVariableException
 	 */
 	public function checkScalar($x, $name = 'Value')
 	{
@@ -53,7 +53,7 @@ trait TypeValidatorTrait
 
 		// PHP doesn't consider NULL to be scalar, but I do because it can be cast to a string
 		if ($x !== null && !is_scalar($x)) {
-			throw new InvalidTypeException($name . ' should be scalar, ' . gettype($x) . ' given');
+			throw new InvalidVariableException($name . ' should be scalar, ' . gettype($x) . ' given');
 		}
 	}
 
@@ -61,7 +61,7 @@ trait TypeValidatorTrait
 	 * @param $x
 	 * @param $class
 	 * @param string | object $name
-	 * @throws InvalidTypeException
+	 * @throws InvalidVariableException
 	 * @throws \InvalidArgumentException
 	 * @throws \LogicException
 	 */
@@ -80,7 +80,7 @@ trait TypeValidatorTrait
 		if (!$x instanceof $class) {
 			$classname = is_object($class) ? get_class($class) : $class;
 			$type = is_object($x) ? get_class($x) : gettype($x);
-			throw new InvalidTypeException($name . ' should be an instance of ' . $classname . ', ' . $type . ' given');
+			throw new InvalidVariableException($name . ' should be an instance of ' . $classname . ', ' . $type . ' given');
 		}
 	}
 

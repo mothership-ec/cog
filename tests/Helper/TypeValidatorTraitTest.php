@@ -2,14 +2,14 @@
 
 namespace Message\Cog\Test\Helper;
 
-use Message\Cog\Helper\TypeValidatorTrait;
+use Message\Cog\Helper\ValidatorTrait;
 
 interface FooInterface
 {}
 
 class Foo implements FooInterface
 {
-	use TypeValidatorTrait;
+	use ValidatorTrait;
 }
 
 class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
@@ -42,7 +42,7 @@ class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \Message\Cog\Exception\InvalidTypeException
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckNumericNonNumeric()
 	{
@@ -68,7 +68,7 @@ class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \Message\Cog\Exception\InvalidTypeException
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckWholeNumberFloat()
 	{
@@ -81,7 +81,7 @@ class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \Message\Cog\Exception\InvalidTypeException
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckWholeNumberStringDecimal()
 	{
@@ -112,7 +112,7 @@ class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \Message\Cog\Exception\InvalidTypeException
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckScalarWithArray()
 	{
@@ -120,7 +120,7 @@ class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \Message\Cog\Exception\InvalidTypeException
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckScalarWithObject()
 	{
@@ -156,7 +156,7 @@ class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \Message\Cog\Exception\InvalidTypeException
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckInstanceWithNonObject()
 	{
@@ -164,7 +164,7 @@ class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException \Message\Cog\Exception\InvalidTypeException
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckInstanceWithDifferentObject()
 	{
