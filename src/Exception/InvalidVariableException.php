@@ -8,7 +8,7 @@ namespace Message\Cog\Exception;
  *
  * @author  Thomas Marchant <thomas@mothership.ec>
  *
- * Exception class explicitly for validating types
+ * Exception class to be thrown when a variable is not as expected
  */
 class InvalidVariableException extends \InvalidArgumentException
 {
