@@ -12,7 +12,7 @@ class Foo implements FooInterface
 	use ValidatorTrait;
 }
 
-class TypeValidatorTraitTest extends \PHPUnit_Framework_TestCase
+class ValidatorTraitTest extends \PHPUnit_Framework_TestCase
 {
 	private $_foo;
 
