@@ -167,13 +167,12 @@ class ValidatorTraitTest extends \PHPUnit_Framework_TestCase
 		$this->_foo->checkString(true);
 	}
 
-
 	/**
 	 * @expectedException \Message\Cog\Exception\InvalidVariableException
 	 */
 	public function testCheckStringWithNonStringAllowEmpty()
 	{
-		$this->_foo->checkString(false);
+		$this->_foo->checkString(false, true);
 	}
 
 	public function testCheckStringWithValidName()
