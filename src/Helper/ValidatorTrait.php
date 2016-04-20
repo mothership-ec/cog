@@ -72,7 +72,7 @@ trait ValidatorTrait
 		}
 
 		if (!$allowEmpty && !$x) {
-			throw new InvalidVariableException($name . ' must not be empty');
+			throw new InvalidVariableException($name . ' must be a non-empty string');
 		}
 	}
 
