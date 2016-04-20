@@ -140,6 +140,55 @@ class ValidatorTraitTest extends \PHPUnit_Framework_TestCase
 		$this->_foo->checkScalar(true, []);
 	}
 
+	public function testCheckString()
+	{
+		$this->_foo->checkString('foo');
+		$this->_foo->checkString('foo', true);
+	}
+
+	/**
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
+	 */
+	public function testCheckStringWithEmpty()
+	{
+		$this->_foo->checkString('');
+	}
+
+	public function testCheckStringWithEmptyAllowEmpty()
+	{
+		$this->_foo->checkString('', true);
+	}
+
+	/**
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
+	 */
+	public function testCheckStringWithNonString()
+	{
+		$this->_foo->checkString(true);
+	}
+
+
+	/**
+	 * @expectedException \Message\Cog\Exception\InvalidVariableException
+	 */
+	public function testCheckStringWithNonStringAllowEmpty()
+	{
+		$this->_foo->checkString(false);
+	}
+
+	public function testCheckStringWithValidName()
+	{
+		$this->_foo->checkString('string', false, 'Foo');
+	}
+
+	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testCheckStringWithInvalidName()
+	{
+		$this->_foo->checkString('string', false, []);
+	}
+
 	public function testCheckInstanceAgainstClassName()
 	{
 		$this->_foo->checkInstance(new \stdClass, '\\stdClass');

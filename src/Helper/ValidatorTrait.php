@@ -59,6 +59,25 @@ trait ValidatorTrait
 
 	/**
 	 * @param $x
+	 * @param string $name
+	 * @param bool $allowEmpty
+	 * @throws InvalidVariableException
+	 */
+	public function checkString($x, $allowEmpty = false, $name = 'Value')
+	{
+		$this->_validateVarName($name);
+
+		if (!is_string($x)) {
+			throw new InvalidVariableException($name . ' should be a ' . ($allowEmpty ? '' : 'non-empty ') . 'string, ' . gettype($x) . ' given');
+		}
+
+		if (!$allowEmpty && !$x) {
+			throw new InvalidVariableException($name . ' must not be empty');
+		}
+	}
+
+	/**
+	 * @param $x
 	 * @param $class
 	 * @param string | object $name
 	 * @throws InvalidVariableException
