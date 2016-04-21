@@ -4,7 +4,7 @@ namespace Message\Cog\Test\DB;
 
 use Message\Cog\DB\QueryBuilder;
 
-class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
+class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 {
 	private $_builder;
 	private $_parser;
