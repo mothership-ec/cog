@@ -22,8 +22,7 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 		$result = $this->getMockBuilder('Message\\Cog\\DB\\Adapter\\ResultInterface')
 			->setMethods(array('fetchArray', 'fetchObject', 'seek', 'getAffectedRows', 'getLastInsertId'))
 			->setConstructorArgs(array(null, $this->_connect))
-			->getMockForAbstractClass()
-									;
+			->getMockForAbstractClass();
 
 		$this->_connect->expects($this->once())
 			->method('query')
@@ -39,7 +38,7 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 
 	public function testAddParams()
 	{
-		$parser  = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->setConstructorArgs(array($this->_connect))->setMethods(array('parse'))->getMock();
+		$parser  = $this->getMockBuilder('Message\\Cog\\DB\\QueryParser')->setConstructorArgs([$this->_connect])->setMethods(['parse'])->getMock();
 		$builder = new QueryBuilder($this->_connect, $parser);
 
 		// Configure the stub.
@@ -53,9 +52,7 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 			->with(
 						"SELECT\n*\nFROM table",
 						['param' => 'value']
-					)
-
-			;
+					);
 
 		$builder->select("*")
 			->from('table')
@@ -940,8 +937,8 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-		 * @expectedException InvalidArgumentException
-		 */
+	 * @expectedException InvalidArgumentException
+	 */
 	public function testNoFromError()
 	{
 		$query =  $this->_builder
@@ -951,8 +948,8 @@ class QueryBuilderTestRefactor extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-		 * @expectedException InvalidArgumentException
-		 */
+	 * @expectedException InvalidArgumentException
+	 */
 	public function testNoSelectError()
 	{
 		$query =  $this->_builder
