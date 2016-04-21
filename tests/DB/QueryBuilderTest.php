@@ -43,16 +43,16 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 
 		// Configure the stub.
 		$parser->method('parse')
-					 ->willReturn(true)
-					 ;
+			->willReturn(true)
+			;
 
 		// Test that getQueryString is calling parse
 		$parser->expects($this->once())
 			->method('parse')
 			->with(
-						"SELECT\n*\nFROM table",
-						['param' => 'value']
-					);
+				"SELECT\n*\nFROM table",
+				['param' => 'value']
+			);
 
 		$builder->select("*")
 			->from('table')
@@ -137,8 +137,8 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		$expected = "SELECT * FROM table WHERE col = 'string' AND col2 = 100 OR col3 = 'ORstring'";
 
 		// Configure the stub.
-    $this->_connect->method('escape')
-         ->will($this->returnArgument(0));
+		$this->_connect->method('escape')
+			->will($this->returnArgument(0));
 
 		$query = $this->_builder
 			->select("*")
@@ -169,7 +169,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 	{
 		$expected = "SELECT * FROM table GROUP BY col, col2";
 
-			$query = $this->_builder
+		$query = $this->_builder
 			->select("*")
 			->from('table')
 			->groupBy('col')
@@ -190,6 +190,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 			->groupBy(['col', 'col2'])
 			->getQueryString()
 		;
+
 		$this->assertEquals($expected, trim(preg_replace('/\s+/', ' ', $query)));
 	}
 
@@ -415,7 +416,6 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		;
 
 		$this->assertInstanceOf('Message\\Cog\\DB\\Query', $query);
-
 	}
 
 	public function testJoinSimple()
@@ -1058,89 +1058,88 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
 		;
 
 		$expected =
-								'SELECT
-								date AS date,
-								SUM(all.net) AS net,
-								SUM(all.tax) AS tax,
-								SUM(all.gross) AS gross,
-								all.type AS `type`,
-								all.order_id AS `order_id`,
-								all.item_id AS item_id,
-								all.product,
-								all.option,
-								country_id AS country
-								FROM (SELECT
-								item.created_at AS date,
-								(IFNULL(item.net, 0)) AS net,
-								(IFNULL(item.tax, 0)) AS tax,
-								(IFNULL(item.gross, 0)) AS gross,
-								CONCAT(order_summary.type," Sale") AS `type`,
-								item.item_id AS item_id,
-								item.order_id AS order_id,
-								item.product_name AS product,
-								item.options AS `option`
-								FROM order_item AS item
-								JOIN order_summary ON item.order_id = order_summary.order_id
-								LEFT JOIN return_item ON return_item.exchange_item_id = item.item_id
-								WHERE
-								order_summary.status_code >= 0
-								AND item.product_id NOT IN (9)
-								AND return_item.exchange_item_id IS NULL
-								AND item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())
-								UNION ALL
-								SELECT
-								order_summary.created_at AS date,
-								(IFNULL(net, 0)) AS net,
-								(IFNULL(tax, 0)) AS tax,
-								(IFNULL(gross, 0)) AS gross,
-								"Shipping In" AS `type`,
-								"" AS item_id,
-								order_shipping.order_id AS order_id,
-								"" AS product,
-								"" AS `option`
-								FROM order_shipping
-								JOIN order_summary ON order_shipping.order_id = order_summary.order_id
-								WHERE
-								order_summary.status_code >= 0
-								AND order_summary.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())
-								UNION ALL
-								SELECT
-								completed_at AS date,
-								(IFNULL(item.net, 0)) AS net,
-								(IFNULL(item.tax, 0)) AS tax,
-								(IFNULL(item.gross, 0)) AS gross,
-								"Exchange item" AS `type`,
-								item.item_id AS item_id,
-								item.order_id AS order_id,
-								item.product_name AS product,
-								item.options AS `option`
-								FROM order_item AS item
-								JOIN order_summary ON order_item.order_id = order_summary.order_id
-								JOIN return_item ON return_item.exchange_item_id = item.item_id
-								JOIN order_item_status ois ON ois.item_id = item.item_id AND ois.status_code = 0
-								WHERE
-								order_summary.status_code >= 0
-								AND item.product_id NOT IN (9)
-								AND item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())
-								UNION ALL
-								SELECT
-								item.completed_at AS date,
-								-(IFNULL(net, 0)) AS net,
-								-(IFNULL(tax, 0)) AS tax,
-								-(IFNULL(gross, 0)) AS gross,
-								"Return" AS `type`,
-								item.item_id AS item_id,
-								item.order_id AS order_id,
-								item.product_name AS product,
-								item.options AS `option`
-								FROM return_item AS item
-								JOIN `return` ON return_item.return_id = return.order_id
-								WHERE
-								accepted = 1
-								AND status_code >= 2200
-								AND item.product_id NOT IN (9)
-								AND item.completed_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())) all';
-
+			'SELECT
+			date AS date,
+			SUM(all.net) AS net,
+			SUM(all.tax) AS tax,
+			SUM(all.gross) AS gross,
+			all.type AS `type`,
+			all.order_id AS `order_id`,
+			all.item_id AS item_id,
+			all.product,
+			all.option,
+			country_id AS country
+			FROM (SELECT
+			item.created_at AS date,
+			(IFNULL(item.net, 0)) AS net,
+			(IFNULL(item.tax, 0)) AS tax,
+			(IFNULL(item.gross, 0)) AS gross,
+			CONCAT(order_summary.type," Sale") AS `type`,
+			item.item_id AS item_id,
+			item.order_id AS order_id,
+			item.product_name AS product,
+			item.options AS `option`
+			FROM order_item AS item
+			JOIN order_summary ON item.order_id = order_summary.order_id
+			LEFT JOIN return_item ON return_item.exchange_item_id = item.item_id
+			WHERE
+			order_summary.status_code >= 0
+			AND item.product_id NOT IN (9)
+			AND return_item.exchange_item_id IS NULL
+			AND item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())
+			UNION ALL
+			SELECT
+			order_summary.created_at AS date,
+			(IFNULL(net, 0)) AS net,
+			(IFNULL(tax, 0)) AS tax,
+			(IFNULL(gross, 0)) AS gross,
+			"Shipping In" AS `type`,
+			"" AS item_id,
+			order_shipping.order_id AS order_id,
+			"" AS product,
+			"" AS `option`
+			FROM order_shipping
+			JOIN order_summary ON order_shipping.order_id = order_summary.order_id
+			WHERE
+			order_summary.status_code >= 0
+			AND order_summary.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())
+			UNION ALL
+			SELECT
+			completed_at AS date,
+			(IFNULL(item.net, 0)) AS net,
+			(IFNULL(item.tax, 0)) AS tax,
+			(IFNULL(item.gross, 0)) AS gross,
+			"Exchange item" AS `type`,
+			item.item_id AS item_id,
+			item.order_id AS order_id,
+			item.product_name AS product,
+			item.options AS `option`
+			FROM order_item AS item
+			JOIN order_summary ON order_item.order_id = order_summary.order_id
+			JOIN return_item ON return_item.exchange_item_id = item.item_id
+			JOIN order_item_status ois ON ois.item_id = item.item_id AND ois.status_code = 0
+			WHERE
+			order_summary.status_code >= 0
+			AND item.product_id NOT IN (9)
+			AND item.created_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())
+			UNION ALL
+			SELECT
+			item.completed_at AS date,
+			-(IFNULL(net, 0)) AS net,
+			-(IFNULL(tax, 0)) AS tax,
+			-(IFNULL(gross, 0)) AS gross,
+			"Return" AS `type`,
+			item.item_id AS item_id,
+			item.order_id AS order_id,
+			item.product_name AS product,
+			item.options AS `option`
+			FROM return_item AS item
+			JOIN `return` ON return_item.return_id = return.order_id
+			WHERE
+			accepted = 1
+			AND status_code >= 2200
+			AND item.product_id NOT IN (9)
+			AND item.completed_at BETWEEN UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 12 MONTH)) AND UNIX_TIMESTAMP(NOW())) all';
 
 		$this->assertEquals(trim(preg_replace('/\s+/', ' ', $expected)), trim(preg_replace('/\s+/', ' ', $query->getQueryString())));
 	}
