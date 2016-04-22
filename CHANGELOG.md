@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.16.0
+
+- Added `Exception\InvalidVariableException` which extends `\InvalidArgumentException` to be thrown when a variable is not as expected, to add some distinction between validation at a higher level and at a lower level
+- Added `Helper\ValidatorTrait` trait for validating inputs in setters. They will throw an exception of `InvalidVariableException` if the variable is invalid. Contains the following methods:
+    - `checkNumeric()` - Checks that a variable is numeric, will throw exception if not.
+    - `checkWholeNumber()` - Checks that a variable is a whole number, will throw exception if not.
+    - `checkString()` - Checks that a variable is a string, will throw exception if not.
+    - `checkScalar()` - Checks that a variable is scalar (or null), will throw exception if not.
+    - `checkInstance()` - Checks that against an object instance or class name, will throw exception if not.
+- Removed `mockery` from `DB\QueryBuilder` unit tests
+- Increased `symfony/filesystem` dependency to `2.4`
+
 ## 4.15.0
 
 - Added `Form\Constraint` namespace for custom validation constraints
