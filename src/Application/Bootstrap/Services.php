@@ -915,6 +915,8 @@ class Services implements ServicesInterface
 		});
 
 		$services['title.list'] = $services->factory(function($c) {
+			trigger_error("The service `title.list` has moved to cog-user", E_USER_DEPRECATED);
+
 			return array(
 				'Mr'     => 'Mr',
 				'Mrs'    => 'Mrs',
