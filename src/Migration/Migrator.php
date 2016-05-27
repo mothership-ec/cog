@@ -107,19 +107,25 @@ class Migrator {
 	{
 		$migrations = $this->_loader->getLastBatch();
 
-		if (count($migrations) == 0) {
-			$this->_note('<comment>Nothing to rollback</comment>');
+		return $this->_rollbackMigrations($migrations);
+	}
 
-			return count($migrations);
+	/**
+	 * Rollback migrations for a specific module
+	 *
+	 * @param string $moduleName    Comma delimited module name i.e. Message:Mothership:Commerce
+	 *
+	 * @return int
+	 */
+	public function rollbackModule($moduleName)
+	{
+		if (!is_string($moduleName)) {
+			throw new \InvalidArgumentException('Module name must be a string, ' . gettype($moduleName) . ' given');
 		}
 
-		foreach ($migrations as $migration) {
-			$this->_runDown($migration);
-		}
+		$migrations = $this->_loader->getByModule($moduleName);
 
-		$this->_displayFailures();
-
-		return count($migrations);
+		return $this->_rollbackMigrations($migrations);
 	}
 
 	/**
@@ -261,6 +267,32 @@ class Migrator {
 
 			$this->_note('<error>Could not load migration: `' . $failure . '`</error>');
 		}
+	}
+
+	/**
+	 * Rundown an array of migrations
+	 *
+	 * @param array $migrations
+	 *
+	 * @return int
+	 */
+	private function _rollbackMigrations(array $migrations)
+	{
+		if (count($migrations) == 0) {
+			$this->_note('<comment>Nothing to rollback</comment>');
+
+			return count($migrations);
+		}
+
+		krsort($migrations);
+
+		foreach ($migrations as $migration) {
+			$this->_runDown($migration);
+		}
+
+		$this->_displayFailures();
+
+		return count($migrations);
 	}
 
 }
