@@ -183,6 +183,17 @@ namespace Message\Cog\Application {
 		}
 
 		/**
+		 * Return a representation of the default namespace for loading view files. If a view file does not exist, it will
+		 * look within its own namespace (as is standard behaviour in earlier versions of Cog)
+		 *
+		 * @return string | null
+		 */
+		public function getDefaultNamespace()
+		{
+			return null;
+		}
+
+		/**
 		 * Set the service container to use.
 		 *
 		 * This gets set automatically, so this method is only for overriding the
@@ -372,8 +383,8 @@ namespace Message\Cog\Application {
 		 */
 		protected function _setDefaults()
 		{
-			// this will default the timezone to UTC if not set. Suppress as 
-			// otherwise date_default_timezone_get() gives strict warning if 
+			// this will default the timezone to UTC if not set. Suppress as
+			// otherwise date_default_timezone_get() gives strict warning if
 			// timezone not set
 			@date_default_timezone_set(date_default_timezone_get());
 		}

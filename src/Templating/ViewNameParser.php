@@ -5,6 +5,7 @@ namespace Message\Cog\Templating;
 use Message\Cog\Service\ContainerInterface;
 use Message\Cog\Module\ReferenceParserInterface;
 use Message\Cog\Filesystem\Finder;
+use Message\Cog\Module\ReferenceParser;
 
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateNameParser;
@@ -20,19 +21,31 @@ class ViewNameParser extends TemplateNameParser
 	protected $_lastAbsoluteModule;
 	protected $_defaultDirs = array();
 
+	private $_setLastAbsolute = true;
+	private $_defaultViewNamespace;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param ReferenceParserInterface $parser    Reference parser class
-	 * @param array                    $fileTypes Array of filetypes to support, in order of preference
-	 * @param array                    $fileTypes Array of formats to support, in order of preference
+	 * @param ReferenceParserInterface $parser       Reference parser class
+	 * @param Finder $finder
+	 * @param array $fileTypes                      $fileTypes Array of filetypes to support, in order of preference
+	 * @param array $formats                        $fileTypes Array of formats to support, in order of preference
+	 * @param string | null $defaultViewNamespace
 	 */
-	public function __construct(ReferenceParserInterface $parser, Finder $finder, array $fileTypes, array $formats)
+	public function __construct(
+		ReferenceParserInterface $parser,
+		Finder $finder,
+		array $fileTypes,
+		array $formats,
+		$defaultViewNamespace
+	)
 	{
 		$this->_parser    = $parser;
 		$this->_finder    = $finder;
 		$this->_fileTypes = $fileTypes;
 		$this->_formats   = $formats;
+		$this->_setDefaultViewNamespace($defaultViewNamespace);
 	}
 
 	/**
@@ -74,6 +87,53 @@ class ViewNameParser extends TemplateNameParser
 			return $reference;
 		}
 
+		if (null !== $this->_defaultViewNamespace && preg_match('/^\:\:.+/', $reference)) {
+			return $this->_parseWithDefaultViewNamespace($reference, $batch);
+		}
+
+		return $this->_parseWithReference($reference, $batch);
+	}
+
+	/**
+	 * Get the absolute path for a parsed reference.
+	 *
+	 * @param $reference
+	 * @param ReferenceParser $parsed Parsed reference
+	 *
+	 * @return ReferenceParser         Absolute parsed reference
+	 */
+	public function getAbsolute($reference, $parsed)
+	{
+		// If it is relative and an absolute path was used previously, make the
+		// reference absolute using the previous module name
+		// This is a fix for https://github.com/messagedigital/cog/issues/40
+		// which should be improved/refactored at a later date
+		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
+			// If it is relative, make it absolute with the last module name
+			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
+			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
+
+			// Parse the new reference
+			$parsed = $this->_parser->parse($newReference);
+		}
+		else if (!$parsed->isRelative() && $this->_setLastAbsolute) {
+			$this->_lastAbsoluteModule = $parsed->getModuleName();
+		}
+
+		return $parsed;
+	}
+
+	/**
+	 * @param $reference
+	 * @param $batch
+	 * @param bool $setLastAbsolute
+	 * @throws \Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException
+	 *
+	 * @return array|TemplateReference
+	 */
+	private function _parseWithReference($reference, $batch, $setLastAbsolute = true)
+	{
+		$setLastAbsolute = (bool) $setLastAbsolute;
 		$parsed = $this->_parser->parse($reference);
 
 		$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
@@ -89,7 +149,7 @@ class ViewNameParser extends TemplateNameParser
 			// Parse the new reference
 			$parsed = $this->_parser->parse($newReference);
 		}
-		else if (!$parsed->isRelative()) {
+		else if (!$parsed->isRelative() && $setLastAbsolute) {
 			$this->_lastAbsoluteModule = $parsed->getModuleName();
 		}
 
@@ -147,31 +207,37 @@ class ViewNameParser extends TemplateNameParser
 	}
 
 	/**
-	 * Get the absolute path for a parsed reference.
+	 * Attempt to parse the namespace with the default view namespace appended. If it fails, parse the reference
+	 * normally
 	 *
-	 * @param  ReferenceParser $parsed Parsed reference
-	 * @return ReferenceParser         Absolute parsed reference
+	 * @param $reference
+	 * @param $batch
+	 *
+	 * @return string
 	 */
-	public function getAbsolute($reference, $parsed)
+	private function _parseWithDefaultViewNamespace($reference, $batch)
 	{
-		// If it is relative and an absolute path was used previously, make the
-		// reference absolute using the previous module name
-		// This is a fix for https://github.com/messagedigital/cog/issues/40
-		// which should be improved/refactored at a later date
-		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
-			// If it is relative, make it absolute with the last module name
-			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
-			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
+		$amendedRef = $this->_defaultViewNamespace . $reference;
 
-			// Parse the new reference
-			$parsed = $this->_parser->parse($newReference);
+		try {
+			$this->_setLastAbsolute = false;
+			return $this->_parseWithReference($amendedRef, $batch, false);
+		} catch (NotAcceptableHttpException $e) {
+			$this->_setLastAbsolute = true;
+			return $this->_parseWithReference($reference, $batch, true);
 		}
-		else if (!$parsed->isRelative()) {
-			$this->_lastAbsoluteModule = $parsed->getModuleName();
-		}
-
-		return $parsed;
 	}
 
+	/**
+	 * @param null | string $namespace
+	 * @throws \InvalidArgumentException
+	 */
+	private function _setDefaultViewNamespace($namespace)
+	{
+		if (null !== $namespace && !is_string($namespace)) {
+			throw new \InvalidArgumentException('Default view namespace must be either null or a string, ' . gettype($namespace) . ' given');
+		}
 
+		$this->_defaultViewNamespace = $namespace;
+	}
 }

@@ -10,6 +10,17 @@ class Factory extends AssetFactory
 	protected $_cacheBustingEnabled = false;
 	protected $_parsed = array();
 
+	private $_defaultNamespace;
+
+	public function __construct($root, $defaultNamespace, $debug = false)
+	{
+		parent::__construct($root, $debug);
+
+		if (null !== $defaultNamespace) {
+			$this->_defaultNamespace = str_replace('\\', ':', trim($defaultNamespace, '\\'));
+		}
+	}
+
 	public function setReferenceParser($referenceParser)
 	{
 		$this->_referenceParser = $referenceParser;
@@ -36,9 +47,7 @@ class Factory extends AssetFactory
 	 */
 	public function createAsset($inputs = array(), $filters = array(), array $options = array())
 	{
-		if (!is_array($inputs)) {
-			$inputs = array($inputs);
-		}
+		$inputs = $this->_convertRelativePaths((array) $inputs);
 
 		$paths      = $this->_getFullPaths($inputs);
 		$namespaces = $this->_getNamespaces($inputs);
@@ -67,6 +76,8 @@ class Factory extends AssetFactory
 	 */
 	public function generateAssetName($inputs, $filters, $options = array())
 	{
+		$inputs = $this->_convertRelativePaths((array) $inputs);
+
 		$name = parent::generateAssetName($inputs, $filters, $options);
 
 		if ($this->_cacheBustingEnabled) {
@@ -131,7 +142,7 @@ class Factory extends AssetFactory
 	 * @param  array $inputs
 	 * @return array
 	 */
-	protected function _getParsedInputs($inputs)
+	protected function _getParsedInputs(array $inputs)
 	{
 		$parsed = array();
 
@@ -141,7 +152,7 @@ class Factory extends AssetFactory
 				continue;
 			}
 
-			if (! isset($this->_parsed[$input])) {
+			if (! array_key_exists($input, $this->_parsed)) {
 				// Parse the input, has to be cloned else the last parsed reference
 				// will override all previous
 				$this->_parsed[$input] = clone $this->_referenceParser->parse($input);
@@ -151,5 +162,43 @@ class Factory extends AssetFactory
 		}
 
 		return $parsed;
+	}
+
+	/**
+	 * If a default namespace is set, it will convert relative asset paths to that of the default namespace, and if the file
+	 * exists, it will swap it out for the existing asset
+	 *
+	 * @param array $inputs
+	 *
+	 * @return array
+	 */
+	private function _convertRelativePaths(array $inputs)
+	{
+		if (null === $this->_defaultNamespace) {
+			return $inputs;
+		}
+
+		$refParser        = $this->_referenceParser;
+		$defaultNamespace = $this->_defaultNamespace;
+
+		array_walk($inputs, function (&$input) use ($refParser, $defaultNamespace){
+
+			if (!is_string($input)) {
+				throw new \LogicException('Input must be a string');
+			}
+
+			$rootMod = constant(get_class($refParser) . '::ROOT_MODIFIER');
+
+			if ($input[1] === ':' && $input[2] === ':') {
+				$altInput = $rootMod . $defaultNamespace . ltrim($input, $rootMod);
+				$path = $refParser->parse($altInput)->getFullPath();
+
+				if (file_exists($path)) {
+					$input = $altInput;
+				}
+			}
+		});
+
+		return $inputs;
 	}
 }
