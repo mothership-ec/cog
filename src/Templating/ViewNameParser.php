@@ -36,6 +36,14 @@ class ViewNameParser extends TemplateNameParser
 	}
 
 	/**
+	 * Possible separators for module names
+	 */
+	public static function getViewNamespaceSeparators()
+	{
+		return ['!', ':'];
+	}
+
+	/**
 	 * Add a default directory to use for searching for view overrides before
 	 * looking in the parsed location.
 	 *
@@ -76,7 +84,7 @@ class ViewNameParser extends TemplateNameParser
 
 		$parsed = $this->_parser->parse($reference);
 
-		$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
+		$referenceSeparators = self::getViewNamespaceSeparators();
 
 		// If it is relative and an absolute path was used previously, make the
 		// reference absolute using the previous module name
@@ -84,7 +92,8 @@ class ViewNameParser extends TemplateNameParser
 		// which should be improved/refactored at a later date
 		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
 			// If it is relative, make it absolute with the last module name
-			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
+			$newReference = str_replace('\\', constant(get_class($this->_parser) . '::SEPARATOR'), $this->_lastAbsoluteModule) . $reference;
+			// $newReference = $reference;
 
 			// Parse the new reference
 			$parsed = $this->_parser->parse($newReference);
@@ -102,13 +111,16 @@ class ViewNameParser extends TemplateNameParser
 		// Set default check paths
 		$checkPaths = array();
 		foreach ($this->_defaultDirs as $dir) {
-			$checkPaths[] = $dir
-				. str_replace('\\', $referenceSeparator, $parsed->getModuleName())
-				. '/'
-				. $parsed->getPath();
+			foreach ($referenceSeparators as $referenceSeparator) {
+				$checkPaths[] = $dir
+					. str_replace('\\', $referenceSeparator, $parsed->getModuleName())
+					. '/'
+					. $parsed->getPath();
+			}
 		}
 
 		// Get the base file name from the reference parser
+		// this needs to be done last as the array's order matters
 		$checkPaths[] = $parsed->getFullPath('resources/view');
 
 		// Loop paths to check, returning on the first one to match
@@ -160,7 +172,7 @@ class ViewNameParser extends TemplateNameParser
 		// which should be improved/refactored at a later date
 		if ($parsed->isRelative() && $this->_lastAbsoluteModule) {
 			// If it is relative, make it absolute with the last module name
-			$referenceSeparator = constant(get_class($this->_parser) . '::SEPARATOR');
+			$referenceSeparators = self::getViewNamespaceSeparators();
 			$newReference = str_replace('\\', $referenceSeparator, $this->_lastAbsoluteModule) . $reference;
 
 			// Parse the new reference
@@ -172,6 +184,4 @@ class ViewNameParser extends TemplateNameParser
 
 		return $parsed;
 	}
-
-
 }
