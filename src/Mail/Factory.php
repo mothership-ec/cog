@@ -79,7 +79,7 @@ class Factory implements MailableInterface {
 	public function set($key, $value)
 	{
 		if (! in_array($key, $this->_requires)) {
-			throw new Exception(sprint("Can not set key that is not required: '%s'", $key));
+			throw new Exception(sprintf("Can not set key that is not required: '%s'", $key));
 		}
 
 		$this->_items[$key] = $value;
